@@ -10,7 +10,7 @@ JEDI Documentation
    :maxdepth: 2
    :caption: Contents:
 
-
+Welcome to JEDI!
 
 Indices and tables
 ==================
