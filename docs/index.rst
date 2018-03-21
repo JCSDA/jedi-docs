@@ -6,15 +6,55 @@
 JEDI Documentation
 ==================
 
+Welcome to JEDI!
+
+This documentation will help you get started with JEDI whether you are a user or a developer.
+
+Table of Contents
+-----------------
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   
+   developer/methodology/getting-started-with-sphinx
 
-Welcome to JEDI!
+Developers
+==========
+
+If you are contributing to JEDI, take a look here for help.
+
+Methodology
+-----------
+
+A certain amount of consistency is required on the part of the developers so that we can
+maintain effecient software development.
+Therefore, we have adopted several methodologies that we expect everyone to use.
+
+Code Development
+^^^^^^^^^^^^^^^^
+
+We are using `GitHub <https://github.com/>`_ for storage of our code, and the 
+`git flow <http://nvie.com/posts/a-successful-git-branching-model/>`_
+methodology for developing that code.
+
+Documentation
+^^^^^^^^^^^^^
+
+For writing guides and manuals, we are using 
+`Sphinx <http://www.sphinx-doc.org/en/master/index.html>`_ which is a Python package.
+
+    `Click here for tips on getting started with Sphinx <developer/methodology/getting-started-with-sphinx.html>`_
+
+`Doxygen <http://www.stack.nl/~dimitri/doxygen/>`_ will be used for automatically
+generating documentation describing our code, such and inheritance diagrams, man
+pages and call trees.
+
+We have created a GitHub repository for holding documentation called JCSDA/jedi-docs.
+Please place your documentation in this repository and placed the appropriate links and text
+to your documentation in the top level index.html file.
 
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
