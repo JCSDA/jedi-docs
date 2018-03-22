@@ -46,11 +46,11 @@ For writing guides and manuals, we are using
     `Click here for tips on getting started with Sphinx <developer/methodology/getting-started-with-sphinx.html>`_
 
 `Doxygen <http://www.stack.nl/~dimitri/doxygen/>`_ will be used for automatically
-generating documentation describing our code, such and inheritance diagrams, man
+generating documentation describing our code, such as inheritance diagrams, man
 pages and call trees.
 
 We have created a GitHub repository for holding documentation called JCSDA/jedi-docs.
-Please place your documentation in this repository and placed the appropriate links and text
+Please place your documentation in this repository and place the appropriate links and text
 to your documentation in the top level index.html file.
 
 Indices and tables
