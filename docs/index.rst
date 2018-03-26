@@ -16,7 +16,9 @@ Table of Contents
 .. toctree::
    :maxdepth: 2
    
+   developer/methodology/getting-started-with-gitflow
    developer/methodology/getting-started-with-sphinx
+
 
 Developers
 ==========
@@ -33,9 +35,12 @@ Therefore, we have adopted several methodologies that we expect everyone to use.
 Code Development
 ^^^^^^^^^^^^^^^^
 
-We are using `GitHub <https://github.com/>`_ for storage of our code, and the 
-`git flow <http://nvie.com/posts/a-successful-git-branching-model/>`_
+We are using `GitHub <https://github.com/>`_ for storage of our code, and the git flow
 methodology for developing that code.
+
+    `Click here for an excellent primer on git flow <http://nvie.com/posts/a-successful-git-branching-model/>`_
+
+    `Click here for tips on getting started with git flow <developer/methodology/getting-started-with-gitflow.html>`_
 
 Documentation
 ^^^^^^^^^^^^^
