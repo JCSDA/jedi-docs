@@ -21,18 +21,6 @@ Table of Contents
    developer/building_and_testing/index.rst
 
 
-Developers
-==========
-
-If you are contributing to JEDI, take a look here for help.
-
-Methodology
------------
-
-A certain amount of consistency is required on the part of the developers so that we can
-maintain effecient software development.
-Therefore, we have adopted several methodologies that we expect everyone to use.
-
 Code Development
 ^^^^^^^^^^^^^^^^
 

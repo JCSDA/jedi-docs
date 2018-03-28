@@ -1,30 +1,27 @@
 Building and Compiling JEDI
 =============================
 
-Backgroung text here.
+Under Construction
 
 Choose your branches
 --------------------
 
-Information here about how to choose both remote and local branches in the CMakeLists file to build with.
-
+Under Construction
 
 Build options
 -------------
 
-Describe --build=develop
-
-more?
+Under Construction
 
 
 Compiling within the Singularity container
 -------------------------------------------
 
-Implementing
+Under Construction
 
 
 Compiling outside the Singularity container
 -------------------------------------------------
 
-This section is under construction - stay tuned for future updates.
+Under Construction
 

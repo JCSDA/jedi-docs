@@ -1,25 +1,26 @@
 Singularity and Vagrant
 =======================
 
-Text goes here
+Under construction
 
 Installing Vagrant on a Mac
 ---------------------------
 
-If you're not using a Mac, you can skip this section
+Under construction
 
 Installing Singularity on a Mac 
 --------------------------------
 
-Text goes here
+Under construction
 
 Installing Singularity on Linux
 -------------------------------
 
-Text goes here
+Under construction
 
 Building the JEDI environment 
 -------------------------------
 
+Under construction: 
 How do download the singularity image and start a singularity shell
 

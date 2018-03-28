@@ -1,22 +1,18 @@
 JEDI Unit Testing
 =============================
 
-Backgroung text here.
+Under construction
 
 The JEDI unit test suite
--------------------
+-------------------------
 
+Under construction;
 each bundle has it's own test suite
 
-describe the -VV option
-
-two types of tests: compare and boost
-
-
 Running a single test
-----------------------------------
+---------------------
 
-Describe the -R option and where to see stdout
+Under construction
 
 
 
