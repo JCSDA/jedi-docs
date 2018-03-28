@@ -6,3 +6,4 @@ JEDI Environment
    :maxdepth: 2
 
    singularity
+   vagrant

@@ -1,4 +1,4 @@
-Building and Compiling JEDI
+Building and compiling JEDI
 =============================
 
 Under Construction

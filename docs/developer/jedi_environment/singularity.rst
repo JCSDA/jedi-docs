@@ -1,10 +1,5 @@
-Singularity and Vagrant
+Singularity
 =======================
-
-Under construction
-
-Installing Vagrant on a Mac
----------------------------
 
 Under construction
 
@@ -22,5 +17,5 @@ Building the JEDI environment
 -------------------------------
 
 Under construction: 
-How do download the singularity image and start a singularity shell
+How to download the singularity image and start a singularity shell
 

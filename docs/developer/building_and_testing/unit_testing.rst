@@ -1,4 +1,4 @@
-JEDI Unit Testing
+JEDI unit testing
 =============================
 
 Under construction

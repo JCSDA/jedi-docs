@@ -8,9 +8,11 @@ Therefore, we have adopted several methodologies and tools that we ask everyone 
 
 .. toctree::
    :maxdepth: 2
-
+ 
+   homebrew
    getting-started-with-gitflow
    getting-started-with-sphinx
+   doxygen
    cmake
    boost
    debuggers
