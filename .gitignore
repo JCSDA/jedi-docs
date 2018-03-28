@@ -1,3 +1,5 @@
 _build
 _status
 _templates
+_static
+.DS_Store

@@ -16,8 +16,9 @@ Table of Contents
 .. toctree::
    :maxdepth: 2
    
-   developer/methodology/getting-started-with-gitflow
-   developer/methodology/getting-started-with-sphinx
+   developer/developer_tools/index.rst
+   developer/jedi_environment/index.rst
+   developer/building_and_testing/index.rst
 
 
 Developers
