@@ -12,7 +12,7 @@ To install homebrew, copy and paste this into the command line of a bash shell:
 
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-The installation of some JEDI tools such as Vagrant require new Homebrew features such as Cask.  To make sure you are using the latest version of Homebrew, type:
+The installation of some JEDI tools such as Vagrant require new Homebrew features such as cask.  To make sure you are using the latest version of Homebrew, type:
 
 .. code:: bash
 

@@ -4,6 +4,8 @@ Debugging Tools
 
 Under construction
 
+.. _kdbg:
+
 kdbg
 ----
 
