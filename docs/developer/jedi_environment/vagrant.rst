@@ -151,7 +151,7 @@ Now you have to tell your Mac to accept graphical input from the virtual machine
    #On your Mac
    xhost + 127.0.0.1
    
-If the above commands don't work on your Mac, you may need to install `XQuartz <https://www.xquartz.org/>`_.
+If the above commands don't work on your Mac, you may need to install `XQuartz <https://www.xquartz.org/>`_.  You might wish to place this xhost command in your :code:`.bash_profile` file so it executes when you open a terminal.
 
 .. _vagrant-jedi:
 
@@ -191,7 +191,7 @@ From there you can enter the Singularity container and (optionally) run your sta
   singularity shell --bind /vagrant_data -e JCSDA-singularity-master-latest.simg
   source startup.sh
 
-Now you're in the Singularity container.  You may then wish to enable X forwarding as described in Step G above by entering :code:`xhost + 127.0.0.1` in a local window.  Then do whatever you want to do: edit files; build, compile, and run JEDI; etc....   When you're done for the day you can exit and shut down the VM:
+Now you're in the Singularity container.  Then do whatever you want to do: edit files; build, compile, and run JEDI; etc....   When you're done for the day you can exit and shut down the VM:
 
 .. code:: bash
 
