@@ -1,4 +1,4 @@
-Getting started with git flow
+Git flow
 =============================
 
 The `git flow primer <http://nvie.com/posts/a-successful-git-branching-model>`_ describes

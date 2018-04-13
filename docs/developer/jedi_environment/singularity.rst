@@ -85,7 +85,7 @@ Once singularity is installed on your system, the rest is easy.  The next step i
 
 .. code:: bash
 
-   singularity pull shub:://JCSDA/singularity
+   singularity pull shub://JCSDA/singularity
 
 Strictly speaking, you only have to do this step once but in practice you will likely want to update your JEDI image occasionally as the software environment continues to evolve.  The pull statement above should grab the most recent development version of the JEDI image file.  It will take a few seconds to execute and when it is done, singularity will tell you what the name of this latest and greatest image file is and where it is located (which should be the same directory that you ran the pull statement in):
 

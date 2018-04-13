@@ -1,6 +1,6 @@
 
-Getting Started with Doxygen
-=============================
+Doxygen
+=======
 
 We at JEDI use `Doxygen <http://www.stack.nl/~dimitri/doxygen/>`_ for generating man pages, inheritance diagrams, call trees and other types of html documentation that is linked to specific blocks of source code such as classes or functions.  For generating web-based manuals, guides, and tutorials we use :doc:`Sphinx <getting-started-with-sphinx>`.
 
@@ -49,7 +49,7 @@ If it's not already there you can install Graphviz using the executable binaries
 
   
 Running Doxygen
---------------
+---------------
 
 Doxygen documentation is inserted directly into the source code using specific directives.  Since these directives are located within comment blocks, they do not affect the compilation of the code.  And, since C++ and Fortran have different ways to define comment blocks, the instructions for adding Doxygen documentation to these source files are correspondingly different.  See below for instructions on how to add Doxygen documentation to :ref:`C++ <doxygen-Cpp>` and :ref:`Fortran 90 <doxygen-Fortran>` source code.
 
@@ -96,6 +96,7 @@ That is sufficient to run Doxygen but you may wish to browse some of the other i
 
 .. _nowizard:
 
+Wait patiently for it to run - it may take a few tens of seconds, particularly if you asked to generate many graphs. 
 If you'd rather not use the Doxywizard GUI, you can do all of the above and more by creating the Doxyfile configuration file manually from the command line and then editing it directly to select the options you want.  To manually generate a Doxyfile, go to your directory of choice and type:
 
 .. code:: bash
