@@ -119,9 +119,9 @@ The :code:`git lfs track` command accepts full directories or wildcards as as sh
 
 Once you have your tracking patterns set up, then you can proceed to add your files.
 
-.. pull-quote::
+.. note::
    
-    **Tip: Be sure to set up the appropriate tracking patterns before you add your large files to the repository.**
+    **Be sure to set up the appropriate tracking patterns before you add your large files to the repository.**
 
 
 .. _activating-gitlfs:     
@@ -170,9 +170,9 @@ However, you can only do this if you have push permission to the repository.  If
 
 It is much better to:
 
-.. pull-quote::
+.. note::
    
-     **(Tip) Use Git-LFS right from the beginning when you add large files to a JEDI repository**
+     **Use Git-LFS right from the beginning when you add large files to a JEDI repository**
 
 
 

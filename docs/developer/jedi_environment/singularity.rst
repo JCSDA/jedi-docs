@@ -7,8 +7,6 @@ In order to appreciate what `Singularity <http://singularity.lbl.gov/index.html>
 
 The computing environment that Singularity creates is called a **container**.  There are other container providers as well, the most well-known being `Docker <https://www.docker.com/>`_.  An advantage of Singularity over these other alternatives is that it was specifically designed to address the challenges associated with HPC systems and collaborative software development efforts that require full control over your own software stack (see `this article in HPCWire <https://www.hpcwire.com/2018/02/08/startup-brings-hpc-containers-enterprise/>`_ and `this article in "Cloud Computing for Science and Engineering" <https://cloud4scieng.org/singularity-a-container-system-for-hpc-applications/>`_).
 
-For instructions on how to build the JEDi environment with Docker, consult the `JEDI wiki <https://wiki.ucar.edu/display/JEDI/Build+JEDI+environment+with+Docker>`_
-
 In contrast to virtual machines, containers do not include the necessary software to build an entire operating system.  Rather, they work with the host operating system to provide the desired functionality, including the libraries, applications, and other software tools that your code needs to run.  So containers generally require much less memory to store and to set up than virtual machines.  Singularity encapsulates your software environment in a single disk **image file** that can be copied to and invoked on any system on which Singularity itself is installed.  The JEDI environment is contained in one such image file (see :ref:`below <build_env>`).
 
 .. _Singularity-install:

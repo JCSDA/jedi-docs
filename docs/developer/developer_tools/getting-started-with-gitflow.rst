@@ -201,10 +201,17 @@ Bugfix and hotfix branches can be published and finalized :ref:`as described abo
 
    git flow bugfix publish wrongoutput
    
-Once your branch is on GitHub, you can issue a pull request to merge it in to the relevant branch (master, develop, or feature).  Once it is sucessfully integrated into the desired branch, you may wish to delete your local branch using the standard git command:
+Once your branch is on GitHub, you can issue a pull request to merge it in to the relevant branch (master, develop, or feature).  Our standard workflow is to delete the bugfix or hotfix branch on GitHub after it has been merged by an appropriate JEDI master.
+
+Once it is sucessfully integrated into the desired branch, you may wish to delete your local branch manually using the standard git command:
 
 .. code:: bash
 
    git branch -d bugfix/wrongoutput
-
    
+And/or, you can run this command periodically which will remove (:code:`-p` is for *prune*) any local branches you have that have already been deleted from GitHub:
+
+.. code:: bash
+
+   git remote update -p
+
