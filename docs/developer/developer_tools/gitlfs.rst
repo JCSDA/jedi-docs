@@ -49,31 +49,38 @@ Otherwise everything should look pretty much the same.  If it is a binary file y
 
 When you pull or fetch and checkout a particular commit, then git LFS will check to see if you already have the tracked files on your system.  This is called your **local LFS cache**.  If so, it will replace the pointers with your local files.  If not, it will download the LFS-tracked files from the remote Store.
 
+An advantage of git LFS (in addition to the larger files sizes and more memory per repo) is that it takes less time to push, pull, and fetch repositories.  If the large files don't change, they can just sit on your local computer (in your local LFS cache) and there is no need to shunt them back and forth to and from GitHub.
+
+Once Git LFS is installed, you can manage a LFS-enabled repo as you would any other; the standard fetch, pull, push, and clone commands work as before (beware of outdated documentation in google searches that says otherwise).
+
 To see if Git LFS is enabled for a given repository and, if so, which files it tracks, go to the repository and enter
 
 .. code:: bash
 
    git lfs track
 
+This will show you the tracked patterns.  To see the actual files that are currently being tracked (i.e. stored on the LFS store instead of GitHub proper), enter
+
+.. code:: bash
+
+   git lfs ls-files
+
+
+For a complete list of git-lfs commands, enter
+
+.. code:: bash
+
+   git lfs help 
+
+Or, to get more detailed information on any particular command, enter
+
+.. code:: bash
+
+   git lfs help <command>
+
 For technical details on how the pointers are implemented see the official `Git LFS Specification <https://github.com/git-lfs/git-lfs/blob/master/docs/spec.md>`_.  And, for details on how to access the Git LFS Store directly, see the `Git LFS API <https://github.com/git-lfs/git-lfs/tree/master/docs/api>`_.
 
-An advantage of git LFS (in addition to the larger files sizes and more memory per repo) is that it takes less time to push, pull, and fetch repositories.  If the large files don't change, they can just sit on your local computer (in your local LFS cache) and there is no need to shunt them back and forth to and from GitHub.
-
-A minor down side in using LFS is a little extra baggage in the git management.  For example, to clone an LFS-enabled repository you have to use, e.g.
-
-.. code:: bash
-
-   git lfs clone https://github.com/JCSDA/ufo.git
-
-
-instead of the standard :code:`git clone` command.  This is good to be aware of but you shouldn't have to worry too much about it in practice because the :ref:`ecbuild <ecbuild>` macros should take care of that for you.  To tell :code:`ecbuild` to clone an lfs-enabled repository, you just need to add :code:`LFS` as an option to the :code:`GIT` command in the :code:`CMakeLists.txt` file of the appropriate JEDI bundle.  For example:
-
-.. code:: bash
-
-  ecbuild_bundle( PROJECT ufo GIT "https://github.com/JCSDA/ufo.git" BRANCH develop LFS UPDATE )
-
-Note that this is an extension of the `EMCWF ecbuild package <https://github.com/ecmwf/ecbuild>`_ that was implemented by the JEDI team.  If this gives you an error, then try downloading the latest version of the :ref:`JEDI Singularity Container <build_env>`.  Or, if you're not using the container, try cloning and building the latest develop version of the `UCAR/ecbuild repositority <https://github.com/UCAR/ecbuild>`_.
-     
+For further documentation and usage tips, see `GitHub's help page <https://help.github.com/articles/about-git-large-file-storage/>`_ and `this tutorial <https://github.com/git-lfs/git-lfs/wiki/Tutorial>`_.
 
 .. _gitlfs-addfiles:     
 
@@ -100,19 +107,26 @@ This tells you that Git LFS is tracking all netCDF files with the extension :cod
 
 If the file or files that you wish to add to the repository are already covered by these tracked patterns, then you are done.  There is nothing more you need to do.  For example, if the tracked patterns were as listed above and if I were to add a file called :code:`newfile.nc` to the :code:`test/testinput` directory, then this new file would be tracked by Git LFS.  If I then proceeded to commit this branch and push it to GitHub, :code:`newfile.nc` would be copied to the Git LFS Store and a pointer to it would be generated and stored on GitHub. 
 
-If the current LFS tracked patterns do not match the new or modified files you wish to add, then you need to define new patterns that do match.  You do this with the :code:`git lfs track` command:
+If the current LFS tracked patterns do not match the new or modified files you wish to add, then you need to define new patterns that do match.  You do this with the :code:`git lfs track` command, for example:
 
 .. code:: bash
 
+   git lfs track "*.nc"
    git lfs track "Documentation/*.ps"
    git lfs track "mydata/**"
    
-The :code:`git lfs track` command accepts full directories or wildcards as as shown above.  The double asterisk in the second command instructs git-lfs to recursively include all subdirectories.  Paths are relative to the top level of the repository.  You can specify as many patterns as you wish.  These will all be stored in the :code:`.gitattributes` file in the top directory of the repo and they can be listed with the :code:`git lfs track` command as described above (omitting arguments will generate the list).
+The :code:`git lfs track` command accepts full directories or wildcards as as shown above.  The first command tells get to track :code:`.nc` files anywhere in the directory tree of the repository.  The double asterisk in the third command instructs git-lfs to recursively include all subdirectories.  Paths are relative to the top level of the repository.  You can specify as many patterns as you wish.  These will all be stored in the :code:`.gitattributes` file in the top directory of the repo and they can be listed with the :code:`git lfs track` command as described above (omitting arguments will generate the list).
+
+Once you have your tracking patterns set up, then you can proceed to add your files.
+
+.. note::
+   
+    **Be sure to set up the appropriate tracking patterns before you add your large files to the repository.**
 
 
 .. _activating-gitlfs:     
 	  
-Activativing git-lfs for a JEDI repository
+Activativing Git-LFS for a JEDI repository
 ------------------------------------------
 
 Most JEDI users and developers can safely skip this section.  By the time you read this, most relevant JEDI repositories will have already been configured to use Git-LFS.
@@ -137,7 +151,7 @@ Now you have to tell git which files you want to store on the remote LFS Store. 
 
 .. code:: bash
 
-   git lfs track "test/testinput/*.nc"
+   git lfs track "*.nc"
    git lfs track "test/testinput/*.nc4"
 
 Entering one or more of these commands will create (or append) a :code:`.gitattributes` file in the top level of your repository where your specifications will be stored.  So, in order to save your LFS specifications for posterity, you should tell git to track this file:
@@ -146,16 +160,18 @@ Entering one or more of these commands will create (or append) a :code:`.gitattr
 
    git add .gitattributes
 
-Now the next time you commit and push this branch to GitHub, it will be properly configured for Git LFS.
+Now you can add your large files and the next time you commit and push this branch to GitHub, it will be properly configured for Git LFS.
 
 **IMPORTANT: Existing files that satisfy your pattern specifications will not be moved to the LFS Store**.  The reason for this is that they are already part of your GitHub history.  They exist in previous commits so they already occupy memory on GitHub.  Replacing them with pointers would be pointless, so to speak, because it would not save any memory.  Even if you were to delete those files from your repository, re-commit, and then re-commit again after adding them back in, GitHub is smart enough to know that these are the same files that were there before so it will use the versions it already has in memory (unless you change the file names or the files themselves).
 
-If you are really courageous and determined, there is a way to move existing files to LFS.  This would require you to first `delete the files from the repo history <https://help.github.com/articles/removing-files-from-a-repository-s-history/>`_ (make sure you move the files someplace safe first!).  Then you can run :code:`git lfs install` and :code:`git lfs track` as described above and then move the files back to the repo.  Then when you commit and push to GitHub, the files will be stored on Git-LFS.  
+If you are really courageous and determined, there is a way to move existing files to LFS.  This would require you to first `delete the files from the repo history <https://help.github.com/articles/removing-files-from-a-repository-s-history/>`_ (make sure you move the files someplace safe first!).  Then you can run :code:`git lfs install` and :code:`git lfs track` as described above and then move the files back to the repo.  Then when you commit and push to GitHub, the files will be stored on Git-LFS.  Another way to move existing files to the LFS Store is with the `git migrate command <https://github.com/git-lfs/git-lfs/wiki/Tutorial#migrating-existing-repository-data-to-lfs>`_.
 
-However, you can only do this if you have push permission to the repository.  If you do have push permission please use this with **great caution** because it does (literally) rewrite history!  Pre-LFS versions of the repo will likely fail tests that they previously passed.
+However, you can only do this if you have push permission to the repository.  If you do have push permission please use this with **great caution** because it does (literally) rewrite history!  Pre-LFS versions of the repo may fail tests that they previously passed.
 
 It is much better to:
 
+.. note::
+   
      **Use Git-LFS right from the beginning when you add large files to a JEDI repository**
 
 

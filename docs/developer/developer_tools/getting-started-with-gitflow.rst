@@ -1,3 +1,5 @@
+.. _gitflow-top:     
+
 Git flow
 =============================
 
@@ -65,6 +67,10 @@ provides an option (-d) to do just that.
 
   git flow init -f   # Force initialize when 'git flow init' has already been run.
 
+  
+.. _gitflow-feature:     
+
+  
 Adding a feature
 ----------------
 
@@ -160,4 +166,52 @@ it's a good time to sync up with the GitHub develop branch.
                                        # Note that this command is not necessary
                                        # if the pull command above did not modify
                                        # the develop branch.
+
+
+bugfix and hotfix branches
+--------------------------
+
+Feature branches are intended for exactly that - new features or enhancements of existing code.  If instead you want to fix a known bug in some branch of the repository, you should create a :code:`bugfix` or :code:`hotfix` branch.
+
+The difference between bugfix and hotfix has to do with where they fit into the :ref:`git flow workflow <gitflow-top>`:
+
+* **bugfix**: branches off of the :code:`develop` branch or a specified :code:`feature` branch
+* **hotfix**: branches off of the :code:`master` branch
+
+These branches are created and finalized :ref:`as described above <gitflow-feature>` for feature branches, e.g.:
+
+.. code:: bash
+
+   git flow bugfix start wrongoutput # branches off of develop
+
+.. code:: bash
+
+   git flow hotfix start wrongoutput # branches off of master
+   
+The default base for a bugfix branch is develop but you can also fix a bug in a feature branch as follows.  
+
+.. code:: bash
+
+   git flow bugfix start wrongoutput feature/myfeature # branches off of myfeature
+   
+
+Bugfix and hotfix branches can be published and finalized :ref:`as described above <gitflow-feature>` for feature branches, for example:
+
+.. code:: bash
+
+   git flow bugfix publish wrongoutput
+   
+Once your branch is on GitHub, you can issue a pull request to merge it in to the relevant branch (master, develop, or feature).  Our standard workflow is to delete the bugfix or hotfix branch on GitHub after it has been merged by an appropriate JEDI master.
+
+Once it is sucessfully integrated into the desired branch, you may wish to delete your local branch manually using the standard git command:
+
+.. code:: bash
+
+   git branch -d bugfix/wrongoutput
+   
+And/or, you can run this command periodically which will remove (:code:`-p` is for *prune*) any local branches you have that have already been deleted from GitHub:
+
+.. code:: bash
+
+   git remote update -p
 
