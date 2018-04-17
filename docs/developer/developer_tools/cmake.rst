@@ -9,6 +9,8 @@ cmake and ctest
 
 Under construction
 
+.. _ecbuild:
+
 ecbuild
 -------
 

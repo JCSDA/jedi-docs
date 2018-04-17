@@ -11,6 +11,7 @@ Therefore, we have adopted several methodologies and tools that we ask everyone 
  
    homebrew
    getting-started-with-gitflow
+   gitlfs
    getting-started-with-sphinx
    doxygen
    cmake

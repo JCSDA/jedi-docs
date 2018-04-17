@@ -1,4 +1,6 @@
-Getting started with git flow
+.. _gitflow-top:     
+
+Git flow
 =============================
 
 The `git flow primer <http://nvie.com/posts/a-successful-git-branching-model>`_ describes
@@ -65,6 +67,10 @@ provides an option (-d) to do just that.
 
   git flow init -f   # Force initialize when 'git flow init' has already been run.
 
+  
+.. _gitflow-feature:     
+
+  
 Adding a feature
 ----------------
 
@@ -161,3 +167,44 @@ it's a good time to sync up with the GitHub develop branch.
                                        # if the pull command above did not modify
                                        # the develop branch.
 
+
+bugfix and hotfix branches
+--------------------------
+
+Feature branches are intended for exactly that - new features or enhancements of existing code.  If instead you want to fix a known bug in some branch of the repository, you should create a :code:`bugfix` or :code:`hotfix` branch.
+
+The difference between bugfix and hotfix has to do with where they fit into the :ref:`git flow workflow <gitflow-top>`:
+
+* **bugfix**: branches off of the :code:`develop` branch or a specified :code:`feature` branch
+* **hotfix**: branches off of the :code:`master` branch
+
+These branches are created and finalized :ref:`as described above <gitflow-feature>` for feature branches, e.g.:
+
+.. code:: bash
+
+   git flow bugfix start wrongoutput # branches off of develop
+
+.. code:: bash
+
+   git flow hotfix start wrongoutput # branches off of master
+   
+The default base for a bugfix branch is develop but you can also fix a bug in a feature branch as follows.  
+
+.. code:: bash
+
+   git flow bugfix start wrongoutput feature/myfeature # branches off of myfeature
+   
+
+Bugfix and hotfix branches can be published and finalized :ref:`as described above <gitflow-feature>` for feature branches, for example:
+
+.. code:: bash
+
+   git flow bugfix publish wrongoutput
+   
+Once your branch is on GitHub, you can issue a pull request to merge it in to the relevant branch (master, develop, or feature).  Once it is sucessfully integrated into the desired branch, you may wish to delete your local branch using the standard git command:
+
+.. code:: bash
+
+   git branch -d bugfix/wrongoutput
+
+   

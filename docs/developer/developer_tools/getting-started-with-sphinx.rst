@@ -1,4 +1,4 @@
-Getting started with Sphinx
+Sphinx
 ===========================
 
 Sphinx is a Python package that can be used to create documentation in various formats that
