@@ -15,5 +15,4 @@ Therefore, we have adopted several methodologies and tools that we ask everyone 
    getting-started-with-sphinx
    doxygen
    cmake
-   boost
    debuggers
