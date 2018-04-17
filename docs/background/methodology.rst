@@ -1,8 +1,9 @@
 #########################################
-Methodology, Long Term Direction of Work
+JEDI General Methodology
 #########################################
 
-The requirements are diverse and many aspects are very complex in themselves or together.
+The `requirements for JEDI <requirements.html>`_ are diverse and many aspects are
+very complex in themselves or together.
 However, over the last decade or two, software development technology has advanced
 significantly, making routine the use of complex software in everyday life.
 Most recently, communication technology has also progressed to a level where working

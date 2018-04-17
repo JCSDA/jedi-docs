@@ -31,7 +31,9 @@ different components of the Earth system, and for different applications, with t
 objective of reducing or avoiding redundant work within the community and increasing
 efficiency of research and of the transition from development teams to operations.
 
+    `Click here for a brief description of high-level requirements for JEDI <background/requirements.html>`_
 
+    `Click here for a brief description of the general methodology for JEDI <background/methodology.html>`_
 
 Code Development
 ^^^^^^^^^^^^^^^^
