@@ -16,9 +16,21 @@ Table of Contents
 .. toctree::
    :maxdepth: 2
    
+   background/index.rst
    developer/developer_tools/index.rst
    developer/jedi_environment/index.rst
    developer/building_and_testing/index.rst
+
+
+Background
+^^^^^^^^^^
+
+The long term objective of the Joint Effort for Data assimilation Integration (JEDI) is to
+provide a unified data assimilation framework for research and operational use, for
+different components of the Earth system, and for different applications, with the
+objective of reducing or avoiding redundant work within the community and increasing
+efficiency of research and of the transition from development teams to operations.
+
 
 
 Code Development
