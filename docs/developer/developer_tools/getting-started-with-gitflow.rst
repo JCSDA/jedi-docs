@@ -35,42 +35,17 @@ Initializing your local repository
 ----------------------------------
 
 These steps only need to be done once when you start a local repository.
-Answer the questions from "git flow init" as shown below.
 
 .. code:: bash
 
-  git clone <path_to_remote_repository>                      # create local repository
+  git clone <path_to_remote_repository>        # create local repository
   
-  git flow init                                              # set up for git flow
-    > Branch name for production releases: [master]          # hit return for default value
-    > Branch name for "next release" development: [develop]  #  which is shown in square braces
-    > How to name your supporting branch prefixes?
-    > Feature branches? [feature/]
-    > Bugfix branches? [bugfix/]
-    > Release branches? [release/]
-    > Hotfix branches? [hotfix/]
-    > Support branches? [support/]
-    > Version tag prefix? []
-    > Hooks and filters directory? [<path_to_local_repo>/.git/hooks]
+  git checkout --track develop                 # checkout and track develop branch
 
-You may have noticed that accepting all default values is recommended, and git flow init
-provides an option (-d) to do just that.
+  git flow init -d                             # initializes git flow with default values
 
-.. code:: bash
+It is possible to initialize git flow with different values but using all default values is very strongly recommended.
 
-  git flow init -d   # Automatically accept all default values
-  
-  # Check what the above command put in for default values. Sometimes, the default
-  # values don't match what's shown above, and you want to end up with the values
-  # shown above. If the values don't match, you can force the initialization to be
-  # re-run using the -f option.
-
-  git flow init -f   # Force initialize when 'git flow init' has already been run.
-
-  
-.. _gitflow-feature:     
-
-  
 Adding a feature
 ----------------
 
