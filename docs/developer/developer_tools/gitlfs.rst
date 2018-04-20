@@ -123,6 +123,15 @@ Once you have your tracking patterns set up, then you can proceed to add your fi
    
     **Be sure to set up the appropriate tracking patterns before you add your large files to the repository.**
 
+So, you're ready to go.  However, it is worth emphasizing that space is limited even on the LFS store and it's
+`not easy <https://stackoverflow.com/questions/34579211/how-to-delete-a-file-tracked-by-git-lfs-and-release-the-storage-quota>`_ to remove a file once it is there (only the repo administrator can do this).  Without careful attention, the accumulation of large files can add up quickly.  So, please be prudent when adding large files to a JEDI repository.
+
+.. note::
+   
+   Before adding large files to a JEDI repository, please ask yourself these questions:
+     * Will these files be useful to the JEDI community?
+     * Am I only including the files/data necessary to run a particular test or demonstration (pruning out all unnecessary auxiliary files/data)?
+     * Will these files remain useful indefinitely, without the need for frequent updating?
 
 .. _activating-gitlfs:     
 	  
