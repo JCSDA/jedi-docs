@@ -209,7 +209,7 @@ Once it is sucessfully integrated into the desired branch, you may wish to delet
 
    git branch -d bugfix/wrongoutput
    
-And/or, you can run this command periodically which will remove (:code:`-p` is for *prune*) any local branches you have that have already been deleted from GitHub:
+And/or, you can run this command periodically which will remove (:code:`-p` is for *prune*) any of your local branches that no longer exist on GitHub:
 
 .. code:: bash
 

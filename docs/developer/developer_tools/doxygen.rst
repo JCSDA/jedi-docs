@@ -10,6 +10,15 @@ Doxygen is open-source software that was developed by Dimitri van Heesch and is 
 
 In what follows we give practical tips on how to use Doxygen within the context of JEDI.
 
+.. note::
+
+   **The most important part of this page are the instructions on how to add Doxygen documentation to** :ref:`C++ <doxygen-Cpp>` **and** :ref:`Fortran <doxygen-Fortran>` **code**
+
+Don't worry about the details of how to configure and run doxygen and to use Doxywizard.  This is optional.  As the project proceeds, the JEDI team will provide Makefiles and Doxyfile configuration files to automatically generate the html output and we will maintain web pages where you can view the html output for current develop branches and prior releases.  Stay tuned to this site for further details.
+
+**All we ask is that you document any code that you add.**
+
+
 Installing Doxygen
 ------------------
 
