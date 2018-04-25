@@ -46,6 +46,8 @@ These steps only need to be done once when you start a local repository.
 
 It is possible to initialize git flow with different values but using all default values is very strongly recommended.
 
+.. _gitflow-feature:     
+
 Adding a feature
 ----------------
 
