@@ -111,6 +111,24 @@ that failed, you can run individual tests using ctest as shown below.
 
     ctest -V -R test_ufo_radiosonde   # -V increases the verbosity of output
 
+.. warning::
+  Unit tests are starting to use MPI, which can require additional MPI configuration.
+  For example, using OpenMPI on the Mac typically requires the following to enable
+  oversubscribing (which means running more MPI processes than avaialble cores).
+  Note that extra MPI processes beyond the number of cores on a system do not actually run
+  in parallel, but that's okay with short, fast-running programs such as unit tests.
+
+  To enable oversubscribing on the Mac with OpenMPI:
+
+  #. Create the file: $HOME/.openmpi/mca-params.conf
+  #. Place the following in the mca-params.conf file
+
+  .. code:: bash
+
+    # This Mac has 2 cores. Enable oversubscribe so that more than 2 MPI
+    # processes can be run on this system.
+    rmaps_base_oversubscribe = 1
+
 Test output is captured in the files:
 
 .. code:: bash
@@ -146,6 +164,27 @@ Then run cmake as follows:
 .. code:: bash
 
     cmake -DCMAKE_INSTALL_PREFIX=$HOME/tools $HOME/projects/my-project
+
+Another set of useful controls are those for setting which compilers will be used for
+building your project.
+CMake will search your system in common directories (/bin, /usr/bin, /usr/local/bin, etc.)
+for compilers and libraries needed by your project.
+It's common for several versions of compilers to exist on a given machine and
+it's not always clear which one CMake will choose.
+These controls can be used to force CMake to use the versions you want.
+
+.. code:: bash
+
+    cmake -DCMAKE_C_COMPILER=/usr/local/bin/gcc            $HOME/projects/my_project # C code
+    cmake -DCMAKE_CXX_COMPILER=/usr/local/bin/g++          $HOME/projects/my_project # C++ code
+    cmake -DCMAKE_Fortran_COMPILER=/usr/local/bin/gfortran $HOME/projects/my_project # Fortran code
+
+    # Note that combinations of these can be issued with one CMake command if you
+    # have a mix of source code languages. Say you've got C, C++ and Fortran.
+    CMP_ROOT=/usr/local/bin
+    cmake -DCMAKE_C_COMPILER=$CMP_ROOT/gcc \
+          -DCMAKE_CXX_COMPILER=$CMP_ROOT/g++ \
+          -DCMAKE_Fortran_COMPILER=$CMP_ROOT/gfortran $HOME/projects/my_project
 
 
 ecbuild
@@ -437,6 +476,7 @@ Here is sample output:
     ECMWF"
     
     >>
+
 It is recommended to choose one of the JEDI repositories and look through all of the
 CMakeLists.txt files.
 This will help you get oriented in how these files are used to piece together the build,
