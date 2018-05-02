@@ -1,7 +1,7 @@
 Building and compiling JEDI
 =============================
 
-As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`cmake` and :code:`ecbuild`, which makes your life much easier.  A typical workflow proceeds in the following steps:
+As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in the following steps:
 
 1. Clone the desired JEDI **bundle**
 2. Optionally edit the :code:`CMakeLists.txt` file in the bundle to choose the code branches you want to work with
@@ -56,7 +56,7 @@ As executed above, Step 1 will create a directory called :code:`~/jedi/src/ufo-b
 
 Note that the first two lines are commented out with :code:`#`.  This is because eckit and fckit are already installed in the :ref:`JEDI Singularity Container <build_env>` so if you are running inside the container, there is no need to build them again.  If you are running outside of the Singularity container and if you have not yet installed these packages on your system, then you may wish to uncomment those two lines.  Or, you may wish to install these packages yourself so you can comment these lines out in the future.  Be warned that can be a bit of a challenge if you are on an HPC system, for example, and you do not have write access to :code:`/usr/local`.  For more information on how to install these packages see our JEDI page on :doc:`ecbuild and cmake <../developer_tools/cmake>`.
 
-As described :doc:`elsewhere <../developer_tools/cmake>`, **eckit** and **fckit** are software utilities provided by ECMWF that are currently used by JEDI to read configuration files, handle error messages, configure MPI libraries, test Fortran code, call Fortran files from C++, and perform other general tasks.  Note that the eckit and fckit repositories identified above exist on the UCAR GitHub organization, which are forks of the parent ECMWF repositories.  In the future we plan to eliminate the UCAR forks and instead access the ECMWF repositories directly.
+As described :doc:`there <../developer_tools/cmake>`, **eckit** and **fckit** are software utilities provided by ECMWF that are currently used by JEDI to read configuration files, handle error messages, configure MPI libraries, test Fortran code, call Fortran files from C++, and perform other general tasks.  Note that the eckit and fckit repositories identified above exist on the UCAR GitHub organization, which are forks of the parent ECMWF repositories.  In the future we plan to eliminate the UCAR forks and instead access the ECMWF repositories directly.
 
 The lines shown above tell ecbuild which specific branches to retrieve from each GitHub repository.  **Modify these accordingly if you wish to use different branches.**  When you then run :code:`ecbuild` as described in :ref:`Step 3 <build-step3>` below, it will first check to see if these repositories already exisit on your system, within the directory of the bundle you are building.  If not, it will clone them from GitHub.  Then :code:`ecbuild` will proceed to checkout the branch specified by the :code:`BRANCH` argument, fetching it from GitHub if necessary.
 
@@ -69,21 +69,21 @@ First, you need to include the (optional) :code:`UPDATE` argument in the :code:`
    cd <build-directory>
    make update
 
-This will tell ecbuild to do a fresch pull of each of the branches that include the :code:`UPDATE` argument.  Note that :code:`make update` will not work if there are no Makefiles in the build directory.  So, this command will only work *after* you have already run :code:`ecbuild` at least once.
+This will tell ecbuild to do a fresh pull of each of the branches that include the :code:`UPDATE` argument.  Note that :code:`make update` will not work if there is no Makefile in the build directory.  So, this command will only work *after* you have already run :code:`ecbuild` at least once.
 
 .. warning::
    
-   Running :code:`make update` will initiate a :code:`git pull` operation for each of the repositories that include the :code:`GIT` and :code:`UPDATE` arguments in the call to :code:`ecbuild_bundle()`.  So, if you have modified these repositories on your local system, there may be merge conflicts that you have to resolve before proceeding.
+   Running :code:`make update` will initiate a :code:`git pull` operation for each of the repositories that include the :code:`GIT` and :code:`UPDATE` arguments in the call to :code:`ecbuild_bundle()` in :code:`CMakeLists.txt`.  So, if you have modified these repositories on your local system, there may be merge conflicts that you have to resolve before proceeding.
 
 If you are a developer, you will, by definition, be modifying the code.  And, if you are a legitimate *JEDI Master*, you will be following the :doc:`git flow <../developer_tools/getting-started-with-gitflow>` workflow.  So, you will have created a feature (or bugfix) branch on your local computer where you are implementing your changes.
 
-For illustration, let's say we created a feature branch of ufo called :code:`feature/newstuff`, which exists on your local system.  Now we want to tell :code:`ecbuild` to use this branch to compile the bundle instead of some other remote branch on GitHub.  To achieve this, we would change the appropriate line in the makefile as follows:
+For illustration, let's say we created a feature branch of ufo called :code:`feature/newstuff`, which exists on your local system.  Now we want to tell :code:`ecbuild` to use this branch to compile the bundle instead of some other remote branch on GitHub.  To achieve this, we would change the appropriate line in the CMakeLists.txt file as follows:
 
 .. code:: bash
 
    ecbuild_bundle( PROJECT ufo SOURCE "~/jedi/src/ufo-bundle/ufo" )
 
-This will use whatever branch of the specified repository that is currently checked out.  As written above, ecbuild will not check out the branch for you.  This is usually not a problem because it is likely that you have the appropriate branch checked out already if you are making modifications to it.  However, if you do want to insist that ecbuild switch to a particular local branch before compiling, then there is indeed a way to do that:
+This will use whatever branch of the specified repository that is currently checked out on your system.  As written above, ecbuild will not check out the branch for you.  This is usually not a problem because it is likely that you have the appropriate branch checked out already if you are making modifications to it.  However, if you do want to insist that ecbuild switch to a particular local branch before compiling, then there is indeed a way to do that:
 
 .. code:: bash
 
