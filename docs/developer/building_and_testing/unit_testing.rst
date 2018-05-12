@@ -86,6 +86,9 @@ To see a list of tests for your bundle without running them, enter
 
 For a complete list of ctest options, enter :code:`man ctest`, :code:`ctest --help`, or check out our :doc:`JEDI page on CMake and CTest <../developer_tools/cmake>`.  As described there, CTest is a component of CMake, so you can also consult the `CMake online documentation <https://cmake.org/documentation/>`_ for the most comprehensive documentation available.
 
+.. _manual-testing:
+
+
 Manual Execution
 ----------------
 
@@ -104,11 +107,10 @@ If you do run the tests without ctest, keep in in mind a few tips.  First, the t
     ../../../bin/qg_forecast.x testinput/truth.json 
 
 
-
 .. _jedi-tests:
 
 The JEDI test suite
--------------------------
+-------------------
 
 What lies "*under the hood*" when you run **ctest**?  Currently, there are two types of tests implemented in JEDI:
 
@@ -123,7 +125,7 @@ Unit testing generally involves evaluating one or more Boolean expressions durin
 
 By contrast, **Application tests** check the operation of some application as a whole.  Some may make use of Boost Boolean tests but most focus on the output that these applications generate.  For example, one may wish to run a 4-day forecast with a particular model and initial condition and then check to see that the result of the forecast matches a well-established solution.  This is currently done by writing the output of the test to a file (typically a text file) and comparing it to an analogous output file from a previous execution of the test.  Such reference files are included in many JEDI repositories and can generally be found in a :code:`test/testoutput` subdirectory.
 
-Comparisons between output files are currently done by means of the **compare.sh** bash script which can be found in the :code:`test` subdirectory in many JEDI repositories.  This script uses standard unix parsing commands such as :code:`grep` and :code:`diff` to assess whether the two solutions match.  For further details see the section on :ref:`Integration and System testing <system-testing>` below.
+Comparisons between output files are currently done by means of the **compare.sh** bash script which can be found in the :code:`test` subdirectory in many JEDI repositories.  This script uses standard unix parsing commands such as :code:`grep` and :code:`diff` to assess whether the two solutions match.  For further details see the section on :ref:`Integration and System testing <app-testing>` below.
 
 .. warning::
 
@@ -186,6 +188,7 @@ Since :code:`test::State<qg::QgTraits>` is a sub-class of :code:`oops::Test` (th
 So, after defining each of the objects, the program above proceeds to pass the Application object (:code:`tests`) to the :code:`execute()` method of the :code:`oops::Run` object.  Other applications are executed in a similar way.
 
 Source code for the executable unit tests in a given JEDI repository can typically be found in a sub-directory labelled :code:`test/executables` or :code:`test/mains`.  Similarly, the source code for executable JEDI Applications that are not :code:`oops::Test` objects can typically be found in a :code:`mains` directory that branches from the top level of the repository.
+
 
 .. _init-test:
 
@@ -309,9 +312,9 @@ The function above then proceeds to perform similar tests for the copy construct
 
 If any of these nested unit tests fail, **ctest** registers a failure for the parent application and an appropriate message is written to the ctest log file (as well as :code:`stdout` if **ctest** is run in verbose mode).
 
-BOOST_CHECK(), BOOST_CHECK_CLOSE(), and BOOST_CHECK_EQUAL() are special cases of BOOST_<level>(), BOOST_<level>_CLOSE(), and BOOST_<level>_EQUAL(), where <level> can take on values of WARN, CHECK, or REQUIRE.  These represent incresing tolerance levels.  There are many more options: see the `Boost test documentation <https://www.boost.org/doc/libs/1_66_0/libs/test/doc/html/index.html>`_ for further information.
+BOOST_CHECK(), BOOST_CHECK_CLOSE(), and BOOST_CHECK_EQUAL() are special cases of BOOST_<level>(), BOOST_<level>_CLOSE(), and BOOST_<level>_EQUAL(), where <level> can take on values of WARN, CHECK, or REQUIRE.  These represent incresing tolerance levels.  There are many more Boost test commands available: see the `Boost test documentation <https://www.boost.org/doc/libs/1_66_0/libs/test/doc/html/index.html>`_ for a complete list.
       
-.. _system-testing:
+.. _app-testing:
 
 Integration and System (Application) Testing
 --------------------------------------------
@@ -339,7 +342,24 @@ In the same directory you will find a soft link to the reference file, :code:`tr
 
 When the test is executed, the :code:`compare.sh` script in the :code:`test` directory of the repository (which also has a soft link in the build directory) will compare the output file to the reference file by first extracting the lines that begin with "Test" (using :code:`grep`) and then comparing the (text) results (using :code:`diff`).  In our example, the two files to be compared are :code:`test.truth` and :code:`test.truth.test.out`.  If these do not match, **ctest** registers a failure.
 
+.. warning::
 
+   The **compare.sh** script may have problems if you run with multiple processers.
+
+.. _test-framework:
+
+JEDI Testing Framework
+----------------------
+
+In this document we have described :ref:`how unit tests are implemented as oops::Test (Application) objects <test-apps>` and we have described how they are executed by :ref:`passing these Application objects to an oops::Run object <init-test>`.  We have focused on the :code:`oops` repository where this testing framework is currently most mature.  However, **the ultimate objective is to replicate this structure for all JEDI repositories.**
+
+Using :code:`oops` as a model, the objective is to have the :code:`test` directory in each JEDI repository mirror the :code:`src` directory.  So, ideally, every class that is defined in the :code:`src` directory will have a corresponding test in the :code:`test` directory.  Furthermore, each of these tests is really a suite of unit tests as described :ref:`above <jedi-tests>`.   
+
+Let's consider ufo as an example.  Here the main source code is located in :code:`ufo/src/ufo`.  In particular, the :code:`.h` and :code:`.cc` files in this directory define the classes that are central to the operation of ufo.  For each of these classes, there should be a corresponding :code:`.h` file in :code:`ufo/test/ufo` that defines the unit test suite for objects of that class.  These are not yet all in place, but this is what we are working toward.  The same applies to all other JEDI repositories.
+
+Each unit test suite should be defined as a sub-class of :code:`oops::Test` as described :ref:`above <test-apps>`.  Then it can be passed to an :code:`oops::Run` object :ref:`as an application to be executed <test-apps>`.
+
+For further details on how developers can contribute to achieving this vision, please see :doc:`Adding a New Test <adding_a_test>`.
 
 
 
