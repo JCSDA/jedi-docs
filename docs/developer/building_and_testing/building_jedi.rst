@@ -25,6 +25,37 @@ In this document we describe Steps 1 through 4, including the various options yo
 You will probably only need to do Step 1 once.  However, if you are a developer who is making changes to one or more JEDI repositories, you will likely find it useful to execute Steps 2 through 5 multiple times, with progressively increasing frequency.  For example, if you are working with a single repository, you may only need to do Step 2 once in order to tell ecbuild to compile your local branch.  And, you'll only need to run :code:`ecbuild` (Step 3) occasionally, when you make changes that affect the directory tree or complilation (for example, adding a file that was not there previously or substantially altering the dependencies).  By comparison, you will likely execute Steps 4 and 5 frequently as you proceed to make changes and test them.
 
 
+.. _git-config:
+
+Precursor: Git Configuration
+----------------------------
+
+Before jumping into the actual building of JEDI, we highly recommend that you read this section.  This information will let you avoid the need to enter your GitHub password many times during the JEDI build process, which can be annoying to say the least.
+
+All JEDI repositories are stored and distributed by means of `GitHub <https://github.com>`_.   If you have used :code:`git` before, then you probably already have a :code:`.gitconfig` configuration file in your home directory.  If you have not already done so at some point in the past, you can create a git configuration file by specifying your GitHub username and email as follows:
+
+.. code:: bash
+	  
+   git config --global user.name <username-for-github>
+   git config --global user.email <email-used-for-github>
+
+This is a recommended action for any user of GitHub since it governs how you access GitHub with :code:`git`.  However, there is another action that you may not have set up previously but that will be immensely useful to all JEDI users and developers: tell GitHub to cache your GitHub credentials:
+
+.. code:: bash
+	  
+   git config --global credential.helper 'cache --timeout=3600'
+   
+This tells GitHub to keep your GitHub login information for an hour, i.e. 3600 seconds (feel free to increase this time if you wish).  If you don't do this, you may regret it - you'll have to enter your GitHub password repeatedly throughout the build process as ecbuild proceeds to clone multiple GitHub repositories.
+
+The statement above should be sufficient on most systems.   However, on some systems (particularly HPC systems with stringent security protocols), it may be necesary to explicitly give git permission to store your GitHub password unencrypted on disk as follows:
+
+.. code:: bash
+
+    git config --global --add credential.helper 'store'
+
+As for all your files, your password will still be protected by the security protocols necessary to simply access the system as a whole and your own filesystem in particular.  So, this should still be pretty secure on HPC systems but you might want to use it with caution in less secure environments such as laptops or desktops.  For other alternatives, see the documentation on `git credentials <https://git-scm.com/docs/gitcredentials>`_.
+
+
 Step 1: Clone the Desired JEDI Bundle
 -------------------------------------
 
@@ -39,7 +70,7 @@ So, to start your JEDI adventure, the first step is to create a directory as a h
     cd src
     git clone https://github.com/JCSDA/ufo-bundle.git
 
-
+	  
 Step 2: Choose your Repos
 --------------------------
 
