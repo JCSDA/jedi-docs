@@ -74,7 +74,7 @@ To increase memory, edit the Vagrantfile and find the section for the provider (
      vb.memory = "1028"
    end
 
-edit the :code:`vb.memory` line to specify the desired amount of memory in MB.  We recommend:
+edit the :code:`vb.memory` line to specify the desired amount of memory in MB.  We recommend at least 4 GB (some bundles such as fv3-bundle may require more):
 
 .. code:: bash
 
@@ -95,13 +95,32 @@ Edit the Vagrantfile and find the section for a **synced folder**:
     # argument is a set of non-required options.
     #config.vm.synced_folder "../vagrant_data", "/vagrant_data"
 
-Uncomment the config.vm.synced_folder command and set the paths to the desired locations of the directories on the host and guest machines. Let's say that you have installed vagrant in :code:`$HOME/singularity-vm` (which is the directory you will start vagrant from). The example below will make the files in the host machine directory :code:`$HOME/singularity-vm/vagrant_data` visible to the guest machine in the directory :code:`/vagrant_data` (and vice-versa). Note - you need to create the :code:`$HOME/singularity-vm/vagrant_data` directory before starting up vagrant.
+Uncomment the config.vm.synced_folder command and set the paths to the desired locations of the directories on the host and guest machines, for example:
 
 .. code:: bash
 
     config.vm.synced_folder  "./vagrant_data", "/vagrant_data"
 
-    
+**Note - you need to make sure that both of these directories exist before starting Singularity.**  In fact, you need to create the host directory even **before you start up Vagrant**, so let's start with that one.  
+
+In the above example, the host directory is the first argument, :code:`./vagrant_data`.  The path is relative to the location of the Vagrantfile.  So, Let's say that you have installed vagrant in :code:`$HOME/singularity-vm`. This is where your Vagrantfile resides and this is the directory you will start vagrant from.  
+
+So, in this example, our next step would be to create a directory on our Mac (the host machine) called :code:`$HOME/singularity-vm/vagrant_data`.
+
+We also need to create the guest directory, which is the second argument in the example above, :code:`/vagrant_data`.  However, we will do this from within the Vagrant VM so we will defer this to Step F below.
+
+For now we'll just leave you with a tip: **Use an absolute path for your guest directory**.  Vagrant will complain if you use a relative path, such as :code:`./vagrant_data`.  You should have permission to create a directory that branches off the root directory as in this example.  If this gives you problems or if you just prefer to have the vagrant data directory branch from your home directory, you can set your guest directory to be :code:`/home/vagrant/vagrant_data`.
+
+On a related note: your default user name when you enter Vagrant will be :code:`vagrant` and your home directory will be :code:`/home/vagrant`.  If you want to change this you can do so by adding a line like this to your Vagrantfile:
+
+.. code:: bash
+
+   config.ssh.username = 'vagabond'	  
+
+For more information, and more options, see the `Vagrant documentation <https://www.vagrantup.com/docs/vagrantfile/ssh_settings.html>`_.
+
+Once both of these directories are created and synchronized, all the contents of the guest directory :code:`/vagrant_data` (within the Vagrant virtual machine) will be accessible from the host directory :code:`$HOME/singularity-vm/vagrant_data` (on your Mac).  So, you will be able to transfer files at will.
+
 .. _create-vm:
 
 F: Create your virtual machine and install Singularity
@@ -113,7 +132,15 @@ According to the `Vagrant web site <https://www.vagrantup.com/docs/cli/up.html>`
     vagrant up
     vagrant ssh
 
-You are now in a linux Ubuntu operating system.  If you used configuration option 1 (singularityware), then Singularity is already installed and you can proceed to Step G.  If you used configuration option 2 above (Ubuntu bento box), you can now proceed to install Singularity as described in our :ref:`Singularity installation instructions <install-sing-from-vagrant>`.  For convenience we repeat those instructions here (you may wish to copy and paste this into your terminal):
+You are now in a linux Ubuntu operating system; the Vagrant VM.
+
+The next step is to create the guest directory that was discussed in Step E.  So, in the example used there, we would enter:
+
+.. code:: bash
+
+    mkdir /vagrant_data
+
+Now we are finally ready for Singularity.  If you used configuration option 1 (singularityware) in Step C, then Singularity is already installed and you can proceed to Step G.  If you used configuration option 2 above (Ubuntu bento box), you can now proceed to install Singularity as described in our :ref:`Singularity installation instructions <install-sing-from-vagrant>`.  For convenience we repeat those instructions here (you may wish to copy and paste this into your terminal):
 
 .. code:: bash
 
@@ -129,6 +156,7 @@ You are now in a linux Ubuntu operating system.  If you used configuration optio
 
     
 .. _mac-x-forwarding:
+
 
 G: Enable X Forwarding (Optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
