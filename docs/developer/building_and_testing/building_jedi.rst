@@ -27,10 +27,10 @@ You will probably only need to do Step 1 once.  However, if you are a developer 
 
 .. _git-config:
 
-Precursor: Git Configuration
+Precursor: System Configuration
 ----------------------------
 
-Before jumping into the actual building of JEDI, we highly recommend that you read this section.  This information will let you avoid the need to enter your GitHub password many times during the JEDI build process, which can be annoying to say the least.
+Before jumping into the actual building of JEDI, we highly recommend that you read this section.  This information will let you avoid the need to enter your GitHub password many times during the JEDI build process, which can be annoying to say the least.  And, it will allow you to avoid errors when using a bundle that requires multiple MPI threads.
 
 All JEDI repositories are stored and distributed by means of `GitHub <https://github.com>`_.   If you have used :code:`git` before, then you probably already have a :code:`.gitconfig` configuration file in your home directory.  If you have not already done so at some point in the past, you can create a git configuration file by specifying your GitHub username and email as follows:
 
@@ -55,6 +55,13 @@ The statement above should be sufficient on most systems.   However, on some sys
 
 As for all your files, your password will still be protected by the security protocols necessary to simply access the system as a whole and your own filesystem in particular.  So, this should still be pretty secure on HPC systems but you might want to use it with caution in less secure environments such as laptops or desktops.  For other alternatives, see the documentation on `git credentials <https://git-scm.com/docs/gitcredentials>`_.
 
+Another action that might make your life easier is to set the following environment variable:
+
+.. code:: bash
+
+    export FC=mpifort
+
+This is required in order to run with multiple MPI threads within the :doc:`JEDI Singularity Container <../jedi_environment/singularity>`, which uses OpenMPI.  You may wish to put this in a :ref:`startup-script <startup-script>` so you don't have to enter it manually every time you enter the Container.  If you run outside the container, some bundles include customized build scripts that will take care of this for you.  Consult the :code:`README` file in the bundle's repository for details.  If you run :code:`make` and it complains about not finding mpi-related files, try cleaning your build directory (to wipe the CMake cache), setting the :code:`FC` environment variable as indicated above, and then proceeding with :code:`ecbuild` as described in Step 3 below.
 
 Step 1: Clone the Desired JEDI Bundle
 -------------------------------------
@@ -78,16 +85,16 @@ As executed above, Step 1 will create a directory called :code:`~/jedi/src/ufo-b
 
 .. code:: bash 
 
-   #ecbuild_bundle( PROJECT eckit GIT "https://github.com/UCAR/eckit.git" BRANCH master  UPDATE )
-   #ecbuild_bundle( PROJECT fckit GIT "https://github.com/UCAR/fckit.git" BRANCH master  UPDATE )
-   ecbuild_bundle( PROJECT oops  GIT "https://github.com/UCAR/oops.git"   BRANCH develop UPDATE )
+   #ecbuild_bundle( PROJECT eckit    GIT "https://github.com/ECMWF/eckit.git"        TAG 0.18.5 )
+   #ecbuild_bundle( PROJECT fckit    GIT "https://github.com/ECMWF/fckit.git"        TAG 0.5.0  )
+   ecbuild_bundle( PROJECT oops  GIT "https://github.com/JCSDA/oops.git"   BRANCH develop UPDATE )
    ecbuild_bundle( PROJECT crtm  GIT "https://github.com/JCSDA/crtm.git"  BRANCH develop UPDATE )
    ecbuild_bundle( PROJECT ioda  GIT "https://github.com/JCSDA/ioda.git"  BRANCH develop UPDATE )
    ecbuild_bundle( PROJECT ufo   GIT "https://github.com/JCSDA/ufo.git"   BRANCH develop UPDATE )
 
 Note that the first two lines are commented out with :code:`#`.  This is because eckit and fckit are already installed in the :ref:`JEDI Singularity Container <build_env>` so if you are running inside the container, there is no need to build them again.  If you are running outside of the Singularity container and if you have not yet installed these packages on your system, then you may wish to uncomment those two lines.  Or, you may wish to install these packages yourself so you can comment these lines out in the future.  Be warned that can be a bit of a challenge if you are on an HPC system, for example, and you do not have write access to :code:`/usr/local`.  For more information on how to install these packages see our JEDI page on :doc:`ecbuild and cmake <../developer_tools/cmake>`.
 
-As described :doc:`there <../developer_tools/cmake>`, **eckit** and **fckit** are software utilities provided by ECMWF that are currently used by JEDI to read configuration files, handle error messages, configure MPI libraries, test Fortran code, call Fortran files from C++, and perform other general tasks.  Note that the eckit and fckit repositories identified above exist on the UCAR GitHub organization, which are forks of the parent ECMWF repositories.  In the future we plan to eliminate the UCAR forks and instead access the ECMWF repositories directly.
+As described :doc:`there <../developer_tools/cmake>`, **eckit** and **fckit** are software utilities provided by ECMWF that are currently used by JEDI to read configuration files, handle error messages, configure MPI libraries, test Fortran code, call Fortran files from C++, and perform other general tasks.  Note that the eckit and fckit repositories identified are obtained directly from ECMWF.
 
 The lines shown above tell ecbuild which specific branches to retrieve from each GitHub repository.  **Modify these accordingly if you wish to use different branches.**  When you then run :code:`ecbuild` as described in :ref:`Step 3 <build-step3>` below, it will first check to see if these repositories already exisit on your system, within the directory of the bundle you are building.  If not, it will clone them from GitHub.  Then :code:`ecbuild` will proceed to checkout the branch specified by the :code:`BRANCH` argument, fetching it from GitHub if necessary.
 
@@ -124,7 +131,7 @@ This may be all you need to know about :code:`ecbuild_bundle()` but other option
 
 .. code:: bash
 
-   ecbuild_bundle( PROJECT eckit GIT "https://github.com/UCAR/eckit.git" TAG 0.18.0 )
+   ecbuild_bundle( PROJECT eckit GIT "https://github.com/ECMWF/eckit.git" TAG 0.18.5 )
 
 For further information see the `cmake/ecbuild_bundle.cmake <https://github.com/ecmwf/ecbuild/blob/develop/cmake/ecbuild_bundle.cmake>`_ file in `ECMWF's ecbuild repository <https://github.com/ECMWF/ecbuild>`_.
 
