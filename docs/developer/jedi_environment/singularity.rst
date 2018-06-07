@@ -133,7 +133,7 @@ where :code:`startup.sh` contains, for example:
 
    #!/bin/bash
    alias Rm='rm -rf '
-   export FC=mpif90
+   export FC=mpifort
    export DISPLAY=localhost:0.0
 
 The last two lines of this example script are particularly noteworthy.  Setting the :code:`FC` environment variable as shown is currently required to compile and run JEDI with multiple mpi threads.  And, setting the :code:`DISPLAY` environment variable as shown should enable X forwarding from the Singularity container to your computer if you are using linux/unix.  This in turn will allow you to use graphical tools such as :code:`emacs` or :ref:`kdbg <kdbg>`.
