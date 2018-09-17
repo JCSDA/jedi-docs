@@ -58,11 +58,13 @@ The second is to obtain the ubuntu OS from one of a selection of `bento boxes <h
 Either option will create a configuration file in the current directory called :code:`Vagrantfile`.  The main difference is that Option 1 will install Singularity by default.  For option 2, you will have to enter a few :ref:`additional commands <install-sing-from-vagrant>` to explicitly install Singularity.
 
 
-D: Allocate Sufficient Memory for the Virtual Machine
+D: Allocate Sufficient Resources for the Virtual Machine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-We have noticed that the default memory size (1 GB) specified in Vagrantfile is potentially problematic in that it may not be enough memory to support running some simulators (e.g., MPAS), and possibly the cause of corruption of the Singularity image when downloading that image. Increasing the memory size to 4 GB seems to remedy these situations.
+We have noticed that the default memory size (1 GB) specified in Vagrantfile is not enough to run some tests and applications (e.g. MAPS, FV3).  Since this is comparable to the size of the Singularity image file, you may even run into problems just entering the container.
 
-To increase memory, edit the Vagrantfile and find the section for the provider (virtualbox) specific configuration. This is a section that looks like:
+Furthermore, some of the tests require 6 MPI threads.  This is particularly true for FV3 but it also holds for some tests in ufo that are designed to assess parallel IO. 
+
+So, you will need to edit the Vagrantfile.  Look for the following section that specifies the provider-specific configuration (in our case this is virtualbox).  Change the :code:`vb.memory` (in MB) and :code:`vb.cpus` fields as shown here:
 
 .. code:: bash
 
@@ -71,14 +73,16 @@ To increase memory, edit the Vagrantfile and find the section for the provider (
      # vb.gui = true
  
      # Customize the amount of memory on the VM:
-     vb.memory = "1028"
+     vb.memory = "4096"
+
+     # Customize the number of cores in the VM:
+     vb.cpus = "6"
+
+     # [...]
+     
    end
 
-edit the :code:`vb.memory` line to specify the desired amount of memory in MB.  We recommend at least 4 GB (some bundles such as fv3-bundle may require more):
-
-.. code:: bash
-
-     vb.memory = "4096"
+This (4GB) should be sufficient to run ufo-bundle.  Some of the other bundle test suites may require as much as 16 GB.
 
 E: Enable file transfer between your Mac and the virtual machine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
