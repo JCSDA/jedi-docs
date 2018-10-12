@@ -196,7 +196,13 @@ Now you have to tell your Mac to accept graphical input from the virtual machine
    #On your Mac
    xhost + 127.0.0.1
    
-This should work for most users.  If it does, then you are done with this section and you can proceed to the :ref:`next section <vagrant-jedi>`.  If the display still does not work, then you may to explicitly grant Singularity access to your display through :code:`xauth` as we now describe.
+To test the display, you can start a graphical application.  For example:
+
+.. code:: bash
+
+   emacs & 
+
+This should work for most users (meaning it should bring up the emacs GUI).  If it does, then **you are done with this section** and you can proceed to the :ref:`next section <vagrant-jedi>`.  If the display still does not work, then you may to explicitly grant Singularity access to your display through :code:`xauth` as we now describe.
 
 Exit singularity and vagrant.  Then edit your Vagrantfile and add these two lines (at the bottom, just before the :code:`end` in the main :code:`Vagrant.configure("2") do |config|` loop will do)
 
