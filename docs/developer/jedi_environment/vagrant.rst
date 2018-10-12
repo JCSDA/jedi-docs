@@ -59,7 +59,7 @@ Either option will create a configuration file in the current directory called :
 
 
 D: Allocate Sufficient Resources for the Virtual Machine
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 We have noticed that the default memory size (1 GB) specified in Vagrantfile is not enough to run some tests and applications (e.g. MAPS, FV3).  Since this is comparable to the size of the Singularity image file, you may even run into problems just entering the container.
 
 Furthermore, some of the tests require 6 MPI threads.  This is particularly true for FV3 but it also holds for some tests in ufo that are designed to assess parallel IO. 
@@ -195,7 +195,58 @@ Now you have to tell your Mac to accept graphical input from the virtual machine
 
    #On your Mac
    xhost + 127.0.0.1
+   
+To test the display, you can start a graphical application.  For example:
 
+.. code:: bash
+
+   emacs & 
+
+This should work for most users (meaning it should bring up the emacs GUI).  If it does, then **you are done with this section** and you can proceed to the :ref:`next section <vagrant-jedi>`.  If the display still does not work, then you may need to explicitly grant Singularity access to your display through :code:`xauth` as we now describe.
+
+Exit singularity and vagrant.  Then edit your Vagrantfile and add these two lines (at the bottom, just before the :code:`end` in the main :code:`Vagrant.configure("2") do |config|` loop will do)
+
+.. code:: bash
+
+   config.ssh.forward_agent = true
+   config.ssh.forward_x11 = true
+
+Then recreate your vagrant VM, log in, and enter the Singularity container:
+
+.. code:: bash
+
+   vagrant halt # restart vagrant	  
+   vagrant up 
+   vagrant ssh
+   singularity shell --bind /vagrant_data -e <singularity-image-file>
+
+Now create an :code:`.Xauthority` file and generate an authorization key for your display:
+
+.. code:: bash
+
+   touch ~/.Xauthority
+   xauth generate 10.0.2.2:0.0 . trusted
+   
+You can list your new authorization key as follows:
+
+.. code:: bash
+
+   xauth list
+   
+There should be at least one entry, corresponding to the display you entered in the :code:`xauth generate` commmand above (you can ignore other entries, if present).  For example, it should look something like this:  
+
+.. code:: bash
+
+   10.0.2.2:0  MIT-MAGIC-COOKIE-1  <hex-key>
+   
+where :code:`<hex-key>` is a hexadecimal key with about 30-40 digits.  Now, copy this information and paste it onto the end of the :code:`xauth add` command as follows:
+   
+.. code:: bash
+
+   xauth add 10.0.2.2:0  MIT-MAGIC-COOKIE-1  <hex-key>
+
+If all worked as planned, this should grant permission for singularity to use your display.   
+   
 .. _vagrant-jedi:
 
 H: Exit Singularity and Vagrant
