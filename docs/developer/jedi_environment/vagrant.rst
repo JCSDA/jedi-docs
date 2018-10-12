@@ -225,7 +225,7 @@ Now create an :code:`.Xauthority` file and generate an authorization key for you
 .. code:: bash
 
    touch ~/.Xauthority
-   xauth generate $DISPLAY . trusted
+   xauth generate 10.0.2.2:0.0 . trusted
    
 You can list your new authorization key as follows:
 
