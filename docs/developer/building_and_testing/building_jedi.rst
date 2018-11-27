@@ -28,7 +28,7 @@ You will probably only need to do Step 1 once.  However, if you are a developer 
 .. _git-config:
 
 Precursor: System Configuration
-----------------------------
+---------------------------------
 
 Before jumping into the actual building of JEDI, we highly recommend that you read this section.  This information will let you avoid the need to enter your GitHub password many times during the JEDI build process, which can be annoying to say the least.  And, it will allow you to avoid errors when using a bundle that requires multiple MPI threads.
 
