@@ -3,7 +3,7 @@
 Singularity
 =======================
 
-In order to appreciate what `Singularity <http://singularity.lbl.gov/index.html>`_ is and why we use it, it is best to begin with its purpose.  From a JEDI perspective, the purpose of Singularity is to provide a uniform computing environment (software tools, libraries, etc) that will enable users like you to easily build, compile, and run JEDI across a wide range of computing platforms, from laptops and workstations running Mac OS X or linux to parallel High-Performace Computing (HPC) systems such as Theia (NOAA), Discover (NASA), or Cheyenne (NCAR).
+In order to appreciate what `Singularity <https://www.sylabs.io/docs/>`_ is and why we use it, it is best to begin with its purpose.  From a JEDI perspective, the purpose of Singularity is to provide a uniform computing environment (software tools, libraries, etc) that will enable users like you to easily build, compile, and run JEDI across a wide range of computing platforms, from laptops and workstations running Mac OS X or linux to parallel High-Performace Computing (HPC) systems such as Theia (NOAA), Discover (NASA), or Cheyenne (NCAR).
 
 The computing environment that Singularity creates is called a **container**.  There are other container providers as well, the most well-known being `Docker <https://www.docker.com/>`_.  An advantage of Singularity over these other alternatives is that it was specifically designed to address the challenges associated with HPC systems and collaborative software development efforts that require full control over your own software stack (see `this article in HPCWire <https://www.hpcwire.com/2018/02/08/startup-brings-hpc-containers-enterprise/>`_ and `this article in "Cloud Computing for Science and Engineering" <https://cloud4scieng.org/singularity-a-container-system-for-hpc-applications/>`_).
 
@@ -14,7 +14,7 @@ In contrast to virtual machines, containers do not include the necessary softwar
 Installing Singularity
 ----------------------
 
-If you're running JEDI on an HPC system, the chances are good that Singularity is already installed.  If it is not, you'll have to ask the support staff to install it for you and make it available for users (unless you happen to have root privileges).   Direct them to the *Download/Installation* menu on the left frame of the main `Singularity <http://singularity.lbl.gov/index.html>`_ site.  You can check to see if Singularity is already installed (and if it is, which version is installed) by typing
+If you're running JEDI on an HPC system, the chances are good that Singularity is already installed.  If it is not, you'll have to ask the support staff to install it for you and make it available for users (unless you happen to have root privileges).   Direct them to the *Download/Installation* menu on the left frame of the main `Singularity <https://www.sylabs.io/docs/>`_ site.  You can check to see if Singularity is already installed (and if it is, which version is installed) by typing
 
 .. code:: bash
 
@@ -24,55 +24,41 @@ Version 2.4.5 was released recently, on March 19, 2018.  You'll need **at least 
 
 If an up-to-date version of Singularity is already installed on your system, you can skip ahead to :ref:`Building the JEDI Environment <build_env>`.  The instructions that follow are mainly intended to help you install Singularity on your own workstation or laptop.
 
-Detailed instructions on how to install Singularity on
+**We recommend that you install Singularity version 3.0 as described in the** `Singularity Documentation <https://www.sylabs.io/guides/3.0/user-guide/quick_start.html#quick-installation-steps>`_.
 
-* `Linux <http://singularity.lbl.gov/install-linux>`_
-* `Mac <http://singularity.lbl.gov/install-mac>`_, and
-* `Windows <http://singularity.lbl.gov/install-windows>`_
-
-systems are available on the `Singularity web site <http://singularity.lbl.gov/index.html>`_.  From the main site, we highly recommend that you go to the **Dowload/Installation** menu on the left.  The alternative would be to scroll down to the bottom of the page and download the tarred-up source code.  However, this is doomed to fail on Mac and Windows systems that do not mesh as gracefully with Singularity.  
+Alternatively, we now describe how to install Singularity 2.6.
 
 As noted :ref:`above <top-Singularity>`, Singularity is not a virtual machine so it does not build its own operating system.  Instead, it must work with the host operating system and it is currently configured to work best with linux.
 
-So, installing on linux systems is relatively easy.  Here you can build directly from the most recent development version of the source code by first cloning the public github repository (note that this requires root privileges):
+If you are running Mac OS X or Windows, then you must first set up a linux operating system.  This requires a proper virtual machine (VM).  The recommended VM provider is `Vagrant <https://www.vagrantup.com/intro/index.html>`_ by HashiCorp, which can build and configure an appropriate linux operating system using Oracle's `VirtualBox <https://www.virtualbox.org/>`_ software package.
+
+  :doc:`If you have a Mac, go here first to install Vagrant, then return to this page <vagrant>`
+
+In short, Vagrant and VirtualBox provide the linux operating system while Singularity provides the necessary software infrastructure for running JEDI (compilers, cmake, ecbuild, etc) by means of the :ref:`JEDI singularity image <build_env>`.
+
+If you configure Vagrant using the **singularityware** Vagrant box (Option 1 in our :doc:`Vagrant documentation <vagrant>`) then no further action is needed - singularity is already installed and ready to go.  Alternatively, you can configure Vagrant using a bento box that establishes a more basic linux environment such as ubuntu (Option 2).  Then you can :ref:`log in to your vagrant VM <create-vm>` with :code:`vagrant ssh` and proceed as described below for linux.  
+
+Installing on linux systems is relatively easy.  The first step is to make sure you have the correct dependencies.  On ubuntu systems, you can install them by copying and pasting this:
+
+.. code:: bash
+
+    # for ubuntu
+    sudo apt-get update
+    sudo apt-get -y install build-essential curl git sudo man vim autoconf libtool
+
+Now you can get the source code from GitHub, checkout version 2.6, make, and install Singularity as follows:
 
 .. code:: bash
 
     # for linux systems
     git clone https://github.com/singularityware/singularity.git
     cd singularity
+    git fetch --all
+    git checkout 2.6.0
     ./autogen.sh
     ./configure --prefix=/usr/local
     make
     sudo make install
-
-If you are running Mac OS X or Windows, then you must first set up a linux operating system.  This requires a proper virtual machine (VM).  The recommended VM provider is `Vagrant <https://www.vagrantup.com/intro/index.html>`_ by HashiCorp, which can build and configure an appropriate linux operating system using Oracle's `VirtualBox <https://www.virtualbox.org/>`_ software package.
-
-  :doc:`If you have a Mac, go here first to install Vagrant, then return to this page <vagrant>`
-
-If you have a Windows machine, consult Singularity's page on `Windows installation <http://singularity.lbl.gov/install-windows>`_.
-
-In short, Vagrant and VirtualBox provide the linux operating system while Singularity provides the necessary software infrastructure for running JEDI (compilers, cmake, ecbuild, etc) by means of the :ref:`JEDI singularity image <build_env>`.
-
-.. _install-sing-from-vagrant:
-
-If you configure Vagrant using the **singularityware** Vagrant box (Option 1 in Singularity's `Mac Installation page <http://singularity.lbl.gov/install-mac>`_) then no further action is needed - singularity is already installed and ready to go.  Alternatively, you can configure Vagrant using a bento box that establishes a more basic linux environment such as ubuntu (Option 2).  Then you can :ref:`log in to your vagrant VM <create-vm>` with :code:`vagrant ssh` and proceed as described above for linux.  But first you'll have make sure that a few essential tools are installed:
-
-
-.. code:: bash
-
-    # from a Vagrant linux virtual machine
-    sudo apt-get update
-    sudo apt-get -y install build-essential curl git sudo man vim autoconf libtool
-    git clone https://github.com/singularityware/singularity.git
-    cd singularity
-    ./autogen.sh
-    ./configure --prefix=/usr/local
-    make
-    sudo make install
-
-
-For instructions on how to set up and work with Vagrant, see our :doc:`JEDI Vagrant page <vagrant>`.
     
 .. _build_env:
 
@@ -92,9 +78,7 @@ Strictly speaking, you only have to do this step once but in practice you will l
    Progress |===================================| 100.0% 
    Done. Container is at: /home/vagrant/JCSDA-singularity-master-latest.simg
 
-Though you can execute individual commands or scripts within the singularity container defined by your image file (see the
-`exec <http://singularity.lbl.gov/docs-exec>`_ and `run <http://singularity.lbl.gov/docs-run>`_ commands in the Singularity
-documentation), for most JEDi applications you will want to invoke a **singularity shell**, as follows:
+Though you can execute individual commands or scripts within the singularity container defined by your image file (see the **exec** and **run** commands in the `Singularity documentation <https://www.sylabs.io/docs/>`_), for most JEDi applications you will want to invoke a **singularity shell**, as follows:
 
 .. code:: bash
 
