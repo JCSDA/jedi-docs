@@ -34,7 +34,7 @@ To install Charliecloud, you'll need a relatively recent version of linux that i
 
 .. code:: bash
 
-  uname -a
+  uname -r
 
 Charliecloud recommends a version of 4.4 or later.
 
@@ -91,7 +91,7 @@ This looks like a normal gzipped tar file.  However, **you should not upack it w
 
    ch-tar2dir ch-jedi-latest.tar.gz .
 
-This may take a few minutes so be patient.  When done, it should give you a message like :code:`./ch-jedi-latest unpacked ok` and it should have created a directory by that same name.   In our example, this directory would be located in :code:`~/jedi/container/ch-jedi-latest`.
+This may take a few minutes so be patient.  When done, it should give you a message like :code:`./ch-jedi-latest unpacked ok` and it should have created a directory by that same name.   In our example, this directory would be located in :code:`~/jedi/ch-container/ch-jedi-latest`.
 
 This is the JEDI Charliecloud container.  It's functionally equivalent to a Singularity image file but it appears as a directory rather than a single file.  Furthermore, that directory contains a complete, self-contained linux filesystem, complete with its own system directories like :code:`/usr/local`, :code:`/bin`, and :code:`/home`.
 
@@ -128,13 +128,13 @@ For example, to run and test ufo-bundle, you can proceed as follows:
     mkdir -p ~/jedi/build
     cd ~/jedi/build
     ecbuild ../src/ufo-bundle
-    make
+    make -j4
     ctest
 
 Charliecloud Tips
 --------------------
 
-If you're running a Charliecloud container from within :doc:`Vagrant`, the most important tip when using Charliecloud (because it is easy to forget) is to **remember to type exit twice** when you are finished working; once to leave the Charliecloud container and a second time to leave Vagrant.
+If you're running a Charliecloud container from within :doc:`Vagrant <vagrant>`, the most important tip when using Charliecloud (because it is easy to forget) is to **remember to type exit twice** when you are finished working; once to leave the Charliecloud container and a second time to leave Vagrant.
 
 Another important thing to realize (whether you are running Charliecloud from Vagrant, from AWS, from an HPC system, or from anywhere else), is that many directories on the host are still visible to you from within the container.  This includes your home directory.  So, it is easy to access files from within the container - you should be able to see and edit everything in your home directory.  
 
@@ -148,7 +148,7 @@ However, what if we were to instead mount the shared directory in :code:`/vagran
 
 .. code:: bash
 
-  ch-run --b /vagrant_data -c /home/ubuntu ch-jedi-latest -- bash
+  ch-run -b /vagrant_data -c /home/ubuntu ch-jedi-latest -- bash
 
 By default, this is mounted in the Charliecloud container as the directory :code:`/mnt/0`.  You can change the mount point **provided that the target directory already exists within the container**.
 
