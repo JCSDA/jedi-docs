@@ -32,7 +32,7 @@ As noted :ref:`above <top-Singularity>`, Singularity is not a virtual machine so
 
 If you are running Mac OS X or Windows, then you must first set up a linux operating system.  This requires a proper virtual machine (VM).  The recommended VM provider is `Vagrant <https://www.vagrantup.com/intro/index.html>`_ by HashiCorp, which can build and configure an appropriate linux operating system using Oracle's `VirtualBox <https://www.virtualbox.org/>`_ software package.
 
-  :doc:`If you have a Mac, go here first to install Vagrant, then return to this page <vagrant>`
+  :doc:`If you have a Mac or WIndows machine, go here first to install Vagrant, then return to this page <vagrant>`
 
 In short, Vagrant and VirtualBox provide the linux operating system while Singularity provides the necessary software infrastructure for running JEDI (compilers, cmake, ecbuild, etc) by means of the :ref:`JEDI singularity image <build_env>`.
 

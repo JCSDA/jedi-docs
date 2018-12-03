@@ -1,27 +1,27 @@
-Vagrant (Mac only)
-==================================
+Vagrant (for Mac and Windows)
+===============================
 
-In order to set up the JEDI environment with :doc:`Singularity <singularity>`, you'll need an operating system (OS) that is capable of running Singularity.  The operating system that is best equipped for this is linux.
+In order to set up the JEDI environment with :doc:`Singularity <singularity>` or :doc:`Charliecloud <charliecloud>` , you'll need to first set up a linux operating system.  We will often focus on ubuntu for illustration purposes but if you prefer other varieties of linux, these are also available from the VIrtualbox provider that we describe below.
 
-So, if you're using a Mac or Windows computer, you will want to set up a local, self-contained linux environment within your broader operating system.  This is commonly called a **virtual machine** (VM).  Once you have a linux VM up and running, you will be able to installl :doc:`Singularity <singularity>` and triumphantly enter the :ref:`JEDI Singularity Container <build_env>`.
+So, if you're using a Mac or Windows computer, you will want to set up a local, self-contained linux environment within your broader operating system.  This is commonly called a **virtual machine** (VM).  Once you have a linux VM up and running, you will be able to installl :doc:`Singularity <singularity>` or :doc:`Charliecloud <charliecloud>` and triumphantly enter the corresponding JEDI Container.
 
-This can all be achieved using an application called `Vagrant <https://www.vagrantup.com/>`_, which is developed and distributed by a company called Hashicorp.  Though we will sometimes refer to Vagrant as the virtual machine provider, the actual linux operating system is ultimately provided by Oracle's `VirtualBox <https://www.virtualbox.org/>`_ software package.  Vagrant is essentially a tool will allow you to build, configure, and manage a VirtualBox operating system.  In particular, we will use Vagrant and VirtualBox to create an Ubuntu (currently version 16.04) virtual machine on your Mac workstation or laptop.  We'll then populate that linux VM with specific JEDI software tools (compilers, ecbuild, etc.) using :doc:`Singularity <singularity>`.
+This can all be achieved using an application called `Vagrant <https://www.vagrantup.com/>`_, which is developed and distributed by a company called Hashicorp.  Though we will sometimes refer to Vagrant as the virtual machine provider, the actual linux operating system is ultimately provided by Oracle's `VirtualBox <https://www.virtualbox.org/>`_ software package.  Vagrant is essentially a tool will allow you to build, configure, and manage a VirtualBox operating system.  In particular, we will use Vagrant and VirtualBox to create an Ubuntu virtual machine on your Mac workstation or laptop.  We'll then populate that linux VM with specific JEDI software tools (compilers, ecbuild, etc.) using :doc:`Singularity <singularity>` or :doc:`Charliecloud <charliecloud>`.
 
 From this brief introduction, it is clear that you do not need to worry about Vagrant or VirtualBox if your working machine (whether it is a workstation, laptop, or HPC system) is already running linux and/or is already running Singularity.  By *working machine* we mean whatever machine you plan to compile and run JEDI on.
 
-You *do* need Vagrant and VirtualBox (or something equivalent) if you wish to run JEDI from a Mac or Windows machine.  Though you can use Vagrant for both platforms, we focus here on Mac OS X.  We refer Windows users to the documentation on `how to install Singularity on Windows systems <http://singularity.lbl.gov/install-windows>`_.
+You *do* need Vagrant and VirtualBox (or something equivalent) if you wish to run JEDI from a Mac or Windows machine.  Though you can use Vagrant for both platforms, we focus here on Mac OS X.
 
-So if you're using a Mac, read on.  Otherwise, feel free to skip this document.
+We refer Windows users to the `Vagrant download page <https://www.vagrantup.com/downloads.html>`_ where you can download a binary implementation for windows and install it using the Windows package manager. After installing Vagrant, you may wish to return to this document for tips on how to configure it for JEDI (skipping Step A of the next section).
 
 Installing and Configuring Vagrant
 ----------------------------------
 
-The following instructions on how to install Vagrant on a Mac follow the `Singularity Mac installation page <http://singularity.lbl.gov/install-mac>`_, but from the perspective of an aspiring JEDI master.
-
-Before you begin you should install or update :doc:`Homebrew <../developer_tools/homebrew>`.  You'll need a relatively recent verision in order to use the :code:`cask` extension.  Once you have done this, you can proceed with the following steps.
-
 A: Install Vagrant and VirtualBox
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As with Windows, you can install Vagrant on a Mac by downloading a pre-compiled binary package from the `Vagrant Dowload Page <https://www.vagrantup.com/downloads.html>`_.  However, we recommend that you install with Homebrew as described below to give you more flexibility in managing both vagrant and virtualbox.
+
+Before you begin you should install or update :doc:`Homebrew <../developer_tools/homebrew>`.  You'll need a relatively recent verision in order to use the :code:`cask` extension.  Once you have done this, you can proceed as follows:
 
 .. code:: bash
 
@@ -29,9 +29,10 @@ A: Install Vagrant and VirtualBox
   brew cask install vagrant
   brew cask install vagrant-manager
 
-B: Create a home for the Singularity container
+B: Create a home for your Container
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-This is just an example: you can choose any path you like
+
+Create a directory from which you will launch Vagrant.  Since vagrant is just an intermediate step toward your eventual goal of running a singularity or charliecloud container, you may wish to name your directory after your preferred container provider.  For example, you may choose this for Singularity:
 
 .. code:: bash
 
@@ -41,26 +42,28 @@ This is just an example: you can choose any path you like
 C: Initialize Vagrant
 ^^^^^^^^^^^^^^^^^^^^^
 
-There are two options here, as noted on Singularity's `Mac installation page <http://singularity.lbl.gov/install-mac>`_.  The simplest is to initialize using the Singularityware Vagrant box provided by the makers of Singularity:
+This is where you choose what type of linux operating system you want Vagrant to create.
+
+There are several options here.  If you plan to use Singularity, the simplest way to proceed is to initialize Vagrant using the Singularityware configuration provided by the makers of Singularity:
 
 .. code:: bash
 
-   # Configuration Option 1
+   # Configuration Option 1 (Singularity pre-installed)
    vagrant init singularityware/singularity-2.4
 
-The second is to obtain the ubuntu OS from one of a selection of `bento boxes <https://app.vagrantup.com/bento>`_ provided by Vagrant:
+The second is to obtain the ubuntu OS from one of a selection of `bento boxes <https://app.vagrantup.com/bento>`_ provided by Vagrant.  We recommond ubuntu 18.04, which can be used to intall either Singularity or Charliecloud:
 
 .. code:: bash
 
    # Configuration Option 2
-   vagrant init bento/ubuntu-16.04
+   vagrant init bento/ubuntu-18.04
 
-Either option will create a configuration file in the current directory called :code:`Vagrantfile`.  The main difference is that Option 1 will install Singularity by default.  For option 2, you will have to enter a few :ref:`additional commands <install-sing-from-vagrant>` to explicitly install Singularity.
+Either option will create a configuration file in the current directory called :code:`Vagrantfile`.  The main difference is that Option 1 will install Singularity by default.  For option 2, you will have to enter a few :ref:`additional commands <Singularity-install>` to explicitly install Singularity.  If you plan to use Charliecloud, we recommend configuration option 2, which has a more up-to-date version of :code:`bash` (you need bash version 4.1 or higher to build Charliecloud containers, though this is not strictly required to run them).
 
 
 D: Allocate Sufficient Resources for the Virtual Machine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-We have noticed that the default memory size (1 GB) specified in Vagrantfile is not enough to run some tests and applications (e.g. MAPS, FV3).  Since this is comparable to the size of the Singularity image file, you may even run into problems just entering the container.
+We have noticed that the default memory size (1 GB) specified in Vagrantfile is not enough to run some tests and applications (e.g. MAPS, FV3).  Since this is comparable to the size of the Singularity and Charliecloud container files, you may even run into problems just entering the container.
 
 Furthermore, some of the tests require 6 MPI threads.  This is particularly true for FV3 but it also holds for some tests in ufo that are designed to assess parallel IO. 
 
@@ -103,17 +106,17 @@ Uncomment the config.vm.synced_folder command and set the paths to the desired l
 
 .. code:: bash
 
-    config.vm.synced_folder  "./vagrant_data", "/vagrant_data"
+    config.vm.synced_folder  "./vagrant_data", "/home/vagrant/vagrant_data"
 
-**Note - you need to make sure that both of these directories exist before starting Singularity.**  In fact, you need to create the host directory even **before you start up Vagrant**, so let's start with that one.  
+**Note - you need to make sure that both of these directories exist before entering the Singularity or Charliecloud container.**  In fact, you need to create the host directory even **before you start up Vagrant**, so let's start with that one.  
 
 In the above example, the host directory is the first argument, :code:`./vagrant_data`.  The path is relative to the location of the Vagrantfile.  So, Let's say that you have installed vagrant in :code:`$HOME/singularity-vm`. This is where your Vagrantfile resides and this is the directory you will start vagrant from.  
 
 So, in this example, our next step would be to create a directory on our Mac (the host machine) called :code:`$HOME/singularity-vm/vagrant_data`.
 
-We also need to create the guest directory, which is the second argument in the example above, :code:`/vagrant_data`.  However, we will do this from within the Vagrant VM so we will defer this to Step F below.
+We also need to create the guest directory, which is the second argument in the example above, :code:`/home/vagrant/vagrant_data`.  Mounting the shared directory in the user's home directory on Vagrant, :code:`/home/vagrant`, is particularly useful if you are using Charliecloud because the user's home directory is visibile from within the directory by default.  However, creating this directory must be done from within the Vagrant VM so we will defer this to Step F below.
 
-For now we'll just leave you with a tip: **Use an absolute path for your guest directory**.  Vagrant will complain if you use a relative path, such as :code:`./vagrant_data`.  You should have permission to create a directory that branches off the root directory as in this example.  If this gives you problems or if you just prefer to have the vagrant data directory branch from your home directory, you can set your guest directory to be :code:`/home/vagrant/vagrant_data`.
+For now we'll just leave you with a tip: **Use an absolute path for your guest directory**.  Vagrant will complain if you use a relative path, such as :code:`./vagrant_data`.  You should have permission to create a directory that branches off the root directory as in this example.  
 
 On a related note: your default user name when you enter Vagrant will be :code:`vagrant` and your home directory will be :code:`/home/vagrant`.  If you want to change this you can do so by adding a line like this to your Vagrantfile:
 
@@ -123,12 +126,12 @@ On a related note: your default user name when you enter Vagrant will be :code:`
 
 For more information, and more options, see the `Vagrant documentation <https://www.vagrantup.com/docs/vagrantfile/ssh_settings.html>`_.
 
-Once both of these directories are created and synchronized, all the contents of the guest directory :code:`/vagrant_data` (within the Vagrant virtual machine) will be accessible from the host directory :code:`$HOME/singularity-vm/vagrant_data` (on your Mac).  So, you will be able to transfer files at will.
+Once both of these directories are created and synchronized, all the contents of the guest directory :code:`/home/vagrant/vagrant_data` (within the Vagrant virtual machine) will be accessible from the host directory :code:`$HOME/singularity-vm/vagrant_data` (on your Mac).  So, you will be able to transfer files at will.
 
 .. _create-vm:
 
-F: Create your virtual machine and install Singularity
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+F: Create your virtual machine and install Singularity or Charliecloud
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 According to the `Vagrant web site <https://www.vagrantup.com/docs/cli/up.html>`_, the most important command in Vagrant is the :code:`vagrant up` command.  This is what creates and configures the virtual machine.  Or, if you have already created the virtual machine previously and then shut it down with the :code:`vagrant halt` command (see :ref:`below <vagrant-jedi>`), then :code:`vagrant up` will re-establish it.   Once it is established, you can log into your virtual machine with the :code:`vagrant ssh` command.  So, enter this to create and log in to your linux VM:  
 
 .. code:: bash
@@ -142,23 +145,10 @@ The next step is to create the guest directory that was discussed in Step E.  So
 
 .. code:: bash
 
-    mkdir /vagrant_data
+    mkdir ~/vagrant_data
 
-Now we are finally ready for Singularity.  If you used configuration option 1 (singularityware) in Step C, then Singularity is already installed and you can proceed to Step G.  If you used configuration option 2 above (Ubuntu bento box), you can now proceed to install Singularity as described in our :ref:`Singularity installation instructions <install-sing-from-vagrant>`.  For convenience we repeat those instructions here (you may wish to copy and paste this into your terminal):
+Now we are finally ready to install the container software.  Please refer to our accompanying pages on :doc:`Singularity <singularity>` or :doc:`Charliecloud <charliecloud>` to install whichever one you prefer (or both!).
 
-.. code:: bash
-
-    # from a Vagrant linux virtual machine
-    sudo apt-get update
-    sudo apt-get -y install build-essential curl git sudo man vim autoconf libtool
-    git clone https://github.com/singularityware/singularity.git
-    cd singularity
-    ./autogen.sh
-    ./configure --prefix=/usr/local
-    make
-    sudo make install
-
-    
 .. _mac-x-forwarding:
 
 
@@ -249,13 +239,14 @@ If all worked as planned, this should grant permission for singularity to use yo
    
 .. _vagrant-jedi:
 
-H: Exit Singularity and Vagrant
+H: Exit Container and Vagrant
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-If you did the optional Step G then you are now in the singularity container.  To return to your Mac OS, you have to enter :code:`exit` twice, once to exit the Singularity container and once to log out of the Vagrant virtual machine:
+
+Normally you will be spending your time working in either the Singularity container or the Charliecloud container.  When you're finished working for the day, it's important to remember to enter :code:`exit` twice, once to exit the container and once to log out of the Vagrant virtual machine:
 
 .. code:: bash
 
-   exit # to exit Singularity
+   exit # to exit Singularity or Charliecloud
    exit # to exit Vagrant
 
 Now, to temporarily shut down your virtual machine, enter
@@ -264,13 +255,13 @@ Now, to temporarily shut down your virtual machine, enter
 
    vagrant halt
 
-Note that this is very different than the :code:`vagrant destroy` command, which is dangerous and should be used with great caution.  As the name of the command suggests, vagrant destroy will completely destroy the virtual machine along with all the files and data it contains.  So, if you do this, you will have to re-create the virtual machine and re-install Singularity, along with any JEDI bundles that you are working with.  And, you will lose any files that you have been editing.  By contrast, vagrant halt will merely shut down the virtual machine, retaining all your files.  This will allow you to gracefully log out of your workstation or laptop without harming your JEDI environment.  For further details see the `Vagrant documentation <https://www.vagrantup.com/docs/cli/halt.html>`_.
+Note that this is very different than the :code:`vagrant destroy` command, which is dangerous and should be used with great caution.  As the name of the command suggests, vagrant destroy will completely destroy the virtual machine along with all the files and data it contains.  So, if you do this, you will have to re-create the virtual machine and re-install Singularity, along with any JEDI bundles that you are working with.  And, you will lose any files that you have been editing.  By contrast, vagrant halt will merely shut down the virtual machine, retaining all your files.  This will allow you to gracefully log out of your workstation or laptop without harming your JEDI environment.  For further details see the `Vagrant command reference <https://www.vagrantup.com/docs/cli/halt.html>`_.
 
 
-Working with Vagrant and Singularity
-------------------------------------
+Working with Vagrant and the JEDI Container
+--------------------------------------------
 
-Once you have Vagrant and Singularity all set up as discussed above, your daily workflow may be as follows.  You might start by going to the directory where you put your Vagrantfile.  Then fire up and log in to your virtual machine.
+Once you have Vagrant and a container provider (either Singularity or Charliecloud) all set up as discussed above, your daily workflow may be as follows.  You might start by going to the directory where you put your Vagrantfile.  Then fire up and log in to your virtual machine.
 
 .. code:: bash
 
@@ -285,7 +276,14 @@ From there you can enter the Singularity container and (optionally) run your sta
   singularity shell --bind /vagrant_data -e JCSDA-singularity-master-latest.simg
   source startup.sh
 
-Now you're in the Singularity container and you can do whatever you wish: edit files, build, compile and run JEDI, etc.  If you want to use X-forwarding you'll have to explicitly tell your Mac to accept graphical input from the Vagrant VM as described in :ref:`Step G <mac-x-forwarding>` above:
+Or, the equivalent commands for Charliecloud would be:
+
+.. code:: bash
+
+  ch-run -c /home/ubuntu ch-jedi-latest -- bash
+  source startup.sh
+
+Now you're in the JEDI container and you can do whatever you wish: edit files, build, compile and run JEDI, etc.  If you want to use X-forwarding you'll have to explicitly tell your Mac to accept graphical input from the Vagrant VM as described in :ref:`Step G <mac-x-forwarding>` above:
 
 .. code:: bash
 
@@ -298,6 +296,6 @@ When you're done for the day you can exit and shut down the VM:
 
 .. code:: bash
 
-   exit # to exit Singularity
+   exit # to exit Singularity or Charliecloud
    exit # to exit Vagrant
    vagrant halt # to shut down the virtual machine
