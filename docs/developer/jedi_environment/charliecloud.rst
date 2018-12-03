@@ -109,7 +109,7 @@ The :code:`-c /home/ubuntu` option tells Charliecloud to enter the container in 
 
 The :code:`~/jedi/ch-container/ch-jedi-latest` argument is the name of the container you want Charliecloud to run. This is the name of the directory created by the :code:`ch-tar2dir` command above.  If you run this from the container's parent directory, in this case :code:`~/jedi/ch-container`, then you can omit the path.
 
-Finally, we have to tell :code:`ch-run` what command we want it to run.  Everything that comes after the double hyphen :code:`--` will be executed within the container.  If you were to run a single command, like :code:`-- ls -alh`, then :code:`ch-run` will enter the container, execute the command, and exit.  However, in this example, we started up a bash shell, with :code:`-- bash`.  So, **all commands that follow will be exectued inside the container.  In order to exit the container, you have to explicitly type exit.**  This brings us to this important warning:  
+Finally, we have to tell :code:`ch-run` what command we want it to run.  The command (including options and arguments) that comes after the double hyphen :code:`--` will be executed within the container.  If you were to run a single command, like :code:`-- ls -alh`, then :code:`ch-run` will enter the container, execute the command, and exit.  However, in this example, we started up a bash shell, with :code:`-- bash`.  So, **all commands that follow will be exectued inside the container.  In order to exit the container, you have to explicitly type exit.**  This brings us to this important warning:  
 
 .. warning:: 
 

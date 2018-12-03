@@ -63,6 +63,15 @@ Another action that might make your life easier is to set the following environm
 
 This is required in order to run with multiple MPI threads within the :doc:`JEDI Singularity Container <../jedi_environment/singularity>`, which uses OpenMPI.  You may wish to put this in a :ref:`startup-script <startup-script>` so you don't have to enter it manually every time you enter the Container.  If you run outside the container, some bundles include customized build scripts that will take care of this for you.  Consult the :code:`README` file in the bundle's repository for details.  If you run :code:`make` and it complains about not finding mpi-related files, try cleaning your build directory (to wipe the CMake cache), setting the :code:`FC` environment variable as indicated above, and then proceeding with :code:`ecbuild` as described in Step 3 below.
 
+Another thing to keep in mind is that some JEDI tests require six MPI task to run.  This is just for ufo-bundle; other bundles may require even more.  Chances are good that your machine (whether it be a laptop, a workstation, a cloud computing instance, or whatever), may have fewer than six compute cores.
+
+If your machine has fewer than six compute cores, you may need to explicitly give openmpi permission to run more than one MPI task on each core.  To do this, go to the directory :code:`~/.openmpi` (create it if it doesn't already exist).  In that directory, execute this command:
+
+.. code:: bash
+
+    echo "rmaps_base_oversubscribe = 1" > mca-params.conf
+    
+
 Step 1: Clone the Desired JEDI Bundle
 -------------------------------------
 
