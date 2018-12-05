@@ -54,7 +54,7 @@ Or, on CentOS, Fedora, Amazon Linux, and similar systems, you might instead ente
 
 These commands require root access.  If you do not have root access, chances are good that the required software is already installed.
 
-The next step is to clone the Charliecloud repository on GitHub, build it, and install it into a directory of your choice.  Here we build and install the code into user ubuntu's home directory:
+The next step is to clone the Charliecloud repository on GitHub, build it, and install it into a directory of your choice.  Here we build and install the code into the user's home directory:
 
 .. code:: bash
 
@@ -63,21 +63,21 @@ The next step is to clone the Charliecloud repository on GitHub, build it, and i
   git clone --recursive https://github.com/hpc/charliecloud.git
   cd charliecloud
   make
-  make install PREFIX=/home/ubuntu/charliecloud
+  make install PREFIX=$HOME/charliecloud
 
-Unless there were problems, Charliecloud should now be installed in the user's home directory (:code:`/home/ubuntu`), in the subdirectory :code:`charliecloud`.  If you wish to test the installation (optional), `run the Bats test suite as described in the Charliecloud Documentation <https://hpc.github.io/charliecloud/test.html>`_.
+Unless there were problems, Charliecloud should now be installed in the user's home directory, in the subdirectory :code:`charliecloud`.  If you wish to test the installation (optional), `run the Bats test suite as described in the Charliecloud Documentation <https://hpc.github.io/charliecloud/test.html>`_.
 
 Now add the Charliecloud executables to your path.  You may wish to do this interactively when you install Charliecloud for the first time but we recommend that you also put it in a startup script such as :code:`.bash_profile`.
 
 .. code:: bash
 
-  export PATH=$PATH:/home/ubuntu/charliecloud/bin
+  export PATH=$PATH:$HOME/charliecloud/bin
 
 
 Building the JEDI environment 
 -------------------------------
 
-Once Charliecloud is installed on your system, the next step is to make a home for the JEDI Charliecloud container and download it as follows:
+Once Charliecloud is installed on your system, the next step is to make a home for the JEDI Charliecloud container and download it as follows (you may also have to install wget if it's not included in the developer tools mentioned above):
 
 .. code:: bash
 
@@ -99,13 +99,13 @@ To enter the Charliecloud container, type:
 
 .. code:: bash
 
-   ch-run -c /home/ubuntu ~/jedi/ch-container/ch-jedi-latest -- bash
+   ch-run -c $HOME ~/jedi/ch-container/ch-jedi-latest -- bash
 
 Let's reconstruct this command to help you understand it and customize it as you wish.   
 
 The :code:`ch-run` command runs a command in the Charliecloud container.  
 
-The :code:`-c /home/ubuntu` option tells Charliecloud to enter the container in the user's home directory, which in our example case is :code:`/home/ubuntu`.  Replace this with your own home directory, which should be the same inside and outside the container.  If this option is omitted, you will enter the container in the root directory.  Typing :code:`cd` will then place you in your home directory.
+The :code:`-c $HOME` option tells Charliecloud to enter the container in the user's home directory, which is the same inside and outside the container.  If this option is omitted, you will enter the container in the root directory.  Typing :code:`cd` will then place you in your home directory.
 
 The :code:`~/jedi/ch-container/ch-jedi-latest` argument is the name of the container you want Charliecloud to run. This is the name of the directory created by the :code:`ch-tar2dir` command above.  If you run this from the container's parent directory, in this case :code:`~/jedi/ch-container`, then you can omit the path.
 
@@ -113,7 +113,7 @@ Finally, we have to tell :code:`ch-run` what command we want it to run.  The com
 
 .. warning:: 
 
-   **When you enter the Charliecloud container, your prompt will not change!!** So, it can be very difficult to tell whether or not you are in the Charliecloud container or not.  One trick is to enter the command :code:`eckit-version`.  If you do not have eckit installed on the host system (which may be a vagrant virtual machine or an amazon EC2 instance), then this command will only return a valid result if you are indeed inside the Charliecloud container.  Note that this is different from Singularity, which does change your prompt when you enter the container.
+   **When you enter the Charliecloud container, your prompt may not change!!** So, it can be very difficult to tell whether or not you are in the Charliecloud container or not.  One trick is to enter the command :code:`eckit-version`.  If you do not have eckit installed on the host system (which may be a vagrant virtual machine or an amazon EC2 instance), then this command will only return a valid result if you are indeed inside the Charliecloud container.  Note that this is different from Singularity, which does change your prompt when you enter the container.
 
 Now, since you are in the container, you have access to all the software libraries that support JEDI.  You can now proceed to build and run JEDI as described :doc:`elsewhere in this documentation <../building_and_testing/building_jedi>`.
 
@@ -127,9 +127,18 @@ For example, to run and test ufo-bundle, you can proceed as follows:
     git clone https://github.com/JCSDA/ufo-bundle.git
     mkdir -p ~/jedi/build
     cd ~/jedi/build
+    export FC=mpifort
     ecbuild ../src/ufo-bundle
     make -j4
     ctest
+
+.. warning:: 
+
+   On some systems (notably Cheyenne) it may be necessary to explicity add :code:`/usr/local/lib` to your :code:`LD_LIBRARY_PATH` environment variable within the Charliecloud container, as follows:
+
+   .. code::
+      
+      LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 Charliecloud Tips
 --------------------
@@ -148,7 +157,7 @@ However, what if we were to instead mount the shared directory in :code:`/vagran
 
 .. code:: bash
 
-  ch-run -b /vagrant_data -c /home/ubuntu ch-jedi-latest -- bash
+  ch-run -b /vagrant_data -c $HOME ch-jedi-latest -- bash
 
 By default, this is mounted in the Charliecloud container as the directory :code:`/mnt/0`.  You can change the mount point **provided that the target directory already exists within the container**.
 
