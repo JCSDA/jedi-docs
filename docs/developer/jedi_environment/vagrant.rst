@@ -49,8 +49,8 @@ There are several options here.  If you plan to use Singularity, the simplest wa
 .. code:: bash
 
    # Configuration Option 1 (Singularity pre-installed)
-   vagrant init singularityware/singularity-2.4
-
+   vagrant init singularityware/singularity-2.4   
+   
 The second is to obtain the ubuntu OS from one of a selection of `bento boxes <https://app.vagrantup.com/bento>`_ provided by Vagrant.  We recommond ubuntu 18.04, which can be used to intall either Singularity or Charliecloud:
 
 .. code:: bash
@@ -59,6 +59,10 @@ The second is to obtain the ubuntu OS from one of a selection of `bento boxes <h
    vagrant init bento/ubuntu-18.04
 
 Either option will create a configuration file in the current directory called :code:`Vagrantfile`.  The main difference is that Option 1 will install Singularity by default.  For option 2, you will have to enter a few :ref:`additional commands <Singularity-install>` to explicitly install Singularity.  If you plan to use Charliecloud, we recommend configuration option 2, which has a more up-to-date version of :code:`bash` (you need bash version 4.1 or higher to build Charliecloud containers, though this is not strictly required to run them).
+
+.. warning::
+
+   Option 1 is easier than Option 2, but it is less flexible.  As of Dec, 2018, the most recent Vagrant box offered by singularityware is version 2.4 (singularityware/singularity-2.4).  There have been substantial changes to Singularity since then, particularlly with the release of Singularity 3.0.  So, if you use Option 1, be aware that your Singularity version may be a bit out of date.  However, you can safely choose Option 1 for the purpose of building and running JEDI.  When we build Singularity containers for JCSDA/JEDI, we will ensure that they are compatible with the most recent Vagrant box offered by Singularityware.
 
 
 D: Allocate Sufficient Resources for the Virtual Machine
