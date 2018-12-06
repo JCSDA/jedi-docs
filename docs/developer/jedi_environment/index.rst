@@ -6,4 +6,5 @@ JEDI Environment
    :maxdepth: 2
 
    singularity
+   charliecloud
    vagrant
