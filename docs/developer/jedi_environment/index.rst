@@ -8,3 +8,4 @@ JEDI Environment
    singularity
    charliecloud
    vagrant
+   modules
