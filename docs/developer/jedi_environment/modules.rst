@@ -7,7 +7,7 @@ If you are running JEDI on a personal computer (Mac, Windows, or linux) we recom
 
 If you are running JEDI on an HPC system, :doc:`Charliecloud <charliecloud>` is still a viable option.  However, on selected HPC systems that are accessed by multiple JEDI users we offer another option, namely **JEDI Modules**.
 
-Modules are implemented on most HPC systems and are an easy and effective way to manage software libraries.  Most implementations share similar commands, such as:
+Environment modules are implemented on most HPC systems and are an easy and effective way to manage software libraries.  Most implementations share similar commands, such as:
 
 .. code :: bash
 
@@ -24,9 +24,9 @@ For further information (and more commands) you can refer to a specific implemen
 
 We currently offer JEDI modules on several HPC systems, as described below.   Consult the appropriate section for instructions on how to access the JEDI modules on each system.
 
-These modules are functionally equivalent to the JEDI Singularity and Charliecloud containers in the sense that they provide all of the necessary software libraries necessary to build and run JEDI.  But there is no need to install a container provider or to enter a different mount namespace.  After loading the appropriate JEDI module or modules (some bundles may require loading more than one), users can proceed to :ref:`compile and run the JEDI bundle of their choice <build-jedi>`.
+These modules are functionally equivalent to the JEDI Singularity and Charliecloud containers in the sense that they provide all of the software libraries necessary to build and run JEDI.  But there is no need to install a container provider or to enter a different mount namespace.  After loading the appropriate JEDI module or modules (some bundles may require loading more than one), users can proceed to :ref:`compile and run the JEDI bundle of their choice <build-jedi>`.
 
-We begin with some general instructions on how to use modules that apply across all systems.  We then system-specific im
+We begin with some general instructions on how to use modules that apply across all systems.  We then give more detailed usage tips for specific systems.
 
 General Usage
 ---------------
@@ -75,7 +75,7 @@ This will include alternative versions of the main jedi module (indicated with a
 .. code :: bash
 
    module purge
-   module use -a `<module-path>`
+   module use -a <module-path>
    module load jedi
    module load jedi-<A> # unnecessary for ufo-bundle and most others
 
