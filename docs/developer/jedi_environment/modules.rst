@@ -17,68 +17,102 @@ Modules are implemented on most HPC systems and are an easy and effective way to
    module load <package1> <package2> <...> # load specified packages
    module unload <package1> <package2> <...> # unload specified packages
    module swap <packageA> <packageB> # swap one module for another
+   module purge # unload all modules
 
-The last command is equivalent to
-
-.. code :: bash
-
-   module unload <packageA>
-   module load <packageB>
 
 For further information (and more commands) you can refer to a specific implementation such as `Lmod <https://lmod.readthedocs.io/en/latest/010_user.html>`_.
 
 We currently offer JEDI modules on several HPC systems, as described below.   Consult the appropriate section for instructions on how to access the JEDI modules on each system.
 
-These modules are functionally equivalent to the JEDI Singularity and Charliecloud containers in the sense that they provide all of the necessary software libraries necessary to build and run JEDI.  But there is no need to install a container provider or to enter a different mount namespace.  After loading the appropriate JEDI module, users can proceed to :ref:`compile and run the JEDI bundle of their choice <build-jedi>`.
+These modules are functionally equivalent to the JEDI Singularity and Charliecloud containers in the sense that they provide all of the necessary software libraries necessary to build and run JEDI.  But there is no need to install a container provider or to enter a different mount namespace.  After loading the appropriate JEDI module or modules (some bundles may require loading more than one), users can proceed to :ref:`compile and run the JEDI bundle of their choice <build-jedi>`.
 
-Theia
----------
+We begin with some general instructions on how to use modules that apply across all systems.  We then system-specific im
 
-On Theia, users can access the installed jedi modules by first entering
+General Usage
+---------------
+
+As a first step, it is a good idea to remove pre-exising modules that might conflict with the software libraries contained in the JEDI modules.  Experienced users may wish to do this selectively to avoid disabling commonly used packages that are unrelated to JEDI.  However, a quick and robust way to ensure that there are no conflicts is to unload all modules with
 
 .. code :: bash
 
-   module use -a /contrib/da/modulefiles
+   module purge
 
-To load the default configuration that uses the intel compiler suite, enter
+The next step is then to access the JEDI modules with:
+
+.. code :: bash
+
+   module use -a <module-path>
+
+The :code:`<module-path>` where JEDI modules are installed is system-specific as described below.
+
+All implementations will include a default jedi module that you can load with:
 
 .. code :: bash
 
    module load jedi
 
-Or, if you'd rather use GNU compilers you can enter this instead:
+This should be sufficient for most users.  But, some users and developers may wish to use different libraries.  For example, the default module on many systems uses the Intel compiler suite but you can switch to the GNU compiler suite by entering something like this:
 
 .. code :: bash
 
-   module load jedi/jedi-gcc-7.3.0
+   module switch jedi jedi/gnu
 
-To list the module you currently have loaded, enter
-
-.. code :: bash
-
-   module list
-
-If you already have GNU version 7.3.0 loaded and you want to switch to version 8.2.0, you can enter
+This is equivalent to entering
 
 .. code :: bash
 
-   module swap jedi/jedi-gcc-7.3.0 jedi/jedi-gcc-8.2.0
+   module unload jedi
+   module load jedi/gnu
 
-To explore other options, enter
+Of course, this example will only work if a module named :code:`jedi/gnu` exists.  There may be name variations across platforms depending on what software has been installed.  To see what options are available for JEDI, enter
 
 .. code :: bash
 
    module spider jedi
 
-When you are happy with this, you are ready to :ref:`build and run your JEDI bundle <build-jedi>`.  However, before proceeding, here are a few tips to keep in mind.
+This will include alternative versions of the main jedi module (indicated with a slash as in :code:`jedi/gnu` above) and it may also include supplementarly modules for specific bundles.    These are usually indicated with a hyphen.  So, in summary, the full procedure for initializing the environment for some arbitrary bundle :code:`<A>` might look like this:
 
-* If you are using intel compilers, run ecbuild with the following option in order to make sure you have the correct system-specific run command for parallel jobs:
+.. code :: bash
+
+   module purge
+   module use -a `<module-path>`
+   module load jedi
+   module load jedi-<A> # unnecessary for ufo-bundle and most others
+
+The jedi module is really multiple nested modules.   To list the modules you currently have loaded, enter
+
+.. code :: bash
+
+   module list
+
+When you are happy with this, you are ready to :ref:`build and run your JEDI bundle <build-jedi>`.
+
+Theia
+---------
+
+Theia is an HPC system located in NOAA's NESCC facility in Fairmont, WV.  On Theia, users can access the installed jedi modules by first entering
+
+.. code :: bash
+
+   module use -a /contrib/da/modulefiles
+
+Current options for setting up the JEDI environment include (choose only one)
+
+.. code :: bash
+
+   module load jedi # intel compiler suite
+   module load jedi/jedi-gcc-7.3.0 # GNU 7.3.0 compiler suite
+   module load jedi/jedi-gcc-8.2.0 # GNU 8.2.0 compiler suite
+
+Some system-specific tips for Theia include:
+
+* If you are using intel compilers, run ecbuild with the following option in order to make sure you have the correct run command for parallel jobs:
 
 .. code:: bash
 
-    ecbuild -DMPIEXEC=$MPIEXEC
+    ecbuild -DMPIEXEC=$MPIEXEC <...>
 
-* Use up to 12 MPI tasks to make the compile more efficient
+* Use up to 12 MPI tasks to speed up the compilation
 
 .. code:: bash
 
