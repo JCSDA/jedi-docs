@@ -12,8 +12,8 @@ Modules are implemented on most HPC systems and are an easy and effective way to
 .. code :: bash
 
    module list # list modules you currently have loaded
-   module avail # list all available modules
-   module spider <string> # search for <string> in available module names
+   module spider <string> # list all modules that contain <string> 
+   module avail # list modules that are compatible with the modules you already have loaded
    module load <package1> <package2> <...> # load specified packages
    module unload <package1> <package2> <...> # unload specified packages
    module swap <packageA> <packageB> # swap one module for another
