@@ -1,3 +1,5 @@
+.. _build-jedi:
+
 Building and compiling JEDI
 =============================
 
