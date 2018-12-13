@@ -214,7 +214,6 @@ For example, you can create your own Vagrantfile by entering something like this
 
 .. code:: bash
 
-   # Configuration Option 2
    vagrant init bento/ubuntu-18.04
 
 
