@@ -14,7 +14,7 @@ In contrast to virtual machines, containers do not include the necessary softwar
 Installing Singularity
 ----------------------
 
-If you're running JEDI somewhere other than your personal computer, Singularity may already be installed.
+If you are using a Vagrant virtual machine that you created with the JEDI Vagrantfile as described on our :doc:`Vagrant page <vagrant>`, then you can skip this step: Singularity 3.0 is already installed.  Or, if you're running JEDI somewhere other than your personal computer, Singularity may already be installed.
 
 You can check to see if Singularity is already installed (and if it is, which version is installed) by typing
 
@@ -37,8 +37,6 @@ So, if you are running Mac OS or Windows, then you must first set up a linux env
   :doc:`If you have a Mac or Windows machine, go here first to install Vagrant, then return to this page <vagrant>`
 
 In short, Vagrant and VirtualBox provide the linux operating system while Singularity (or Charliecloud) provides the necessary software infrastructure for running JEDI (compilers, cmake, ecbuild, etc) by means of the :ref:`JEDI singularity image <build_env>`.
-
-If you configure Vagrant using the **singularityware** Vagrant box (Option 1 in our :doc:`Vagrant documentation <vagrant>`) then no further action is needed - singularity is already installed and ready to go.  Alternatively, you can configure Vagrant using a bento box that establishes a more basic linux environment such as ubuntu (Option 2).  Then you can :ref:`log in to your vagrant VM <create-vm>` with :code:`vagrant ssh` and proceed as described below for linux.  
 
 Singularity offers comprehensive `installation instructions for Singularity 3.0 <https://www.sylabs.io/guides/3.0/user-guide/quick_start.html#quick-installation-steps>`_ and we refer JEDI users to that site for the most up-to-date information and for troubleshooting.  Here we summarize the main steps.
 

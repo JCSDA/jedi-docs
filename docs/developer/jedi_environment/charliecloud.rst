@@ -9,6 +9,10 @@ Charliecloud was developed and is still maintained by software developers at Los
 
 In the documentation that follows we focus only on what you need to know as a user of JEDI.
 
+.. warning::
+
+   See the `Charliecloud documenation <https://hpc.github.io/charliecloud/index.html>`_ (particularly the Installation and Tutorial sections) for tips and warnings about using Charliecloud.  For example, there is a known bug on the **Cray Linux Environment** that causes nodes to crash just before exiting some Charliecloud jobs (they do have a workaround).    Also, if you have a large number of MPI processes that each invokes the same Charliecloud container, it could overwhelm a network file system.  For JEDI, we've run MPI jobs from within the container and have not yet noticed a problem with this (please let us know if you do!).
+
 .. _Charliecloud-install:
 
 Installing Charliecloud
@@ -73,6 +77,14 @@ Now add the Charliecloud executables to your path.  You may wish to do this inte
 
   export PATH=$PATH:$HOME/charliecloud/bin
 
+.. note::
+
+   If you do decide to run the Charliecloud test suite you should be aware that some of these tests require root privileges.  If you do not have root privileges, you can disable these tests by setting this environment variable before running :code:`make test`:
+
+   .. code:: bash
+
+	  export CH_TEST_PERMDIRS=skip
+  
 .. _build_charliejedi:
 
 Building the JEDI environment 
