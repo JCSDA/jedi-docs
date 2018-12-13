@@ -150,7 +150,7 @@ If you used a different Vagrant box than the one specified in the JEDI Vagrantfi
 
    export DISPLAY=localhost:10.0
 
-If the display still does not work, then you may need to explicitly grant Singularity access to your display through :code:`xauth` as we now describe.
+If the display still does not work, then you may need to explicitly grant Vagrant access to your display through :code:`xauth` as we now describe.
 
 Exit the container and exit vagrant.  Then edit your Vagrantfile and add these two lines (at the bottom, just before the :code:`end` in the main :code:`Vagrant.configure("2") do |config|` loop will do)
 
@@ -159,7 +159,7 @@ Exit the container and exit vagrant.  Then edit your Vagrantfile and add these t
    config.ssh.forward_agent = true
    config.ssh.forward_x11 = true
 
-Then recreate your vagrant VM, log in, and enter the Singularity container:
+Then recreate your vagrant VM, log in, and enter the container (for example, for Singularity):
 
 .. code:: bash
 
@@ -193,7 +193,7 @@ where :code:`<hex-key>` is a hexadecimal key with about 30-40 digits.  Now, copy
 
    xauth add 10.0.2.2:0  MIT-MAGIC-COOKIE-1  <hex-key>
 
-If all worked as planned, this should grant permission for singularity to use your display.   
+If all worked as planned, this should grant permission for vagrant to use your display.   
    
 
 .. _vagrant-customize:
@@ -293,22 +293,22 @@ Once you have Vagrant and a container provider (either Singularity or Charlieclo
 
 .. code:: bash
 
-  cd $HOME/singularity-vm
+  cd $HOME/jedi-vm
   vagrant up
   vagrant ssh
   
-From there you can enter the Singularity container and (optionally) run your startup script:
+From there you can enter the container and (optionally) run your startup script.  For example, in the case of Singularity this would look something like this:
 
 .. code:: bash
 
-  singularity shell --bind /vagrant_data -e JCSDA-singularity-master-latest.simg
+  singularity shell -e <singularity-image-file>
   source startup.sh
 
-Or, the equivalent commands for Charliecloud would be:
+The equivalent commands for Charliecloud would be:
 
 .. code:: bash
 
-  ch-run -c /home/ubuntu ch-jedi-latest -- bash
+  ch-run -c /home/vagrant ch-jedi-latest -- bash
   source startup.sh
 
 Now you're in the JEDI container and you can do whatever you wish: edit files, build, compile and run JEDI, etc.  If you want to use X-forwarding you'll have to explicitly tell your Mac to accept graphical input from the Vagrant VM as described in :ref:`Step G <mac-x-forwarding>` above:
