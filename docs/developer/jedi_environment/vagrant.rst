@@ -48,7 +48,7 @@ In what follows, we will refer to this as the home directory of your Vagrant Vir
   
 We at JCSDA provide a Vagrantfile that can be used to create a virtual machine that is pre-configured to build and run JEDI, with both Singularity and Charliecloud pre-installed.
 
-    `Click here to download the JEDI Vagrantfile <http://data.jcsda.org/containers/Vagrantfile>`_
+    `Download the JEDI Vagrantfile here <http://data.jcsda.org/containers/Vagrantfile>`_
 
 
 Or, alternatively, you can retrieve it with
