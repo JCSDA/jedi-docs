@@ -73,6 +73,7 @@ Now add the Charliecloud executables to your path.  You may wish to do this inte
 
   export PATH=$PATH:$HOME/charliecloud/bin
 
+.. _build_charliejedi:
 
 Building the JEDI environment 
 -------------------------------
@@ -83,7 +84,7 @@ Once Charliecloud is installed on your system, the next step is to make a home f
 
    mkdir -p ~/jedi/ch-container
    cd ~/jedi/ch-container
-   wget http://data.jcsda.org/charliecloud/ch-jedi-latest.tar.gz
+   wget http://data.jcsda.org/containers/ch-jedi-latest.tar.gz
 
 This looks like a normal gzipped tar file.  However, **you should not upack it with** :code:`tar`! Instead, unpack it with this command:
 
