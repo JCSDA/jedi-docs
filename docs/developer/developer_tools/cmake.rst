@@ -54,6 +54,8 @@ For the Mac, use `homebrew <https://brew.sh/>`_ to install CMake.
 For Windows and Linux systems, see the `CMake downloads website <https://cmake.org/download/>`_
 for packages and instructions.
 
+.. _using-cmake:
+
 Using CMake and CTest
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -112,7 +114,7 @@ that failed, you can run individual tests using ctest as shown below.
     ctest -V -R test_ufo_radiosonde   # -V increases the verbosity of output
 
 .. warning::
-  Unit tests are starting to use MPI, which can require additional MPI configuration.
+  Many unit tests use MPI, which can require additional MPI configuration.
   For example, using OpenMPI on the Mac typically requires the following to enable
   oversubscribing (which means running more MPI processes than avaialble cores).
   Note that extra MPI processes beyond the number of cores on a system do not actually run
@@ -186,7 +188,9 @@ These controls can be used to force CMake to use the versions you want.
           -DCMAKE_CXX_COMPILER=$CMP_ROOT/g++ \
           -DCMAKE_Fortran_COMPILER=$CMP_ROOT/gfortran $HOME/projects/my_project
 
-
+CMake also has tools that are useful for debugging.  In particular,  the :code:`--trace` and :code:`--debug-output` options show every line of every script file that is executed while cmake is running. 
+	  
+	  
 ecbuild
 -------
 
@@ -477,6 +481,15 @@ Here is sample output:
     
     >>
 
+
+For examples on how to use ecbuild to compile JEDI bundles, see :doc:`Building and Compiling JEDI <../building_and_testing/building_jedi>` (Step 3).
+
+You can pass cmake command line options to cmake with ecbuild by proceeding them with two dashes :code:`--`.  For example, to use the cmake :code:`--trace` option mentioned :ref:`above <using-cmake>` (useful for debugging), you can enter:
+
+.. code:: bash
+
+    ecbuild -- --trace <path_to_bundle>  # example that adds the --trace option to the cmake call	  
+    
 It is recommended to choose one of the JEDI repositories and look through all of the
 CMakeLists.txt files.
 This will help you get oriented in how these files are used to piece together the build,
