@@ -282,6 +282,6 @@ Here we see that :code:`config_element_exists()` is an interface to the :code:`e
 
 .. code:: bash
 
-    Radiosonde GeoVaLs Norm =    8471.8799999999992
+    Radiosonde GeoVaLs Norm =    8471.8836878543570
 
     
