@@ -3,6 +3,8 @@ JEDI Configuration Files: Implementation
 
 This document describes the practical implementation of JEDI configuration files, including how users can create and read them.  For an overview what these files contain see :doc:`JEDI Configuration Files: Content <config_content>`.
 
+.. _config-format:
+
 File Format
 -------------
 
@@ -52,7 +54,9 @@ As an example, consider the configuration file for the :code:`test_ufo_radiosond
         tolerance: 1.0e-03  # in % so that corresponds to 10^-5
         ObsBias: {}
 
-Note that keys representing single variables or vectors are represented as lower case while keys representing more complex objects in the YAML heirarchy are rendered in `CamelCase <https://en.wikipedia.org/wiki/Camel_case>`_.  We refer the user to the `YAML Documentation <https://yaml.org/spec/1.2/spec.html>`_ for a comprehensive description of the syntax but we'll give a brief overview here.
+Note that keys representing single variables or vectors are represented as lower case while keys representing more complex objects in the YAML heirarchy are rendered in `CamelCase <https://en.wikipedia.org/wiki/Camel_case>`_.  This is the preferred style but it is not currently followed by all JEDI repositories.
+
+We refer the user to the `YAML Documentation <https://yaml.org/spec/1.2/spec.html>`_ for a comprehensive description of the syntax but we'll give a brief overview here.
 
 The first thing to note is that indentation matters.  Items are organized into a heirarchy, with the top-level objects beginning in the leftmost column and subsidiary components of these objects indented accordingly.  The number of spaces is not important; two is sufficient to define the scope of an item and its contents.
 

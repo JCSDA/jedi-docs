@@ -153,7 +153,7 @@ For example, to run and test ufo-bundle, you can proceed as follows:
 
    .. code::
       
-      LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 Charliecloud Tips
 --------------------
