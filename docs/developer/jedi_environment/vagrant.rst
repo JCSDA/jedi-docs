@@ -34,7 +34,8 @@ B: Download JEDI Configuration File
 
 Now we need to tell Vagrant what type of virtual machine we want to create and how to provision it with the software we need.  This is done by means of a configuration file that goes by the default name of :code:`Vagrantfile`.
 
-So, to proceed, you should first create a directory where you will place your Vagrantfile.  This is where you will launch your virtual machine.  You should also create a subdirectory called :code:`vagrant_data` that we will use
+So, to proceed, you should first create a directory where you will place your Vagrantfile.  This is where you will launch your virtual machine.  **You should also create a subdirectory called** :code:`vagrant_data` **that we will use**.  If you don't create this directory, you will get an error when vagrant tried to mount it.  
+
 
 You can call the parent directory whatever you wish but if you change the name of the :code:`vagrant_data` directory then you will also have to :ref:`change the Vagrantfile <vagrant-customize>`.
 
@@ -59,6 +60,10 @@ Or, alternatively, you can retrieve it with
 
 
 Place this Vagrantfile in the home directory of your Vagrant VM.
+
+.. warning::
+
+   If you already have a Vagrant VM installed and you want to install a new one (particularly using a Vagrantfile in the same directory as before), then you may have to fully delete the previous VM first to avoid any conflicts.  Instructions on how to do this are provided in the :ref:`Deleting a Vagrant VM <vagrant-destroy>` section below. 
 
 C: Launch your Virtual Machine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -326,3 +331,59 @@ When you're done for the day you can exit and shut down the VM:
    exit # to exit Singularity or Charliecloud
    exit # to exit Vagrant
    vagrant halt # to shut down the virtual machine
+
+.. _vagrant-destroy:
+
+Deleting a Vagrant VM
+----------------------
+
+When you shut down a Vagrant virtual machine (VM) with :code:`vagrant halt`, it's like shutting down your laptop or workstation.  When you restart the VM, you can pick up where you left off.  You'll see all the files and directories that were there before.
+
+This is usually desirable.  However, it does mean that the VM is occupying disk space on your machine even when it is suspended.  If you have created multiple VMs, this can add up.  So, it is often useful to delete a VM if you are done using it.
+
+To check vagrant's status at any time enter
+
+.. code:: bash
+
+    vagrant global-status	 
+
+This is a useful command to know about.  It will tell you all the VMs vagrant knows about on your computer including the path where the Vagrantfile is located and the state.   A :code:`vagrant up` command will puth the VM in a :code:`running` state while a :code:`vagrant halt` command will put the VM in a **poweroff** state.
+
+If you want to delete one or more of these VMs, the first step is to **save any files you have on the VM that you want to preserve**.  This can be done by moving them to the :code:`~/vagrant_data` directory which will still exists on your local computer after the VM is deleted.
+
+Now, the best way to proceed is to go to the directory where the vagrant file is and enter:
+
+.. code:: bash
+
+    vagrant destroy # enter y at the prompt
+    rm -rf .vagrant
+
+The first command deletes all of the disks used by the virtual machine, with the exception of the cross-mounted :code:`vagrant_data` directory which still exists on your local computer.  The second command resets the vagrant configuration.  This is particularly important if you re-install a new VM where another VM had been previously.  If you skip this step, :code:`vagrant up` may give you errors that complain about mounting the :code:`vagrant_data` directory ("...it seems that you don't have the privileges to change the firewall...").
+
+This is a start, but you're not done.  As mentioned :doc:`at the top of this document <vagrant>`, Vagrant is really just an interface to VirtualBox, which provides the linux OS.  The Virtualbox VM that contains the linux OS still exists and is still using resources on your computer.  To see the VirtualBoxes that are currently installed though Vagrant, run
+
+.. code:: bash
+
+    vagrant box list	  
+
+If you used the JEDI Vagrantfile as described in Step B above, then you'll see one or more entries with the name :code:`centos/7`.  The first step here is to prune any that are not being used any more with
+
+.. code:: bash
+
+    vagrant box prune
+
+However, even this might not delete the VM you want to delete.  Run :code:`vagrant list` to see if it is still there and if it is, you can delete it with
+
+.. code:: bash
+
+    vagrant box remove centos/7	  
+
+..or ubuntu or singularityware or whatever name is listed for the box you want to delete.
+
+Now, this should be sufficient for most situations.  Most users can stop here with confidence that they have deleted their unwanted VMs and have freed up the resources on their local computer.
+
+However, it is possible that there might still be VirtualBox VMs on your machine that Vagrant has lost track of.  You might notice this if you try to create a new VM with :code:`vagrant up` and it complains that "A VirtualBox machine with the name jedibox already exists" (or a similar error message).
+
+If this is the case, you can run VirtualBox directly to manage your VMs.  This can be done through the command line with the :code:`vboxmanage` command (run :code:`vboxmanage --help` for information) but we recommend the **VirtualBox GUI**, which is more user-friendly.
+
+To access the GUI on a Mac or Windows machine, just go to your Applications folder and double click on the VirtualBox icon.  There you will see a complete list of all the VirtualBox VMs installed on your system and you can delete any that you don't want by selecting the **machine** menu item and then **remove**. 

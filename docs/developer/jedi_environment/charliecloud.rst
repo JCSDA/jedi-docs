@@ -18,6 +18,8 @@ In the documentation that follows we focus only on what you need to know as a us
 Installing Charliecloud
 ------------------------
 
+If you are using a Vagrant virtual machine that you created with the JEDI Vagrantfile as described on our :doc:`Vagrant page <vagrant>`, then you can skip this step: Charliecloud is already installed.  
+
 The Charliecloud Documentation pages have thorough `Installation Instructions <https://hpc.github.io/charliecloud/install.html>`_.  This is the most up-to-date documentation available and if you have any problems with the procedure describe here we refer to you that page for troubleshooting.
 
 Installing on Mac OS and Windows systems
@@ -151,7 +153,7 @@ For example, to run and test ufo-bundle, you can proceed as follows:
 
    .. code::
       
-      LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 Charliecloud Tips
 --------------------

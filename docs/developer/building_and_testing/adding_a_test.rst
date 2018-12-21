@@ -192,14 +192,14 @@ Along with the executable, the :doc:`configuration file <configuration>` is the 
 
 Here we'll just say that the proper place to put it is in the :code:`test/testinput` directory of the JEDI repository that you are working with.  Or, if your tests are located in :code:`test/mydir`, another option would be to put the associated input files in :code:`test/mydir/testinput`.  If there are already some files there, you can use them as a template for creating your own.  Or, you can look for :code:`testinput` files from other repositories that test similiar functionality.
 
-Let's call our configuration file :code:`test/testinput/myclass.json`.  To proceed, we would create the file and then edit it to activate the code features that we wish to test.
+Let's call our configuration file :code:`test/testinput/myclass.yaml`.  To proceed, we would create the file and then edit it to activate the code features that we wish to test.
 
 As mentioned way back in Step 1, some tests do not require new infrastructure.  Some new tests only require a different configuration file to activate a different feature of the code.  If this is the case for you, then you can just duplicate an existing configuration file and modify it accordingly, skipping Steps 1-6.
 
 Step 8: Register all files with CMake and CTest
 ------------------------------------------------
 
-In steps 1-7 above we have created or modified three files, namely the source code for our tests, :code:`test/mydir/MyClass.h`, the executable :code:`test/executables/TestMyClass.cc`, and the configuration file :code:`test/testinput/myclass.json`.  In order for CMake to compile and run these files, we have to let CMake know they exist.
+In steps 1-7 above we have created or modified three files, namely the source code for our tests, :code:`test/mydir/MyClass.h`, the executable :code:`test/executables/TestMyClass.cc`, and the configuration file :code:`test/testinput/myclass.yaml`.  In order for CMake to compile and run these files, we have to let CMake know they exist.
 
 We achive this by editing the file :code:`test/CMakeLists.txt`.  This is where the tests are managed from the perspective of CMake and CTest.
 
@@ -208,18 +208,18 @@ We'll start with the configuration file because every new test you add is likely
 .. code:: CMake
 
    list( APPEND qg_test_input
-     testinput/3dvar.json
-     testinput/3dfgat.json
-     testinput/4densvar.json
-     testinput/4dvar.alpha.json
+     testinput/3dvar.yaml
+     testinput/3dfgat.yaml
+     testinput/4densvar.yaml
+     testinput/4dvar.alpha.yaml
      [...]
-     testinput/test_op_obs.json
-     testinput/analytic_init.json
-     testinput/analytic_init_fc.json
+     testinput/test_op_obs.yaml
+     testinput/analytic_init.yaml
+     testinput/analytic_init_fc.yaml
      compare.sh
    )
 
-You would add your input file, :code:`test/testinput/myclass.json` to this list (note that the path is relative to the path of the :code:`CMakeLists.txt` file itself).  If you search on :code:`qg_test_input` in the file, you can see that list is later used to create a soft link for the input files in the build directory, where the tests will be run.
+You would add your input file, :code:`test/testinput/myclass.yaml` to this list (note that the path is relative to the path of the :code:`CMakeLists.txt` file itself).  If you search on :code:`qg_test_input` in the file, you can see that list is later used to create a soft link for the input files in the build directory, where the tests will be run.
 
 Finally, at long last, you can register your test with CTest.  We can do this with a call to :code:`ecbuild_add_test()` in the :code:`test/CMakeLists.txt` file.  Here is an example from :code:`oops/qg/test/CMakeLists.txt`:
 
@@ -228,7 +228,7 @@ Finally, at long last, you can register your test with CTest.  We can do this wi
    ecbuild_add_test( TARGET  test_qg_state
                   BOOST
                   SOURCES executables/TestState.cc
-                  ARGS    "testinput/interfaces.json"
+                  ARGS    "testinput/interfaces.yaml"
                   LIBS    qg )
 
 The TARGET option defines the name of the test and the BOOST option tells CMake that this is a Boost unit test suite.  The use of TARGET, as opposed to COMMAND, tells CMake to compile the executable before running it.  So, this requires that we specify the executable with the SOURCES argument, as shown.
@@ -242,7 +242,7 @@ So, our example would look something like this:
    ecbuild_add_test( TARGET  test_myrepo_myclass
                   BOOST
                   SOURCES executables/TestMyClass.cc
-                  ARGS    "../testinput/myclass.json"
+                  ARGS    "../testinput/myclass.yaml"
                   LIBS    myrepo )
 
 Note that this is sufficient to inform CMake of the existence of our executable so it need not appear in any other list of files (such as :code:`test_qg_input` above or similar lists of source files used to create the ecbuild libraries).  Furthermore, since the executable includes our test application file :code:`test/mydir/MyClass.h`, it will be compiled as well, as part of the compilation of the executable.  So, we're done!  Good luck with debugging!
@@ -266,11 +266,11 @@ You would add your test to the appropriate CMakeLists.txt file with :code:`ecbui
    ecbuild_add_test( TARGET test_qg_truth
                   TYPE SCRIPT
                   COMMAND "compare.sh"
-                  ARGS "${CMAKE_BINARY_DIR}/bin/qg_forecast.x testinput/truth.json"
+                  ARGS "${CMAKE_BINARY_DIR}/bin/qg_forecast.x testinput/truth.yaml"
                        testoutput/truth.test
                   DEPENDS qg_forecast.x )
 
-Here we include a TYPE SCRIPT argument in place of BOOST and we specify :code:`command.sh` as the command to be executed.  The ARGS argument now includes the two files to be compared, namely the output of our application :code:`${CMAKE_BINARY_DIR}/bin/qg_forecast.x testinput/truth.json` (set off by quotes) and our reference file, :code:`testoutput/truth.test`.  We include the executable application in the DEPENDS argument to make sure that CMake knows it needs to compile this application before running the test.
+Here we include a TYPE SCRIPT argument in place of BOOST and we specify :code:`command.sh` as the command to be executed.  The ARGS argument now includes the two files to be compared, namely the output of our application :code:`${CMAKE_BINARY_DIR}/bin/qg_forecast.x testinput/truth.yaml` (set off by quotes) and our reference file, :code:`testoutput/truth.test`.  We include the executable application in the DEPENDS argument to make sure that CMake knows it needs to compile this application before running the test.
 
 However, before you add an Application test we must warn you :ref:`again <app-testing>` that the :code:`compare.sh` script may run into problems if you run your application on multiple MPI threads.  We are currently working on a more robust framework for Application testing.
 

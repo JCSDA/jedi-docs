@@ -25,7 +25,7 @@ ECMWF that assist with the specification of the manufacturing processes.
 For example, ecbuild provides enhancement of CTest by linking in the
 `Boost test framework <https://www.boost.org/doc/libs/1_67_0/libs/test/doc/html/index.html>`_.
 Along with ecbuild we are using two ECMWF libraries called
-`eckit <https://github.com/UCAR/eckit>`_ and `fckit <https://github.com/UCAR/fckit>`_.
+`eckit <https://github.com/ecmwf/eckit>`_ and `fckit <https://github.com/ecmwf/fckit>`_.
 Eckit is a C++ library that provides utilites including logging, MPI, configuration
 file (JSON, YAML) parsing and math functions.
 Fckit is a Fortran tool kit that provides similar utilities as eckit, plus helper functions
