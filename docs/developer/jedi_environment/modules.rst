@@ -122,6 +122,37 @@ Some system-specific tips for Theia include:
       
 Cheyenne
 ---------
+
+`Cheyenne <https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/cheyenne>`_ is a 5.34-petaflops, high-performance computer built for NCAR by SGI. On Cheyenne, users can access the installed jedi modules by first entering
+
+.. code :: bash
+
+   module purge
+   module use /gpfs/u/home/xinzhang/modules/default
+
+Current options for setting up the JEDI environment include (choose only one)
+
+.. code :: bash
+
+   module load jedi/gnu   # GNU 7.3.0 compiler suite and openmpi/3.0.1
+   module load jedi/intel # Intel 18.0.1.20171018 compiler suite and openmpi/3.1.0
+
+* Run ecbuild with the following option
+
+.. code:: bash
+
+    mkdir build; cd build
+    ecbuild <path_of_the_jedi_code>
+
+* Use multiple threads to speed up the compilation
+
+.. code:: bash
+
+    make -j4
+
+.. warning::
+    
+    Please do not use too many threads to speed up the compilation, Cheyenne system administor might terminate your login node.
       
 Discover
 ---------
