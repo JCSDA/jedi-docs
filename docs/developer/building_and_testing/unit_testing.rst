@@ -96,7 +96,7 @@ You can also run the executable test files directly, without going through ctest
 
 .. code:: bash
 
-    test_qg_state testinput/interfaces.json 
+    test_qg_state testinput/interfaces.yaml 
 	  
 You can determine which executable and which configuration file each test uses by viewing the :code:`CMakeLists.txt` file in the corresponding :code:`test` directory of the repository.  If you're running the ufo bundle, then the relevant :code:`CMakeLists.txt` files for the examples above would be :code:`<src-directory>/ufo-bundle/oops/qg/test` and :code:`<src-directory>/ufo-bundle/ufo/test`.  Just open the relevant :code:`CMakeLists.txt` file and search on the name of the test.  See :doc:`Adding a New Test <adding_a_test>` for further details on how to interpret the syntax.
 
@@ -104,7 +104,7 @@ If you do run the tests without ctest, keep in in mind a few tips.  First, the t
 
 .. code:: bash
 
-    ../../../bin/qg_forecast.x testinput/truth.json 
+    ../../../bin/qg_forecast.x testinput/truth.yaml 
 
 
 .. _jedi-tests:
