@@ -9,3 +9,4 @@ Building, Testing, and Running JEDI
    unit_testing.rst
    adding_a_test.rst
    configuration.rst
+   config_content.rst

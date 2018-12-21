@@ -1,6 +1,6 @@
-_build
+docs/_build
 _status
 _templates
-_static
+docs/_static
 .DS_Store
 *~
