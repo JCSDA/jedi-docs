@@ -205,8 +205,6 @@ Selecting a file from the **File List** will let you see the documentation for t
 
 This is only the beginning - we encourage you to dive in and explore! For futher details on what you find, consult the `Doxygen User Manual <http://www.doxygen.nl/manual/index.html>`_
 
-
-
 .. _wizard:
 
 Doxywizard and Customizing the Doxygen Build

@@ -194,19 +194,15 @@ This will invoke the debug flags on the C++ and Fortran compilers and it will al
    ecbuild -- -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CXX_FLAGS="-Wfloat-equal -Wcast-align" ../src/ufo-bundle
 
 
-.. note::   
-    Let's say that you're working on an HPC system where you do not have the privileges to install Singularity.  If this is the case then we recommend that your first check to see if there are :doc:`JEDI modules <../jedi_environment/modules>` installed on your system.   If your system is listed on this modules documentation page then you can simply load the JEDI module as described there and you will have access to ecbuild, eckit, and other JEDI infrastructure.
+Now Let's say that you're working on an HPC system where you do not have the privileges to install Singularity.  If this is the case then we recommend that your first check to see if there are :doc:`JEDI modules <../jedi_environment/modules>` installed on your system.   If your system is listed on this modules documentation page then you can simply load the JEDI module as described there and you will have access to ecbuild, eckit, and other JEDI infrastructure.
 
-   If your system is not one that is supported by the JEDI team, then we recommend the alter
+If your system is not one that is supported by the JEDI team, then a second option is to install :doc:`CharlieCloud <../jedi_environment/charliecloud>` in your home directory and run JEDI from within the Charliecloud container.
 
-   If your system is not listed on this documentation page, then 
-
-In this situation we recommend that you install :doc:`CharlieCloud <../jedi_environment/charliecloud>` in your home directory and run JEDI from within the Charliecloud container.  
-If that is the case, then you may have installed eckit in a location other than :code:`/usr/local`.  Ecbuild treats this information as an argument to CMake.  So, you would specify such a path as follows:    
+A third option is for you to install eckit on your system manually (not recommended).  If you do this, then you may have to tell ecbuild where to find it with this command line option:
 
 .. code:: bash
 
-   ecbuild -- -DECKIT_PATH="$HOME/jedi/src/tools" ../src/ufo-bundle
+   ecbuild -- -DECKIT_PATH=<path-to-eckit> ../src/ufo-bundle
 
 For more information, enter :code:`ecbuild --help` and see our JEDI page on :doc:`ecbuild and cmake <../developer_tools/cmake>`.
 
