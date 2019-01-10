@@ -43,7 +43,9 @@ Installing CMake and CTest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This step is only necessary if you are working outside the
-:ref:`Singularity container <build_env>`.
+JEDI :doc:`Charliecloud <../jedi_environment/charliecloud>` 
+or :doc:`Singularity <../jedi_environment/singularity>` 
+containers.
 
 For the Mac, use `homebrew <https://brew.sh/>`_ to install CMake.
 
