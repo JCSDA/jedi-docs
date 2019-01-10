@@ -63,7 +63,7 @@ Another action that might make your life easier is to set the following environm
 
     export FC=mpifort
 
-This is required in order to run with multiple MPI threads within the :doc:`JEDI Singularity Container <../jedi_environment/singularity>`, which uses OpenMPI.  You may wish to put this in a :ref:`startup-script <startup-script>` so you don't have to enter it manually every time you enter the Container.  If you run outside the container, some bundles include customized build scripts that will take care of this for you.  Consult the :code:`README` file in the bundle's repository for details.  If you run :code:`make` and it complains about not finding mpi-related files, try cleaning your build directory (to wipe the CMake cache), setting the :code:`FC` environment variable as indicated above, and then proceeding with :code:`ecbuild` as described in Step 3 below.
+This is required in order to run with multiple MPI threads within the JEDI :doc:`CharlieCloud <../jedi_environment/charliecloud>` and :doc:`Singularity <../jedi_environment/singularity>` containers, which uses OpenMPI.  You may wish to put this in a :ref:`startup-script <startup-script>` so you don't have to enter it manually every time you enter the Container.  If you run outside the container, some bundles include customized build scripts that will take care of this for you.  Consult the :code:`README` file in the bundle's repository for details.  If you run :code:`make` and it complains about not finding mpi-related files, try cleaning your build directory (to wipe the CMake cache), setting the :code:`FC` environment variable as indicated above, and then proceeding with :code:`ecbuild` as described in Step 3 below.
 
 Another thing to keep in mind is that some JEDI tests require six MPI task to run.  This is just for ufo-bundle; other bundles may require even more.  Chances are good that your machine (whether it be a laptop, a workstation, a cloud computing instance, or whatever), may have fewer than six compute cores.
 
@@ -103,7 +103,7 @@ As executed above, Step 1 will create a directory called :code:`~/jedi/src/ufo-b
    ecbuild_bundle( PROJECT ioda  GIT "https://github.com/JCSDA/ioda.git"  BRANCH develop UPDATE )
    ecbuild_bundle( PROJECT ufo   GIT "https://github.com/JCSDA/ufo.git"   BRANCH develop UPDATE )
 
-Note that the first two lines are commented out with :code:`#`.  This is because eckit and fckit are already installed in the :ref:`JEDI Singularity Container <build_env>` so if you are running inside the container, there is no need to build them again.  If you are running outside of the Singularity container and if you have not yet installed these packages on your system, then you may wish to uncomment those two lines.  Or, you may wish to install these packages yourself so you can comment these lines out in the future.  Be warned that can be a bit of a challenge if you are on an HPC system, for example, and you do not have write access to :code:`/usr/local`.  For more information on how to install these packages see our JEDI page on :doc:`ecbuild and cmake <../developer_tools/cmake>`.
+Note that the first two lines are commented out with :code:`#`.  This is because eckit and fckit are already installed in the JEDI :doc:`CharlieCloud <../jedi_environment/charliecloud>` and :doc:`Singularity <../jedi_environment/singularity>` containers so if you are running inside the container, there is no need to build them again.  If you are running outside of the containers and if you have not yet installed these packages on your system, then you may wish to uncomment those two lines.  Or, you may wish to install these packages yourself so you can comment these lines out in the future.  Be warned that can be a bit of a challenge if you are on an HPC system, for example, and you do not have write access to :code:`/usr/local`.  For more information on how to install these packages see our JEDI page on :doc:`ecbuild and cmake <../developer_tools/cmake>`.
 
 As described :doc:`there <../developer_tools/cmake>`, **eckit** and **fckit** are software utilities provided by ECMWF that are currently used by JEDI to read configuration files, handle error messages, configure MPI libraries, test Fortran code, call Fortran files from C++, and perform other general tasks.  Note that the eckit and fckit repositories identified are obtained directly from ECMWF.
 
@@ -167,11 +167,11 @@ Then, from that build directory, run :code:`ecbuild`, specifying the path to the
 
 Here we have used :code:`~/jedi/src` as our source directory and :code:`~jedi/build` as our build directory.  Feel free to change this as you wish, but just **make sure that your source and build directories are different**.  
 
-This should work for most bundles but if it doesn't then check in the bundle source directory to see if there are other **build scripts** you may need to run.  This is particularly true if you are running outside of the :ref:`JEDI Singularity Container <build_env>`.  These build scripts are customized for each bundle and instructions on how to use them can be found in the :code:`README` file in the top level of the bundle repository.
+This should work for most bundles but if it doesn't then check in the bundle source directory to see if there are other **build scripts** you may need to run.  This is particularly true if you are running outside of the JEDI :doc:`CharlieCloud <../jedi_environment/charliecloud>` and :doc:`Singularity <../jedi_environment/singularity>` containers.  These build scripts are customized for each bundle and instructions on how to use them can be found in the :code:`README` file in the top level of the bundle repository.
 
 .. warning::
    
-    **Some bundles may require you to run a build script prior to or in lieu of running ecbuild, particularly if you are running outside of the Singularity container.  Check the README file in the top directory of the bundle repository to see if this is necessary, particularly if you encounter problems running ecbuild, cmake, or ctest.**
+    **Some bundles may require you to run a build script prior to or in lieu of running ecbuild, particularly if you are running outside of the CharlieCloud and Singularity containers.  Check the README file in the top directory of the bundle repository to see if this is necessary, particularly if you encounter problems running ecbuild, cmake, or ctest.**
 
 After you enter the ecbuild command, remember to practice patience, dear `padawan <http://starwars.wikia.com/wiki/Padawan>`_.  The build process may take less than a minute for ufo-bundle but for some other bundles it can take twenty minutes or more, particularly if ecbuild has to retrieve a number of large restart files from a remote :doc:`Git LFS store <../developer_tools/gitlfs>` over a wireless network.
 
@@ -193,12 +193,16 @@ This will invoke the debug flags on the C++ and Fortran compilers and it will al
 
    ecbuild -- -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CXX_FLAGS="-Wfloat-equal -Wcast-align" ../src/ufo-bundle
 
-   
-Now let's say that you're working outside the Singularity container on an HPC system.  If that is the case, then you may have installed eckit in a location other than :code:`/usr/local`.  Ecbuild treats this information as an argument to CMake.  So, you would specify such a path as follows:    
+
+Let's say that you're working on an HPC system where you do not have the privileges to install Singularity.  If this is the case then we recommend that your first check to see if there are :doc:`JEDI modules <../jedi_environment/modules>` installed on your system.   If your system is listed on this modules documentation page then you can simply load the JEDI module as described there and you will have access to ecbuild, eckit, and other JEDI infrastructure.
+
+If your system is not one that is supported by the JEDI team, then a second option is to install :doc:`CharlieCloud <../jedi_environment/charliecloud>` in your home directory and run JEDI from within the Charliecloud container.
+
+A third option is for you to install eckit on your system manually (not recommended).  If you do this, then you may have to tell ecbuild where to find it with this command line option:
 
 .. code:: bash
 
-   ecbuild -- -DECKIT_PATH="$HOME/jedi/src/tools" ../src/ufo-bundle
+   ecbuild -- -DECKIT_PATH=<path-to-eckit> ../src/ufo-bundle
 
 For more information, enter :code:`ecbuild --help` and see our JEDI page on :doc:`ecbuild and cmake <../developer_tools/cmake>`.
 
