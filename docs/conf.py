@@ -47,8 +47,16 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'JEDI Documentation'
-copyright = '2018, Stephen Herbener'
-author = 'Stephen Herbener'
+copyright = '2018-2019, University Corporation for Atmospheric Research'
+author = [
+    'Maryam Abdi-Oskouei',
+    'Stephen Herbener',
+    'Daniel Holdaway'
+    'Mark Miesch',
+    'Anna Shlyaeva'
+    'Yannick Tremolet',
+    'Xin Zhang'
+    ]
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
