@@ -91,8 +91,8 @@ Now you are in a linux environment (CentoOS 7).  From here you can pull the JEDI
 * :ref:`Click here to proceed with the JEDI Charliecloud Container <build_charliejedi>`
 
 The choice is up to you.  Both the Singularity container and the Charliecloud container are built from the same Docker image file so they contain identical software.  The main advantage to using Charliecloud is that you do not need root privileges to run it.  But, if you use Vagrant this should not be a problem because you should have root privileges in your Vagrant VM.  You can even try both in the same virtual machine and see which one you prefer.  
-  
-Note that the Vagrant Virtual Machine we have built uses the CentOS 7 operating system.  However, no need to worry if you prefer ubuntu.  Both the Singularity container and the Charliecloud container run ubuntu.  So, if you work within the container, you will be in an ubuntu environment.
+
+Depending on which Vagrantfile you use, your VM may run either the ubuntu or the CentOS operating system.  However, you shouldn't need to be too concerned about this because you'll be working mostly in either the Singularity container or the Charliecloud container which both run ubuntu.  So, if you work within the container, you will be in an ubuntu environment regardless of which OS your vagrant VM is running.
 
 .. _vagrant-jedi:
 
