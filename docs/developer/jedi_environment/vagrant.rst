@@ -51,7 +51,6 @@ We at JCSDA provide a Vagrantfile that can be used to create a virtual machine t
 
     `Download the JEDI Vagrantfile here <http://data.jcsda.org/containers/Vagrantfile>`_
 
-
 Or, alternatively, you can retrieve it with
 
 .. code:: bash
@@ -65,6 +64,10 @@ Place this Vagrantfile in the home directory of your Vagrant VM.
 
    If you already have a Vagrant VM installed and you want to install a new one (particularly using a Vagrantfile in the same directory as before), then you may have to fully delete the previous VM first to avoid any conflicts.  Instructions on how to do this are provided in the :ref:`Deleting a Vagrant VM <vagrant-destroy>` section below. 
 
+.. note::
+
+   If you have problems with this JEDI Vagrantfile, there `an alternative Vagrantfile that you can download <http://data.jcsda.org/containers/Vagrantfile_centos>`_ that expands the disk storage using the :code:`disksize` plugin to Vagrant.  This also comes with Charliecloud and Singularity pre-installed.  After downloading this file, it's easiest to change its name to :code:`Vagrantfile` and then run :code:`vagrant up` again.  However, before trying this make sure that you either :ref:`destroy your previous VM <vagrant-destroy>` or create the new VM from a different directory and give it a different name (edit the Vagrantfile and search for **jedibox**). 
+   
 C: Launch your Virtual Machine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -379,6 +382,12 @@ However, even this might not delete the VM you want to delete.  Run :code:`vagra
     vagrant box remove centos/7	  
 
 ..or ubuntu or singularityware or whatever name is listed for the box you want to delete.
+
+In some cases it might also help to delete the hidden :code:`.vagrant` file that is created by vagrant in the same directory as your Vagrantfile.  So, from that directory, enter:
+
+.. code:: bash
+
+    rm -rf .vagrant
 
 Now, this should be sufficient for most situations.  Most users can stop here with confidence that they have deleted their unwanted VMs and have freed up the resources on their local computer.
 
