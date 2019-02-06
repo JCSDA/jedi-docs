@@ -88,7 +88,7 @@ So, when this command finishes, you can log into your virtual machine with
 Now you are in a linux environment (CentoOS 7).  From here you can pull the JEDI container of your choice,
 
 * :ref:`Click here to proceed with JEDI Singularity Container <build_env>`
-* :ref:`Click here to prceed with the JEDI Charliecloud Container <build_charliejedi>`
+* :ref:`Click here to proceed with the JEDI Charliecloud Container <build_charliejedi>`
 
 The choice is up to you.  Both the Singularity container and the Charliecloud container are built from the same Docker image file so they contain identical software.  The main advantage to using Charliecloud is that you do not need root privileges to run it.  But, if you use Vagrant this should not be a problem because you should have root privileges in your Vagrant VM.  You can even try both in the same virtual machine and see which one you prefer.  
   
