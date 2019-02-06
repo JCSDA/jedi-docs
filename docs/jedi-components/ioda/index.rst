@@ -6,3 +6,4 @@ IODA
    :maxdepth: 2
 
    introduction
+   class-structure
