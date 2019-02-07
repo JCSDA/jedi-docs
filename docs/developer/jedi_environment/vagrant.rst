@@ -51,7 +51,6 @@ We at JCSDA provide a Vagrantfile that can be used to create a virtual machine t
 
     `Download the JEDI Vagrantfile here <http://data.jcsda.org/containers/Vagrantfile>`_
 
-
 Or, alternatively, you can retrieve it with
 
 .. code:: bash
@@ -65,6 +64,10 @@ Place this Vagrantfile in the home directory of your Vagrant VM.
 
    If you already have a Vagrant VM installed and you want to install a new one (particularly using a Vagrantfile in the same directory as before), then you may have to fully delete the previous VM first to avoid any conflicts.  Instructions on how to do this are provided in the :ref:`Deleting a Vagrant VM <vagrant-destroy>` section below. 
 
+.. note::
+
+   If you have problems with this JEDI Vagrantfile, there `an alternative Vagrantfile that you can download <http://data.jcsda.org/containers/Vagrantfile_centos>`_ that expands the disk storage using the :code:`disksize` plugin to Vagrant.  This also comes with Charliecloud and Singularity pre-installed.  After downloading this file, it's easiest to change its name to :code:`Vagrantfile` and then run :code:`vagrant up` again.  However, before trying this make sure that you either :ref:`destroy your previous VM <vagrant-destroy>` or create the new VM from a different directory and give it a different name (edit the Vagrantfile and search for **jedibox**). 
+   
 C: Launch your Virtual Machine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -85,11 +88,11 @@ So, when this command finishes, you can log into your virtual machine with
 Now you are in a linux environment (CentoOS 7).  From here you can pull the JEDI container of your choice,
 
 * :ref:`Click here to proceed with JEDI Singularity Container <build_env>`
-* :ref:`Click here to prceed with the JEDI Charliecloud Container <build_charliejedi>`
+* :ref:`Click here to proceed with the JEDI Charliecloud Container <build_charliejedi>`
 
 The choice is up to you.  Both the Singularity container and the Charliecloud container are built from the same Docker image file so they contain identical software.  The main advantage to using Charliecloud is that you do not need root privileges to run it.  But, if you use Vagrant this should not be a problem because you should have root privileges in your Vagrant VM.  You can even try both in the same virtual machine and see which one you prefer.  
-  
-Note that the Vagrant Virtual Machine we have built uses the CentOS 7 operating system.  However, no need to worry if you prefer ubuntu.  Both the Singularity container and the Charliecloud container run ubuntu.  So, if you work within the container, you will be in an ubuntu environment.
+
+Depending on which Vagrantfile you use, your VM may run either the ubuntu or the CentOS operating system.  However, you shouldn't need to be too concerned about this because you'll be working mostly in either the Singularity container or the Charliecloud container which both run ubuntu.  So, if you work within the container, you will be in an ubuntu environment regardless of which OS your vagrant VM is running.
 
 .. _vagrant-jedi:
 
@@ -379,6 +382,12 @@ However, even this might not delete the VM you want to delete.  Run :code:`vagra
     vagrant box remove centos/7	  
 
 ..or ubuntu or singularityware or whatever name is listed for the box you want to delete.
+
+In some cases it might also help to delete the hidden :code:`.vagrant` file that is created by vagrant in the same directory as your Vagrantfile.  So, from that directory, enter:
+
+.. code:: bash
+
+    rm -rf .vagrant
 
 Now, this should be sufficient for most situations.  Most users can stop here with confidence that they have deleted their unwanted VMs and have freed up the resources on their local computer.
 
