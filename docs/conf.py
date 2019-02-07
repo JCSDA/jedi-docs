@@ -47,8 +47,16 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'JEDI Documentation'
-copyright = '2018, Stephen Herbener'
-author = 'Stephen Herbener'
+copyright = '2018-2019, University Corporation for Atmospheric Research'
+author = [
+    'Maryam Abdi-Oskouei',
+    'Stephen Herbener',
+    'Daniel Holdaway',
+    'Mark Miesch',
+    'Anna Shlyaeva',
+    'Yannick Tremolet',
+    'Xin Zhang'
+    ]
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -139,8 +147,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'JEDIDocumentation.tex', 'JEDI Documentation Documentation',
-     'Stephen Herbener', 'manual'),
+    (master_doc, 'JEDIDocumentation.tex', 'JEDI Documentation',
+     'JEDI Core Team', 'manual'),
 ]
 
 
@@ -149,8 +157,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'jedidocumentation', 'JEDI Documentation Documentation',
-     [author], 1)
+    (master_doc, 'jedidocumentation', 'JEDI Documentation',
+     author, 1)
 ]
 
 
@@ -160,8 +168,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'JEDIDocumentation', 'JEDI Documentation Documentation',
-     author, 'JEDIDocumentation', 'One line description of project.',
+    (master_doc, 'JEDIDocumentation', 'JEDI Documentation',
+     'JEDI Core Team', 'JEDIDocumentation', 'Joint Effort for Data assimilation Integration',
      'Miscellaneous'),
 ]
 

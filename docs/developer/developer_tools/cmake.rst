@@ -20,7 +20,7 @@ level testing category.
 We may need to go beyond CTest to address our large scale system testing that is geared
 more toward performance benchmarking and verifying functionality on HPC systems.
 
-`Ecbuild <https://github.com/UCAR/ecbuild>`_ is a set of CMake macros provided by the
+`Ecbuild <https://github.com/ecmwf/ecbuild>`_ is a set of CMake macros provided by the
 ECMWF that assist with the specification of the manufacturing processes.
 For example, ecbuild provides enhancement of CTest by linking in the
 `Boost test framework <https://www.boost.org/doc/libs/1_67_0/libs/test/doc/html/index.html>`_.
@@ -196,12 +196,11 @@ CMake also has tools that are useful for debugging.  In particular,  the :code:`
 ecbuild
 -------
 
-For now the ecbuild, eckit and fckit packages should be cloned and built from the
-`UCAR GitHub repositories <https://github.com/UCAR>`_.
-The UCAR repositories are simply snapshots of the ECMWF repositories, which at the time
-were private repositories.
-Recently, the ECMWF has made available public repositories for these tools, and we are
-planning on switching to those repositories in the near future.
+The JEDI software stack links directly to the public ecbuild, eckit, and fckit GitHub repositories
+provided by `ECMWF <https://github.com/ecmwf>`_.  In particular, public releases from these repositories
+have been cloned from GitHub, compiled, and included in the JEDI
+:doc:`Singularity <../jedi_environment/singularity>` and :doc:`Charliecloud <../jedi_environment/charliecloud>`
+containers.
 
 Ecbuild does enforce the restriction recommended above on building your project outside of the
 source directories.
@@ -210,7 +209,8 @@ Installing ecbuild
 ^^^^^^^^^^^^^^^^^^
 
 As before, the steps shown in this section are only necessary if you are working outside the
-:ref:`Singularity container <build_env>`.
+:doc:`Singularity <../jedi_environment/singularity>` and
+:doc:`Charliecloud <../jedi_environment/charliecloud>` containers.
 
 For all systems, you need to have CMake, eigen3, and boost installed before installing
 ecbuild.
@@ -252,10 +252,10 @@ the build directory will be $HOME/projects/ecbuild/build.
 
     # create the ecbuild clone and make sure you are on the master branch
     cd $HOME/projects
-    git clone https://github.com/UCAR/ecbuild.git     # clone from UCAR for now
+    git clone https://github.com/ecmwf/ecbuild.git
 
     cd ecbuild
-    git checkout master
+    git checkout 2.9.4 # check out the most recent release
 
     # create the build directory
     mkdir build
@@ -263,7 +263,7 @@ the build directory will be $HOME/projects/ecbuild/build.
 
     # install ecbuild
     cmake ..        # This assumes that you have write permission in /usr/local
-    make install
+    sudo make install
     
     # if you don't have permission to write into /usr/local
     cmake -DCMAKE_INSTALL_PREFIX=$HOME/tools ..
@@ -280,10 +280,10 @@ and the build directories are subdirectories of the clones called "build".
 
     # create the eckit clone
     cd $HOME/projects
-    git clone https://github.com/UCAR/eckit.git
+    git clone https://github.com/ecmwf/eckit.git
 
     cd eckit
-    git checkout master
+    git checkout 0.23.0 # check out the most recent public release
 
     # create the build directory
     mkdir build
@@ -294,18 +294,18 @@ and the build directories are subdirectories of the clones called "build".
     # Note the use of ecbuild in place of cmake
     #
     # If no write permission in /usr/local, add -DCMAKE_INSTALL_PREFIX=$HOME/tools
-    # to the ecbuild command.
+    # to the ecbuild command and omit the :code:`sudo` in the :code:`make install`.
     ecbuild ..
     make
     ctest
-    make install
+    sudo make install
 
     ######### Repeat for fckit ###########
     cd $HOME/projects
-    git clone https://github.com/UCAR/fckit.git
+    git clone https://github.com/ecmwf/fckit.git
 
     cd fckit
-    git checkout master
+    git checkout develop # as of Feb, 2019 this has required functionality that the public releases do not
 
     # create the build directory
     mkdir build
@@ -314,11 +314,11 @@ and the build directories are subdirectories of the clones called "build".
     # build, test, install fckit
     #
     # If no write permission in /usr/local, add -DCMAKE_INSTALL_PREFIX=$HOME/tools
-    # to the ecbuild command.
+    # to the ecbuild command and omit the :code:`sudo` in the :code:`make install`.
     ecbuild ..
     make
     ctest
-    make install
+    sudo make install
 
 
 Using ecbuild
