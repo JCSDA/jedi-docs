@@ -7,9 +7,9 @@ General Overview
 ----------------
 
 The Interface for Observation Data Access (IODA) component of JEDI provides the interfaces that bridge the external observation data to the components within JEDI that utilize those data, namely OOPS and UFO.
-As shown in :numref:`ioda-data-flow`, data flows in two directions through the IODA subsystem.
+As shown in :numref:`ioda-hlev-dflow`, data flows in two directions through the IODA subsystem.
 
-.. _ioda-data-flow:
+.. _ioda-hlev-dflow:
 .. figure:: images/IODA_Overview.png
    :height: 400px
    :align: center
@@ -45,7 +45,7 @@ During the execution of the DA run, the observation data and location meta data 
 JEDI Components that are Clients of IODA
 ----------------------------------------
 
-As seen in :numref:`ioda-data-flow`, the clients of IODA within the JEDI system are UFO and OOPS.
+As seen in :numref:`ioda-hlev-dflow`, the clients of IODA within the JEDI system are UFO and OOPS.
 UFO is responsible for computing the simulated observations, H(x), from the model fields.
 Therefore, UFO takes the observation location meta data from IODA, queries the model for the field values at those locations and then runs the corresponding forward operators to calculate H(x) at all of the observation locations.
 One task for OOPS is to run minimization which operates in part on the difference between the actual observations, y, and the simulated observations, H(x).
@@ -54,6 +54,6 @@ OOPS collects H(x) from UFO and y from IODA to form a departure, y - H(x), that 
 External Observation Data
 -------------------------
 
-The data centers (eg. NCEP, in :numref:`ioda-data-flow`) store observation data in a wide variety of formats.
+The data centers (eg. NCEP, in :numref:`ioda-hlev-dflow`) store observation data in a wide variety of formats.
 Because of this, the general idea in IODA is to convert these formats to a common format, the "IODA data store", to facilitate access by IODA.
 This way, the different manners is which JEDI may want to select, query, or distribute the observation data can be done through one API to the IODA data store format, as opposed to many API's to the various data center formats.

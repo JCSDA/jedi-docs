@@ -45,4 +45,17 @@ Each ObsVector is associated with a single ObsSpace that stores its values in th
 IODA Data Flow
 --------------
 
+During the execution of a DA run, observation data are read into multiple ObsSpace objects (according to observation type) forming the pieces of the y vector.
+Multiple ObsOperator objects are created that correspond to the ObsSpace objects for the purpose of calculating the simulated observations forming the pieces of the H(x) vector.
+The total y and H(x) vectors are assembled from the data presented by the multiple ObsSpace and ObsOperator objects by an OOPS object called Observer as show in :numref:`ioda-obj-dflow`.
 
+.. _ioda-obj-dflow:
+.. figure:: images/IODA_DataFlow.png
+   :height: 400px
+   :align: center
+
+   Data flow through IODA, UFO and OOPS objects
+
+At various points in the DA run, results such as H(x), O-A, or O-B (i.e., any quantity corresponding to a observation vector) can be stored into the multiple ObsSpace objects for subsequent writing out into a results file.
+An example for H(x) is shown in :numref:`ioda-obj-dflow` along the dashed line path.
+The data written into the results file can later be used for analysis of the DA run.
