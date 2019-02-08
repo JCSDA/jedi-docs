@@ -3,8 +3,8 @@
 IODA Introduction
 =======================
 
-General Overview
-----------------
+Overview
+--------
 
 The Interface for Observation Data Access (IODA) component of JEDI provides the interfaces that bridge the external observation data to the components within JEDI that utilize those data, namely OOPS and UFO.
 As shown in :numref:`ioda-hlev-dflow`, data flows in two directions through the IODA subsystem.
@@ -57,3 +57,6 @@ External Observation Data
 The data centers (eg. NCEP, in :numref:`ioda-hlev-dflow`) store observation data in a wide variety of formats.
 Because of this, the general idea in IODA is to convert these formats to a common format, the "IODA data store", to facilitate access by IODA.
 This way, the different manners is which JEDI may want to select, query, or distribute the observation data can be done through one API to the IODA data store format, as opposed to many API's to the various data center formats.
+After the DA run completes, it is often desired to analyze different aspects of that run.
+IODA will provide a diagnostics file for this purpose whose contents will be selectable via the DA run configuration.
+"O minus A" is an example of a quantity that could be saved in the diagnostics file.

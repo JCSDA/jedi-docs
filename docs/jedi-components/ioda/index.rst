@@ -7,3 +7,4 @@ IODA
 
    introduction
    class-structure
+   interface
