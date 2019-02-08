@@ -39,15 +39,15 @@ The ObsSpace, ObsOperator pairs tend to form according to observation type (e.g.
 This breaks the problem up into smaller more managable pieces, and facilitates the observation simulation since each observation type tends to require a different algorithm for its simulation.
 
 Note that there will exist multiple ObsVector objects for two reasons.
-First because of the multiple ObsSpace objects, and second because both actual observations (the y vector) and simulated observations (the H(x) vector).
+First because of the multiple ObsSpace objects, and second because both actual observations (the y vector) and simulated observations (the H(x) vector) are stored in ObsVectors.
 Each ObsVector is associated with a single ObsSpace that stores its values in the corresponding Obs Database (:numref:`ioda-classes`).
 
 IODA Data Flow
 --------------
 
-During the execution of a DA run, observation data are read into multiple ObsSpace objects (according to observation type) forming the pieces of the y vector.
-Multiple ObsOperator objects are created that correspond to the ObsSpace objects for the purpose of calculating the simulated observations forming the pieces of the H(x) vector.
-The total y and H(x) vectors are assembled from the data presented by the multiple ObsSpace and ObsOperator objects by an OOPS object called Observer as show in :numref:`ioda-obj-dflow`.
+The primary use of IODA in the JEDI system is to manage the actual observations in the y vector, and simulated observations in the H(x) vector.
+Both of these quantities are observation vectors which are stored in ObsVector objects.
+:numref:`ioda-obj-dflow` depicts the manner in which y and H(x) are presented to JEDI for use in the DA cost function. 
 
 .. _ioda-obj-dflow:
 .. figure:: images/IODA_DataFlow.png
@@ -56,6 +56,10 @@ The total y and H(x) vectors are assembled from the data presented by the multip
 
    Data flow through IODA, UFO and OOPS objects
 
-At various points in the DA run, results such as H(x), O-A, or O-B (i.e., any quantity corresponding to a observation vector) can be stored into the multiple ObsSpace objects for subsequent writing out into a results file.
-An example for H(x) is shown in :numref:`ioda-obj-dflow` along the dashed line path.
+Two OOPS Observations objects are created to hold the total y and H(x) vectors, and one Observer object is created to transform the x vector (from the model) into the H(x) vector.
+The Observations and Observer objects are how the rest of JEDI access the y and H(x) vectors.
+Note that the resulting H(x) from the set of ObsOperator objects is stored in an Observations object since H(x) is a type of observation vector.
+
+At various points in the DA run, results such as H(x), O-A, or O-B (i.e., any quantity corresponding to a observation vector) can be stored in an Observations object for subsequent writing out into a results file.
+An example for H(x) is shown in :numref:`ioda-obj-dflow` with the orange arrow pointing from the set of ObsSpace objects to the Obs Data file.
 The data written into the results file can later be used for analysis of the DA run.
