@@ -40,7 +40,7 @@ A prototype interface, using a common data organization (:numref:`ioda-inmem-sch
 
    Schematic view of the IODA in-memory represention
 
-Central to this scheme are the 2D arrays holding the osbervation data quantities (ObsValue, ObsError, H(x) in :numref:`ioda-inmem-schematic`).
+Central to this scheme are the 2D arrays holding the osbervation data quantities (ObsValue, ObsError, HofX in :numref:`ioda-inmem-schematic`).
 
 .. warning::
    The IODA interfaces are newly formed and under much development at the time of the writing of this documentation, and as such are subject to change.
