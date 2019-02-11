@@ -7,7 +7,7 @@ Overview
 --------
 
 The Interface for Observation Data Access (IODA) component of JEDI provides the interfaces that bridge the external observation data to the components within JEDI that utilize those data, namely OOPS and UFO.
-As shown in :numref:`ioda-hlev-dflow`, data flows in two directions through the IODA subsystem.
+As shown in :numref:`ioda-hlev-dflow`, data flow in two directions through the IODA subsystem.
 
 .. _ioda-hlev-dflow:
 .. figure:: images/IODA_Overview.png
@@ -19,7 +19,7 @@ As shown in :numref:`ioda-hlev-dflow`, data flows in two directions through the 
 Data stored in observation data "tanks" at different centers are extracted, loaded into memory and presented through an interface to the JEDI OOPS and UFO subsystems. 
 The DA run produces various results such as H(x), O-A, and O-B, which are (selectively) written out into files that can be used for plotting and other diagnostic purposes.
 
-The goal for IODA is to be able to handle an immense amount of data from the tanks (, left side) without overwhelming the DA run.
+The goal for IODA is to be able to handle an immense amount of data from the tanks (:numref:`ioda-hlev-dflow`, left side) without overwhelming the DA run.
 In addition, IODA needs to present observation data in different manners (e.g., spatially localized clusters of observations) for consumption by UFO and OOPS as well as write DA results in a format amenable to the user's diagnostics tools.
 
 Representation of Model and Observation Data
