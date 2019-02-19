@@ -31,7 +31,7 @@ This implementation is not quite in the form of the prototype architecture, but 
 Currently, we are using netcdf for the IODA Datafile format (subject to change) and we have a common netcdf writer in the ioda-converters with a collection of readers for the various observation data file formats.
 Work is in progress to evolve the current implementation to the prototype architecture.
 
-A prototype interface, using a common data organization (:numref:`ioda-inmem-schematic`, has been defined for access to observation data from the JEDI components OOPS and UFO.
+A prototype interface, using a common data organization (:numref:`ioda-inmem-schematic`), has been defined for access to observation data from the JEDI components OOPS and UFO.
 
 .. _ioda-inmem-schematic:
 .. figure:: images/IODA_InMemorySchematic.png
@@ -45,8 +45,8 @@ Central to this scheme are the 2D arrays holding the osbervation data quantities
 .. warning::
    The IODA interfaces are newly formed and under much development at the time of the writing of this documentation, and as such are subject to change.
 
-External Observation Data
--------------------------
+Interface to External Observation Data
+--------------------------------------
 
 Data Tanks
 ^^^^^^^^^^
@@ -54,12 +54,42 @@ Data Tanks
 Diagnostic Files
 ^^^^^^^^^^^^^^^^
 
-JEDI Components
----------------
+Interface to other JEDI Components
+----------------------------------
 
 OOPS Interface
 ^^^^^^^^^^^^^^
 
+.. _ioda_oops_methods:
+.. figure:: images/IodaOopsMethods.png
+   :height: 128px
+   :align: center
+
+.. _obs_vector_read:
+.. figure:: images/ObsVectorRead.png
+   :height: 88px
+   :align: center
+
+.. _obs_vector_save:
+.. figure:: images/ObsVectorSave.png
+   :height: 115px
+   :align: center
+
 UFO Interface
 ^^^^^^^^^^^^^
+
+.. _ioda_ufo_methods:
+.. figure:: images/IodaUfoMethods.png
+   :height: 95px
+   :align: center
+
+.. _obs_space_getdb:
+.. figure:: images/ObsSpaceGetDb.png
+   :height: 365px
+   :align: center
+
+.. _obs_space_putdb:
+.. figure:: images/ObsSpacePutDb.png
+   :height: 80px
+   :align: center
 
