@@ -26,7 +26,7 @@ At this point, we have a prototype architecture defined for the handling of file
 The intent of this architecture is to enable the use of one IODA file reader/writer implementation, namely the IodaIO class in :numref:`ioda-file-handling`.
 Using the single IodaIO class will make future maintenance much simpler, especially since we have not yet settled on the particular file format to use for the IODA Datafile piece.
 
-A first pass implementation of this architecture has been created in the `ioda-converters github repository <https://github.com/JCSDA/ioda-converters>`_.
+A first pass implementation of this architecture has been created in the `ioda-converters github repository <https://github.com/JCSDA/ioda-converters.git>`_.
 This implementation is not quite in the form of the prototype architecture, but is evolving toward that goal.
 Currently, we are using netcdf for the IODA Datafile format (subject to change) and we have a common netcdf writer in the ioda-converters with a collection of readers for the various observation data file formats.
 Work is in progress to evolve the current implementation to the prototype architecture.
@@ -58,6 +58,9 @@ Examples of Location Meta Data are quatities that describe each location such as
 The Variable Meta Data array is analogous to the Location Meta Data array, except that it holds meta data associated with the variables in the ObsData arrays.
 Examples include the variable names, and in the case of some instruments, channel numbers and channel freqencies.
 
+A first pass implementation of this interface has been implemented in the `ioda github repository <https://github.com/JCSDA/ioda.git>`_.
+This implementation is entirely in C++ and is successfully handling a small set of observation types including radiosonde, aircraft, ADO, AMSU-A, GNSSRO and Marine (SST, sea ice thickness and fraction, etc.) test cases.
+
 .. warning::
    The IODA interfaces are newly formed and under development at the time of the writing of this documentation, and as such are subject to change.
 
@@ -73,7 +76,7 @@ We are targeting to get these interfaces more clearly defined over the next one 
 Data Tanks
 ^^^^^^^^^^
 
-The means for converting observation data in the external data tanks into files that IODA can read are being handled by a number of scripts and programs in the `ioda-converters github repository <https://github.com/JCSDA/ioda-converters>`_.
+The means for converting observation data in the external data tanks into files that IODA can read are being handled by a number of scripts and programs in the `ioda-converters github repository <https://github.com/JCSDA/ioda-converters.git>`_.
 This code is relatively new and under active development.
 The goal is to organize the code into specific readers for each data tank format, all tied into a general IODA file writer, namely the IodaIO abstract interface class shown in :numref:`ioda-file-handling`.
 Organizing this way will allow us to experiment with differnt file formats, for the IODA datafile piece (:numref:`ioda-file-handling`), with minimal interference for the clients of the IodaIO class.
@@ -97,8 +100,8 @@ This will need to be addressed before getting into operational sized DA runs.
 
 .. _radiosonde_example_yaml:
 
-Example Radiosond YAML
-""""""""""""""""""""""
+Example Radiosonde YAML
+"""""""""""""""""""""""
 
 The following is the YAML for the UFO test "test_ufo_radiosonde_opr".
 
@@ -158,7 +161,7 @@ The variables being assimilated are selected in the YAML configuration using the
 In the :ref:`radiosonde_example_yaml` above, one variable "air_temperature" is being assimilated.
 In this case, the ObsVector will read only the air_temparature row from the ObsData table and load that into a vector.
 
-The ObsVector class contains the following two methods, :code:`read()` for creating a vector from an ObsData array in memory and :code:`save()` for storing a vector into an ObsData array.
+The ObsVector class contains the following two methods, :code:`read()` for filling a vector from an ObsData array in memory and :code:`save()` for storing a vector into an ObsData array.
 
 .. code:: C++
 
@@ -191,7 +194,7 @@ The ObsVector object yobs is constructed in the first line, and the third line c
 UFO Interface
 ^^^^^^^^^^^^^
 
-UFO access observation data via Fortran functions and subroutines belonging to the ObsSpace class.
+UFO accesses observation data via Fortran functions and subroutines belonging to the ObsSpace class.
 ObsSpace is implemented in C++ and a Fortran interface layer is provided for UFO.
 The following three routines are used to access observation data, and unlike the ObsVector methods in the :ref:`ioda-oops-interface` above, access is available to ObsData arrays and all Meta Data arrays.
 Reasons to access ObsData arrays from UFO would be for debugging purposes or for storing results, such as H(x), for post analysis.
