@@ -35,7 +35,7 @@ At the top of the structure in OOPS, there is a class, ObsSpaces (note the plura
 
 Each IODA ObsSpace object instantiated by OOPS ObsSpaces is associated with a corresponding UFO ObsOperator.
 The ObsOperator is the object that simulates observation values, H(x).
-The ObsSpace, ObsOperator pairs tend to form according to observation type (e.g., radiance, radiosonde, aircraft) that only work on those types as opposed to the entire set of observations.
+The ObsSpace, ObsOperator pairs form according to observation type (e.g., radiance, radiosonde, aircraft) that only work on those types as opposed to the entire set of observations.
 This breaks the problem up into smaller more managable pieces, and facilitates the observation simulation since each observation type tends to require a different algorithm for its simulation.
 
 Note that there will exist multiple ObsVector objects for two reasons.
