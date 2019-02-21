@@ -31,7 +31,7 @@ Multiple ObsSpace Objects
 -------------------------
 
 Note that the ObsSpace structure contains a set of ObsSpace objects (:numref:`ioda-classes`).
-At the top of the structre in OOPS, there is a class, ObsSpaces (note the plural), that contains a vector of pointers (data member "spaces\_") that reference a set of ObservationSpace objects with their corresponding IODA ObsSpace objects.
+At the top of the structure in OOPS, there is a class, ObsSpaces (note the plural), that contains a vector of pointers (data member "spaces\_") that reference a set of ObservationSpace objects with their corresponding IODA ObsSpace objects.
 
 Each IODA ObsSpace object instantiated by OOPS ObsSpaces is associated with a corresponding UFO ObsOperator.
 The ObsOperator is the object that simulates observation values, H(x).
