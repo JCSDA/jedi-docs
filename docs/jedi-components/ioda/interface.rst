@@ -40,9 +40,9 @@ A prototype interface, using a common data organization (:numref:`ioda-inmem-sch
 
    Schematic view of the IODA in-memory represention
 
-Central to this scheme are the 2D arrays holding the osbervation data quantities (ObsValue, ObsError, HofX in :numref:`ioda-inmem-schematic`).
-Each row of the ObsData array holds a particular vector of observation related data.
-The length of each row is equal to the number of unique locations (nlocs), (x,y,z,t) or (x,y,t) tuple values, and the number of rows correspond to the set of available observation variables (nvars).
+Central to this scheme are the 2D arrays holding the observation data quantities (ObsValue, ObsError, HofX in :numref:`ioda-inmem-schematic`).
+Each row of the ObsData array holds a particular vector of observation-related data.
+The length of each row is equal to the number of unique locations (nlocs), (x,y,z,t) or (x,y,t) tuple values, and the number of rows corresponds to the set of available observation variables (nvars).
 Note that an ObsVector can be constructed using a subset of the variables (rows) in the ObsData arrays.
 In the case of satellite data, the rows correspond to individual instrument channels.
 
