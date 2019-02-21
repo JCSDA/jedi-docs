@@ -35,8 +35,9 @@ Each location is an (x,y,z,t) tuple that defines where the corresponding observa
 
 .. note::
 
-   Some observation quantities, for example many satellite instrument measurements, result from a vertical (column) integration thus eliminating the vertical dimension.
-   In these cases, the location is an (x,y,t) tuple instead where the z component is not necessary.
+   Some observation quantities have been derived from integrations that effectively eliminate the vertical dimension (for example, satellite observations of radiance, brightness temperature, GNSSRO, etc.)
+   These observations typically have horizontal spatial and temporal coordinates (x,y,t) associated with each observation value.
+   In these cases, the location is an (x,y,t) tuple instead where the z component is not present.
 
 Because of the sparse nature of the observation data, these data are viewed within JEDI as 2D arrays (variables versus locations) and the associated location values (the x, y, z, t coordinate values) are treated as meta data.
 Location #1 is a particular combination of x, y, z, t values, location #2 is another combination of x, y, z, t values, and so forth.
@@ -56,7 +57,7 @@ External Observation Data
 
 The data centers (eg. NCEP, in :numref:`ioda-hlev-dflow`) store observation data in a wide variety of formats.
 Because of this, the general idea in IODA is to convert these formats to a common format, the "IODA data store", to facilitate access by IODA.
-This way, the different manners is which JEDI may want to select, query, or distribute the observation data can be done through one API to the IODA data store format, as opposed to many API's to the various data center formats.
+This way, the different manners in which JEDI may want to select, query, or distribute the observation data can be done through one API to the IODA data store format, as opposed to many API's to the various data center formats.
 After the DA run completes, it is often desired to analyze different aspects of that run.
 IODA will provide a diagnostics file for this purpose whose contents will be selectable via the DA run configuration.
 "O minus A" is an example of a quantity that could be saved in the diagnostics file.
