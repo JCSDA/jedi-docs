@@ -157,7 +157,7 @@ Current options for setting up the JEDI environment include (choose only one)
 Discover
 ---------
 
-      `Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.  On Discover, users can access the installed jedi modules by first entering
+      `Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.  On Discover, users can access the installed JEDI modules by first entering
 
 .. code :: bash
 
@@ -167,14 +167,14 @@ Current options for setting up the JEDI environment include (choose only one)
 
 .. code :: bash
 
-   module load apps/jedi/gcc/7.3          # GNU v7.3.0 compiler suite
-   module load apps/jedi/intel/17.0.7.259 # Intel v17.0.7.259 compiler suite
+   module load apps/jedi/gcc-7.3          # GNU v7.3.0 compiler suite
+   module load apps/jedi/intel-17.0.7.259 # Intel v17.0.7.259 compiler suite
 
 * Run ecbuild with the following option to provide the correct path for :code:`MPIEXEC`
 
 .. code:: bash
 
-    ecbuild -DMPIEXEC=$MPIEXEC <path_of_the_jedi_code>
+    ecbuild -DMPIEXEC=$MPIEXEC <path_of_the_jedi_source_code>
 
 * Use up to 12 MPI tasks to speed up the compilation
 
