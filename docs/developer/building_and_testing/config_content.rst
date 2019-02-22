@@ -56,6 +56,8 @@ Often the largest section of the configuration file, this describes one or more 
 * **ObsBias**: Used to specify the Bias correction
 * **GeoVaLs**: Identifies simulated ufo output files and other parameters that are used for testing
 
+Here is an :ref:`example YAML file <radiosonde_example_yaml>` showing how to specify the creation of an output file from IODA.
+
 Assimilation Window
 ^^^^^^^^^^^^^^^^^^^^
 

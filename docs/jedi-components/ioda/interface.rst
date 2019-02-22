@@ -61,17 +61,13 @@ Examples include the variable names, and in the case of some instruments, channe
 A first pass implementation of this interface has been implemented in the `ioda github repository <https://github.com/JCSDA/ioda.git>`_.
 This implementation is entirely in C++ and is successfully handling a small set of observation types including radiosonde, aircraft, ADO, AMSU-A, GNSSRO and Marine (SST, sea ice thickness and fraction, etc.) test cases.
 
-.. warning::
-   The IODA interfaces are newly formed and under development at the time of the writing of this documentation, and as such are subject to change.
-
-
 .. _int-ext-obs-data:
 
 Interfaces to External Observation Data
 ---------------------------------------
 
 These interfaces are under heavy development and currently not well defined.
-We are targeting to get these interfaces more clearly defined over the next one to two months.
+We are working with data providers to get these interfaces more clearly defined over the next one to two months.
 
 Data Tanks
 ^^^^^^^^^^
@@ -84,7 +80,7 @@ Organizing this way will allow us to experiment with differnt file formats, for 
 Diagnostic Files
 ^^^^^^^^^^^^^^^^
 
-At this point, the diagnostic file type and data organization are not settled.
+At this point, we are actively investigating the best option for the diagnostic file type and data organization in IODA.
 We are using the same data organization as the IODA input file which currently is a netcdf file.
 As the requirements for downstream diagnostic tools get clarified, the file type and data organization are subject to change.
 
@@ -145,6 +141,8 @@ However, if there are 4 process elements, then the output will appear in the fol
     Data/sondes_obs_2018041500_m_out_0002.nc4
     Data/sondes_obs_2018041500_m_out_0003.nc4
 
+More details about constructing and processing YAML configuration files can be found in :doc:`/developer/building_and_testing/config_content` and :doc:`/developer/building_and_testing/configuration`.
+
 Interfaces to other JEDI Components
 -----------------------------------
 
@@ -158,7 +156,7 @@ OOPS Interface
 
 OOPS accesses observation data via C++ methods belonging to the ObsVector class.
 The variables being assimilated are selected in the YAML configuration using the :code:`variables` sub-keyword under the :code:`ObsType` keyword.
-In the :ref:`radiosonde_example_yaml` above, one variable "air_temperature" is being assimilated.
+In the :ref:`radiosonde example <radiosonde_example_yaml>` above, one variable "air_temperature" is being assimilated.
 In this case, the ObsVector will read only the air_temparature row from the ObsData table and load that into a vector.
 
 The ObsVector class contains the following two methods, :code:`read()` for filling a vector from an ObsData array in memory and :code:`save()` for storing a vector into an ObsData array.
@@ -169,7 +167,7 @@ The ObsVector class contains the following two methods, :code:`read()` for filli
    void read(const std::string &);
    void save(const std::string &) const;
 
-* The :code:`std::string` argurments are the names of the ObsData array that is to be accessed.
+* The :code:`std::string` arguments are the names of the ObsData array that is to be accessed.
 
 Following is an example of reading into an observation vector.
 Note that the ObsVector object yobs\_ has already been constructed which included the allocation of the memory to store the observation data coming from the :code:`read()` method.
@@ -245,7 +243,7 @@ Following is an example from the CRTM radiance simulator, where meta data from t
    deallocate(TmpVar)
 
 
-An example for storing the results of a QC background check is show below.
+An example for storing the results of a QC background check is shown below.
 Note that the storage for "flags" has been allocated and "flags" has been filled with the background check results prior to this code.
 
 .. code:: Fortran
