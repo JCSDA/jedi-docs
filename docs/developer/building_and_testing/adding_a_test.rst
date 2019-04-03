@@ -31,7 +31,7 @@ What MyClass.h **Should** Contain
 
 As a prelude to the steps that follow, we note that the main purpose of :code:`test/mydir/MyClass.h` is to define :code:`test::MyClass` as a sub-class of :code:`oops::Test`.  As a sub-class of :code:`oops::Test`, :code:`test::MyClass` will also be a sub-class of :code:`oops::Application`.  That is, it will be an Application object that can be executed by :ref:`passing it to an oops::Run object <init-test>`.  In addition to declaring and defining :code:`test::MyClass`, our file might also define a :code:`MyClassFixture` class to help with accessing the configuration file (Step 2).  Necessary components of :code:`test/mydir/MyClass.h` include one or more functions that define the unit tests as well as a :code:`register_tests()` method within :code:`test::MyClass` that adds these tests to the master test suite.
 
-Since we'll be building off of :code:`oops::Test` and the eckit unit test suite, one necessary item in the header of our MyClass.h file includes:
+Since we'll be building off of :code:`oops::Test` and the eckit unit test suite, one necessary item in the header of our MyClass.h file is:
 
 .. code:: C++
 
@@ -234,7 +234,7 @@ Finally, at long last, you can register your test with CTest.  We can do this wi
                   ARGS    "testinput/interfaces.yaml"
                   LIBS    qg )
 
-The TARGET option defines the name of the test.  The use of TARGET, as opposed to COMMAND, tells CMake to compile the executable before running it.  So, this requires that we specify the executable with the SOURCES argument, as shown.
+The TARGET option defines the name of the test.  The use of TARGET, as opposed to COMMAND, tells CMake to compile the executable before running it. This requires that we specify the executable with the SOURCES argument, as shown.
 
 The configuration file is specified using the ARGS argument to :code:`ecbuild_add_test()`.  This will be implemented as a command-line argument to the executable as described in :ref:`Manual Execution <manual-testing>`.  The LIBS argument specifies the relevant source code through a previous call to :code:`ecbuild_add_library()`.  
 
