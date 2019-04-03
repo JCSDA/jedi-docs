@@ -29,21 +29,20 @@ If you're still in this section, read on for some tips on how to write the appli
 What MyClass.h **Should** Contain
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As a prelude to the steps that follow, we note that the main purpose of :code:`test/mydir/MyClass.h` is to define :code:`test::MyClass` as a sub-class of :code:`oops::Test`.  As a sub-class of :code:`oops::Test`, :code:`test::MyClass` will also be a sub-class of :code:`oops::Application`.  That is, it will be an Application object that can be executed by :ref:`passing it to an oops::Run object <init-test>`.  In addition to declaring and defining :code:`test::MyClass`, our file might also define a :code:`MyClassFixture` class to help with accessing the configuration file (Step 2).  Necessary components of :code:`test/mydir/MyClass.h` include one or more functions that define the unit tests as well as a :code:`register_tests()` method within :code:`test::MyClass` that adds these tests to the Boost master test suite.
+As a prelude to the steps that follow, we note that the main purpose of :code:`test/mydir/MyClass.h` is to define :code:`test::MyClass` as a sub-class of :code:`oops::Test`.  As a sub-class of :code:`oops::Test`, :code:`test::MyClass` will also be a sub-class of :code:`oops::Application`.  That is, it will be an Application object that can be executed by :ref:`passing it to an oops::Run object <init-test>`.  In addition to declaring and defining :code:`test::MyClass`, our file might also define a :code:`MyClassFixture` class to help with accessing the configuration file (Step 2).  Necessary components of :code:`test/mydir/MyClass.h` include one or more functions that define the unit tests as well as a :code:`register_tests()` method within :code:`test::MyClass` that adds these tests to the master test suite.
 
-Since we'll be building off of :code:`oops::Test` and the Boost unit test suite, some necessary items in the header of our MyClass.h file include:
+Since we'll be building off of :code:`oops::Test` and the eckit unit test suite, one necessary item in the header of our MyClass.h file includes:
 
 .. code:: C++
 
-   #include <boost/test/unit_test.hpp>
-   #include "oops/runs/Test.h"
-
+   #define ECKIT_TESTING_SELF_REGISTER_CASES 0
+  
 And the contents of the file should be encapsulated within the :code:`test` namespace, to distinguish it from the corresponding class of the same name in the :code:`src` directory.
    
 What MyClass.h **Should not** Contain
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As described :ref:`elsewhere <init-test>`, the unit tests are initialized and executed by means of the :code:`execute()` method in :code:`oops::Test`.  As a sub-class of :code:`oops::Test`, the :code:`test::MyClass` object will have access to this method and it is best **not** to re-define it.  Doing so may disrupt how Boost executes the tests.
+As described :ref:`elsewhere <init-test>`, the unit tests are initialized and executed by means of the :code:`execute()` method in :code:`oops::Test`.  As a sub-class of :code:`oops::Test`, the :code:`test::MyClass` object will have access to this method and it is best **not** to re-define it.  Doing so may disrupt how eckit executes the tests.
 
 
 Step 2: Define A Test Fixture
@@ -94,38 +93,43 @@ Step 3: Define Your Unit Tests
 
 Now the next step would be to define the unit tests themselves as functions within :code:`test/mydir/MyClass.h`.  As a guide you can use the illustrative example in :ref:`Anatomy of a Unit Test <unit-test>` or the many examples to be found in :code:`oops/src/test/interface`.    The possibilites are endless, but just remember two things:
 
-   1. Include one or more calls to :ref:`Boost check functions <unit-test>`
+   1. Include one or more calls to :ref:`eckit check functions <unit-test>`
    2. Use your test fixture to create objects based on the information in the configuration file
 
-Step 4: Register your Unit Tests with Boost
+Step 4: Register your Unit Tests with eckit
 -------------------------------------------
 
-In order for Boost to run your tests, you have to generate a :ref:`Boost test suite <init-test>`.  This is achieved by means of the :code:`register_tests()` method of :code:`test::MyClass` and as this :code:`test::Increment` example (from (:code:`oops/src/test/interface/Increment.h`) demonstrates, there is little else needed to define the class:
+In order for eckit to run your tests, you have to :ref:`register <init-test>` each individual test. This is achieved by means of the :code:`register_tests()` method of :code:`test::MyClass` and as this :code:`test::Increment` example (from (:code:`oops/src/test/interface/Increment.h`) demonstrates, there is little else needed to define the class:
 
 .. code:: C++
+  template <typename MODEL> class Increment : public oops::Test {
+   public:
+    Increment() {}
+    virtual ~Increment() {}
+   private:
+    std::string testid() const {return "test::Increment<" + MODEL::name() + ">";}
 
-   template <typename MODEL> class Increment : public oops::Test {
-    public:
-     Increment() {}
-     virtual ~Increment() {}
-    private:
-     std::string testid() const {return "test::Increment<" + MODEL::name() + ">";}
+    void register_tests() const {
+      std::vector<eckit::testing::Test>& ts = eckit::testing::specification();
 
-     void register_tests() const {
-       boost::unit_test::test_suite * ts = BOOST_TEST_SUITE("interface/Increment");
+      ts.emplace_back(CASE("interface/Increment/testIncrementConstructor")
+        { testIncrementConstructor<MODEL>(); });
+      ts.emplace_back(CASE("interface/Increment/testIncrementCopyConstructor")
+        { testIncrementCopyConstructor<MODEL>(); });
+      ts.emplace_back(CASE("interface/Increment/testIncrementTriangle")
+        { testIncrementTriangle<MODEL>(); });
+      ts.emplace_back(CASE("interface/Increment/testIncrementOpPlusEq")
+        { testIncrementOpPlusEq<MODEL>(); });
+      ts.emplace_back(CASE("interface/Increment/testIncrementDotProduct")
+        { testIncrementDotProduct<MODEL>(); });
+      ts.emplace_back(CASE("interface/Increment/testIncrementAxpy")
+        { testIncrementAxpy<MODEL>(); });
+      ts.emplace_back(CASE("interface/Increment/testIncrementInterpAD")
+        { testIncrementInterpAD<MODEL>(); });
+      }
+    };
 
-       ts->add(BOOST_TEST_CASE(&testIncrementConstructor<MODEL>));
-       ts->add(BOOST_TEST_CASE(&testIncrementCopyConstructor<MODEL>));
-       ts->add(BOOST_TEST_CASE(&testIncrementTriangle<MODEL>));
-       ts->add(BOOST_TEST_CASE(&testIncrementOpPlusEq<MODEL>));
-       ts->add(BOOST_TEST_CASE(&testIncrementDotProduct<MODEL>));
-       ts->add(BOOST_TEST_CASE(&testIncrementAxpy<MODEL>));
-
-       boost::unit_test::framework::master_test_suite().add(ts);
-     }
-   };
-
-So, we would proceed by defining :code:`test::MyClass` in a similar way.  Just specify the proper directory in the BOOST_TEST_SUITE() function (relative to the :code:`test` directory) and add each of your test functions one by one using BOOST_TEST_CASE() as shown.
+So, we would proceed by defining :code:`test::MyClass` in a similar way.  Just specify the test object (here :code:`ts`) and add each of your test functions one by one using :code:`emplace_back` as shown.
 
 Then no more action is required for :code:`test/mydir/MyClass.h`; Our :code:`test::MyClass::register_tests()` method will be executed automatically when we pass :code:`test::MyClass` as an application to :code:`oops::Run` (see :ref:`Initialization and Execution of Unit Tests <init-test>`). 
 
@@ -226,12 +230,11 @@ Finally, at long last, you can register your test with CTest.  We can do this wi
 .. code:: CMake
 
    ecbuild_add_test( TARGET  test_qg_state
-                  BOOST
                   SOURCES executables/TestState.cc
                   ARGS    "testinput/interfaces.yaml"
                   LIBS    qg )
 
-The TARGET option defines the name of the test and the BOOST option tells CMake that this is a Boost unit test suite.  The use of TARGET, as opposed to COMMAND, tells CMake to compile the executable before running it.  So, this requires that we specify the executable with the SOURCES argument, as shown.
+The TARGET option defines the name of the test.  The use of TARGET, as opposed to COMMAND, tells CMake to compile the executable before running it.  So, this requires that we specify the executable with the SOURCES argument, as shown.
 
 The configuration file is specified using the ARGS argument to :code:`ecbuild_add_test()`.  This will be implemented as a command-line argument to the executable as described in :ref:`Manual Execution <manual-testing>`.  The LIBS argument specifies the relevant source code through a previous call to :code:`ecbuild_add_library()`.  
 
@@ -240,7 +243,6 @@ So, our example would look something like this:
 .. code:: CMake
 
    ecbuild_add_test( TARGET  test_myrepo_myclass
-                  BOOST
                   SOURCES executables/TestMyClass.cc
                   ARGS    "../testinput/myclass.yaml"
                   LIBS    myrepo )
@@ -270,7 +272,7 @@ You would add your test to the appropriate CMakeLists.txt file with :code:`ecbui
                        testoutput/truth.test
                   DEPENDS qg_forecast.x )
 
-Here we include a TYPE SCRIPT argument in place of BOOST and we specify :code:`command.sh` as the command to be executed.  The ARGS argument now includes the two files to be compared, namely the output of our application :code:`${CMAKE_BINARY_DIR}/bin/qg_forecast.x testinput/truth.yaml` (set off by quotes) and our reference file, :code:`testoutput/truth.test`.  We include the executable application in the DEPENDS argument to make sure that CMake knows it needs to compile this application before running the test.
+Here we include a TYPE SCRIPT argument and we specify :code:`command.sh` as the command to be executed.  The ARGS argument now includes the two files to be compared, namely the output of our application :code:`${CMAKE_BINARY_DIR}/bin/qg_forecast.x testinput/truth.yaml` (set off by quotes) and our reference file, :code:`testoutput/truth.test`.  We include the executable application in the DEPENDS argument to make sure that CMake knows it needs to compile this application before running the test.
 
 However, before you add an Application test we must warn you :ref:`again <app-testing>` that the :code:`compare.sh` script may run into problems if you run your application on multiple MPI threads.  We are currently working on a more robust framework for Application testing.
 

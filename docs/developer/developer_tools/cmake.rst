@@ -21,10 +21,7 @@ We may need to go beyond CTest to address our large scale system testing that is
 more toward performance benchmarking and verifying functionality on HPC systems.
 
 `Ecbuild <https://github.com/ecmwf/ecbuild>`_ is a set of CMake macros provided by the
-ECMWF that assist with the specification of the manufacturing processes.
-For example, ecbuild provides enhancement of CTest by linking in the
-`Boost test framework <https://www.boost.org/doc/libs/1_67_0/libs/test/doc/html/index.html>`_.
-Along with ecbuild we are using two ECMWF libraries called
+ECMWF that assist with the specification of the manufacturing processes. Along with ecbuild we are using two ECMWF libraries called
 `eckit <https://github.com/ecmwf/eckit>`_ and `fckit <https://github.com/ecmwf/fckit>`_.
 Eckit is a C++ library that provides utilites including logging, MPI, configuration
 file (JSON, YAML) parsing and math functions.
@@ -212,8 +209,7 @@ As before, the steps shown in this section are only necessary if you are working
 :doc:`Singularity <../jedi_environment/singularity>` and
 :doc:`Charliecloud <../jedi_environment/charliecloud>` containers.
 
-For all systems, you need to have CMake, eigen3, and boost installed before installing
-ecbuild.
+For all systems, you need to have CMake, eigen3 installed before installing ecbuild.
 To install these on the Mac:
 
 .. code:: bash
@@ -221,23 +217,7 @@ To install these on the Mac:
     brew install cmake              # as shown above
     brew install eigen              # this will install eigen3
 
-    brew install --cc=gcc-7 boost   # --cc tells brew to compile C/C++ using gcc version 7
-
-The boost libraries will not have the proper names for routines (linking won't work) unless
-they are built with the same gcc version that will be used for compiling JEDI projects.
-On the Mac for this example, gcc version 7 is being used for all compiling.
-If, for example, your Mac has gcc version 6, then the brew command in the example code above
-should be changed to :code:`brew install --cc=gcc-6 boost`.
-
-.. note::
-  Gory details about the boost install: The issue is in the name mangling of the C++
-  routines.
-  The manner in which names are mangled changes with different C++ standards
-  (C++03, C++11, etc.).
-  Different versions of gcc default to different C++ standards, so the best thing to
-  do is just force the boost compile to use the same version that subsequent
-  compiles will use so that you don't have to worry about which C++ standard is
-  being used.
+JEDI projects use Boost header-only libraries and building Boost is not required.  
 
 For Windows and Linux systems, see the `CMake downloads website <https://cmake.org/download/>`_,
 `Eigen website <http://eigen.tuxfamily.org/>`_ and

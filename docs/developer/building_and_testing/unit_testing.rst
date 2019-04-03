@@ -119,17 +119,17 @@ What lies "*under the hood*" when you run **ctest**?  Currently, there are two t
 
 This does not include other types of system and acceptance testing that may be run outside of the ctest framework, by individual developers and testers.  Integration and system tests are refereed to as **Application tests** for reasons that will become clear in the :ref:`next section <test-apps>`.   
 
-**Unit tests** are currently implemented in JEDI using the `Boost C++ libraries <https://www.boost.org>`_.   In particular, we use the extensive `Boost Test Library <https://www.boost.org/doc/libs/1_66_0/libs/test/doc/html/index.html>`_ for initializing and organizing our suite of unit tests, and for generating appropriate status and error messages.  :ref:`See below <init-test>` for further details on how Boost is implemented and used.
+**Unit tests** are currently implemented in JEDI using eckit unit testing framework for initializing and organizing our suite of unit tests, and for generating appropriate status and error messages.  :ref:`See below <init-test>` for further details on how tests are implemented.
 
 Unit testing generally involves evaluating one or more Boolean expressions during the execution of some particular component or components of the code.  For example, one can read in a model state from an input file and then check whether some measure of the State norm agrees with a known value to within some specified tolerance.  Or, one can test whether a particular variable is positive (such as temperature or density) or whether a particular function executes without an error.
 
-By contrast, **Application tests** check the operation of some application as a whole.  Some may make use of Boost Boolean tests but most focus on the output that these applications generate.  For example, one may wish to run a 4-day forecast with a particular model and initial condition and then check to see that the result of the forecast matches a well-established solution.  This is currently done by writing the output of the test to a file (typically a text file) and comparing it to an analogous output file from a previous execution of the test.  Such reference files are included in many JEDI repositories and can generally be found in a :code:`test/testoutput` subdirectory.
+By contrast, **Application tests** check the operation of some application as a whole.  Some may make use of eckit Boolean tests but most focus on the output that these applications generate.  For example, one may wish to run a 4-day forecast with a particular model and initial condition and then check to see that the result of the forecast matches a well-established solution.  This is currently done by writing the output of the test to a file (typically a text file) and comparing it to an analogous output file from a previous execution of the test.  Such reference files are included in many JEDI repositories and can generally be found in a :code:`test/testoutput` subdirectory.
 
 Comparisons between output files are currently done by means of the **compare.sh** bash script which can be found in the :code:`test` subdirectory in many JEDI repositories.  This script uses standard unix parsing commands such as :code:`grep` and :code:`diff` to assess whether the two solutions match.  For further details see the section on :ref:`Integration and System testing <app-testing>` below.
 
 .. warning::
 
-   **Both the Boost libraries and the compare.sh testing procedure are provisional and are likely to be phased out in the future in favor of other options.  So, please do not add any Boost functionality that is not already present.**
+  **The compare.sh testing procedure is provisional and is likely to be modified in the future.**
 
 As mentioned above, each JEDI bundle has its own suite of tests and you can list them (without running them) by entering this from the build directory:
 
@@ -143,10 +143,9 @@ With few exceptions, all JEDI repositories contain a :code:`test` directory that
 
 Within each :code:`test` directory you will find a file called :code:`CMakeLists.txt`.  This is where each test is added, one by one, to the suite of tests that is executed by **ctest**.  As described in the `CMake documentation <https://cmake.org/documentation/>`_, this is ultimately achieved by repeated calls to the CMake :code:`add_test()` command.
 
-However, the :doc:`ecbuild package <../developer_tools/cmake>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`.  Thus, unit tests are added using the :code:`BOOST` argument to :code:`ecbuild_add_test()` and Application tests are added by specifying :code:`TYPE SCRIPT` and :code:`COMMAND "compare.sh"`.
-For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
+However, the :doc:`ecbuild package <../developer_tools/cmake>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`. Application tests are added by specifying :code:`TYPE SCRIPT` and :code:`COMMAND "compare.sh"` to :code:`ecbuild_add_test()`. For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
 
-Since it relies on the net result of an application, each Application test is typically associated with a single **ctest** excecutable.  However, applications of type :code:`oops::Test` (see :ref:`next section <test-apps>`) will typically execute multiple unit tests for each executable, or in other words each item in the ctest suite.  So, in this sense, the suite of unit tests is nested within each of the individual tests defined by **ctest**.  And, it is this nested suite of unit tests that is currently managed with Boost (see :ref:`below <init-test>`).
+Since it relies on the net result of an application, each Application test is typically associated with a single **ctest** excecutable.  However, applications of type :code:`oops::Test` (see :ref:`next section <test-apps>`) will typically execute multiple unit tests for each executable, or in other words each item in the ctest suite.  So, in this sense, the suite of unit tests is nested within each of the individual tests defined by **ctest**.  And, it is this nested suite of unit tests. (see :ref:`below <init-test>`).
 
 
 .. _test-apps:
@@ -213,27 +212,9 @@ Second, as an application, a :code:`test::State<Model>` object also has an :code
 
 The :code:`execute()` method for an :code:`oops::Test` is defined in the
 file :code:`oops/src/oops/runs/Test.h`.  The main purpose of this routine is
-to intialize and run the suite of unit tests.  It achieves this by first
-accessing the :doc:`configuration file <configuration>`.
+to intialize and run the suite of unit tests. 
 
-In particular, the code searches the :doc:`configuration file <configuration>` for a variable named
-**test_framework_runtime_config** and then retrieves it using the :code:`getString()` method of the
-:code:`eckit::Configuration` class:
-
-.. code:: C++
-
-    std::string args = config.getString("test_framework_runtime_config");
-
-This configuration variable contains command-line options that are ultimately passed to the Boost test library.
-A common option (as it appears in the configuration file) is 
-
-.. code:: YAML
-
-      "test_framework_runtime_config": "--log_level=test_suite",
-
-This tells Boost to report when each unit test starts and finishes, along with other information such as which tests failed.  For other options, see the :code:`log_level` parameter in the `documentation for the Boost Test Library <https://www.boost.org/doc/libs/1_66_0/libs/test/doc/html/index.html>`_.
-
-The :code:`execute()` method in each :code:`oops::Test` object then proceeds to register the tests with :code:`oops::Test::register_tests()` and run them with a call to Boost's :code:`unit_test_main()` function (:code:`argc` and :code:`argv` are parsed from the :code:`args` variable above):    
+The :code:`execute()` method in each :code:`oops::Test` object then proceeds to register the tests with :code:`oops::Test::register_tests()` and run them with a call to eckit's :code:`run_tests()` function (:code:`argc` and :code:`argv` are parsed from the :code:`args` variable above):    
 
 .. code:: C++      
       
@@ -241,7 +222,7 @@ The :code:`execute()` method in each :code:`oops::Test` object then proceeds to 
       Log::trace() << "Registering the unit tests" << std::endl;
       register_tests();
       Log::trace() << "Running the unit tests" << std::endl;
-      int result = boost::unit_test::unit_test_main(&init_unit_test, argc, argv);
+      int result = eckit::testing::run_tests(argc, argv, false);
       Log::trace() << "Finished running the unit tests" << std::endl;
       Log::error() << "Finished running the unit tests, result = " << result << std::endl;
 
@@ -250,17 +231,16 @@ So, the real difference between different :code:`oops::Test` objects is encapsul
 In the case of :code:`test::State<MODEL>` (which you may recall from the previous section is a sub-class of :code:`oops::Test`), this method is defined as follows (see :code:`oops/src/test/interface/State.h`):
 
 .. code:: C++
-	  
   void register_tests() const {
-    boost::unit_test::test_suite * ts = BOOST_TEST_SUITE("interface/State");
+    std::vector<eckit::testing::Test>& ts = eckit::testing::specification();
 
-    ts->add(BOOST_TEST_CASE(&testStateConstructors<MODEL>));
-    ts->add(BOOST_TEST_CASE(&testStateInterpolation<MODEL>));
-
-    boost::unit_test::framework::master_test_suite().add(ts);
+    ts.emplace_back(CASE("interface/State/testStateConstructors")
+      { testStateConstructors<MODEL>(); });
+    ts.emplace_back(CASE("interface/State/testStateInterpolation")
+      { testStateInterpolation<MODEL>(); });
   }
 
-This is where the Boost unit test suite is actually initiated: A :code:`test_suite` object is created by calling :code:`BOOST_TEST_SUITE()`, tests are added through successive calls to :code:`BOOST_TEST_CASE()` and then the suite is added to the master test suite with :code:`master_test_suite().add()`.
+This is where the eckit unit test suite is actually initiated: A :code:`ts` object is created by calling :code:`specification()`, tests are added to testing suite :code:`ts` by :code:`emplace_back`.
 
 Note that all this occurs within the :code:`test::State<MODEL>` class template so there will be a different instance of each of these unit tests for each model.  So, our example application :code:`test_qg_state` will call :code:`test::State<qg:QgTraits>::register_tests()` whereas other models and other applications (as defined in other sub-classes of :code:`oops::Test` - see :ref:`above <test-apps>`) will register different unit tests.
 
@@ -271,48 +251,46 @@ So, in short, members of the **ctest** test suite are added by means of :code:`e
 Anatomy of a Unit Test
 ----------------------
 
-Let's continue to use :code:`test_qg_state` as an example in order to illustrate how unit tests are currently implemented in JEDI.  As described in the previous two sections, the execution of this test (a single test from the perspective of **ctest**) will call :code:`test::State<qg:QgTraits>::register_tests()` to register a suite of unit tests and it will call :code:`boost::unit_test::unit_test_main()` to run them.
+Let's continue to use :code:`test_qg_state` as an example in order to illustrate how unit tests are currently implemented in JEDI.  As described in the previous two sections, the execution of this test (a single test from the perspective of **ctest**) will call :code:`test::State<qg:QgTraits>::register_tests()` to register a suite of unit tests and it will call :code:`eckit::testing::run_tests()` to run them.
 
 As demonstrated in the previous section, this particular suite of unit tests includes two members, namely :code:`testStateConstructors<MODEL>()` and :code:`TestStateInterpolation<MODEL>()`, with :code:`MODEL` instantiated as :code:`qg:QgTraits`.  What happens when we run one of these unit tests?
 
 Here we will focus on the first, :code:`TestStateConstructors<MODEL>()`.  Both are defined in :code:`oops/src/test/interface/State.h`, where you will find this code segment:
 
 .. code:: C++
+  template <typename MODEL> void testStateConstructors() {
+    typedef StateFixture<MODEL>   Test_;
+    typedef oops::State<MODEL>    State_;
 
-   template <typename MODEL> void testStateConstructors() {
-     typedef StateFixture<MODEL>   Test_;
-     typedef oops::State<MODEL>    State_;
+    const double norm = Test_::test().getDouble("norm-file");
+    const double tol = Test_::test().getDouble("tolerance");
+    const util::DateTime vt(Test_::test().getString("date"));
 
-     const double norm = Test_::test().getDouble("norm-file");
-     const double tol = Test_::test().getDouble("tolerance");
-     const util::DateTime vt(Test_::test().getString("date"));
+    // Test main constructor
+    const eckit::LocalConfiguration conf(Test_::test(), "StateFile");
+    const oops::Variables vars(conf);
+    boost::scoped_ptr<State_> xx1(new State_(Test_::resol(), vars, conf));
 
-     // Test main constructor
-     const eckit::LocalConfiguration conf(Test_::test(), "StateFile");
-     boost::scoped_ptr<State_> xx1(new State_(Test_::resol(), conf));
+    EXPECT(xx1.get());
+    const double norm1 = xx1->norm();
+    EXPECT(oops::is_close(norm1, norm, tol));
+    EXPECT(xx1->validTime() == vt);
 
-     BOOST_CHECK(xx1.get());
-     const double norm1 = xx1->norm();
-     BOOST_CHECK_CLOSE(norm1, norm, tol);
-     BOOST_CHECK_EQUAL(xx1->validTime(), vt);
-
-     [...]
+    [...]
 
 This starts by defining :code:`Test_` as an alias for the :code:`StateFixture<MODEL>` class.  Other test objects also have corresponding fixture classes, for example :code:`test::ModelFixture<MODEL>`, :code:`test::ObsTestsFixture<MODEL>`, etc.  These are primarily used to access relevant sections of the configuration file.  In the above example, they are used to extract a reference value for the State norm, a tolerence level for the norm test, and a reference date for the State object that is about to be created.
 
 Then the "StateFile" section of the config file is extracted through the StateFixture and, together with information about the geometry (in :code:`Test_::resol()`), is used to create a new State object called :code:`*xx1` (:code:`boost::scoped_ptr<>` is a type of smart pointer defined by Boost similar to :code:`std::unique_ptr<>` in C++11).
 
-Then the unit tests really begin, with multiple calls to check Boolean expressions, including exit codes.  The first call to :code:`BOOST_CHECK()` checks to see if the pointer is properly defined with the help of the :code:`get()` method of :code:`boost::scoped_ptr<>`.  In other words, it checks to see if a State object was successfully created.
+Then the unit tests really begin, with multiple calls to check Boolean expressions, including exit codes.  The first call to :code:`EXPECT()` checks to see if the pointer is properly defined with the help of the :code:`get()` method of :code:`boost::scoped_ptr<>`.  In other words, it checks to see if a State object was successfully created.
 
-The call to :code:`BOOST_CHECK_CLOSE()` then checks to see if the norm that was read from the configuration file is equal to the value computed with the :code:`norm()` method of the State object, with the specified tolerance.
+The call to :code:`EXPECT(oops::is_close(norm1, norm, tol))` then checks to see if the norm that was read from the configuration file is equal to the value computed with the :code:`norm()` method of the State object, with the specified tolerance.
 
-:code:`BOOST_CHECK_EQUAL()` is similar to :code:`BOOST_CHECK_CLOSE()` but without the tolerance.  It is used to verify that the date of the State object is equal to the reference value read from the configuration file.
+:code:`EXPECT()` with double equal sign is used to verify that the State object is equal to the reference value read from the configuration file.
 
 The function above then proceeds to perform similar tests for the copy constructor (not shown).      
 
 If any of these nested unit tests fail, **ctest** registers a failure for the parent application and an appropriate message is written to the ctest log file (as well as :code:`stdout` if **ctest** is run in verbose mode).
-
-BOOST_CHECK(), BOOST_CHECK_CLOSE(), and BOOST_CHECK_EQUAL() are special cases of BOOST_<level>(), BOOST_<level>_CLOSE(), and BOOST_<level>_EQUAL(), where <level> can take on values of WARN, CHECK, or REQUIRE.  These represent incresing tolerance levels.  There are many more Boost test commands available: see the `Boost test documentation <https://www.boost.org/doc/libs/1_66_0/libs/test/doc/html/index.html>`_ for a complete list.
       
 .. _app-testing:
 
