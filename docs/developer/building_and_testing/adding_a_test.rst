@@ -102,6 +102,7 @@ Step 4: Register your Unit Tests with eckit
 In order for eckit to run your tests, you have to :ref:`register <init-test>` each individual test. This is achieved by means of the :code:`register_tests()` method of :code:`test::MyClass` and as this :code:`test::Increment` example (from (:code:`oops/src/test/interface/Increment.h`) demonstrates, there is little else needed to define the class:
 
 .. code:: C++
+
   template <typename MODEL> class Increment : public oops::Test {
    public:
     Increment() {}

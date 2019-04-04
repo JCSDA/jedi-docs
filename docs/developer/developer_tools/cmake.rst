@@ -313,7 +313,7 @@ gets passed through to cmake.
 
 Ecbuild is the workhorse for building and testing (and eventually installing) the JEDI
 software.
-Once ecbuild and associated libaries (eigen3, boost, eckit, fckit) are installed, all
+Once ecbuild and associated libaries (eigen3, eckit, fckit) are installed, all
 subsequent manufacturing is done using the ecbuild command in place of cmake.
 The output from ecbuild is captured in the file:
 

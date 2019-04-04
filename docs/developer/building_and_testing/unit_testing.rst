@@ -231,6 +231,7 @@ So, the real difference between different :code:`oops::Test` objects is encapsul
 In the case of :code:`test::State<MODEL>` (which you may recall from the previous section is a sub-class of :code:`oops::Test`), this method is defined as follows (see :code:`oops/src/test/interface/State.h`):
 
 .. code:: C++
+
   void register_tests() const {
     std::vector<eckit::testing::Test>& ts = eckit::testing::specification();
 
@@ -258,6 +259,7 @@ As demonstrated in the previous section, this particular suite of unit tests inc
 Here we will focus on the first, :code:`TestStateConstructors<MODEL>()`.  Both are defined in :code:`oops/src/test/interface/State.h`, where you will find this code segment:
 
 .. code:: C++
+
   template <typename MODEL> void testStateConstructors() {
     typedef StateFixture<MODEL>   Test_;
     typedef oops::State<MODEL>    State_;
