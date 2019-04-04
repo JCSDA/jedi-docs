@@ -12,7 +12,7 @@ Environment modules are implemented on most HPC systems and are an easy and effe
 .. code :: bash
 
    module list # list modules you currently have loaded
-   module spider <string> # list all modules that contain <string> 
+   module spider <string> # list all modules that contain <string>
    module avail # list modules that are compatible with the modules you already have loaded
    module load <package1> <package2> <...> # load specified packages
    module unload <package1> <package2> <...> # unload specified packages
@@ -117,9 +117,9 @@ Some system-specific tips for Theia include:
 .. code:: bash
 
     make -j12
-  
-   
-      
+
+
+
 Cheyenne
 ---------
 
@@ -151,10 +151,35 @@ Current options for setting up the JEDI environment include (choose only one)
     make -j4
 
 .. warning::
-    
+
     Please do not use too many threads to speed up the compilation, Cheyenne system administor might terminate your login node.
-      
+
 Discover
 ---------
-      
+
+      `Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.  On Discover, users can access the installed JEDI modules by first entering
+
+.. code :: bash
+
+   module use -a /discover/nobackup/projects/gmao/obsdev/rmahajan/opt/modulefiles
+
+Current options for setting up the JEDI environment include (choose only one)
+
+.. code :: bash
+
+   module load apps/jedi/gcc-7.3          # GNU v7.3.0 compiler suite
+   module load apps/jedi/intel-17.0.7.259 # Intel v17.0.7.259 compiler suite
+
+* Run ecbuild with the following option to provide the correct path for :code:`MPIEXEC`
+
+.. code:: bash
+
+    ecbuild -DMPIEXEC=$MPIEXEC <path_of_the_jedi_source_code>
+
+* Use up to 12 MPI tasks to speed up the compilation
+
+.. code:: bash
+
+    make -j12
+
 
