@@ -102,24 +102,24 @@ Though you can execute individual commands or scripts within the singularity con
 
 .. code:: bash
 
-   # starting Singularity from a linux/unix system
    singularity shell -e <image-file>
    
 Now you are inside the **Singularity Container** and you have access to all the software infrastructure needed to build, compile, and run JEDI.  The :code:`-e` option helps prevent conflicts between the host environment and the container environment (e.g. conflicting library paths) by cleaning the environment before running the container.  Note that this does not mean that the container is isolated from the host environment; you should still be able to access files and directories on your host computer (or on your virtual machine if you are using Vagrant) from within the Singularity container.
 
-If you installed singularity from within a :doc:`Vagrant <vagrant>` virtual machine (Mac or Windows), then you probably set up a a :code:`/home/vagrant/vagrant_data` directory (you may have given it a different name and/or path) that is shared between the host machine and the virtual machine.  If you want to continue to use this directory to transfer files between your host computer and your Singulairty container, then you need to tell Singularity about this directory when you start the shell.  This can be done as follows:
+If you installed singularity from within a :doc:`Vagrant <vagrant>` virtual machine (Mac or Windows), then you probably set up a a :code:`/home/vagrant/vagrant_data` directory (you may have given it a different name and/or path) that is shared between the host machine and the virtual machine.  Since this is mounted in your home directory, you should be able to access it from within the container.  However, sometimes you may wish to mount another directory in the container that is not accessible from Singularity by default.  For example, let's say that you are working on an HPC system and you have a designated workspace in a directory called :code:`$SCRATCH`.  We have included a mount point in the JEDI singularity container called :code:`/worktmp` that will allow you to access such a directory.  For this example, you would mount your work directory as follows:
 
 .. code:: bash
 
-   # starting Singularity from a vagrant virtual machine	  
-   singularity shell --bind /vagrant_data -e <image-file>
+   singularity shell --bind $SCRATCH:/worktmp -e <image-file>
+
+After you enter the container you can :code:`cd` to :code:`/worktmp` to access your workspace.   
    
 There is another "feature" of Singularity that is worth mentioning. Though Singularity starts a bash shell when entering the container, You may notice that it does not call the typical bash startup scripts like :code:`.bashrc`, :code:`.bash_profile` or :code:`.bash_aliases`.  Furthermore, this behavior persists even if you do not use the :code:`-e` option to :code:`singulary shell`.  This is intentional.  The creators of Singularity deliberately arranged it so that the singularity container does not call these startup scripts in order to avoid conflicts between the host environment and the container environment.   It is possible to circumvent this behavior using the :code:`--shell` option as follows:  
 
 .. code:: bash
 
    # NOT RECOMMENDED!
-   singularity shell --shell /bin/bash -e JCSDA-singularity-master-latest.simg
+   singularity shell --shell /bin/bash -e <image-file>
 
 However, if you do this, you may begin to appreciate why it is not recommended.  In particular, you'll notice that your command line prompt has not changed.  So, it is not easy to tell whether you are working in the container or not.  Needless to say, this can get very confusing if you have multiple windows open!
 
