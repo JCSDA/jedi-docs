@@ -21,6 +21,7 @@ Table of Contents
    developer/developer_tools/index.rst
    developer/jedi_environment/index.rst
    developer/building_and_testing/index.rst
+   jedi-components/index.rst
 
 
 Background
