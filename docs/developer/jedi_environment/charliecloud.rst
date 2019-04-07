@@ -224,7 +224,7 @@ This is good, but for substantial parallel applications there is an approach tha
       export BINDIR=/worktmp/jedi/fv3-gnu-openmpi/build/bin
 
       ### Run the executable
-      mpirun -np 144 ch-run -b $WORK:/worktmp -c $RUNDIR $CHDIR/ch-jedi-latest -- "$BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml"
+      mpirun -np 144 ch-run -b $WORK:/worktmp -c $RUNDIR $CHDIR/ch-jedi-latest -- $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml
 
 There are a few things to note about this example.  First, mpirun is called from outside the container to start up 144 mpi tasks.  Each task then starts its own Charliecloud container by running :code:`ch-run`, mounting a work disk that is accessed through :code:`/worktmp` in the container, as described above.   The :code:`-c $RUNDIR` option tells Charliecloud to :code:`cd` to the :code:`$RUNDIR` directory to run the command (note that this is the path as viewed from within the container).  As before, the command appears after the :code:`--`.  But instead of entering the container by invoking a :code:`bash` script, we enter a single command, which is here enclosed by double quotes :code:`"`.  So, in short, we are telling each MPI task to run this command in the container, from the :code:`$RUNDIR` directory.
 
@@ -235,7 +235,7 @@ This is usually more efficient than the alternative of running a single containe
 .. code::
 
       export TMPDIR=/worktmp/scratch
-      ch-run -b $WORK:/worktmp -c $WORKDIR $CHDIR/ch-jedi-latest -- "mpirun -np 144 $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml"
+      ch-run -b $WORK:/worktmp -c $WORKDIR $CHDIR/ch-jedi-latest -- mpirun -np 144 $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml
       
 This example illustrates **another important tip** to keep in mind.  Openmpi uses the directory :code:`$TMPDIR` to store temporary files during runtime.  On Cheyenne, this is set to :code:`/glade/scratch/`whoami`` by default.  But this directory is not accessible from the container so, unless we do something about this, our executable will fail.  Redefining it as :code:`/worktmp/scratch` as shown here does the trick, provided that associated external directory :code:`$WORK/scratch` exists.  Recall that Charliecloud does not change environment variables so we can set it outside the container as shown.  A similar workaround may also be required on other HPC systems.
 
