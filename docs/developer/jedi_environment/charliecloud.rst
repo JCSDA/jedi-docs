@@ -184,7 +184,7 @@ For example, if you create a directory called :code:`/home/vagrant/vagrant_data`
 
 Then, when you are inside the container, any files that you put in :code:`/home/vagrant/vagrant_data` will be accessible from Mac OS.  
 
-.. _ch-hpc
+.. _ch-hpc:
 
 Tips for HPC Systems
 ----------------------------
