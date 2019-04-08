@@ -48,15 +48,7 @@ master_doc = 'index'
 # General information about the project.
 project = 'JEDI Documentation'
 copyright = '2018-2019, University Corporation for Atmospheric Research'
-author = [
-    'Maryam Abdi-Oskouei',
-    'Stephen Herbener',
-    'Daniel Holdaway',
-    'Mark Miesch',
-    'Anna Shlyaeva',
-    'Yannick Tremolet',
-    'Xin Zhang'
-    ]
+author = 'JEDI Core Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -73,6 +65,9 @@ release = '1'
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
 language = None
+
+# Enable figure numbering
+numfig = True
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -148,7 +143,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'JEDIDocumentation.tex', 'JEDI Documentation',
-     'JEDI Core Team', 'manual'),
+     author, 'manual'),
 ]
 
 
@@ -158,7 +153,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, 'jedidocumentation', 'JEDI Documentation',
-     author, 1)
+     [author], 1)
 ]
 
 
@@ -169,7 +164,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'JEDIDocumentation', 'JEDI Documentation',
-     'JEDI Core Team', 'JEDIDocumentation', 'Joint Effort for Data assimilation Integration',
+     author, 'JEDIDocumentation', 'Joint Effort for Data assimilation Integration',
      'Miscellaneous'),
 ]
 
