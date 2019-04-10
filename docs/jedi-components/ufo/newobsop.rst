@@ -51,7 +51,7 @@ and try to compile/build the code.
 Adding an Observation Operator test
 -----------------------------------
 
-After this skeleton code is generated, you may wish to create a test for your new observation operator. Even if the test fails because of missing data or a mismatch between computed and provided values, the test will still call your operator and any print statements or other calls you perform within the Fortran subroutines will execute. 
+After this skeleton code is generated, create a test for your new observation operator. Even if the test fails because of missing data or a mismatch between computed and provided values, the test will still call your operator and any print statements or other calls you perform within the Fortran subroutines will execute. 
 
 For observation operator test one needs a sample observation file and a corresponding geovals file.
 
