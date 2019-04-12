@@ -128,14 +128,16 @@ Cheyenne
 .. code :: bash
 
    module purge
-   module use /gpfs/u/home/xinzhang/modules/default
+   module use /gpfs/u/home/miesch/modules/default
 
 Current options for setting up the JEDI environment include (choose only one)
 
 .. code :: bash
 
-   module load jedi/gnu   # GNU 7.3.0 compiler suite and openmpi/3.0.1
-   module load jedi/intel # Intel 18.0.1.20171018 compiler suite and openmpi/3.1.0
+   module load jedi/gnu-openmpi # GNU compiler suite and openmpi
+   module load jedi/gnu-mpt   # GNU compiler suite and mpt
+   module load jedi/intel-openmpi # Intel compiler suite and openmpi
+   module load jedi/intel-mpt # Intel compiler suite and mpt
 
 * Run ecbuild with the following option
 
