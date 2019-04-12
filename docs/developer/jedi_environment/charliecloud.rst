@@ -155,8 +155,8 @@ For example, to run and test ufo-bundle, you can proceed as follows:
       
       export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
-Charliecloud Tips
---------------------
+General Charliecloud Tips
+----------------------------
 
 If you're running a Charliecloud container from within :doc:`Vagrant <vagrant>`, the most important tip when using Charliecloud (because it is easy to forget) is to **remember to type exit twice** when you are finished working; once to leave the Charliecloud container and a second time to leave Vagrant.
 
@@ -183,3 +183,59 @@ For example, if you create a directory called :code:`/home/vagrant/vagrant_data`
     ch-run -b /vagrant_data:/home/vagrant/vagrant_data ch-jedi-latest -- bash
 
 Then, when you are inside the container, any files that you put in :code:`/home/vagrant/vagrant_data` will be accessible from Mac OS.  
+
+.. _ch-hpc:
+
+Tips for HPC Systems
+----------------------------
+
+By default, Charliecloud does not change environment variables (with a few exceptions).  The JEDI Charliecloud container does explicitly set a few variables such as :code:`NETCDF`, :code:`FC`, :code:`PIO`, etc. (for bash shells) but it's still good practice to clean your environment by purging other modules before you enter your :code:`ch-run` command.  Most HPC systems use some form of environment modules to load software packages.  So "cleaning your environment" usually just looks like this:
+
+.. code::
+      
+      module purge
+
+Another common practice on HPC systems is to run applications in designed work or scratch directories instead of one's home directory.  This is often required to have access to sufficient disk space.  The JEDI Charliecloud and Singularity containers includes a :code:`/worktmp` directory that can be used as a mount point for a system work space.  For example, on Cheyenne one may wish to do this:
+
+.. code::
+      
+      ch-run -b/glade/work/`whoami`:/worktmp <path>/ch-jedi-latest -- bash
+
+This is good, but for substantial parallel applications there is an approach that is even better for MPI jobs.  System administrators at HPC centers spend a lot of time and effort configuring their MPI implementations to take full advantage of the system hardware.  If you run the mpi implementation inside the container (currently openmpi), you won't be able to take advantage of these site-specific configurations and optimizations.  Fortunately, there is a way out of this dilemma: you can invoke the parallel process manager, :code:`mpirun` or :code:`mpiexec` outside the container and then have each MPI process enter its own container.  Again using Cheyenne as an example, you can do this in a batch script like this:
+
+.. code::
+      
+      #!/bin/bash
+      #PBS -N multicon
+      #PBS -A <account-number>
+      #PBS -l walltime=00:10:00
+      #PBS -l select=4:ncpus=36:mpiprocs=36
+      #PBS -q regular
+      #PBS -j oe
+      #PBS -m abe
+      #PBS -M <email-address>
+
+      module purge
+      module load gnu/7.3.0 openmpi/3.1.3
+
+      export CHDIR=$HOME/ch-jedi
+      export WORK=/glade/work/`whoami`
+      export RUNDIR=/worktmp/myrundir
+      export BINDIR=/worktmp/jedi/fv3-gnu-openmpi/build/bin
+
+      ### Run the executable
+      mpirun -np 144 ch-run -b $WORK:/worktmp -c $RUNDIR $CHDIR/ch-jedi-latest -- $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml
+
+There are a few things to note about this example.  First, mpirun is called from outside the container to start up 144 mpi tasks.  Each task then starts its own Charliecloud container by running :code:`ch-run`, mounting a work disk that is accessed through :code:`/worktmp` in the container, as described above.   The :code:`-c $RUNDIR` option tells Charliecloud to :code:`cd` to the :code:`$RUNDIR` directory to run the command (note that this is the path as viewed from within the container).  As before, the command appears after the :code:`--`.  But instead of entering the container by invoking a :code:`bash` script, we enter a single command, which is here enclosed by double quotes :code:`"`.  So, in short, we are telling each MPI task to run this command in the container, from the :code:`$RUNDIR` directory.
+
+**Important** This will only work if the MPI implementations inside and outside the container are compatible.  Since the MPI implementation inside the container is openmpi compiled with gnu compilers, we load the :code:`gnu/7.3.0` and :code:`openmpi/3.1.3` modules before calling :code:`mpirun`.
+
+This is usually more efficient than the alternative of running a single container with multiple mpi jobs:
+
+.. code::
+
+      export TMPDIR=/worktmp/scratch
+      ch-run -b $WORK:/worktmp -c $WORKDIR $CHDIR/ch-jedi-latest -- mpirun -np 144 $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml
+      
+This example illustrates **another important tip** to keep in mind.  Openmpi uses the directory :code:`$TMPDIR` to store temporary files during runtime.  On Cheyenne, this is set to :code:`/glade/scratch/`whoami`` by default.  But this directory is not accessible from the container so, unless we do something about this, our executable will fail.  Redefining it as :code:`/worktmp/scratch` as shown here does the trick, provided that associated external directory :code:`$WORK/scratch` exists.  Recall that Charliecloud does not change environment variables so we can set it outside the container as shown.  A similar workaround may also be required on other HPC systems.
+
