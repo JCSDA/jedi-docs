@@ -26,9 +26,9 @@ The new observation operator has to have a C++ interface, because all observatio
 
 Most of the time you’d only need to modify the Fortran module (3), and the files from (1-2) can be generated automatically.
 
-To generate the ObsOperator files, you can run the following script: :code:`ufo/tools/new_obsop/create_obsop_fromexample.sh MyOperator path/to/myoperator`
+To generate the ObsOperator files, you can run the following script: :code:`ufo/tools/new_obsop/create_obsop_fromexample.sh <ObsOperatorName> <directory>`
 
-:code:`MyOperator` is an UpperCamelCase name you’d like your obs operator to go by. :code:`path/to/myoperator` is relative to :code:`ufo/src/ufo`. Examples for existing obsoperators: atmvertinterp, crtm, identity.
+:code:`<ObsOperatorName>` is an UpperCamelCase name you’d like your obs operator to go by. :code:`<directory>` is a directory name in :code:`ufo/src/ufo`. Examples for existing obsoperators: atmvertinterp, crtm, identity.
 
 Example of calling :code:`create_obsop_fromexample.sh`:
 
@@ -41,7 +41,7 @@ After the directory with the new obsoperator is created, add it to :code:`ufo/sr
 .. code:: bash
 
    add_subdirectory( identity )
-   add_subdirectory( <path/to/myoperator> )
+   add_subdirectory( myoperator )
    list( APPEND ufo_src_files
         ${identity_src_files}
         ${myoperator_src_files}
@@ -68,7 +68,7 @@ All observation operator tests in UFO use the OOPS ObsOperator test. To create a
 
 Other changes required in :code:`ufo/test/CMakeLists.txt`:
 
-Link the config (yaml file) you will be using for the test:
+Link the :doc:`config file <../../developer/building_and_testing/config_content>` you will be using for the test:
 
 .. code:: bash
 
