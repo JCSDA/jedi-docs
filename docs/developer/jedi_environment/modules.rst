@@ -128,7 +128,7 @@ Cheyenne
 .. code :: bash
 
    module purge
-   module use /gpfs/u/home/miesch/modules/default
+   module use /glade/work/miesch/modules/modulefiles/core
 
 Current options for setting up the JEDI environment include (choose only one)
 
