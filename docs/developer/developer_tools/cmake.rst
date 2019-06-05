@@ -250,9 +250,10 @@ the build directory will be $HOME/projects/ecbuild/build.
     make install
 
 Once ecbuild is installed, it can be used to build and install the eckit and fckit
-libraries.
-Install eckit first before working on fckit since fckit is a package that builds upon
-eckit and needs it to exist before compiling.
+libraries.  Currently, it is recommended to only install eckit, since fckit is
+generally built along with the JEDI code.  This is done because the JEDI team
+often make changes to fckit and we generally work from our own fork.
+
 For the following code example, assume that the clones are placed in $HOME/projects
 and the build directories are subdirectories of the clones called "build".
 
@@ -280,26 +281,6 @@ and the build directories are subdirectories of the clones called "build".
     ctest
     sudo make install
 
-    ######### Repeat for fckit ###########
-    cd $HOME/projects
-    git clone https://github.com/ecmwf/fckit.git
-
-    cd fckit
-    git checkout develop # as of Feb, 2019 this has required functionality that the public releases do not
-
-    # create the build directory
-    mkdir build
-    cd build
-
-    # build, test, install fckit
-    #
-    # If no write permission in /usr/local, add -DCMAKE_INSTALL_PREFIX=$HOME/tools
-    # to the ecbuild command and omit the :code:`sudo` in the :code:`make install`.
-    ecbuild ..
-    make
-    ctest
-    sudo make install
-
 
 Using ecbuild
 ^^^^^^^^^^^^^
@@ -313,7 +294,7 @@ gets passed through to cmake.
 
 Ecbuild is the workhorse for building and testing (and eventually installing) the JEDI
 software.
-Once ecbuild and associated libaries (eigen3, eckit, fckit) are installed, all
+Once ecbuild and associated libaries (eigen3, eckit) are installed, all
 subsequent manufacturing is done using the ecbuild command in place of cmake.
 The output from ecbuild is captured in the file:
 
