@@ -8,9 +8,9 @@ Existing Observation Operators
 
 Before implementing a new observation operator, check if one of the observation operators already implemented in UFO is suitable:
 
-1. Interface to CRTM for radiances and aerosol optical depth (:code:`ufo/src/ufo/crtm/` , “CRTM” for radiances, “AOD” for aod in the config files)
-2. Linear vertical interpolation in log pressure for the variables specified in the config file (:code:`ufo/src/ufo/atmvertinterp`, “Radiosonde”, “Aircraft”, “Satwind”, more names could be added to :code:`ObsAtmVertInterp.cc`). 
-3. Identity observation operator for 2D fields (takes the result of the horizontal interpolation from the geovals and returns it as H(x)) (:code:`ufo/src/ufo/identity`, “Surface”, more names could be added to :code:`ObsIdentity.cc`)
+1. Interface to CRTM for radiances and aerosol optical depth (:code:`ufo/src/ufo/crtm/` , "CRTM" for radiances, "AOD" for aod in the config files)
+2. Linear vertical interpolation in log pressure for the variables specified in the config file (:code:`ufo/src/ufo/atmvertinterp`, "Radiosonde", "Aircraft", "Satwind", more names could be added to :code:`ObsAtmVertInterp.cc`).
+3. Identity observation operator for 2D fields (takes the result of the horizontal interpolation from the geovals and returns it as H(x)) (:code:`ufo/src/ufo/identity`, "Surface", more names could be added to :code:`ObsIdentity.cc`)
 4. Several GNSSRO observation operators.
 
 Creating files for a new Observation Operator
@@ -51,7 +51,7 @@ and try to compile/build the code.
 Adding an Observation Operator test
 -----------------------------------
 
-After this skeleton code is generated, create a test for your new observation operator. Even if the test fails because of missing data or a mismatch between computed and provided values, the test will still call your operator and any print statements or other calls you perform within the Fortran subroutines will execute. 
+After this skeleton code is generated, create a test for your new observation operator. Even if the test fails because of missing data or a mismatch between computed and provided values, the test will still call your operator and any print statements or other calls you perform within the Fortran subroutines will execute.
 
 For observation operator test one needs a sample observation file and a corresponding geovals file.
 
@@ -95,9 +95,9 @@ Adding substance to the new Observation Operator
 
 To implement the Observation Operator, one needs to:
 
-* Specify input variable names (requested from the model) and output variable names (simulated by the observation operator) in :code:`ufo_obsoperator_mod.F90`, subroutine :code:`ufo_obsoperator_setup`. The input variable names need to be saved in :code:`self%varin` (set :code:`self%nvars_in` and allocate accordingly), the output variables in :code:`self%varout` (set :code:`self%nvars_out` and allocate accordingly). See examples in :code:`ufo/src/ufo/atmvertinterp/ufo_atmvertinterp_mod.F90` and :code:`ufo/src/ufo/crtm/ufo_radiancecrtm_mod.F90`. The variables can be hardcoded or controlled from the config file depending on your observation operator.
+* Specify input variable names (requested from the model) and output variable names (simulated by the observation operator) in :code:`ufo_obsoperator_mod.F90`, subroutine :code:`ufo_obsoperator_setup`. The input variable names need to be saved in :code:`self%varin` (set :code:`self%nvars_in` and allocate accordingly), the output variables in :code:`self%varout` (set :code:`self%nvars_out` and allocate accordingly). See examples in :code:`ufo/src/ufo/atmvertinterp/ufo_atmvertinterp_mod.F90` and :code:`ufo/src/ufo/crtm/ufo_radiancecrtm_mod.F90`. The variables can be hard-coded or controlled from the config file depending on your observation operator.
 
-* Fill in :code:`ufo_obsoperator_simobs` routine. This subroutine is for calculating H(x). Inputs: :code:`geovals` (horizontally interpolated to obs locations model fields for the variables specified in :code:`self%varin` above), :code:`obss` (observation space, can be used to request observation metadata). Output: :code:`hofx` (obs vector to hold H(x)). Note that the vector was allocated before the call to :code:`ufo_obsoperator_simobs`, and only needs to be filled in. 
+* Fill in :code:`ufo_obsoperator_simobs` routine. This subroutine is for calculating H(x). Inputs: :code:`geovals` (horizontally interpolated to obs locations model fields for the variables specified in :code:`self%varin` above), :code:`obss` (observation space, can be used to request observation metadata). Output: :code:`hofx` (obs vector to hold H(x)). Note that the vector was allocated before the call to :code:`ufo_obsoperator_simobs`, and only needs to be filled in.
 
 Observation Operator test
 -------------------------
@@ -111,7 +111,7 @@ There are two parts of this test:
 2. testSimulateObs: tests observation operator calculation in the following way:
 
   * Creates observation operator, calls :code:`ufo_obsoperator_setup`
-  * Reads “GeoVaLs” (vertical profiles of relevant model variables, interpolated to observation lat-lon location) from the geovals file
+  * Reads "GeoVaLs" (vertical profiles of relevant model variables, interpolated to observation lat-lon location) from the geovals file
   * Computes H(x) by calling :code:`ufo_obsoperator_simobs`
   * Reads benchmark H(x) from the obs file (netcdf variable name defined by :code:`vecequiv` entry in the config) and compares it to H(x) computed above
   * Test passes if the norm(benchmark H(x) - H(x)) < tolerance, with tolerance defined in the config by :code:`tolerance`.

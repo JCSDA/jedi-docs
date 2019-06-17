@@ -1,6 +1,6 @@
-#########################################
+##########################
 Branching and merging code
-#########################################
+##########################
 
 Following the git flow structure, repositories contain two special branches:
 the master branch which contains released versions of the code, and the develop
@@ -46,7 +46,7 @@ develop branches and tagged.
 Typically, the tag will contain the release number (for example 2.0 for a major
 release, or 2.1 for a minor one).
 The masterbranch then contains the new official release and development work
-continues in the develop branch based on the release. 
+continues in the develop branch based on the release.
 
 Despite all the care being taken in the testing, there will always be (hopefully rare)
 bugs needing fixing in any software.

@@ -1,12 +1,12 @@
-.. _gitflow-top:     
+.. _gitflow-top:
 
 Git flow
-=============================
+========
 
 The `git flow primer <http://nvie.com/posts/a-successful-git-branching-model>`_ describes
 how to use native git commands to implement the flow.
 Since the writing of the primer, several modules have been created that provide git
-extensions that bundle native git commands into much simpler commands for each of the 
+extensions that bundle native git commands into much simpler commands for each of the
 steps in git flow.
 
 The cheat sheet below includes instructions on how to install git flow, as well as how
@@ -39,14 +39,14 @@ These steps only need to be done once when you start a local repository.
 .. code:: bash
 
   git clone <path_to_remote_repository>        # create local repository
-  
+
   git checkout --track develop                 # checkout and track develop branch
 
   git flow init -d                             # initializes git flow with default values
 
 It is possible to initialize git flow with different values but using all default values is very strongly recommended.
 
-.. _gitflow-feature:     
+.. _gitflow-feature:
 
 Adding a feature
 ----------------
@@ -70,7 +70,7 @@ performance enhancements.
 
   git flow feature start perf-enhance  # a new branch called feature/perf-enhance
                                        # is created and checked out
-  
+
   # make edits, test code, etc.
 
   git flow feature publish perf-enhance   # this pushes your new branch
@@ -97,7 +97,7 @@ This can be done by running the following:
 
 .. code:: bash
 
-  git remote udpate -p   # This syncronizes the metadata describing the changes that have
+  git remote update -p   # This synchronizes the metadata describing the changes that have
                          # been done on the remote repository. The -p option "prunes" branches
                          # that have been deleted on the remote repository which will include
                          # your "feature/perf-enhance" branch.
@@ -109,7 +109,7 @@ This can be done by running the following:
 
   git branch -d feature/perf-enhance  # Remove feature/perf-enhance branch from your
                                       # local repository. Don't need the feature/perf-enhance
-                                      # branch anymore since those changes are included in
+                                      # branch any more since those changes are included in
                                       # the develop branch.
 
 
@@ -164,28 +164,28 @@ These branches are created and finalized :ref:`as described above <gitflow-featu
 .. code:: bash
 
    git flow hotfix start wrongoutput # branches off of master
-   
-The default base for a bugfix branch is develop but you can also fix a bug in a feature branch as follows.  
+
+The default base for a bugfix branch is develop but you can also fix a bug in a feature branch as follows.
 
 .. code:: bash
 
    git flow bugfix start wrongoutput feature/myfeature # branches off of myfeature
-   
+
 
 Bugfix and hotfix branches can be published and finalized :ref:`as described above <gitflow-feature>` for feature branches, for example:
 
 .. code:: bash
 
    git flow bugfix publish wrongoutput
-   
+
 Once your branch is on GitHub, you can issue a pull request to merge it in to the relevant branch (master, develop, or feature).  Our standard workflow is to delete the bugfix or hotfix branch on GitHub after it has been merged by an appropriate JEDI master.
 
-Once it is sucessfully integrated into the desired branch, you may wish to delete your local branch manually using the standard git command:
+Once it is successfully integrated into the desired branch, you may wish to delete your local branch manually using the standard git command:
 
 .. code:: bash
 
    git branch -d bugfix/wrongoutput
-   
+
 And/or, you can run this command periodically which will remove (:code:`-p` is for *prune*) any of your local branches that no longer exist on GitHub:
 
 .. code:: bash

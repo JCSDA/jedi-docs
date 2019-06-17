@@ -1,6 +1,6 @@
-#########################################
+##############
 Reviewing code
-#########################################
+##############
 
 We now discuss procedures to control the contents of branches, especially the
 develop and master branches.
@@ -20,7 +20,7 @@ The review process is an integral part of the development work and should be con
 from the start.
 As a result, at the beginning of each development, it is assigned a ZenHub issue where
 discussion and documentation can happen during the development process and can be
-referred to during the review process and later if required. 
+referred to during the review process and later if required.
 
 Reviewers should be assigned for any new development as soon as it starts; assignments
 are done through ZenHub.
@@ -33,9 +33,9 @@ For a trivial bug fix or very local changes that do not affect the rest of the s
 one reviewer is enough.
 For more complex modifications, more reviewers should be included.
 It is suggested that a list of default potential reviewers is designated and maintained
-for each large components of the code (B matrix, observation operators, etc…) to
+for each large components of the code (B matrix, observation operators, etc.) to
 assist in the process and that regular developers are also involved in reviewing
-each other’s code as an excellent way to promote a common culture and knowledge of the code. 
+each other's code as an excellent way to promote a common culture and knowledge of the code.
 
 It is in the interest of both developers and reviewers to review and merge code often
 in small incremental changes rather than massive changes at once.

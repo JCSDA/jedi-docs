@@ -1,6 +1,6 @@
-#########################################
+#######
 Testing
-#########################################
+#######
 
 Testing is a mandatory step of the development process and no branch should
 be merged without prior testing.
@@ -8,7 +8,7 @@ be merged without prior testing.
 To assist developers and reviewers in their roles, the ecosystem includes
 facilities for testing the code.
 This entails two aspects: tests have to be developed and the environment should
-make it easy to add and run them. 
+make it easy to add and run them.
 
 Although some tests exist for various systems, it should be considered part of
 the development process to add tests to the existing collection.

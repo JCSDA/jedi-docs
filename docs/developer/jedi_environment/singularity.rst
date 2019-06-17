@@ -1,9 +1,9 @@
 .. _top-Singularity:
 
 Singularity
-=======================
+===========
 
-In order to appreciate what `Singularity <https://www.sylabs.io/docs/>`_ is and why we use it, it is best to begin with its purpose.  From a JEDI perspective, the purpose of Singularity is to provide a uniform computing environment (software tools, libraries, etc) that will enable users like you to easily build, compile, and run JEDI across a wide range of computing platforms, from laptops and workstations running Mac OS X or linux to parallel High-Performace Computing (HPC) systems such as Theia (NOAA), Discover (NASA), or Cheyenne (NCAR).
+In order to appreciate what `Singularity <https://www.sylabs.io/docs/>`_ is and why we use it, it is best to begin with its purpose.  From a JEDI perspective, the purpose of Singularity is to provide a uniform computing environment (software tools, libraries, etc.) that will enable users like you to easily build, compile, and run JEDI across a wide range of computing platforms, from laptops and workstations running Mac OS X or Linux to parallel High-Performance Computing (HPC) systems such as Theia (NOAA), Discover (NASA), or Cheyenne (NCAR).
 
 The computing environment that Singularity creates is called a **container**.  There are other container providers as well, the most well-known being `Docker <https://www.docker.com/>`_.  An advantage of Singularity over these other alternatives is that it was specifically designed to address the challenges associated with HPC systems and collaborative software development efforts that require full control over your own software stack (see `this article in HPCWire <https://www.hpcwire.com/2018/02/08/startup-brings-hpc-containers-enterprise/>`_ and `this article in "Cloud Computing for Science and Engineering" <https://cloud4scieng.org/singularity-a-container-system-for-hpc-applications/>`_).
 
@@ -26,13 +26,13 @@ If it is not installed, and if you have root privileges, then you can install it
 
 If Singularity is not installed and if you cannot install it because you do not have root privileges, then we recommend that you use :doc:`charliecloud` instead.  Root privileges are not needed to install and use the JEDI Charliecloud container and it provides the same software libraries as the Singularity container.  Alternatively, you may ask your system administrators to install Singularity.  However, many HPC centers will be reluctant to do so because of security vulnerabilities.
 
-If you do wish to proceed with Singularity, **we recommend that you install the most recent stable release** (`version 3.0 <https://www.sylabs.io/guides/3.0/user-guide/>`_ as of Dec, 2018).  
+If you do wish to proceed with Singularity, **we recommend that you install the most recent stable release** (`version 3.0 <https://www.sylabs.io/guides/3.0/user-guide/>`_ as of Dec, 2018).
 
 If an up-to-date version of Singularity is already installed on your system, you can skip ahead to :ref:`Building the JEDI Environment <build_env>`.  The instructions that follow are mainly intended to help you install Singularity on your own workstation or laptop.
 
-As noted :ref:`above <top-Singularity>`, Singularity is not a virtual machine so it does not build its own operating system.  Instead, it must work with the host operating system.  Like Charliecloud, Singularity relies on linux mount namespaces in order to set up application environments that are isolated from the host.  Neither Mac OS X nor Windows currently supports mount namespaces.
+As noted :ref:`above <top-Singularity>`, Singularity is not a virtual machine so it does not build its own operating system.  Instead, it must work with the host operating system.  Like Charliecloud, Singularity relies on Linux mount namespaces in order to set up application environments that are isolated from the host.  Neither Mac OS X nor Windows currently supports mount namespaces.
 
-So, if you are running Mac OS or Windows, then you must first set up a linux environment.  This requires a proper virtual machine (VM).  The recommended VM provider is `Vagrant <https://www.vagrantup.com/intro/index.html>`_ by HashiCorp, which can build and configure an appropriate linux operating system using Oracle's `VirtualBox <https://www.virtualbox.org/>`_ software package.
+So, if you are running Mac OS or Windows, then you must first set up a Linux environment.  This requires a proper virtual machine (VM).  The recommended VM provider is `Vagrant <https://www.vagrantup.com/intro/index.html>`_ by HashiCorp, which can build and configure an appropriate Linux operating system using Oracle's `VirtualBox <https://www.virtualbox.org/>`_ software package.
 
   :doc:`If you have a Mac or Windows machine, go here first to install Vagrant, then return to this page <vagrant>`
 
@@ -40,7 +40,7 @@ In short, Vagrant and VirtualBox provide the linux operating system while Singul
 
 Singularity offers comprehensive `installation instructions for Singularity 3.0 <https://www.sylabs.io/guides/3.0/user-guide/quick_start.html#quick-installation-steps>`_ and we refer JEDI users to that site for the most up-to-date information and for troubleshooting.  Here we summarize the main steps.
 
-The first step is to make sure you have the correct dependencies.  On ubuntu systems, you can install them by copying and pasting this:
+The first step is to make sure you have the correct dependencies.  On Ubuntu systems, you can install them by copying and pasting this:
 
 .. code:: bash
 
@@ -49,7 +49,7 @@ The first step is to make sure you have the correct dependencies.  On ubuntu sys
     sudo apt-get install -y build-essential libssl-dev
     sudo apt-get install -y uuid-dev libgpgme11-dev squashfs-tools
 
-Next you need to install and configure the `Go programming language <https://golang.org/doc/install>`_, which Singularity 3.0 requires.  There are multiple ways to do this but this should work on most linux systems (note - this installs in :code:`/usr/local`, which requires root privileges):
+Next you need to install and configure the `Go programming language <https://golang.org/doc/install>`_, which Singularity 3.0 requires.  There are multiple ways to do this but this should work on most Linux systems (note - this installs in :code:`/usr/local`, which requires root privileges):
 
 .. code:: bash
 
@@ -81,11 +81,11 @@ Now you can compile and install Singularity (requires root privileges)
     make -C builddir
     sudo make -C builddir install
 
-        
+
 .. _build_env:
 
-Building the JEDI environment 
--------------------------------
+Building the JEDI environment
+-----------------------------
 
 Once singularity is installed on your system, the rest is easy.  The next step is to download the **JEDI Singularity image** from the singularity hub (shub):
 
@@ -97,13 +97,13 @@ Once singularity is installed on your system, the rest is easy.  The next step i
 Strictly speaking, you only have to do this step once but in practice you will likely want to update your JEDI image occasionally as the software environment continues to evolve.  The pull statement above should grab the most recent development version of the JEDI image file (it may take a few minutes to execute).
 
 The name of the image file may vary depending on your version of Singularity and the name of the file on the Singularity Hub (shub).  For example, if you are running Singularity version 2.4 or 2.6, the above command may retrieve a file called :code:`JCSDA-singularity-master-latest.simg`.  In Singularity version 3.0, it may be called :code:`singularity_latest.sif`.  In what follows, we will represent this name as :code:`<image-file>` - you should replace this with the name of the file retrieved by the pull command.
-   
+
 Though you can execute individual commands or scripts within the singularity container defined by your image file (see the **exec** and **run** commands in the `Singularity documentation <https://www.sylabs.io/docs/>`_), for most JEDi applications you will want to invoke a **singularity shell**, as follows:
 
 .. code:: bash
 
    singularity shell -e <image-file>
-   
+
 Now you are inside the **Singularity Container** and you have access to all the software infrastructure needed to build, compile, and run JEDI.  The :code:`-e` option helps prevent conflicts between the host environment and the container environment (e.g. conflicting library paths) by cleaning the environment before running the container.  Note that this does not mean that the container is isolated from the host environment; you should still be able to access files and directories on your host computer (or on your virtual machine if you are using Vagrant) from within the Singularity container.
 
 If you installed singularity from within a :doc:`Vagrant <vagrant>` virtual machine (Mac or Windows), then you probably set up a a :code:`/home/vagrant/vagrant_data` directory (you may have given it a different name and/or path) that is shared between the host machine and the virtual machine.  Since this is mounted in your home directory, you should be able to access it from within the container.  However, sometimes you may wish to mount another directory in the container that is not accessible from Singularity by default.  For example, let's say that you are working on an HPC system and you have a designated workspace in a directory called :code:`$SCRATCH`.  We have included a mount point in the JEDI singularity container called :code:`/worktmp` that will allow you to access such a directory.  For this example, you would mount your work directory as follows:
@@ -112,9 +112,9 @@ If you installed singularity from within a :doc:`Vagrant <vagrant>` virtual mach
 
    singularity shell --bind $SCRATCH:/worktmp -e <image-file>
 
-After you enter the container you can :code:`cd` to :code:`/worktmp` to access your workspace.   
-   
-There is another "feature" of Singularity that is worth mentioning. Though Singularity starts a bash shell when entering the container, You may notice that it does not call the typical bash startup scripts like :code:`.bashrc`, :code:`.bash_profile` or :code:`.bash_aliases`.  Furthermore, this behavior persists even if you do not use the :code:`-e` option to :code:`singulary shell`.  This is intentional.  The creators of Singularity deliberately arranged it so that the singularity container does not call these startup scripts in order to avoid conflicts between the host environment and the container environment.   It is possible to circumvent this behavior using the :code:`--shell` option as follows:  
+After you enter the container you can :code:`cd` to :code:`/worktmp` to access your workspace.
+
+There is another "feature" of Singularity that is worth mentioning. Though Singularity starts a bash shell when entering the container, You may notice that it does not call the typical bash startup scripts like :code:`.bashrc`, :code:`.bash_profile` or :code:`.bash_aliases`.  Furthermore, this behavior persists even if you do not use the :code:`-e` option to :code:`singulary shell`.  This is intentional.  The creators of Singularity deliberately arranged it so that the singularity container does not call these startup scripts in order to avoid conflicts between the host environment and the container environment.   It is possible to circumvent this behavior using the :code:`--shell` option as follows:
 
 .. code:: bash
 
@@ -140,7 +140,7 @@ where :code:`startup.sh` contains, for example:
    export FC=mpifort
    export DISPLAY=localhost:0.0
 
-The last two lines of this example script are particularly noteworthy.  Setting the :code:`FC` environment variable as shown is currently required to compile and run JEDI with multiple mpi threads.  And, setting the :code:`DISPLAY` environment variable as shown should enable X forwarding from the Singularity container to your computer if you are using linux/unix.  This in turn will allow you to use graphical tools such as :code:`emacs` or :ref:`kdbg <kdbg>`.
+The last two lines of this example script are particularly noteworthy.  Setting the :code:`FC` environment variable as shown is currently required to compile and run JEDI with multiple mpi threads.  And, setting the :code:`DISPLAY` environment variable as shown should enable X forwarding from the Singularity container to your computer if you are using Linux/Unix.  This in turn will allow you to use graphical tools such as :code:`emacs` or :ref:`kdbg <kdbg>`.
 
 If you are invoking the singularity shell from a vagrant virtual machine, then X Forwarding is a bit more complicated; :ref:`See here for how to setup X Forwarding on a Mac <mac-x-forwarding>`.
 

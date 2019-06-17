@@ -23,7 +23,7 @@ more toward performance benchmarking and verifying functionality on HPC systems.
 `Ecbuild <https://github.com/ecmwf/ecbuild>`_ is a set of CMake macros provided by the
 ECMWF that assist with the specification of the manufacturing processes. Along with ecbuild we are using two ECMWF libraries called
 `eckit <https://github.com/ecmwf/eckit>`_ and `fckit <https://github.com/ecmwf/fckit>`_.
-Eckit is a C++ library that provides utilites including logging, MPI, configuration
+Eckit is a C++ library that provides utilities including logging, MPI, configuration
 file (JSON, YAML) parsing and math functions.
 Fckit is a Fortran tool kit that provides similar utilities as eckit, plus helper functions
 to convert strings and arrays between Fortran and C/C++, and extending the unit test
@@ -40,8 +40,8 @@ Installing CMake and CTest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This step is only necessary if you are working outside the
-JEDI :doc:`Charliecloud <../jedi_environment/charliecloud>` 
-or :doc:`Singularity <../jedi_environment/singularity>` 
+JEDI :doc:`Charliecloud <../jedi_environment/charliecloud>`
+or :doc:`Singularity <../jedi_environment/singularity>`
 containers.
 
 For the Mac, use `homebrew <https://brew.sh/>`_ to install CMake.
@@ -65,7 +65,7 @@ for that source code, what libraries to link in, configuration of tests and the 
 of programs and scripts for installation.
 Here is a `CMake tutorial <https://cmake.org/cmake-tutorial/>`_ that is helpful for
 getting an idea of what goes into a CMakeLists.txt file.
- 
+
 Once the CMakeLists.txt for a project are created, all one does to build, test and install
 your software is:
 
@@ -73,7 +73,7 @@ your software is:
 
     cmake <dir_where_toplevel_CMakeLists.txt_file>   # generate the make files
 
-    make              # compile everthing
+    make              # compile everything
     ctest             # run the tests
     make install      # install the programs and scripts
 
@@ -115,7 +115,7 @@ that failed, you can run individual tests using ctest as shown below.
 .. warning::
   Many unit tests use MPI, which can require additional MPI configuration.
   For example, using OpenMPI on the Mac typically requires the following to enable
-  oversubscribing (which means running more MPI processes than avaialble cores).
+  oversubscribing (which means running more MPI processes than available cores).
   Note that extra MPI processes beyond the number of cores on a system do not actually run
   in parallel, but that's okay with short, fast-running programs such as unit tests.
 
@@ -187,9 +187,9 @@ These controls can be used to force CMake to use the versions you want.
           -DCMAKE_CXX_COMPILER=$CMP_ROOT/g++ \
           -DCMAKE_Fortran_COMPILER=$CMP_ROOT/gfortran $HOME/projects/my_project
 
-CMake also has tools that are useful for debugging.  In particular,  the :code:`--trace` and :code:`--debug-output` options show every line of every script file that is executed while cmake is running. 
-	  
-	  
+CMake also has tools that are useful for debugging.  In particular,  the :code:`--trace` and :code:`--debug-output` options show every line of every script file that is executed while cmake is running.
+
+
 ecbuild
 -------
 
@@ -217,7 +217,7 @@ To install these on the Mac:
     brew install cmake              # as shown above
     brew install eigen              # this will install eigen3
 
-JEDI projects use Boost header-only libraries and building Boost is not required.  
+JEDI projects use Boost header-only libraries and building Boost is not required.
 
 For Windows and Linux systems, see the `CMake downloads website <https://cmake.org/download/>`_,
 `Eigen website <http://eigen.tuxfamily.org/>`_ and
@@ -244,7 +244,7 @@ the build directory will be $HOME/projects/ecbuild/build.
     # install ecbuild
     cmake ..        # This assumes that you have write permission in /usr/local
     sudo make install
-    
+
     # if you don't have permission to write into /usr/local
     cmake -DCMAKE_INSTALL_PREFIX=$HOME/tools ..
     make install
@@ -294,7 +294,7 @@ gets passed through to cmake.
 
 Ecbuild is the workhorse for building and testing (and eventually installing) the JEDI
 software.
-Once ecbuild and associated libaries (eigen3, eckit) are installed, all
+Once ecbuild and associated libraries (eigen3, eckit) are installed, all
 subsequent manufacturing is done using the ecbuild command in place of cmake.
 The output from ecbuild is captured in the file:
 
@@ -306,40 +306,40 @@ Ecbuild has its own options which can be inspected by running :code:`ecbuild --h
 Here is sample output:
 
 .. code:: bash
-    
+
     >> ecbuild --help
 
     USAGE:
-    
+
       ecbuild [--help] [--version] [--toolchains]
       ecbuild [option...] [--] [cmake-argument...] <path-to-source>
       ecbuild [option...] [--] [cmake-argument...] <path-to-existing-build>
-    
+
     DESCRIPTION:
-    
+
       ecbuild is a build system based on CMake, but providing a lot of macro's
       to make it easier to work with. Upon execution,
       the equivalent cmake command is printed.
-    
+
       ecbuild/cmake must be called from an out-of-source build directory and
       forbids in-source builds.
-    
+
     SYNOPSIS:
-    
+
         --help         Display this help
         --version      Display ecbuild version
         --toolchains   Display list of pre-installed toolchains (see below)
-    
-    
+
+
     Available values for "option":
-    
+
         --cmakebin=<path>
               Set which cmake binary to use. Default is 'cmake'
-    
+
         --prefix=<prefix>
               Set the install path to <prefix>.
               Equivalent to cmake argument "-DCMAKE_INSTALL_PREFIX=<prefix>"
-    
+
         --build=<build-type>
               Set the build-type to <build-type>.
               Equivalent to cmake argument "-DCMAKE_BUILD_TYPE=<build-type>"
@@ -348,7 +348,7 @@ Here is sample output:
                  - release : Highest optimization level, for best performance
                  - bit : Highest optimization level while staying bit-reproducible
                  - ...others depending on project
-    
+
         --log=<log-level>
               Set the ecbuild log-level
               Equivalent to "-DECBUILD_LOG_LEVEL=<log-level>"
@@ -360,19 +360,19 @@ Here is sample output:
                  - CRITICAL
                  - OFF
               Every choice outputs also the log-levels listed below itself
-    
+
         --static
               Build static libraries.
               Equivalent to "-DBUILD_SHARED_LIBS=OFF"
-    
+
         --dynamic, --shared
               Build dynamic libraries (usually the default).
               Equivalent to "-DBUILD_SHARED_LIBS=ON"
-    
+
         --config=<config>
               Configuration file using CMake syntax that gets included
               Equivalent to cmake argument "-DECBUILD_CONFIG=<config-file>"
-    
+
         --toolchain=<toolchain>
               Use a platform specific toolchain, containing settings such
               as compilation flags, locations of commonly used dependencies.
@@ -380,68 +380,68 @@ Here is sample output:
               pre-installed toolchain provided with ecbuild. For a list of
               pre-installed toolchains, run "ecbuild --toolchains".
               Equivalent to cmake argument "-DCMAKE_TOOLCHAIN_FILE=<toolchain-file>"
-    
+
         --cache=<ecbuild-cache-file>    (advanced)
               A file called "ecbuild-cache.cmake" is generated during configuration.
               This file can be moved to a safe location, and specified for future
               builds to speed up checking of compiler/platform capabilities. Note
               that this is only accelerating fresh builds, as cmake internally
               caches also. Therefore this option is *not* recommended.
-    
+
         --build-cmake[=<prefix>]
               Automatically download and build CMake version 3.5.2.
               Requires an internet connection and may take a while. If no prefix
               is given, install into /Users/stephenh/projects/jedi-docs/docs.
-    
+
         --dryrun
               Don't actually execute the cmake call, just print what would have
               been executed.
-    
-    
+
+
     Available values for "cmake-argument":
-    
+
         Any value that can be usually passed to cmake to (re)configure the build.
         Typically these values start with "-D".
             example:  -DENABLE_TESTS=ON  -DENABLE_MPI=OFF  -DECKIT_PATH=...
-    
+
         They can be explicitly separated from [option...] with a "--", for the case
         there is a conflicting option with the "cmake" executable, and the latter's
         option is requested.
-    
+
     ------------------------------------------------------------------------
-    
+
     NOTE: When reconfiguring a build, it is only necessary to change the relevant
     options, as everything stays cached. For example:
       > ecbuild --prefix=PREFIX .
       > ecbuild -DENABLE_TESTS=ON .
-    
+
     ------------------------------------------------------------------------
-    
+
     Compiling:
-    
+
       To compile the project with <N> threads:
         > make -j<N>
-    
+
       To get verbose compilation/linking output:
         > make VERBOSE=1
-    
+
     Testing:
-    
+
       To run the project's tests
         > ctest
-    
+
       Also check the ctest manual/help for more options on running tests
-    
+
     Installing:
-    
+
       To install the project in location PREFIX with
            "--prefix=PREFIX" or
            "-DCMAKE_INSTALL_PREFIX=PREFIX"
         > make install
-    
+
     ------------------------------------------------------------------------
     ECMWF"
-    
+
     >>
 
 
@@ -451,8 +451,8 @@ You can pass cmake command line options to cmake with ecbuild by proceeding them
 
 .. code:: bash
 
-    ecbuild -- --trace <path_to_bundle>  # example that adds the --trace option to the cmake call	  
-    
+    ecbuild -- --trace <path_to_bundle>  # example that adds the --trace option to the cmake call
+
 It is recommended to choose one of the JEDI repositories and look through all of the
 CMakeLists.txt files.
 This will help you get oriented in how these files are used to piece together the build,

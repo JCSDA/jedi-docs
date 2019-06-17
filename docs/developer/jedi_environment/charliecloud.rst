@@ -1,7 +1,7 @@
 .. _top-charliecloud:
 
 Charliecloud
-=======================
+============
 
 `Charliecloud <https://hpc.github.io/charliecloud/index.html>`_ is similar to :doc:`Singularity <singularity>` in that it is a software container service.  However, it has one significant advantage over Singularity in that **it does not require root privileges** to install the Charliecloud software or to run Charliecloud containers.  This can be a huge advantage, particularly on HPC systems where users generally do not have root privileges and where system administrators are often reluctant to install singularity because of security concerns.
 
@@ -16,27 +16,27 @@ In the documentation that follows we focus only on what you need to know as a us
 .. _Charliecloud-install:
 
 Installing Charliecloud
-------------------------
+-----------------------
 
-If you are using a Vagrant virtual machine that you created with the JEDI Vagrantfile as described on our :doc:`Vagrant page <vagrant>`, then you can skip this step: Charliecloud is already installed.  
+If you are using a Vagrant virtual machine that you created with the JEDI Vagrantfile as described on our :doc:`Vagrant page <vagrant>`, then you can skip this step: Charliecloud is already installed.
 
 The Charliecloud Documentation pages have thorough `Installation Instructions <https://hpc.github.io/charliecloud/install.html>`_.  This is the most up-to-date documentation available and if you have any problems with the procedure describe here we refer to you that page for troubleshooting.
 
 Installing on Mac OS and Windows systems
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Like Singularity, Charliecloud relies on linux mount namespaces to control the set of filesystem mounts that are visible to a process.  Neither Mac nor Windows operating systems currently support such mount namespaces.
+Like Singularity, Charliecloud relies on Linux mount namespaces to control the set of filesystem mounts that are visible to a process.  Neither Mac nor Windows operating systems currently support such mount namespaces.
 
-So, if you are using a Mac or Windows laptop, we recommend that you install a virtual machine provider like `Vagrant <https://www.vagrantup.com/>`_.  Instructions on how to do so are provided on our :doc:`JEDI Vagrant Page <vagrant>`.  This will allow you to create a linux virtual machine on your computer where you can install Charliecloud and run JEDI.
+So, if you are using a Mac or Windows laptop, we recommend that you install a virtual machine provider like `Vagrant <https://www.vagrantup.com/>`_.  Instructions on how to do so are provided on our :doc:`JEDI Vagrant Page <vagrant>`.  This will allow you to create a Linux virtual machine on your computer where you can install Charliecloud and run JEDI.
 
-You are free to choose what type of linux operating system you want to have for your Vagrant virtual machine.  In much of what follows, we will use ubuntu as as an example, and in particular ubuntu 18.04.  We recommend this environment for running Charliecloud, in part because it has a more up-to-date version of :code:`bash` than the ubuntu 16.04 bento box available from virtualbox.  However, most recent linux varieties (including ubuntu 16.04) should be sufficient, as long at they support mount namespaces (see the :ref:`linux installation section <linux-install>` for further information.
+You are free to choose what type of linux operating system you want to have for your Vagrant virtual machine.  In much of what follows, we will use Ubuntu as as an example, and in particular Ubuntu 18.04.  We recommend this environment for running Charliecloud, in part because it has a more up-to-date version of :code:`bash` than the Ubuntu 16.04 bento box available from virtualbox.  However, most recent Linux varieties (including Ubuntu 16.04) should be sufficient, as long at they support mount namespaces (see the :ref:`linux installation section <linux-install>` for further information.
 
 .. _linux-install:
 
 Installing on Linux Systems
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To install Charliecloud, you'll need a relatively recent version of linux that is capable of creating mount namespaces.  Most linux implementations from the last few years should be sufficient.  If you want to check the version of the linux kernel, you can enter:
+To install Charliecloud, you'll need a relatively recent version of Linux that is capable of creating mount namespaces.  Most Linux implementations from the last few years should be sufficient.  If you want to check the version of the Linux kernel, you can enter:
 
 .. code:: bash
 
@@ -44,15 +44,15 @@ To install Charliecloud, you'll need a relatively recent version of linux that i
 
 Charliecloud recommends a version of 4.4 or later.
 
-You'll also need a C compiler and some basic software tools.  These may already be installed if you are using an HPC system or a linux PC. However, if you are starting from a bare installation, such as a Vagrant virtual machine or a cloud computing instance (e.g. Amazon EC2), you may need to install these yourself.  On ubuntu or Debian systems you can do this with:
+You'll also need a C compiler and some basic software tools.  These may already be installed if you are using an HPC system or a linux PC. However, if you are starting from a bare installation, such as a Vagrant virtual machine or a cloud computing instance (e.g. Amazon EC2), you may need to install these yourself.  On Ubuntu or Debian systems you can do this with:
 
 .. code:: bash
 
   sudo apt-get update
   sudo apt-get install build-essential python
 
-Or, on CentOS, Fedora, Amazon Linux, and similar systems, you might instead enter:  
-  
+Or, on CentOS, Fedora, Amazon Linux, and similar systems, you might instead enter:
+
 .. code:: bash
 
   sudo yum update
@@ -86,11 +86,11 @@ Now add the Charliecloud executables to your path.  You may wish to do this inte
    .. code:: bash
 
 	  export CH_TEST_PERMDIRS=skip
-  
+
 .. _build_charliejedi:
 
-Building the JEDI environment 
--------------------------------
+Building the JEDI environment
+-----------------------------
 
 Once Charliecloud is installed on your system, the next step is to make a home for the JEDI Charliecloud container and download it as follows (you may also have to install wget if it's not included in the developer tools mentioned above):
 
@@ -108,7 +108,7 @@ This looks like a normal gzipped tar file.  However, **you should not upack it w
 
 This may take a few minutes so be patient.  When done, it should give you a message like :code:`./ch-jedi-latest unpacked ok` and it should have created a directory by that same name.   In our example, this directory would be located in :code:`~/jedi/ch-container/ch-jedi-latest`.
 
-This is the JEDI Charliecloud container.  It's functionally equivalent to a Singularity image file but it appears as a directory rather than a single file.  Furthermore, that directory contains a complete, self-contained linux filesystem, complete with its own system directories like :code:`/usr/local`, :code:`/bin`, and :code:`/home`.
+This is the JEDI Charliecloud container.  It's functionally equivalent to a Singularity image file but it appears as a directory rather than a single file.  Furthermore, that directory contains a complete, self-contained Linux filesystem, complete with its own system directories like :code:`/usr/local`, :code:`/bin`, and :code:`/home`.
 
 To enter the Charliecloud container, type:
 
@@ -116,17 +116,17 @@ To enter the Charliecloud container, type:
 
    ch-run -c $HOME ~/jedi/ch-container/ch-jedi-latest -- bash
 
-Let's reconstruct this command to help you understand it and customize it as you wish.   
+Let's reconstruct this command to help you understand it and customize it as you wish.
 
-The :code:`ch-run` command runs a command in the Charliecloud container.  
+The :code:`ch-run` command runs a command in the Charliecloud container.
 
 The :code:`-c $HOME` option tells Charliecloud to enter the container in the user's home directory, which is the same inside and outside the container.  If this option is omitted, you will enter the container in the root directory.  Typing :code:`cd` will then place you in your home directory.
 
 The :code:`~/jedi/ch-container/ch-jedi-latest` argument is the name of the container you want Charliecloud to run. This is the name of the directory created by the :code:`ch-tar2dir` command above.  If you run this from the container's parent directory, in this case :code:`~/jedi/ch-container`, then you can omit the path.
 
-Finally, we have to tell :code:`ch-run` what command we want it to run.  The command (including options and arguments) that comes after the double hyphen :code:`--` will be executed within the container.  If you were to run a single command, like :code:`-- ls -alh`, then :code:`ch-run` will enter the container, execute the command, and exit.  However, in this example, we started up a bash shell, with :code:`-- bash`.  So, **all commands that follow will be exectued inside the container.  In order to exit the container, you have to explicitly type exit.**  This brings us to this important warning:  
+Finally, we have to tell :code:`ch-run` what command we want it to run.  The command (including options and arguments) that comes after the double hyphen :code:`--` will be executed within the container.  If you were to run a single command, like :code:`-- ls -alh`, then :code:`ch-run` will enter the container, execute the command, and exit.  However, in this example, we started up a bash shell, with :code:`-- bash`.  So, **all commands that follow will be executed inside the container.  In order to exit the container, you have to explicitly type exit.**  This brings us to this important warning:
 
-.. warning:: 
+.. warning::
 
    **When you enter the Charliecloud container, your prompt may not change!!** So, it can be very difficult to tell whether or not you are in the Charliecloud container or not.  One trick is to enter the command :code:`eckit-version`.  If you do not have eckit installed on the host system (which may be a vagrant virtual machine or an amazon EC2 instance), then this command will only return a valid result if you are indeed inside the Charliecloud container.  Note that this is different from Singularity, which does change your prompt when you enter the container.
 
@@ -147,22 +147,22 @@ For example, to run and test ufo-bundle, you can proceed as follows:
     make -j4
     ctest
 
-.. warning:: 
+.. warning::
 
-   On some systems (notably Cheyenne) it may be necessary to explicity add :code:`/usr/local/lib` to your :code:`LD_LIBRARY_PATH` environment variable within the Charliecloud container, as follows:
+   On some systems (notably Cheyenne) it may be necessary to explicitly add :code:`/usr/local/lib` to your :code:`LD_LIBRARY_PATH` environment variable within the Charliecloud container, as follows:
 
    .. code::
-      
+
       export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 General Charliecloud Tips
-----------------------------
+-------------------------
 
 If you're running a Charliecloud container from within :doc:`Vagrant <vagrant>`, the most important tip when using Charliecloud (because it is easy to forget) is to **remember to type exit twice** when you are finished working; once to leave the Charliecloud container and a second time to leave Vagrant.
 
-Another important thing to realize (whether you are running Charliecloud from Vagrant, from AWS, from an HPC system, or from anywhere else), is that many directories on the host are still visible to you from within the container.  This includes your home directory.  So, it is easy to access files from within the container - you should be able to see and edit everything in your home directory.  
+Another important thing to realize (whether you are running Charliecloud from Vagrant, from AWS, from an HPC system, or from anywhere else), is that many directories on the host are still visible to you from within the container.  This includes your home directory.  So, it is easy to access files from within the container - you should be able to see and edit everything in your home directory.
 
-In addition to the user's home directory, a few system directories are also mounted and accessible from within the container.  This includes :code:`/dev`, :code:`/proc`, and :code:`/sys`.  But, notably, it *does not* include :code:`/usr/local`; This is the whole point of the container - to re-define the software that is installed on your system without conflicting with what you have installed already. 
+In addition to the user's home directory, a few system directories are also mounted and accessible from within the container.  This includes :code:`/dev`, :code:`/proc`, and :code:`/sys`.  But, notably, it *does not* include :code:`/usr/local`; This is the whole point of the container - to re-define the software that is installed on your system without conflicting with what you have installed already.
 
 These mounted directories should be sufficient for many users.  However, you have the option to also mount any additional directories of your choice.  An important example is for Mac or Windows users who run Charliecloud from within a Vagrant virtual machine.  The Vagrant home directory is visible from within the Charliecloud container but this directory is typically not accessible from the host operating system, e.g. MacOS.
 
@@ -182,29 +182,29 @@ For example, if you create a directory called :code:`/home/vagrant/vagrant_data`
 
     ch-run -b /vagrant_data:/home/vagrant/vagrant_data ch-jedi-latest -- bash
 
-Then, when you are inside the container, any files that you put in :code:`/home/vagrant/vagrant_data` will be accessible from Mac OS.  
+Then, when you are inside the container, any files that you put in :code:`/home/vagrant/vagrant_data` will be accessible from Mac OS.
 
 .. _ch-hpc:
 
 Tips for HPC Systems
-----------------------------
+--------------------
 
 By default, Charliecloud does not change environment variables (with a few exceptions).  The JEDI Charliecloud container does explicitly set a few variables such as :code:`NETCDF`, :code:`FC`, :code:`PIO`, etc. (for bash shells) but it's still good practice to clean your environment by purging other modules before you enter your :code:`ch-run` command.  Most HPC systems use some form of environment modules to load software packages.  So "cleaning your environment" usually just looks like this:
 
 .. code::
-      
+
       module purge
 
 Another common practice on HPC systems is to run applications in designed work or scratch directories instead of one's home directory.  This is often required to have access to sufficient disk space.  The JEDI Charliecloud and Singularity containers includes a :code:`/worktmp` directory that can be used as a mount point for a system work space.  For example, on Cheyenne one may wish to do this:
 
 .. code::
-      
+
       ch-run -b/glade/work/`whoami`:/worktmp <path>/ch-jedi-latest -- bash
 
 This is good, but for substantial parallel applications there is an approach that is even better for MPI jobs.  System administrators at HPC centers spend a lot of time and effort configuring their MPI implementations to take full advantage of the system hardware.  If you run the mpi implementation inside the container (currently openmpi), you won't be able to take advantage of these site-specific configurations and optimizations.  Fortunately, there is a way out of this dilemma: you can invoke the parallel process manager, :code:`mpirun` or :code:`mpiexec` outside the container and then have each MPI process enter its own container.  Again using Cheyenne as an example, you can do this in a batch script like this:
 
 .. code::
-      
+
       #!/bin/bash
       #PBS -N multicon
       #PBS -A <account-number>
@@ -236,6 +236,6 @@ This is usually more efficient than the alternative of running a single containe
 
       export TMPDIR=/worktmp/scratch
       ch-run -b $WORK:/worktmp -c $WORKDIR $CHDIR/ch-jedi-latest -- mpirun -np 144 $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml
-      
-This example illustrates **another important tip** to keep in mind.  Openmpi uses the directory :code:`$TMPDIR` to store temporary files during runtime.  On Cheyenne, this is set to :code:`/glade/scratch/`whoami`` by default.  But this directory is not accessible from the container so, unless we do something about this, our executable will fail.  Redefining it as :code:`/worktmp/scratch` as shown here does the trick, provided that associated external directory :code:`$WORK/scratch` exists.  Recall that Charliecloud does not change environment variables so we can set it outside the container as shown.  A similar workaround may also be required on other HPC systems.
+
+This example illustrates **another important tip** to keep in mind.  Openmpi uses the directory :code:`$TMPDIR` to store temporary files during runtime.  On Cheyenne, this is set to :code:`/glade/scratch/$(whoami)` by default.  But this directory is not accessible from the container so, unless we do something about this, our executable will fail.  Redefining it as :code:`/worktmp/scratch` as shown here does the trick, provided that associated external directory :code:`$WORK/scratch` exists.  Recall that Charliecloud does not change environment variables so we can set it outside the container as shown.  A similar workaround may also be required on other HPC systems.
 

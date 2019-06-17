@@ -1,8 +1,8 @@
-#########################################
+######################
 Creating documentation
-#########################################
+######################
 
-For writing guides and manuals, we are using 
+For writing guides and manuals, we are using
 `Sphinx <http://www.sphinx-doc.org/en/master/index.html>`_ which is a Python package.
 
     `Click here for tips on getting started with Sphinx <../developer/developer_tools/getting-started-with-sphinx.html>`_

@@ -15,7 +15,7 @@ Table of Contents
 
 .. toctree::
    :maxdepth: 2
-   
+
    background/index.rst
    working-practices/index.rst
    developer/developer_tools/index.rst
@@ -89,7 +89,7 @@ The review process determines if the scientific and technical quality are suffic
 at any point in time.
 
 The decision not to include a certain aspect in the community code is not a
-judgment on its scientific excellence.
+judgement on its scientific excellence.
 It could be that aspects that are critical for one user are useful only for that user.
 In that case, the code should be kept in a separate repository and it is the build
 system that brings the codes together and includes what is required for a given

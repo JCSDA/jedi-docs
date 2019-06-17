@@ -1,7 +1,7 @@
 .. _top-ioda-intro:
 
 IODA Introduction
-=======================
+=================
 
 Overview
 --------
@@ -16,7 +16,7 @@ As shown in :numref:`ioda-hlev-dflow`, data flow in two directions through the I
 
    High level data flow through the IODA subsystem
 
-Data stored in observation data "tanks" at different centers are extracted, loaded into memory and presented through an interface to the JEDI OOPS and UFO subsystems. 
+Data stored in observation data "tanks" at different centers are extracted, loaded into memory and presented through an interface to the JEDI OOPS and UFO subsystems.
 The DA run produces various results such as H(x), O-A, and O-B, which are (selectively) written out into files that can be used for plotting and other diagnostic purposes.
 
 The goal for IODA is to be able to handle an immense amount of data from the tanks (:numref:`ioda-hlev-dflow`, left side) without overwhelming the DA run.
