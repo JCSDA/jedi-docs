@@ -11,7 +11,7 @@ On the observation data side there exist huge amounts of data, thus creating the
 The primary mechanism for accomplishing this is to filter out all of the observations that lie outside the current DA timing window, and present only that subset to be read into memory during a DA run.
 
 There are many different types of observations that come with a variety of ways that the observation data are organized.
-To the extent that is feasible, it is desireable to devise a common data organization of which all of these observation types can employ.
+To the extent that is feasible, it is desirable to devise a common data organization of which all of these observation types can employ.
 The memory representation of observation data in IODA has started with a prototype along these lines that successfully places a number of observation types (radiosonde, aircraft, AMSU-A, GNSSRO, plus several more) into a common organization.
 
 At this point, we have a prototype architecture defined for the handling of files containing observation data (:numref:`ioda-file-handling`).
@@ -38,7 +38,7 @@ A prototype interface, using a common data organization (:numref:`ioda-inmem-sch
    :height: 400px
    :align: center
 
-   Schematic view of the IODA in-memory represention
+   Schematic view of the IODA in-memory representation
 
 Central to this scheme are the 2D arrays holding the observation data quantities (ObsValue, ObsError, HofX in :numref:`ioda-inmem-schematic`).
 Each row of the ObsData array holds a particular vector of observation-related data.
@@ -53,10 +53,10 @@ In the case of using vectors for each element, the ObsData array effectively bec
 
 In addition to the ObsData arrays, two more arrays are added that contain meta data.
 The Location Meta Data array (:numref:`ioda-inmem-schematic`) contains rows, of length nlocs, corresponding to meta data oriented by location.
-Examples of Location Meta Data are quatities that describe each location such as Latitude, Longitude, Date/Time, and descriptive quantities associated with locations such the Scan Angle of an satellite-borne instrument.
+Examples of Location Meta Data are quantities that describe each location such as Latitude, Longitude, Date/Time, and descriptive quantities associated with locations such the Scan Angle of an satellite-borne instrument.
 
 The Variable Meta Data array is analogous to the Location Meta Data array, except that it holds meta data associated with the variables in the ObsData arrays.
-Examples include the variable names, and in the case of some instruments, channel numbers and channel freqencies.
+Examples include the variable names, and in the case of some instruments, channel numbers and channel frequencies.
 
 A first pass implementation of this interface has been implemented in the `ioda github repository <https://github.com/JCSDA/ioda.git>`_.
 This implementation is entirely in C++ and is successfully handling a small set of observation types including radiosonde, aircraft, ADO, AMSU-A, GNSSRO and Marine (SST, sea ice thickness and fraction, etc.) test cases.
@@ -75,7 +75,7 @@ Data Tanks
 The means for converting observation data in the external data tanks into files that IODA can read are being handled by a number of scripts and programs in the `ioda-converters github repository <https://github.com/JCSDA/ioda-converters.git>`_.
 This code is relatively new and under active development.
 The goal is to organize the code into specific readers for each data tank format, all tied into a general IODA file writer, namely the IodaIO abstract interface class shown in :numref:`ioda-file-handling`.
-Organizing this way will allow us to experiment with differnt file formats, for the IODA datafile piece (:numref:`ioda-file-handling`), with minimal interference for the clients of the IodaIO class.
+Organizing this way will allow us to experiment with different file formats, for the IODA datafile piece (:numref:`ioda-file-handling`), with minimal interference for the clients of the IodaIO class.
 
 Diagnostic Files
 ^^^^^^^^^^^^^^^^
@@ -213,7 +213,7 @@ Typically, only meta data are used in the actual H(x) calculations.
 * The :code:`vect` argument is a Fortran array for holding the data values
     * The client (caller) is responsible for allocating the memory for the :code:`vect` argument
 
-Following is an example from the CRTM radiance simulator, where meta data from the instrument are required for doing the simluation.
+Following is an example from the CRTM radiance simulator, where meta data from the instrument are required for doing the simulation.
 
 .. code:: Fortran
 

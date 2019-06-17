@@ -1,5 +1,5 @@
 Adding a New Test
-======================
+=================
 
 So, you've developed a new feature in some JEDI repository and now you want to test it.  You have come to the right place.
 
@@ -9,7 +9,7 @@ The first thing to emphasize is that there are many levels of sophistication on 
 
 Wherever you are on this spectrum of possibilities, we hope this document will be useful.  Just be aware that **you are under no obligation to follow all the steps**.  If the infrastructure for that step is already in place, then feel free to proceed to the next step.
 
-In any case, it is imperative that you first :doc:`read this document that describes how tests are organized, implemented and executed within JEDI <unit_testing>`.  In particular, please read :ref:`our vision <test-framework>` on how we would like the developmont of the JEDI testing framework to proceed.
+In any case, it is imperative that you first :doc:`read this document that describes how tests are organized, implemented and executed within JEDI <unit_testing>`.  In particular, please read :ref:`our vision <test-framework>` on how we would like the development of the JEDI testing framework to proceed.
 
 Step 1: Create a File for your Test Application
 -----------------------------------------------
@@ -36,9 +36,9 @@ Since we'll be building off of :code:`oops::Test` and the eckit unit test suite,
 .. code:: C++
 
    #define ECKIT_TESTING_SELF_REGISTER_CASES 0
-  
+
 And the contents of the file should be encapsulated within the :code:`test` namespace, to distinguish it from the corresponding class of the same name in the :code:`src` directory.
-   
+
 What MyClass.h **Should not** Contain
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -89,9 +89,9 @@ Note that this, like other oops test objects, is a class template, with a differ
 So, proceeding with our example, it would be advisable to begin by defining a :code:`test::MyClassFixture` class in :code:`test/mydir/MyClass.h` to facilitate the creation of useful objects as specified in the configuration file.  For many more examples see the various files in :code:`oops/src/test/interface`.
 
 Step 3: Define Your Unit Tests
--------------------------------
+------------------------------
 
-Now the next step would be to define the unit tests themselves as functions within :code:`test/mydir/MyClass.h`.  As a guide you can use the illustrative example in :ref:`Anatomy of a Unit Test <unit-test>` or the many examples to be found in :code:`oops/src/test/interface`.    The possibilites are endless, but just remember two things:
+Now the next step would be to define the unit tests themselves as functions within :code:`test/mydir/MyClass.h`.  As a guide you can use the illustrative example in :ref:`Anatomy of a Unit Test <unit-test>` or the many examples to be found in :code:`oops/src/test/interface`.    The possibilities are endless, but just remember two things:
 
    1. Include one or more calls to :ref:`eckit check functions <unit-test>`
    2. Use your test fixture to create objects based on the information in the configuration file
@@ -132,7 +132,7 @@ In order for eckit to run your tests, you have to :ref:`register <init-test>` ea
 
 So, we would proceed by defining :code:`test::MyClass` in a similar way.  Just specify the test object (here :code:`ts`) and add each of your test functions one by one using :code:`emplace_back` as shown.
 
-Then no more action is required for :code:`test/mydir/MyClass.h`; Our :code:`test::MyClass::register_tests()` method will be executed automatically when we pass :code:`test::MyClass` as an application to :code:`oops::Run` (see :ref:`Initialization and Execution of Unit Tests <init-test>`). 
+Then no more action is required for :code:`test/mydir/MyClass.h`; Our :code:`test::MyClass::register_tests()` method will be executed automatically when we pass :code:`test::MyClass` as an application to :code:`oops::Run` (see :ref:`Initialization and Execution of Unit Tests <init-test>`).
 
 Step 6: Create an Executable
 ----------------------------
@@ -168,7 +168,7 @@ That's it.  Note that the include paths for a given repository are specified in 
 
 
 So, the first include statement in the :code:`TestMyClass.cc` example above should have no problem finding :code:`oops/src/oops/runs/Run.h`, where the :code:`oops::Run` class is defined.
-    
+
 It is likely that the :code:`src` directory of the working repository is also in the include path. So, in the above example we specified the relative path of our :code:`MyClass.h` file in the :code:`test` directory so the compiler does not confuse it with the file of the same name in the :code:`src` directory.
 
 In some situations it might be beneficial to define a modified Run object that does some additional model-specific set up.  Here is an example from :code:`fv3-jedi/test/executables/TestModel.cc`
@@ -183,30 +183,30 @@ In some situations it might be beneficial to define a modified Run object that d
      fv3jedi::RunFV3JEDI run(argc, argv);
      test::Model<fv3jedi::FV3JEDITraits> tests;
      run.execute(tests);
-     return 0; 
+     return 0;
    };
 
 However, :code:`fv3jedi::RunFV3JEDI` is a sub-class of :code:`oops::Run` and it uses the :code:`execute()` method of its parent.  So, the execution of the test is essentially the same as the previous example.
 
-Also, it is worth noting that the application used here is the :code:`fv3jedi::FV3JEDITraits` instance of :code:`test::Model<MODEL>`, which is already defined in :code:`oops/src/test/interface/Model.h`.  So, in this case there would be no need to create a new test application as described in Steps 1-5.    
+Also, it is worth noting that the application used here is the :code:`fv3jedi::FV3JEDITraits` instance of :code:`test::Model<MODEL>`, which is already defined in :code:`oops/src/test/interface/Model.h`.  So, in this case there would be no need to create a new test application as described in Steps 1-5.
 
 Step 7: Create a Configuration File
 -----------------------------------
 
 Along with the executable, the :doc:`configuration file <configuration>` is the way to tell JEDI what you want it to do.  We reserve a detailed description of how to work with JEDI configuration files for :doc:`another document <configuration>`.
 
-Here we'll just say that the proper place to put it is in the :code:`test/testinput` directory of the JEDI repository that you are working with.  Or, if your tests are located in :code:`test/mydir`, another option would be to put the associated input files in :code:`test/mydir/testinput`.  If there are already some files there, you can use them as a template for creating your own.  Or, you can look for :code:`testinput` files from other repositories that test similiar functionality.
+Here we'll just say that the proper place to put it is in the :code:`test/testinput` directory of the JEDI repository that you are working with.  Or, if your tests are located in :code:`test/mydir`, another option would be to put the associated input files in :code:`test/mydir/testinput`.  If there are already some files there, you can use them as a template for creating your own.  Or, you can look for :code:`testinput` files from other repositories that test similar functionality.
 
 Let's call our configuration file :code:`test/testinput/myclass.yaml`.  To proceed, we would create the file and then edit it to activate the code features that we wish to test.
 
 As mentioned way back in Step 1, some tests do not require new infrastructure.  Some new tests only require a different configuration file to activate a different feature of the code.  If this is the case for you, then you can just duplicate an existing configuration file and modify it accordingly, skipping Steps 1-6.
 
 Step 8: Register all files with CMake and CTest
-------------------------------------------------
+-----------------------------------------------
 
 In steps 1-7 above we have created or modified three files, namely the source code for our tests, :code:`test/mydir/MyClass.h`, the executable :code:`test/executables/TestMyClass.cc`, and the configuration file :code:`test/testinput/myclass.yaml`.  In order for CMake to compile and run these files, we have to let CMake know they exist.
 
-We achive this by editing the file :code:`test/CMakeLists.txt`.  This is where the tests are managed from the perspective of CMake and CTest.
+We achieve this by editing the file :code:`test/CMakeLists.txt`.  This is where the tests are managed from the perspective of CMake and CTest.
 
 We'll start with the configuration file because every new test you add is likely to have a new configuration file.  Edit the CMakeLists.txt file and look for a list of input files like this one from :code:`oops/qg/test/CMakeLists.txt`:
 
@@ -237,7 +237,7 @@ Finally, at long last, you can register your test with CTest.  We can do this wi
 
 The TARGET option defines the name of the test.  The use of TARGET, as opposed to COMMAND, tells CMake to compile the executable before running it. This requires that we specify the executable with the SOURCES argument, as shown.
 
-The configuration file is specified using the ARGS argument to :code:`ecbuild_add_test()`.  This will be implemented as a command-line argument to the executable as described in :ref:`Manual Execution <manual-testing>`.  The LIBS argument specifies the relevant source code through a previous call to :code:`ecbuild_add_library()`.  
+The configuration file is specified using the ARGS argument to :code:`ecbuild_add_test()`.  This will be implemented as a command-line argument to the executable as described in :ref:`Manual Execution <manual-testing>`.  The LIBS argument specifies the relevant source code through a previous call to :code:`ecbuild_add_library()`.
 
 So, our example would look something like this:
 
@@ -256,7 +256,7 @@ There are many other useful arguments for :code:`ecbuild_add_test()`.  As usual,
 .. _add-app-test:
 
 Adding an Application Test
----------------------------
+--------------------------
 
 The steps above are specific to Unit Tests.  You could in principle follow much of the same procedure to create an :ref:`Application test <jedi-tests>` but since these are usually used to test existing :ref:`Applications <test-apps>`, steps 1-5 would usually not be necessary.
 
@@ -276,5 +276,3 @@ You would add your test to the appropriate CMakeLists.txt file with :code:`ecbui
 Here we include a TYPE SCRIPT argument and we specify :code:`command.sh` as the command to be executed.  The ARGS argument now includes the two files to be compared, namely the output of our application :code:`${CMAKE_BINARY_DIR}/bin/qg_forecast.x testinput/truth.yaml` (set off by quotes) and our reference file, :code:`testoutput/truth.test`.  We include the executable application in the DEPENDS argument to make sure that CMake knows it needs to compile this application before running the test.
 
 However, before you add an Application test we must warn you :ref:`again <app-testing>` that the :code:`compare.sh` script may run into problems if you run your application on multiple MPI threads.  We are currently working on a more robust framework for Application testing.
-
-		  

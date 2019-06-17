@@ -1,9 +1,9 @@
 .. _top-modules:
 
 JEDI Modules
-=======================
+============
 
-If you are running JEDI on a personal computer (Mac, Windows, or linux) we recommend that you use either the :doc:`JEDI Singularity container <singularity>` or the :code:`JEDI Charliecloud container <charliecloud>`.  These provide all of the necessary software libraries for you to build and run JEDI.
+If you are running JEDI on a personal computer (Mac, Windows, or Linux) we recommend that you use either the :doc:`JEDI Singularity container <singularity>` or the :code:`JEDI Charliecloud container <charliecloud>`.  These provide all of the necessary software libraries for you to build and run JEDI.
 
 If you are running JEDI on an HPC system, :doc:`Charliecloud <charliecloud>` is still a viable option.  However, on selected HPC systems that are accessed by multiple JEDI users we offer another option, namely **JEDI Modules**.
 
@@ -29,9 +29,9 @@ These modules are functionally equivalent to the JEDI Singularity and Charlieclo
 We begin with some general instructions on how to use modules that apply across all systems.  We then give more detailed usage tips for specific systems.
 
 General Usage
----------------
+-------------
 
-As a first step, it is a good idea to remove pre-exising modules that might conflict with the software libraries contained in the JEDI modules.  Experienced users may wish to do this selectively to avoid disabling commonly used packages that are unrelated to JEDI.  However, a quick and robust way to ensure that there are no conflicts is to unload all modules with
+As a first step, it is a good idea to remove pre-existing modules that might conflict with the software libraries contained in the JEDI modules.  Experienced users may wish to do this selectively to avoid disabling commonly used packages that are unrelated to JEDI.  However, a quick and robust way to ensure that there are no conflicts is to unload all modules with
 
 .. code :: bash
 
@@ -70,7 +70,7 @@ Of course, this example will only work if a module named :code:`jedi/gnu` exists
 
    module spider jedi
 
-This will include alternative versions of the main jedi module (indicated with a slash as in :code:`jedi/gnu` above) and it may also include supplementarly modules for specific bundles.    These are usually indicated with a hyphen.  So, in summary, the full procedure for initializing the environment for some arbitrary bundle :code:`<A>` might look like this:
+This will include alternative versions of the main jedi module (indicated with a slash as in :code:`jedi/gnu` above) and it may also include supplementary modules for specific bundles.    These are usually indicated with a hyphen.  So, in summary, the full procedure for initializing the environment for some arbitrary bundle :code:`<A>` might look like this:
 
 .. code :: bash
 
@@ -88,7 +88,7 @@ The jedi module is really multiple nested modules.   To list the modules you cur
 When you are happy with this, you are ready to :ref:`build and run your JEDI bundle <build-jedi>`.
 
 Theia
----------
+-----
 
 Theia is an HPC system located in NOAA's NESCC facility in Fairmont, WV.  On Theia, users can access the installed jedi modules by first entering
 
@@ -121,7 +121,7 @@ Some system-specific tips for Theia include:
 
 
 Cheyenne
----------
+--------
 
 `Cheyenne <https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/cheyenne>`_ is a 5.34-petaflops, high-performance computer built for NCAR by SGI. On Cheyenne, users can access the installed jedi modules by first entering
 
@@ -154,10 +154,10 @@ Current options for setting up the JEDI environment include (choose only one)
 
 .. warning::
 
-    Please do not use too many threads to speed up the compilation, Cheyenne system administor might terminate your login node.
+    Please do not use too many threads to speed up the compilation, Cheyenne system administrator might terminate your login node.
 
 Discover
----------
+--------
 
       `Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.  On Discover, users can access the installed JEDI modules by first entering
 

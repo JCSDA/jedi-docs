@@ -1,6 +1,6 @@
-#########################################
+################################
 Forking and cloning repositories
-#########################################
+################################
 
 GitHub and similar tools allow for cloning or forking repositories.
 Cloning is used by developers that have push permission to the official repository.
@@ -15,7 +15,7 @@ In the context of a unified data assimilation and forecasting system, we recomme
 In practice, each developer will work on their own fork of the repository and clone from
 that work for editing code.
 Each developer can push to their own work freely (it is recommended to push often).
-Developers issue a pull request when contributions are ready to be merged in the 
+Developers issue a pull request when contributions are ready to be merged in the
 central repository.
 It is possible for developers to pull branches from each other’s repositories and
 collaborate on a common feature.

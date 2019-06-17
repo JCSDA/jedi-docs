@@ -1,6 +1,6 @@
-#############################
+############################
 JEDI High Level Requirements
-#############################
+############################
 
 As Earth observing systems are constantly evolving and new systems launched, continuous
 scientific developments for exploiting the full potential of the data are necessary.

@@ -1,6 +1,6 @@
-#########################################
+########################
 JEDI General Methodology
-#########################################
+########################
 
 The `requirements for JEDI <requirements.html>`_ are diverse and many aspects are
 very complex in themselves or together.
@@ -42,7 +42,7 @@ adapted to the new interfaces.
 Existing software will be modified to call the refactored parts to prevent divergence
 and maintain a continuously functioning system.
 A subset of interfaces that should be implemented first will be defined so that some
-applications can start using the new interfaces before everything is complete. 
+applications can start using the new interfaces before everything is complete.
 
 For operational applications, it must be ensured that the application of these principles
 will not adversely impact their ability to implement the code or negatively impact efficiency.

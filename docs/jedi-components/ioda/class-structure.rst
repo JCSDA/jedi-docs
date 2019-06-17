@@ -36,7 +36,7 @@ At the top of the structure in OOPS, there is a class, ObsSpaces (note the plura
 Each IODA ObsSpace object instantiated by OOPS ObsSpaces is associated with a corresponding UFO ObsOperator.
 The ObsOperator is the object that simulates observation values, H(x).
 The ObsSpace, ObsOperator pairs form according to observation type (e.g., radiance, radiosonde, aircraft) that only work on those types as opposed to the entire set of observations.
-This breaks the problem up into smaller more managable pieces, and facilitates the observation simulation since each observation type tends to require a different algorithm for its simulation.
+This breaks the problem up into smaller more manageable pieces, and facilitates the observation simulation since each observation type tends to require a different algorithm for its simulation.
 
 Note that there will exist multiple ObsVector objects for two reasons.
 First because of the multiple ObsSpace objects, and second because both actual observations (the y vector) and simulated observations (the H(x) vector) are stored in ObsVectors.
@@ -47,7 +47,7 @@ IODA Data Flow
 
 The primary use of IODA in the JEDI system is to manage the actual observations in the y vector, and simulated observations in the H(x) vector.
 Both of these quantities are observation vectors which are stored in ObsVector objects.
-:numref:`ioda-obj-dflow` depicts the manner in which y and H(x) are presented to JEDI for use in the DA cost function. 
+:numref:`ioda-obj-dflow` depicts the manner in which y and H(x) are presented to JEDI for use in the DA cost function.
 
 .. _ioda-obj-dflow:
 .. figure:: images/IODA_DataFlow.png

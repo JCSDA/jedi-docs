@@ -1,5 +1,5 @@
 Sphinx
-===========================
+======
 
 Sphinx is a Python package that can be used to create documentation in various formats that
 include HTML, LaTex and man pages.
@@ -62,7 +62,7 @@ Also, directories are created for holding the output of make (_build), custom HT
 (_templates) and custom stylesheets (_static).
 
 Sphinx has different "themes" which set the style of your html pages.
-ReadTheDocs can pick up on these themes and if the theme is called "default", then 
+ReadTheDocs can pick up on these themes and if the theme is called "default", then
 ReadTheDocs will substitute its own page style.
 However, sphinx-quickstart writes the conf.py file with a theme called "alabaster".
 To change the theme to default (which looks nice in both Sphinx and ReadTheDocs), do
@@ -87,7 +87,7 @@ Entries in the index are created wherever you place an "index" directive in the 
 .rst files.
 
 reStructuredText is easy to use, yet it has an extensive set of features.
-Probabaly the best way to get going is to look up examples on the web.
+Probably the best way to get going is to look up examples on the web.
 Also, the sphinx website has a great primer for reStructuredText which can be viewed by
 clicking the link below.
 
@@ -105,7 +105,7 @@ Once you are ready to build your documentation, run:
 
 After running make, the output will appear in the _build directory in a subdirectory
 corresponding to the output format you selected (e.g., _build/html for the output of
-"make html").
+``make html``).
 
 HTML pages can be viewed using the URL file form.
 If you built your HTML in the directory
