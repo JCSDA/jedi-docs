@@ -1,8 +1,74 @@
-.. _top-ufo-newobsop:
+.. _top-ufo-qc:
 
-ObsFilters implemented in UFO
-========================================
+Quality Control in UFO
+======================
 
+OOPS Observation Processing Flow
+--------------------------------
+
+Observations can be used in different ways in OOPS-JEDI. In variational data assimilation,
+the initial computation of the observation term of the cost function (J\ :sub:`o`) is where
+most of the quality control takes place.
+
+The flow of this computation in OOPS is as follows::
+
+  CostFunction::evaluate
+    CostJo::initialize
+      ObsFilters::ObsFilters
+      Observer::Observer
+        ObsOperator::variables
+        ObsFilters::requiredGeoVaLs
+    CostFunction::runNL
+      Model::forecast
+        Observer::initialize
+          GeoVaLs::GeoVaLs
+        loop over time steps
+          Observer::process
+            State::getValues
+        end loop over time steps
+        Observer::finalize
+          ObsFilters::priorFilter
+          ObsOperator::simulateObs
+          ObsFilters::postFilter
+    CostJo::finalize
+      ObsErrors::ObsErrors
+      ydep=ysimul-yobs
+
+This needs more explanation here. Just before and just after calling the :code:`simulateObs`
+method, the :code:`Observer` calls the :code:`ObsFilters` :code:`priorFilter` and
+:code:`postFilter` methods. The observation filters are very generic and can perform a
+number of tasks, but mostly they are used for quality control.
+
+Observation Filters
+-------------------
+
+Observation filters are generic and have access to:
+ - Observation values and metadata
+ - Model values at observations locations (GeoVaLs)
+ - Simulated observation value (for post-filter)
+ - Their own private data
+
+Filters are written once and used with many observation types
+Several generic filters already exist
+Entirely controlled from yaml configuration file(s)
+More generic filters will be developed to cover most needs
+
+Creating a new Filter
+---------------------
+
+If your observation operator is different from the above, you may need to create a new
+filter. Typically, all the files for a new filter are in :code:`ufo/src/ufo/filters`.
+
+Filter tests
+------------
+
+All observation filters tests in UFO use the OOPS ObsFilters test from
+:code:`oops/src/test/base/ObsFilters.h`.
+
+Generic QC Filters implemented in UFO
+=====================================
+
+There are a number of exisiting generic filters in the UFO.
 Below is the description of how to configure each of the existing QC filters in UFO. All filters also can use "where" statement, with syntax described in the last section on this page.
 
 Bounds Check Filter

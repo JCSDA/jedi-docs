@@ -6,4 +6,4 @@ UFO
    :maxdepth: 2
 
    newobsop
-   filters
+   qcfilters
