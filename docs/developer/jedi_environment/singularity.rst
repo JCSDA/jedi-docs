@@ -3,11 +3,12 @@
 Singularity
 ===========
 
-In order to appreciate what `Singularity <https://www.sylabs.io/docs/>`_ is and why we use it, it is best to begin with its purpose.  From a JEDI perspective, the purpose of Singularity is to provide a uniform computing environment (software tools, libraries, etc.) that will enable users like you to easily build, compile, and run JEDI across a wide range of computing platforms, from laptops and workstations running Mac OS X or Linux to parallel High-Performance Computing (HPC) systems such as Theia (NOAA), Discover (NASA), or Cheyenne (NCAR).
+`Singularity <https://www.sylabs.io/docs/>`_ is arguably the leading provider of software containers for HPC applications.  It was originally developed at Lawrence Berkeley Labs but then branched off into it's own enterprise that is now called SysLabs.  It is designed to be used for scientific applications on HPC systems, and to support general scientific use cases.  Singularity encapsulates your software environment in a single disk **image file** that can be copied to and invoked on any system on which Singularity itself is installed.  The JEDI environment is contained in one such image file (see :ref:`below <build_env>`).
 
-The computing environment that Singularity creates is called a **container**.  There are other container providers as well, the most well-known being `Docker <https://www.docker.com/>`_.  An advantage of Singularity over these other alternatives is that it was specifically designed to address the challenges associated with HPC systems and collaborative software development efforts that require full control over your own software stack (see `this article in HPCWire <https://www.hpcwire.com/2018/02/08/startup-brings-hpc-containers-enterprise/>`_ and `this article in "Cloud Computing for Science and Engineering" <https://cloud4scieng.org/singularity-a-container-system-for-hpc-applications/>`_).
+**For these reasons, Singularity is the recommended container platform for JEDI users and developers.**
 
-In contrast to virtual machines, containers do not include the necessary software to build an entire operating system.  Rather, they work with the host operating system to provide the desired functionality, including the libraries, applications, and other software tools that your code needs to run.  So containers generally require much less memory to store and to set up than virtual machines.  Singularity encapsulates your software environment in a single disk **image file** that can be copied to and invoked on any system on which Singularity itself is installed.  The JEDI environment is contained in one such image file (see :ref:`below <build_env>`).
+However, Singularity requires root privileges to install.  This may not be a problem on your laptop or PC, but it can be an issue on HPC systems where such installations can only be done by the system administors.  So, if you are on an HPC or other system where you do not have root access, we recommend that you first check to see if Singularity is already installed.  It may be.  If not, the next step would be to ask your system administrators to install it.  If they refuse (and some still do because of lingering security concerns), then we recommend that you use :doc:`Charliecloud <charliecloud>` instead.
+
 
 .. _Singularity-install:
 
@@ -22,13 +23,9 @@ You can check to see if Singularity is already installed (and if it is, which ve
 
   singularity --version
 
-If it is not installed, and if you have root privileges, then you can install it yourself as described in the remainder of this section.
+**To use the JEDI container, you'll need Singularity version 3.0 or later.**  If an up-to-date version of Singularity is already installed on your system, you can skip ahead to :ref:`Building the JEDI Environment <build_env>`.
 
-If Singularity is not installed and if you cannot install it because you do not have root privileges, then we recommend that you use :doc:`charliecloud` instead.  Root privileges are not needed to install and use the JEDI Charliecloud container and it provides the same software libraries as the Singularity container.  Alternatively, you may ask your system administrators to install Singularity.  However, many HPC centers will be reluctant to do so because of security vulnerabilities.
-
-If you do wish to proceed with Singularity, **we recommend that you install the most recent stable release** (`version 3.0 <https://www.sylabs.io/guides/3.0/user-guide/>`_ as of Dec, 2018).
-
-If an up-to-date version of Singularity is already installed on your system, you can skip ahead to :ref:`Building the JEDI Environment <build_env>`.  The instructions that follow are mainly intended to help you install Singularity on your own workstation or laptop.
+If an up-to-date version is not available, then you can ask your system administrator to install or update it.  Alternatively, if you have root privileges, then you can install it yourself as described in the remainder of this section.  If Singularity is not installed and if you cannot install it because you do not have root privileges, then we recommend that you use :doc:`charliecloud` instead.  Root privileges are not needed to install and use the JEDI Charliecloud container and it provides the same software libraries as the Singularity container.  
 
 As noted :ref:`above <top-Singularity>`, Singularity is not a virtual machine so it does not build its own operating system.  Instead, it must work with the host operating system.  Like Charliecloud, Singularity relies on Linux mount namespaces in order to set up application environments that are isolated from the host.  Neither Mac OS X nor Windows currently supports mount namespaces.
 
