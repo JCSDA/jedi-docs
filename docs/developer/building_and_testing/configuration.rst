@@ -21,7 +21,6 @@ As an example, consider the configuration file for the :code:`test_ufo_radiosond
 .. code:: yaml
 
     ---
-    test_framework_runtime_config: "--log_level=test_suite"
     window_begin: '2018-04-14T21:00:00Z'
     window_end: '2018-04-15T03:00:00Z'
     LinearObsOpTest:
@@ -30,28 +29,25 @@ As an example, consider the configuration file for the :code:`test_ufo_radiosond
       toleranceAD: 1.0e-11
     Observations:
       ObsTypes:
-      - ObsType: Radiosonde
-        ObsData:
+      - ObsOperator:
+          name: VertInterp
+        ObsSpace:
+          name: Radiosonde
           ObsDataIn:
             obsfile: Data/sondes_obs_2018041500_m.nc4
-          ObsDataOut:
-            obsfile: Data/sondes_obs_2018041500_m_out.nc4
-        variables:
-        - air_temperature
-        - eastward_wind
-        - northward_wind
+          simulate:
+            variables:
+            - air_temperature
+            - eastward_wind
+            - northward_wind
         GeoVaLs:
-          norm: 8471.883687854357
-          random: 0
           filename: Data/sondes_geoval_2018041500_m.nc4
-          window_begin: '2018-04-14T21:00:00Z'
-          window_end: '2018-04-15T03:00:00Z'
         ObsFilters:
         - Filter: Background Check
           variable: air_temperature
           threshold: 3.0
-        rmsequiv: 118.81431
-        tolerance: 1.0e-03  # in % so that corresponds to 10^-5
+        vecequiv: GsiHofX
+        tolerance: 1.0e-06
         ObsBias: {}
 
 Note that keys representing single variables or vectors are represented as lower case while keys representing more complex objects in the YAML hierarchy are rendered in `CamelCase <https://en.wikipedia.org/wiki/Camel_case>`_.  This is the preferred style but it is not currently followed by all JEDI repositories.
@@ -62,7 +58,7 @@ The first thing to note is that indentation matters.  Items are organized into a
 
 The beginning of a YAML document is indicated by three dashes :code:`---`, which may or may not be preceded by directives. Each line typically contains a key-value pair separated by a colon and a space.  The key is generally a string and the value may be either a string or a number.  This is used to assign values to variables.  For example, the **window_begin** object is set to a value of '2018-04-14T21:00:00Z' and the **LinearObsOpTest.toleranceTL** variable is set to a value of 1.0e-9.  Note that we have used a period to represent the hierarchy of items; **toleranceTL** is a component of **LinearObsOpTest**.  Note also that the values may be interpreted in different ways.  For example, the **window_begin** value is written as a string in the yaml file but it is interpreted as a :code:`util::DateTime` object when it is read into JEDI.
 
-Objects with multiple values (sequences in YAML) are indicated as indented lists with one item per line and each item delineated by a dash.  For example, **Observations.ObsTypes[0].variables** is equated to a list of items, namely ["air_temperature", "eastward_wind", "northward_wind"].  Comments are preceded by a :code:`#` sign as seen for **Observations.ObsTypes[0].tolerance**.
+Objects with multiple values (sequences in YAML) are indicated as indented lists with one item per line and each item delineated by a dash.  For example, **Observations.ObsTypes[0].ObsSpace.simulate.variables** is equated to a list of items, namely ["air_temperature", "eastward_wind", "northward_wind"].  Comments are preceded by a :code:`#` sign as seen for **Observations.ObsTypes[0].tolerance**.
 
 Lists or sequences may also be identified with brackets :code:`{}`.  This is illustrated in the above file with the example of **Observations.ObsTypes[0].ObsBias**, which is here identified as a list, albeit an empty one.
 

@@ -48,13 +48,45 @@ Observations
 
 Often the largest section of the configuration file, this describes one or more observation types (**ObsTypes**), each of which is a multi-level YAML/JSON object in its own right.  As described our :doc:`Configuration file implementation example <configuration>`, each of these **ObsTypes** are read into JEDI as an :code:`eckit::Configuration` object.  Commonly used components within each ObsType include
 
-* **ObsType**: A name describing the observation type
-* **ObsData**: Input and output file names that contain the data
-* **variables**: Identifies variables required for the forward operator
-* **Covariance**: Provides information and specifications for computing the observation error covariance matrix.
-* **ObsFilters**: Used to define QC filters
-* **ObsBias**: Used to specify the Bias correction
-* **GeoVaLs**: Identifies simulated ufo output files and other parameters that are used for testing
+* **ObsSpace**: describes observation space-related configuration (required)
+
+  * **name**: descriptive name, used in logs (required)
+  * **ObsDataIn.obsfile**: input filename (this or **Generate** section is required)
+  * **ObsDataOut.obsfile**: output filename (optional)
+  * **simulate**: list of variables that need to be simulated by the observation operator (required).
+
+Example:
+
+.. code:: yaml
+
+   # Example 1: radiosonde
+   ObsSpace:
+     name: Radiosonde
+     ObsDataIn:
+       obsfile: Data/sondes_obs_2018041500.nc4
+     simulate:
+       variables: [air_temperature, eastward_wind, northward_wind]
+   # Example 2: radiances (note channels specification)
+   ObsSpace:
+     name: amsua_n19
+     ObsDataIn:
+       obsfile: Data/amsua_n19_obs_2018041500.nc4
+     ObsDataOut:
+       obsfile: Data/amsua_n19_obs_2018041500_out.nc4
+     simulate:
+       variables: [brightness_temperature]
+       channels: 1-10,15
+
+
+* **ObsOperator**: describes observation operator and its options (required)
+
+  * **name**: name in the ObsOperator and LinearObsOperator factory, defined in the C++ code (required)
+  * other options depend on observation operators.
+
+* **Covariance**: Provides information and specifications for computing the observation error covariance matrix (required for DA applications)
+* **ObsFilters**: Used to define QC filters (optional)
+* **ObsBias**: Used to specify the Bias correction (optional)
+* **GeoVaLs**: Identifies simulated ufo output files and other parameters that are used for testing (optional, only used for UFO tests)
 
 Here is an :ref:`example YAML file <radiosonde_example_yaml>` showing how to specify the creation of an output file from IODA.
 
