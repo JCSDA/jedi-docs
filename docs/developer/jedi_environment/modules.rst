@@ -128,16 +128,15 @@ Cheyenne
 .. code :: bash
 
    module purge
-   module use /glade/work/miesch/modules/modulefiles/core
+   export OPT=/glade/work/miesch/modules
+   module use $OPT/modulefiles/core
 
 Current options for setting up the JEDI environment include (choose only one)
 
 .. code :: bash
 
    module load jedi/gnu-openmpi # GNU compiler suite and openmpi
-   module load jedi/gnu-mpt   # GNU compiler suite and mpt
-   module load jedi/intel-openmpi # Intel compiler suite and openmpi
-   module load jedi/intel-mpt # Intel compiler suite and mpt
+   module load jedi/intel-impi # Intel compiler suite and Intel mpi
 
 * Run ecbuild with the following option
 
