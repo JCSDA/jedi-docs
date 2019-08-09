@@ -184,3 +184,59 @@ Current options for setting up the JEDI environment include (choose only one)
     make -j12
 
 
+S4
+--
+S4 is the **Satellite Simulations and Data Assimilation Studes** supercomputer located at the University of Wisconsin-Madison's Space Science and Engineering Center.
+
+The system currently only supports intel compilers and the recommended compiler suite to use for JEDI is version 17.0.6.  To use the JEDI modules, enter
+
+.. code:: bash
+
+    export OPT=/data/users/mmiesch/modules
+    module use $OPT/modulefiles/core
+    module load jedi/intel17-impi
+
+Furthermore, the recommended MPI job scheduler on S4 is :code:`srun` rather than :code:`mpirun` or :code:`mpiexec`.  So, in order to tell ctest to use srun, you must run ecbuild with the following options:
+
+.. code:: bash
+
+   ecbuild -DMPIEXEC_EXECUTABLE=/bin/srun -DMPIEXEC_NUMPROC_FLAG="--ntasks=" -DMPIEXEC_PREFLAGS="--cpu_bind_core --distribution=block:block" <bundle-dir>
+
+Though you can run serial tasks interactively, mpi jobs will likely hang unless you run them through the batch system.  So, you'll need to create a batch script (a file) with contents similar to the following example:
+   
+.. code:: bash
+   
+	  #!/usr/bin/bash
+	  #SBATCH --job-name=<name>
+	  #SBATCH --partition=ivy
+	  #SBATCH --nodes=1
+	  #SBATCH --ntasks=4
+	  #SBATCH --cpus-per-task=1
+	  #SBATCH --time=0:10:00
+	  #SBATCH --mail-user=<email-address>
+
+	  source /etc/bashrc
+	  module purge
+	  module use /data/users/mmiesch/modules/modulefiles/core
+	  module load jedi/intel17-impi
+	  module list
+	  ulimit -s unlimited
+
+	  # run a particular application directly with srun
+	  cd <path-to-bundle-build-directory>/test/ufo
+	  srun --ntasks=4 --cpu_bind_core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
+
+	  # ...or run one or more ctests
+	  cd <path-to-bundle-build-directory>
+          ctest -R <mytest>
+	  
+	  exit 0
+   
+Then you can submit and monitor your jobs with these commands
+
+.. code:: bash
+
+	  sbatch <batch-script>
+	  squeue | grep <your-user-name>
+
+You can delete jobs with the :code:`scancel` command.  For further information please consult the S4 user documentation.	  
