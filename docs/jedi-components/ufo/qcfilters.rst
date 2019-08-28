@@ -119,8 +119,6 @@ This filter checks for distance between observation value and model simulated va
 
 The first filter would reject all temperature observations where abs(y-H(x)) > min ( absolute_threshold, threshold * sigma_o). The seconf filter will reject wind component observation where abs(y-H(x)) > threshold * sigma_o.
 
-.. code:: yaml
-
 where statement
 -------------------
 
