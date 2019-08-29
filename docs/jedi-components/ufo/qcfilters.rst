@@ -181,3 +181,46 @@ The syntax of this ObsFilter is also identical to that of "where" statement, but
      - variable: something@MetaData
        is_not_defined
 
+Filter actions
+--------------
+The action taken on filtered observations is configurable in the YAML.  So far this capability is only implemented for the background check through a FilterAction object, but the functionality is generic and can be extended to all other generic filters.  The two action options available now are rejection or inflating the ObsError, which are activated as follows:
+
+.. code:: yaml
+
+   - Filter: Background Check
+     variables: [air_temperature]
+     threshold: 2.0
+     absolute threshold: 1.0
+     action:
+       name: reject
+   - Filter: Background Check
+     variables: [eastward_wind, northward_wind]
+     threshold: 2.0
+     where:
+     - variable: latitude
+       minvalue: -60.0
+       maxvalue: 60.0
+     action:
+       name: inflate error
+       inflation: 2.0
+
+The default action (when the action section is omitted from the Filter) is to reject the filtered observations.
+
+ObsFunction and ObsDiagnostic suffixes
+--------------------------------------
+
+In addition to, e.g., @GeoVaLs, @MetaData, @ObsValue, @HofX, there are two new suffixes that can be used.
+
+- @ObsFunction requires that a particular variable is defined as an ObsFunction Class under ufo/src/ufo/obsfunctions.  One example of an ObsFunction is Velocity@ObsFunction, which uses the 2 wind components to produce windspeed and can be used as follows:
+
+.. code:: yaml
+
+    - Filter: Domain Check
+      variables: [eastward_wind, northward_wind]
+      where:
+      - variable: Velocity@ObsFunction
+        maxvalue: 20.0
+
+So far, @ObsFunction variables can be used in where statements in any of the generic filters.  In the future, they may be used to inflate ObsError as an "action".
+
+- @ObsDiagnostic will be used to store non-h(x) diagnostic values from the simulateObs function in individual ObsOperator classes.  The ObsDiagnostics interface class to OOPS is used to pass those diagnostics to the ObsFilters.  Because the diagnostics are provided by simulateObs, they can only be used in a PostFilter.  The generic filters will need to have PostFilter functions implemented (currently only Background Check) in order to use ObsDiagnostics.  The simulateObs interface to ObsDiagnostics will be first demonstrated in CRTM.
