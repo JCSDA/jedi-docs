@@ -181,6 +181,34 @@ The syntax of this ObsFilter is also identical to that of "where" statement, but
      - variable: something@MetaData
        is_not_defined
 
+Difference filter
+-----------------
+
+This filter will compare the difference between a reference variable and a second variable and assign a QC flag if the difference is outside of a prescribed range.
+
+For example:
+
+.. code:: yaml
+
+   ObsFilters:
+   - Filter: Difference Check
+     reference: brightness_temperature_8@ObsValue
+     value: brightness_temperature_9@ObsValue
+     minvalue: 0
+   passedBenchmark:  540      # number of passed obs
+
+
+The above YAML is checking the difference between :code:`brightness_temperature_9@ObsValue` and :code:`brightness_temperature_8@ObsValue` and rejecting negative values.
+
+In psuedo-code form:
+:code:`if (brightness_temperature_9@ObsValue - brightness_temperature_8@ObsValue < minvalue) reject_obs()`
+
+The options for YAML include:
+ - :code:`minvalue`: the minimum value the difference :code:`value - reference` can be. Set this to 0, for example, and all negative differences will be rejected.
+ - :code:`maxvalue`: the maximum value the difference :code:`value - reference` can be. Set this to 0, for example, and all positive differences will be rejected.
+ - :code:`threshold`: the absolute value the difference :code:`value - reference` can be (sign independent). Set this to 10, for example, and all differences outside of the range from -10 to 10 will be rejected.
+Note that :code:`threshold` supersedes :code:`minvalue` and :code:`maxvalue` in the filter.
+
 Filter actions
 --------------
 The action taken on filtered observations is configurable in the YAML.  So far this capability is only implemented for the background check through a FilterAction object, but the functionality is generic and can be extended to all other generic filters.  The two action options available now are rejection or inflating the ObsError, which are activated as follows:
@@ -224,3 +252,4 @@ In addition to, e.g., @GeoVaLs, @MetaData, @ObsValue, @HofX, there are two new s
 So far, @ObsFunction variables can be used in where statements in any of the generic filters.  In the future, they may be used to inflate ObsError as an "action".
 
 - @ObsDiagnostic will be used to store non-h(x) diagnostic values from the simulateObs function in individual ObsOperator classes.  The ObsDiagnostics interface class to OOPS is used to pass those diagnostics to the ObsFilters.  Because the diagnostics are provided by simulateObs, they can only be used in a PostFilter.  The generic filters will need to have PostFilter functions implemented (currently only Background Check) in order to use ObsDiagnostics.  The simulateObs interface to ObsDiagnostics will be first demonstrated in CRTM.
+
