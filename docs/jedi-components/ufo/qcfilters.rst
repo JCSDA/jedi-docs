@@ -203,7 +203,6 @@ For a 3D mesh, specify a vertical_mesh in addition to a horizontal_mesh:
 
 In a 3D mesh, the observation nearest the horizontal centroid in each vertical bin will be retained.  There is no weighting towards the vertical midpoint of the bin.
 
-=======
 Difference filter
 -----------------
 
