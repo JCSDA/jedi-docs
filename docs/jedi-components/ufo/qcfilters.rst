@@ -202,3 +202,76 @@ For a 3D mesh, specify a vertical_mesh in addition to a horizontal_mesh:
       vertical_mesh:     10000 #Pa
 
 In a 3D mesh, the observation nearest the horizontal centroid in each vertical bin will be retained.  There is no weighting towards the vertical midpoint of the bin.
+
+=======
+Difference filter
+-----------------
+
+This filter will compare the difference between a reference variable and a second variable and assign a QC flag if the difference is outside of a prescribed range.
+
+For example:
+
+.. code:: yaml
+
+   ObsFilters:
+   - Filter: Difference Check
+     reference: brightness_temperature_8@ObsValue
+     value: brightness_temperature_9@ObsValue
+     minvalue: 0
+   passedBenchmark:  540      # number of passed obs
+
+
+The above YAML is checking the difference between :code:`brightness_temperature_9@ObsValue` and :code:`brightness_temperature_8@ObsValue` and rejecting negative values.
+
+In psuedo-code form:
+:code:`if (brightness_temperature_9@ObsValue - brightness_temperature_8@ObsValue < minvalue) reject_obs()`
+
+The options for YAML include:
+ - :code:`minvalue`: the minimum value the difference :code:`value - reference` can be. Set this to 0, for example, and all negative differences will be rejected.
+ - :code:`maxvalue`: the maximum value the difference :code:`value - reference` can be. Set this to 0, for example, and all positive differences will be rejected.
+ - :code:`threshold`: the absolute value the difference :code:`value - reference` can be (sign independent). Set this to 10, for example, and all differences outside of the range from -10 to 10 will be rejected.
+Note that :code:`threshold` supersedes :code:`minvalue` and :code:`maxvalue` in the filter.
+
+Filter actions
+--------------
+The action taken on filtered observations is configurable in the YAML.  So far this capability is only implemented for the background check through a FilterAction object, but the functionality is generic and can be extended to all other generic filters.  The two action options available now are rejection or inflating the ObsError, which are activated as follows:
+
+.. code:: yaml
+
+   - Filter: Background Check
+     variables: [air_temperature]
+     threshold: 2.0
+     absolute threshold: 1.0
+     action:
+       name: reject
+   - Filter: Background Check
+     variables: [eastward_wind, northward_wind]
+     threshold: 2.0
+     where:
+     - variable: latitude
+       minvalue: -60.0
+       maxvalue: 60.0
+     action:
+       name: inflate error
+       inflation: 2.0
+
+The default action (when the action section is omitted from the Filter) is to reject the filtered observations.
+
+ObsFunction and ObsDiagnostic suffixes
+--------------------------------------
+
+In addition to, e.g., @GeoVaLs, @MetaData, @ObsValue, @HofX, there are two new suffixes that can be used.
+
+- @ObsFunction requires that a particular variable is defined as an ObsFunction Class under ufo/src/ufo/obsfunctions.  One example of an ObsFunction is Velocity@ObsFunction, which uses the 2 wind components to produce windspeed and can be used as follows:
+
+.. code:: yaml
+
+    - Filter: Domain Check
+      variables: [eastward_wind, northward_wind]
+      where:
+      - variable: Velocity@ObsFunction
+        maxvalue: 20.0
+
+So far, @ObsFunction variables can be used in where statements in any of the generic filters.  In the future, they may be used to inflate ObsError as an "action".
+
+- @ObsDiagnostic will be used to store non-h(x) diagnostic values from the simulateObs function in individual ObsOperator classes.  The ObsDiagnostics interface class to OOPS is used to pass those diagnostics to the ObsFilters.  Because the diagnostics are provided by simulateObs, they can only be used in a PostFilter.  The generic filters will need to have PostFilter functions implemented (currently only Background Check) in order to use ObsDiagnostics.  The simulateObs interface to ObsDiagnostics will be first demonstrated in CRTM.
