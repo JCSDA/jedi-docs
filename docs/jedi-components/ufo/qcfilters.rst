@@ -205,7 +205,7 @@ In psuedo-code form:
 :code:`if (brightness_temperature_9@ObsValue - brightness_temperature_8@ObsValue < minvalue) reject_obs()`
 
 The options for YAML include:
- - :code:`minvalue`: the minimum value the difference :code:`reference - value` can be. Set this to 0, for example, and all negative differences will be rejected.
- - :code:`maxvalue`: the maximum value the difference :code:`reference - value` can be. Set this to 0, for example, and all positive differences will be rejected.
- - :code:`threshold`: the absolute value the difference :code:`reference - value` can be (sign independent). Set this to 10, for example, and all differences outside of the range from -10 to 10 will be rejected.
+ - :code:`minvalue`: the minimum value the difference :code:`value - reference` can be. Set this to 0, for example, and all negative differences will be rejected.
+ - :code:`maxvalue`: the maximum value the difference :code:`value - reference` can be. Set this to 0, for example, and all positive differences will be rejected.
+ - :code:`threshold`: the absolute value the difference :code:`value - reference` can be (sign independent). Set this to 10, for example, and all differences outside of the range from -10 to 10 will be rejected.
 Note that :code:`threshold` supersedes minvalue and maxvalue in the filter.
