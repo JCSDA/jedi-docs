@@ -190,12 +190,14 @@ This filter will compare the difference between a reference variable and a secon
 For example:
 
 .. code:: yaml
+
    ObsFilters:
    - Filter: Difference Check
      reference: brightness_temperature_8@ObsValue
      value: brightness_temperature_9@ObsValue
      minvalue: 0
    passedBenchmark:  540      # number of passed obs
+
 
 The above YAML is checking the difference between :code:`brightness_temperature_9@ObsValue` and :code:`brightness_temperature_8@ObsValue` and rejecting negative values.
 
