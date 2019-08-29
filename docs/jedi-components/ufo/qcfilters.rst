@@ -184,16 +184,16 @@ The syntax of this ObsFilter is also identical to that of "where" statement, but
 Gaussian Thinning Filter
 -------------------------
 
-This filter thins observations to a two- or three-dimensional equidistant grid.  This is horizontally defined in kilometers (the mesh is generated relative to the mean radius of the earth) and vertically in pressure (Pa).  For 2D thinning, simply specify a `horizontal_mesh`:  
+This filter thins observations to a two- or three-dimensional equidistant grid.  This is horizontally defined in kilometers (the mesh is generated relative to the mean radius of the earth) and vertically in pressure (Pa).  For 2D thinning, simply specify a horizontal_mesh:  
 
 .. code:: yaml
 
     - Filter: Gaussian_Thinning
       horizontal_mesh:   1111.949266 #km = 10 deg at equator
 
-The accepted observation nearest to each thinning centroid will be retained, while all others within the thinning mesh will be excluded.  
+The observation nearest to each thinning centroid will be retained, while all others within the thinning mesh will be excluded.  
 
-For a 3D mesh, specify a `vertical_mesh` in addition to a `horizontal_mesh`:
+For a 3D mesh, specify a vertical_mesh in addition to a horizontal_mesh:
 
 .. code:: yaml
 
