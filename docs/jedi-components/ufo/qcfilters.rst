@@ -224,7 +224,7 @@ By default, this filter will compute the local derivative at each point in a rec
 
 Alternatively if one wishes to use a specific range/slope for the entire observation record, :code:`i1` and :code:`i2` can be defined in the YAML.
 For this case, For all locations in the record:
-   :code:`dy/dx = (y(i2)-y(i1))/(x(i2)-x(i1))`
+ :code:`dy/dx = (y(i2)-y(i1))/(x(i2)-x(i1))`
 
 Note that this filter really only works/makes sense for observations that have been sorted by the independent variable and grouped by some other field.
 
