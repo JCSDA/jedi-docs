@@ -229,6 +229,7 @@ The options for YAML include:
  - :code:`minvalue`: the minimum value the difference :code:`value - reference` can be. Set this to 0, for example, and all negative differences will be rejected.
  - :code:`maxvalue`: the maximum value the difference :code:`value - reference` can be. Set this to 0, for example, and all positive differences will be rejected.
  - :code:`threshold`: the absolute value the difference :code:`value - reference` can be (sign independent). Set this to 10, for example, and all differences outside of the range from -10 to 10 will be rejected.
+
 Note that :code:`threshold` supersedes :code:`minvalue` and :code:`maxvalue` in the filter.
 
 Derivative filter
@@ -246,7 +247,7 @@ By default, this filter will compute the local derivative at each point in a rec
 
 Alternatively if one wishes to use a specific range/slope for the entire observation record, :code:`i1` and :code:`i2` can be defined in the YAML.
 For this case, For all locations in the record:
- :code:`dy/dx = (y(i2)-y(i1))/(x(i2)-x(i1))`
+:code:`dy/dx = (y(i2)-y(i1))/(x(i2)-x(i1))`
 
 Note that this filter really only works/makes sense for observations that have been sorted by the independent variable and grouped by some other field.
 
@@ -260,7 +261,7 @@ An example:
      dependent: air_pressure
      minvalue: -50
      maxvalue: 0
-passedBenchmark:  238      # number of passed obs
+     passedBenchmark:  238      # number of passed obs
 
 The above YAML is checking the derivative of :code:`air_pressure` with respect to :code:`datetime` for a radiosonde profile and rejecting observations where the derivative is positive and less than -50 Pa/sec.
 
