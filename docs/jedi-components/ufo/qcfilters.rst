@@ -215,17 +215,17 @@ Derivative filter
 This filter will compute a local derivative over each observation record and assign a QC flag if the derivative is outside of a prescribed range.
 
 By default, this filter will compute the local derivative at each point in a record.
-For the first location (1) in a record:
-:code:`dy/dx = (y(2)-y(1))/(x(2)-x(1))`
-For the last location (n) in a record:
-:code:`dy/dx = (y(n)-y(n-1))/(x(n)-x(n-1))`
-For all other locations (i):
-:code:`dy/dx = (y(i+1)-y(i-1))/(x(i+1)-x(i-1))`
+ - For the first location (1) in a record:
+   :code:`dy/dx = (y(2)-y(1))/(x(2)-x(1))`
+ - For the last location (n) in a record:
+   :code:`dy/dx = (y(n)-y(n-1))/(x(n)-x(n-1))`
+ - For all other locations (i):
+   :code:`dy/dx = (y(i+1)-y(i-1))/(x(i+1)-x(i-1))`
 
 Alternatively if one wishes to use a specific range/slope for the entire observation record, :code:`i1` and :code:`i2` can be defined in the YAML.
 For this case,
-For all locations in the record:
-:code:`dy/dx = (y(i2)-y(i1))/(x(i2)-x(i1))`
+ - For all locations in the record:
+   :code:`dy/dx = (y(i2)-y(i1))/(x(i2)-x(i1))`
 
 Note that this filter really only works/makes sense for observations that have been sorted by the independent variable and grouped by some other field.
 
