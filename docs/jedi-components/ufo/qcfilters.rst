@@ -209,6 +209,48 @@ The options for YAML include:
  - :code:`threshold`: the absolute value the difference :code:`value - reference` can be (sign independent). Set this to 10, for example, and all differences outside of the range from -10 to 10 will be rejected.
 Note that :code:`threshold` supersedes :code:`minvalue` and :code:`maxvalue` in the filter.
 
+Derivative filter
+-----------------
+
+This filter will compute a local derivative over each observation record and assign a QC flag if the derivative is outside of a prescribed range.
+
+By default, this filter will compute the local derivative at each point in a record.
+For the first location (1) in a record:
+:code:`dy/dx = (y(2)-y(1))/(x(2)-x(1))`
+For the last location (n) in a record:
+:code:`dy/dx = (y(n)-y(n-1))/(x(n)-x(n-1))`
+For all other locations (i):
+:code:`dy/dx = (y(i+1)-y(i-1))/(x(i+1)-x(i-1))`
+
+Alternatively if one wishes to use a specific range/slope for the entire observation record, :code:`i1` and :code:`i2` can be defined in the YAML.
+For this case,
+For all locations in the record:
+:code:`dy/dx = (y(i2)-y(i1))/(x(i2)-x(i1))`
+
+Note that this filter really only works/makes sense for observations that have been sorted by the independent variable and grouped by some other field.
+
+An example:
+
+.. code:: yaml
+
+   ObsFilters:
+   - Filter: Derivative Check
+     independent: datetime
+     dependent: air_pressure
+     minvalue: -50
+     maxvalue: 0
+passedBenchmark:  238      # number of passed obs
+
+The above YAML is checking the derivative of :code:`air_pressure` with respect to :code:`datetime` for a radiosonde profile and rejecting observations where the derivative is positive and less than -50 Pa/sec.
+
+The options for YAML include:
+ - :code:`independent`: the name of the independent variable (:code:`dx`)
+ - :code:`dependent`: the name of the dependent variable (:code:`dy`)
+ - :code:`minvalue`: the minimum value the derivative can be without the observations being rejected
+ - :code:`maxvalue`: the maximum value the derivative can be without the observations being rejected
+ - :code:`i1`: the index of the first observation location in the record to use
+ - :code:`i2`: the index of the last observation location in the record to use
+
 Filter actions
 --------------
 The action taken on filtered observations is configurable in the YAML.  So far this capability is only implemented for the background check through a FilterAction object, but the functionality is generic and can be extended to all other generic filters.  The two action options available now are rejection or inflating the ObsError, which are activated as follows:
@@ -252,4 +294,3 @@ In addition to, e.g., @GeoVaLs, @MetaData, @ObsValue, @HofX, there are two new s
 So far, @ObsFunction variables can be used in where statements in any of the generic filters.  In the future, they may be used to inflate ObsError as an "action".
 
 - @ObsDiagnostic will be used to store non-h(x) diagnostic values from the simulateObs function in individual ObsOperator classes.  The ObsDiagnostics interface class to OOPS is used to pass those diagnostics to the ObsFilters.  Because the diagnostics are provided by simulateObs, they can only be used in a PostFilter.  The generic filters will need to have PostFilter functions implemented (currently only Background Check) in order to use ObsDiagnostics.  The simulateObs interface to ObsDiagnostics will be first demonstrated in CRTM.
-
