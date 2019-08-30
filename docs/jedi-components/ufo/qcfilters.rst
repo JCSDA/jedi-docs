@@ -181,6 +181,28 @@ The syntax of this ObsFilter is also identical to that of "where" statement, but
      - variable: something@MetaData
        is_not_defined
 
+Gaussian Thinning Filter
+-------------------------
+
+This filter thins observations to a two- or three-dimensional equidistant grid.  This is horizontally defined in kilometers (the mesh is generated relative to the mean radius of the earth) and vertically in pressure (Pa).  For 2D thinning, simply specify a horizontal_mesh:  
+
+.. code:: yaml
+
+    - Filter: Gaussian_Thinning
+      horizontal_mesh:   1111.949266 #km = 10 deg at equator
+
+The observation nearest to each thinning centroid will be retained, while all others within the thinning mesh will be excluded.  
+
+For a 3D mesh, specify a vertical_mesh in addition to a horizontal_mesh:
+
+.. code:: yaml
+
+    - Filter: Gaussian_Thinning
+      horizontal_mesh:   1111.949266 #km = 10 deg at equator
+      vertical_mesh:     10000 #Pa
+
+In a 3D mesh, the observation nearest the horizontal centroid in each vertical bin will be retained.  There is no weighting towards the vertical midpoint of the bin.
+
 Difference filter
 -----------------
 
@@ -252,4 +274,3 @@ In addition to, e.g., @GeoVaLs, @MetaData, @ObsValue, @HofX, there are two new s
 So far, @ObsFunction variables can be used in where statements in any of the generic filters.  In the future, they may be used to inflate ObsError as an "action".
 
 - @ObsDiagnostic will be used to store non-h(x) diagnostic values from the simulateObs function in individual ObsOperator classes.  The ObsDiagnostics interface class to OOPS is used to pass those diagnostics to the ObsFilters.  Because the diagnostics are provided by simulateObs, they can only be used in a PostFilter.  The generic filters will need to have PostFilter functions implemented (currently only Background Check) in order to use ObsDiagnostics.  The simulateObs interface to ObsDiagnostics will be first demonstrated in CRTM.
-
