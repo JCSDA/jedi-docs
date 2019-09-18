@@ -188,22 +188,32 @@ S4
 --
 S4 is the **Satellite Simulations and Data Assimilation Studes** supercomputer located at the University of Wisconsin-Madison's Space Science and Engineering Center.
 
-The system currently only supports intel compilers and the recommended compiler suite to use for JEDI is version 17.0.6.  To use the JEDI modules, enter
+There are a few platform-specific features of S4 that affect how you build and run JEDI.  First, the system currently only supports intel compilers.  Second, S4 uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs.  Though some slurm implementations allow you to use the usual mpi job scripts :code:`mpirun` or :code:`mpiexec`, these may not function properly on S4.  Instead, you are advised to use the slurm run script :code:`srun`.  A Third S4 feature is that mpi jobs cannot be run interactively and must instead be submitted with the slurm :code:`sbatch` command.  Finally, S4 system administrators have disabled file locking on their work disks, which can cause problems with HDF5.
+
+So, to accommodate all of these features of the S4 system there are a few actions you need to take.  The first is to include these commands in your :code:`.bashrc` file (or implement their c shell equivalents):
 
 .. code:: bash
 
     export OPT=/data/users/mmiesch/modules
+    export HDF5_USE_FILE_LOCKING=FALSE
+    export SLURM_EXPORT_ENV=ALL
     module use $OPT/modulefiles/core
-    module load jedi/intel17-impi
+    ulimit -s unlimited
 
-Furthermore, the recommended MPI job scheduler on S4 is :code:`srun` rather than :code:`mpirun` or :code:`mpiexec`.  So, in order to tell ctest to use srun, you must run ecbuild with the following options:
+Remember to run :code:`source ~/.bashrc` the first time you add these to make sure the changes take effect.  This should not be necessary for future logins.
+
+The recommended compiler suite to use for JEDI is version 17.0.6.  So, you can build JEDI with these commands:
 
 .. code:: bash
 
-   ecbuild -DMPIEXEC_EXECUTABLE=/bin/srun -DMPIEXEC_NUMPROC_FLAG="--ntasks=" -DMPIEXEC_PREFLAGS="--cpu_bind_core --distribution=block:block" <bundle-dir>
+   module load jedi/intel17-impi
+   ecbuild -DMPIEXEC=/bin/srun -DMPIEXEC_EXECUTABLE=/usr/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
+   make -j4
 
-Though you can run serial tasks interactively, mpi jobs will likely hang unless you run them through the batch system.  So, you'll need to create a batch script (a file) with contents similar to the following example:
-   
+Note that the :code:`jedi/intel17-impi` module includes a patched version of :code:`eckit` that is needed to have mpi jobs run correctly with :code:`srun`.  This patch has been communicated to ECMWF and will be included in future versions of :code:`eckit`.  As is standard JEDI practice, :code:`fckit` is not included in the :code:`jedi/intel17-impi` module and should be built within the bundle.  Note also that you have to tell ecbuild to use :code:`srun` as its mpi executable, as shown above.
+
+To run parallel jobs, you'll need to create a batch script (a file) with contents similar to the following example:
+
 .. code:: bash
    
 	  #!/usr/bin/bash
@@ -222,11 +232,15 @@ Though you can run serial tasks interactively, mpi jobs will likely hang unless 
 	  module list
 	  ulimit -s unlimited
 
+          export SLURM_EXPORT_ENV=ALL
+          export HDF5_USE_FILE_LOCKING=FALSE	  
+	  
 	  # run a particular application directly with srun
 	  cd <path-to-bundle-build-directory>/test/ufo
 	  srun --ntasks=4 --cpu_bind_core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
 
-	  # ...or run one or more ctests
+	  # ...or run one or more ctests - but make sure the number of tasks it requires matches the
+	  # --ntasks SBATCH specification above
 	  cd <path-to-bundle-build-directory>
           ctest -R <mytest>
 	  
