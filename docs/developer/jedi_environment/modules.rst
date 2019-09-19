@@ -192,6 +192,7 @@ There are a few platform-specific features of S4 that affect how you build and r
 
 So, to accommodate all of these features of the S4 system there are a few actions you need to take.  The first is to include these commands in your :code:`.bashrc` file (or implement their c shell equivalents):
 
+
 .. code:: bash
 
     export OPT=/data/users/mmiesch/modules
@@ -232,9 +233,9 @@ To run parallel jobs, you'll need to create a batch script (a file) with content
 	  module list
 	  ulimit -s unlimited
 
-          export SLURM_EXPORT_ENV=ALL
-          export HDF5_USE_FILE_LOCKING=FALSE	  
-	  
+    export SLURM_EXPORT_ENV=ALL
+    export HDF5_USE_FILE_LOCKING=FALSE	  
+
 	  # run a particular application directly with srun
 	  cd <path-to-bundle-build-directory>/test/ufo
 	  srun --ntasks=4 --cpu_bind_core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
