@@ -233,8 +233,8 @@ To run parallel jobs, you'll need to create a batch script (a file) with content
 	  module list
 	  ulimit -s unlimited
 
-         export SLURM_EXPORT_ENV=ALL
-         export HDF5_USE_FILE_LOCKING=FALSE	  
+    export SLURM_EXPORT_ENV=ALL
+    export HDF5_USE_FILE_LOCKING=FALSE	  
 
 	  # run a particular application directly with srun
 	  cd <path-to-bundle-build-directory>/test/ufo
