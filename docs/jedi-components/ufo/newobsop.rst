@@ -6,7 +6,7 @@ Creating new Observation Operator in UFO
 Existing Observation Operators
 ------------------------------
 
-Before implementing a new observation operator, check if one of the observation operators already implemented in UFO is suitable:
+Before implementing a new observation operator, check if one of the :doc:`observation operators already implemented in UFO <obsops>` is suitable.
 
 1. Interface to CRTM for radiances and aerosol optical depth (:code:`ufo/src/ufo/crtm/` , "CRTM" for radiances, "AOD" for aod in the config files)
 2. Linear vertical interpolation in log pressure for the variables specified in the config file (:code:`ufo/src/ufo/atmvertinterp`, "Radiosonde", "Aircraft", "Satwind", more names could be added to :code:`ObsAtmVertInterp.cc`).
