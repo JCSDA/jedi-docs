@@ -10,8 +10,10 @@ Observations can be used in different ways in OOPS-JEDI. In variational data ass
 the initial computation of the observation term of the cost function (J\ :sub:`o`) is where
 most of the quality control takes place.
 
-The flow of this computation in OOPS is as follows::
+The flow of this computation in OOPS is as follows:
 
+.. code:: yaml  
+  
   CostFunction::evaluate
     CostJo::initialize
       ObsFilters::ObsFilters
@@ -105,26 +107,49 @@ In the above example two filters are configured, one testing temperature, and th
 Background Check Filter
 ------------------------
 
-This filter checks for distance between observation value and model simulated value (y-H(x)) and rejects obs where the absolute difference is larger than abs_threshold or threshold * sigma_o.
+This filter checks for bias corrected distance between observation value and model simulated value (y-H(x)) and rejects obs where the absolute difference is larger than abs_threshold or threshold * sigma_o when the filter action is set to "reject". This filter can also adjust observation error through a constant inflation factor when the filter action is set to "inflate error". If no action section is included in the yaml, the filter is set to reject the flagged observations.
 
 .. code:: yaml
 
-    - Filter: Background Check
-      variables: [air_temperature]
-      threshold: 2.0
-      absolute threshold: 1.0
-    - Filter: Background Check
-      variables: [eastward_wind, northward_wind]
-      threshold: 2.0
+   ObsFilters:
+   - Filter: Background Check
+     variables: [air_temperature]
+     threshold: 2.0
+     absolute threshold: 1.0
+     action:
+       name: reject
+   - Filter: Background Check
+     variables: [eastward_wind, northward_wind]
+     threshold: 2.0
+     where:
+     - variable: latitude@MetaData
+       minvalue: -60.0
+       maxvalue: 60.0
+     action:
+       name: inflate error
+       inflation: 2.0
 
-The first filter would reject all temperature observations where abs(y-H(x)) > min ( absolute_threshold, threshold * sigma_o). The seconf filter will reject wind component observation where abs(y-H(x)) > threshold * sigma_o.
+The first filter would flag temperature observations where abs((y+bias)-H(x)) > min ( absolute_threshold, threshold * sigma_o), and
+then the flagged data are rejected due to filter action is set to reject.
 
-where statement
--------------------
+The second filter would flag wind component observations where abs((y+bias)-H(x)) > threshold * sigma_o and latitude of the observation location are within 60 degree. The flagged data will then be inflated with a factor 2.0.
 
-Where statement can be used with Background Check and Bounds Check above, and is also a main part of Domain Check and Blacklist described below.
+Please see the "Filter Action" for more detail.
 
-It can use: minvalue, maxvalue, is_defined, is_not_defined, and is_in, is_not_in for integer values:
+Where statement and processWhere function
+------------------------------------------
+
+Where statment can be included in the yaml file in conjuncton with observation filters as the condition for filtering. The processWhere function takes the condition in where statement from yaml and creates a mask that restricts where the filter will apply. The default is true so that if there is no where the filter applies everywhere. Eveywhere the condition is false, the filter will not be applied.
+
+The valid condition set by where statment include the following 5 categories:
+
+- :code:`minvalue` and/or :code:`maxvalue` : filter applied if value is within the valid range
+- :code:`is_defined`                       : filter applied if data has a valid value (not missing) 
+- :code:`is_not_defined`                   : filter applied if data is missing  
+- :code:`is_in`                            : filter applied if data is in the given whitelist 
+- :code:`is_not_in`                        : filter applied if data is not in the given blacklist
+
+The :code:`is_in` and :code:`is_not_in` capabiities are implemented but not available to users yet. 
 
 .. code:: yaml
 
@@ -132,16 +157,17 @@ It can use: minvalue, maxvalue, is_defined, is_not_defined, and is_in, is_not_in
    - variable: sea_surface_temperature@GeoVaLs
      minvalue: 200
      maxvalue: 300
+   - variable: latitude@MetaData
+     maxvalue: 60. 
    - variable: height@MetaData
      is_defined
    - variable: station_id@MetaData
      is_in: 3, 6, 11-120
-   - variable: something@MetaData
-     is_not_defined
 
-In the example above where statement would mean that the filter is applied for all observed variables in the following situations: sea_surface_temperature from the model is between [200, 300], height from the observation metadata has a valid number, station_id is 3, 6, or between 11 and 120, and something@MetaData doesn't have a valid value.
+In the example above, four maskes are created for radiosonde observation filtering. The filter will be applied in sequence at observation location where the sea surface temperature is within the range of [200,300] Kelvin and where the latitude is <= than 60 degree and where the height of the observation has a valid value (not missing) and where the station id matches the ids in the whitelist. 
 
-If where is applied in BackgroundCheck or BoundsCheck, then those filters are only applied when all the where statements are valid.
+The Where statement and processWhere function are used in generic filters such as BackgroundCheck, DifferenceCheck, ObsBoundsCheck, ObsDomainCheck, and BlackList.
+
 
 Domain Check Filter
 --------------------
