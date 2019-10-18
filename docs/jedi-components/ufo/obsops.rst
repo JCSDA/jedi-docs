@@ -13,7 +13,7 @@ Vertical interpolation observation operator implements linear interpolation in v
 Code:
 ^^^^^
 
-`ufo/vertinterp/`
+:code:`ufo/vertinterp/`
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -51,20 +51,30 @@ Configuration options:
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
-(AtmVertInterpLay)
------------------------------------
+Atmosphere Vertical Layer Interpolation (AtmVertInterpLay)
+----------------------------------------------------------
 
 Description:
 ^^^^^^^^^^^^
 
+Observational operator for vertical summation of model layers within an observational atmospheric layer where the top and bottom pressure levels are specified in cbars.
+
 Code:
 ^^^^^
 
+:code:`ufo/atmvertinterplay/`
+
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^ 
+There are no configuration options.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
+
+.. code:: yaml
+
+  ObsOperator:
+    name: AtmVertInterpLay
 
 (CRTM)
 -----------------------------------
