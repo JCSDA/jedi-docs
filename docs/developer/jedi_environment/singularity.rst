@@ -35,49 +35,9 @@ So, if you are running Mac OS or Windows, then you must first set up a Linux env
 
 In short, Vagrant and VirtualBox provide the linux operating system while Singularity (or Charliecloud) provides the necessary software infrastructure for running JEDI (compilers, cmake, ecbuild, etc) by means of the :ref:`JEDI singularity image <build_env>`.
 
-Singularity offers comprehensive `installation instructions for Singularity 3.0 <https://www.sylabs.io/guides/3.0/user-guide/quick_start.html#quick-installation-steps>`_ and we refer JEDI users to that site for the most up-to-date information and for troubleshooting.  Here we summarize the main steps.
+Singularity offers comprehensive installation instructions and we refer the reader there for the most up-to-date information and troubleshooting.  To access these instructions, `first navigate to the Singularity documentation site <https://sylabs.io/docs/>`_.  From there, choose the version of Singularity you wish to install and select the corresponding **HTML** link. We recommend version 3.0 or later.  Then navigate to **Quick Start - Quick Installation Steps**.
 
-The first step is to make sure you have the correct dependencies.  On Ubuntu systems, you can install them by copying and pasting this:
-
-.. code:: bash
-
-    # for ubuntu
-    sudo apt-get update
-    sudo apt-get install -y build-essential libssl-dev
-    sudo apt-get install -y uuid-dev libgpgme11-dev squashfs-tools
-
-Next you need to install and configure the `Go programming language <https://golang.org/doc/install>`_, which Singularity 3.0 requires.  There are multiple ways to do this but this should work on most Linux systems (note - this installs in :code:`/usr/local`, which requires root privileges):
-
-.. code:: bash
-
-    export VERSION=1.11.2 OS=linux ARCH=amd64
-    wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz
-    sudo tar -C /usr/local -xzf go$VERSION.$OS-$ARCH.tar.gz
-    echo 'export GOPATH=${HOME}/go' >> ~/.bashrc
-    echo 'export PATH=/usr/local/go/bin:${PATH}:${GOPATH}/bin' >> ~/.bashrc
-    source ~/.bashrc
-
-You can enter :code:`go help` to see if this installation worked.
-
-Now clone the Singularity repository from GitHub and :code:`go get` its dependencies:
-
-.. code:: bash
-
-    mkdir -p $GOPATH/src/github.com/sylabs
-    cd $GOPATH/src/github.com/sylabs
-    git clone https://github.com/sylabs/singularity.git
-    cd singularity
-    go get -u -v github.com/golang/dep/cmd/dep
-
-Now you can compile and install Singularity (requires root privileges)
-
-.. code:: bash
-
-    cd $GOPATH/src/github.com/sylabs/singularity
-    ./mconfig
-    make -C builddir
-    sudo make -C builddir install
-
+Briefly, the installation process consists of first installing required system dependencies such as :code:`libssl-dev`, :code:`uuid-dev`, and :code:`squashfs-tools`.  Then the next step is to install and configure the `Go programming language <https://golang.org/doc/install>`_, which Singularity 3.0 requires.  After following the steps as described on the Singularity documenation, you can enter :code:`go help` to see if your installation worked.  After you've set up the proper dependencies, you can then download a tar file containing the Singularity source code, configure it, compile it, and install it.  As described above, this requires root privileges.
 
 .. _build_env:
 
