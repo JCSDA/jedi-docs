@@ -99,9 +99,18 @@ where :code:`startup.sh` contains, for example:
 
 The last two lines of this example script are particularly noteworthy.  Setting the :code:`FC` environment variable as shown is currently required to compile and run JEDI with multiple mpi threads.  And, setting the :code:`DISPLAY` environment variable as shown should enable X forwarding from the Singularity container to your computer if you are using Linux/Unix.  This in turn will allow you to use graphical tools such as :code:`emacs` or :ref:`kdbg <kdbg>`.
 
+
 If you are invoking the singularity shell from a vagrant virtual machine, then X Forwarding is a bit more complicated; :ref:`See here for how to setup X Forwarding on a Mac <mac-x-forwarding>`.
 
 For a full list of options, type :code:`singularity shell --help` from *outside* the container.
+
+On a related note, you may have to run this in order for the jedi code to build properly:
+
+.. code:: bash
+
+    git lfs install
+
+This only needs to be done once, and it can be done from either inside or outside the container.  The reason this is necessary is because Singularity does not change your user name, your user privileges, or your home directory - you're the same person inside and outside the container, and you have the same home directory.  The :code:`git lfs install` command modifies the git configuration in order to properly process files that are stored on :doc:`git-lfs <../developer_tools/gitlfs>`.  These configuration settings are stored in a file in your home directory called :code:`~/.gitconfig`.  You would not want the container to automatically modify the files in your home directory so it is best to enter this manually.  But, you only have to run this command once, even if you use multiple containers.
 
 To exit the Singularity container at any time, simply type
 
