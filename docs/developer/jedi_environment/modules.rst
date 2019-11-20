@@ -136,16 +136,19 @@ Current options for setting up the JEDI environment include (choose only one)
 .. code :: bash
 
    module load jedi/gnu-openmpi # GNU compiler suite and openmpi
-   module load jedi/intel-impi # Intel compiler suite and Intel mpi
+   module load jedi/intel-impi # Intel 17.0.1 compiler suite and Intel mpi
+   module load jedi/intel19-impi # Intel 19.0.5 compiler suite and Intel mpi
 
-* Run ecbuild with the following option
+Run ecbuild and pull the latest code.  Note - because of space limitations on your home directory, it's a good idea to locate your build directory on glade:
 
 .. code:: bash
 
-    mkdir build; cd build
-    ecbuild <path_of_the_jedi_code>
+    cd /glade/work/<username>	  
+    mkdir jedi/build; cd jedi/build
+    ecbuild <path-to-jedi-bundle>
+    make update
 
-* Use multiple threads to speed up the compilation
+Use multiple threads to speed up the compilation
 
 .. code:: bash
 
@@ -155,6 +158,35 @@ Current options for setting up the JEDI environment include (choose only one)
 
     Please do not use too many threads to speed up the compilation, Cheyenne system administrator might terminate your login node.
 
+The system configuration on Cheyenne will not allow you to run mpi jobs from the login node.  So, if you try to run :code:`ctest` from here, the mpi tests will fail.  So, to run the jedi unit tests you will have to either submit a batch job or request an interactive session with :code:`qsub -I`.  The following is a sample batch script to run the unit tests for ufo-bundle.  Note that some ctests require up to 6 MPI tasks so requesting 6 cores should be sufficient.
+
+.. code:: bash
+
+    #!/bin/bash
+    #PBS -N ctest-impi
+    #PBS -A <account-number>
+    #PBS -l walltime=00:20:00
+    #PBS -l select=1:ncpus=6:mpiprocs=6
+    #PBS -q regular
+    #PBS -j oe
+    #PBS -m abe
+    #PBS -M <your-email>
+
+    source /glade/u/apps/ch/opt/lmod/7.2.1/lmod/lmod/init/bash
+    module purge
+    export OPT=/glade/work/miesch/modules
+    module use $OPT/modulefiles/core
+    module load jedi/intel-impi
+
+    # cd to your build directory.  Make sure that these binaries were built
+    # with the same module that is loaded above, in this case jedi/intel-impi
+    
+    cd /glade/work/<username>/jedi/ufo-bundle/build-intel-impi
+
+    # now run ctest
+    ctest
+    
+    
 Discover
 --------
 

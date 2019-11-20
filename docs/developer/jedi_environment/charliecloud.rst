@@ -92,21 +92,21 @@ Now add the Charliecloud executables to your path.  You may wish to do this inte
 Building the JEDI environment
 -----------------------------
 
-Once Charliecloud is installed on your system, the next step is to make a home for the JEDI Charliecloud container and download it as follows (you may also have to install wget if it's not included in the developer tools mentioned above):
+Once Charliecloud is installed on your system, the next step is to make a home for the JEDI Charliecloud container and download it.  For a list of available JEDI Charliecloud containers, see `the JCSDA Public Data Repository <http://data.jcsda.org/pages/containers.html>`_.   Image names follow the format :code:`ch-jedi-<compiler>-<mpi>-<type>-latest.tar.gz`  where :code:`<compiler>-<mpi>` refer to the compiler/mpi combination used to build the dependencies and :code:`<type>` is set to :code:`dev` for development containers that include the compilers and :code:`app` for application containers that include only the compiled jedi code, with its dependencies (:doc:`see the Portability overview for further information <portability>`.  For example, to obtain the JEDI Charliecloud development container that is built with the gnu compiler suite and openmpi you would do this:
 
 .. code:: bash
 
    mkdir -p ~/jedi/ch-container
    cd ~/jedi/ch-container
-   wget http://data.jcsda.org/containers/ch-jedi-latest.tar.gz
-
+   wget http://data.jcsda.org/containers/ch-jedi-gnu-openmpi-dev-latest.tar.gz
+   
 This looks like a normal gzipped tar file.  However, **you should not upack it with** :code:`tar`! Instead, unpack it with this command:
 
 .. code:: bash
 
-   ch-tar2dir ch-jedi-latest.tar.gz .
+   ch-tar2dir ch-jedi-gnu-openmpi-dev-latest.tar.gz .
 
-This may take a few minutes so be patient.  When done, it should give you a message like :code:`./ch-jedi-latest unpacked ok` and it should have created a directory by that same name.   In our example, this directory would be located in :code:`~/jedi/ch-container/ch-jedi-latest`.
+This may take a few minutes so be patient.  When done, it should give you a message like :code:`./ch-jedi-gnu-openmpi-dev-latest unpacked ok` and it should have created a directory by that same name.   In our example, this directory would be located in :code:`~/jedi/ch-container/ch-jedi-gnu-openmpi-dev-latest`.
 
 This is the JEDI Charliecloud container.  It's functionally equivalent to a Singularity image file but it appears as a directory rather than a single file.  Furthermore, that directory contains a complete, self-contained Linux filesystem, complete with its own system directories like :code:`/usr/local`, :code:`/bin`, and :code:`/home`.
 
@@ -114,7 +114,7 @@ To enter the Charliecloud container, type:
 
 .. code:: bash
 
-   ch-run -c $HOME ~/jedi/ch-container/ch-jedi-latest -- bash
+   ch-run -c $HOME ~/jedi/ch-container/ch-jedi-gnu-openmpi-dev-latest -- bash
 
 Let's reconstruct this command to help you understand it and customize it as you wish.
 
@@ -122,7 +122,7 @@ The :code:`ch-run` command runs a command in the Charliecloud container.
 
 The :code:`-c $HOME` option tells Charliecloud to enter the container in the user's home directory, which is the same inside and outside the container.  If this option is omitted, you will enter the container in the root directory.  Typing :code:`cd` will then place you in your home directory.
 
-The :code:`~/jedi/ch-container/ch-jedi-latest` argument is the name of the container you want Charliecloud to run. This is the name of the directory created by the :code:`ch-tar2dir` command above.  If you run this from the container's parent directory, in this case :code:`~/jedi/ch-container`, then you can omit the path.
+The :code:`~/jedi/ch-container/ch-jedi-gnu-openmpi-dev-latest` argument is the name of the container you want Charliecloud to run. This is the name of the directory created by the :code:`ch-tar2dir` command above.  If you run this from the container's parent directory, in this case :code:`~/jedi/ch-container`, then you can omit the path.
 
 Finally, we have to tell :code:`ch-run` what command we want it to run.  The command (including options and arguments) that comes after the double hyphen :code:`--` will be executed within the container.  If you were to run a single command, like :code:`-- ls -alh`, then :code:`ch-run` will enter the container, execute the command, and exit.  However, in this example, we started up a bash shell, with :code:`-- bash`.  So, **all commands that follow will be executed inside the container.  In order to exit the container, you have to explicitly type exit.**  This brings us to this important warning:
 
@@ -130,7 +130,15 @@ Finally, we have to tell :code:`ch-run` what command we want it to run.  The com
 
    **When you enter the Charliecloud container, your prompt may not change!!** So, it can be very difficult to tell whether or not you are in the Charliecloud container or not.  One trick is to enter the command :code:`eckit-version`.  If you do not have eckit installed on the host system (which may be a vagrant virtual machine or an amazon EC2 instance), then this command will only return a valid result if you are indeed inside the Charliecloud container.  Note that this is different from Singularity, which does change your prompt when you enter the container.
 
-Now, since you are in the container, you have access to all the software libraries that support JEDI.  You can now proceed to build and run JEDI as described :doc:`elsewhere in this documentation <../building_and_testing/building_jedi>`.
+Now, since you are in the container, you have access to all the software libraries that support JEDI.  However, there is one more thing you need to do before you run ecbuild.  Make sure :code:`git-lfs` is initialized with this:
+
+.. code:: bash
+
+    git lfs install
+
+This modifies your git configuration to properly interpret data files stored with :doc:`git-lfs <../developer_tools/gitlfs>`.  The reason that this is not automatically done by Charliecloud is because these configuration settings are stored in your home directory, in a file called :code:`~/.gitconfig`.  Charliecloud does not change your user name, your user privileges, or your home directory.  In short, you have the same home directory inside and outside the container.  So, the contents of your home directory cannot be stored in the container image that you downloaded as a compressed tar file.  This also means that it makes no difference if you run :code:`git lfs install` inside or outside the container.  You only have to run this once, even if you use mulditple containers.
+
+You can now proceed to build and run JEDI as described :doc:`elsewhere in this documentation <../building_and_testing/building_jedi>`.
 
 For example, to run and test ufo-bundle, you can proceed as follows:
 
@@ -172,7 +180,7 @@ However, what if we were to instead mount the shared directory in :code:`/vagran
 
 .. code:: bash
 
-  ch-run -b /vagrant_data -c $HOME ch-jedi-latest -- bash
+  ch-run -b /vagrant_data -c $HOME ch-jedi-gnu-openmpi-dev-latest -- bash
 
 By default, this is mounted in the Charliecloud container as the directory :code:`/mnt/0`.  You can change the mount point **provided that the target directory already exists within the container**.
 
@@ -180,7 +188,7 @@ For example, if you create a directory called :code:`/home/vagrant/vagrant_data`
 
 .. code:: bash
 
-    ch-run -b /vagrant_data:/home/vagrant/vagrant_data ch-jedi-latest -- bash
+    ch-run -b /vagrant_data:/home/vagrant/vagrant_data ch-jedi-gnu-openmpi-dev-latest -- bash
 
 Then, when you are inside the container, any files that you put in :code:`/home/vagrant/vagrant_data` will be accessible from Mac OS.
 
@@ -199,7 +207,7 @@ Another common practice on HPC systems is to run applications in designed work o
 
 .. code::
 
-      ch-run -b/glade/work/`whoami`:/worktmp <path>/ch-jedi-latest -- bash
+      ch-run -b/glade/work/`whoami`:/worktmp <path>/ch-jedi-gnu-openmpi-dev-latest -- bash
 
 This is good, but for substantial parallel applications there is an approach that is even better for MPI jobs.  System administrators at HPC centers spend a lot of time and effort configuring their MPI implementations to take full advantage of the system hardware.  If you run the mpi implementation inside the container (currently openmpi), you won't be able to take advantage of these site-specific configurations and optimizations.  Fortunately, there is a way out of this dilemma: you can invoke the parallel process manager, :code:`mpirun` or :code:`mpiexec` outside the container and then have each MPI process enter its own container.  Again using Cheyenne as an example, you can do this in a batch script like this:
 
@@ -224,7 +232,7 @@ This is good, but for substantial parallel applications there is an approach tha
       export BINDIR=/worktmp/jedi/fv3-gnu-openmpi/build/bin
 
       ### Run the executable
-      mpirun -np 144 ch-run -b $WORK:/worktmp -c $RUNDIR $CHDIR/ch-jedi-latest -- $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml
+      mpirun -np 144 ch-run -b $WORK:/worktmp -c $RUNDIR $CHDIR/ch-jedi-gnu-openmpi-dev-latest -- $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml
 
 There are a few things to note about this example.  First, mpirun is called from outside the container to start up 144 mpi tasks.  Each task then starts its own Charliecloud container by running :code:`ch-run`, mounting a work disk that is accessed through :code:`/worktmp` in the container, as described above.   The :code:`-c $RUNDIR` option tells Charliecloud to :code:`cd` to the :code:`$RUNDIR` directory to run the command (note that this is the path as viewed from within the container).  As before, the command appears after the :code:`--`.  But instead of entering the container by invoking a :code:`bash` script, we enter a single command, which is here enclosed by double quotes :code:`"`.  So, in short, we are telling each MPI task to run this command in the container, from the :code:`$RUNDIR` directory.
 
@@ -235,7 +243,7 @@ This is usually more efficient than the alternative of running a single containe
 .. code::
 
       export TMPDIR=/worktmp/scratch
-      ch-run -b $WORK:/worktmp -c $WORKDIR $CHDIR/ch-jedi-latest -- mpirun -np 144 $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml
+      ch-run -b $WORK:/worktmp -c $WORKDIR $CHDIR/ch-jedi-gnu-openmpi-dev-latest -- mpirun -np 144 $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml
 
 This example illustrates **another important tip** to keep in mind.  Openmpi uses the directory :code:`$TMPDIR` to store temporary files during runtime.  On Cheyenne, this is set to :code:`/glade/scratch/$(whoami)` by default.  But this directory is not accessible from the container so, unless we do something about this, our executable will fail.  Redefining it as :code:`/worktmp/scratch` as shown here does the trick, provided that associated external directory :code:`$WORK/scratch` exists.  Recall that Charliecloud does not change environment variables so we can set it outside the container as shown.  A similar workaround may also be required on other HPC systems.
 

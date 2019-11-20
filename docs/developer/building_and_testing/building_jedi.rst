@@ -57,21 +57,23 @@ The statement above should be sufficient on most systems.   However, on some sys
 
 As for all your files, your password will still be protected by the security protocols necessary to simply access the system as a whole and your own filesystem in particular.  So, this should still be pretty secure on HPC systems but you might want to use it with caution in less secure environments such as laptops or desktops.  For other alternatives, see the documentation on `git credentials <https://git-scm.com/docs/gitcredentials>`_.
 
-Another action that might make your life easier is to set the following environment variable:
+Before building the jedi code, you should also make sure that git is configured to interpret files that are stored on :doc:`git-lfs <../developer_tools/gitlfs>`:
 
 .. code:: bash
 
-    export FC=mpifort
+    git lfs install
 
-This is required in order to run with multiple MPI threads within the JEDI :doc:`CharlieCloud <../jedi_environment/charliecloud>` and :doc:`Singularity <../jedi_environment/singularity>` containers, which uses OpenMPI.  You may wish to put this in a :ref:`startup-script <startup-script>` so you don't have to enter it manually every time you enter the Container.  If you run outside the container, some bundles include customized build scripts that will take care of this for you.  Consult the :code:`README` file in the bundle's repository for details.  If you run :code:`make` and it complains about not finding mpi-related files, try cleaning your build directory (to wipe the CMake cache), setting the :code:`FC` environment variable as indicated above, and then proceeding with :code:`ecbuild` as described in Step 3 below.
+This only needs to be done once, and it is required even if you are running in a container.
 
 Another thing to keep in mind is that some JEDI tests require six MPI task to run.  This is just for ufo-bundle; other bundles may require even more.  Chances are good that your machine (whether it be a laptop, a workstation, a cloud computing instance, or whatever), may have fewer than six compute cores.
 
-If your machine has fewer than six compute cores, you may need to explicitly give openmpi permission to run more than one MPI task on each core.  To do this, go to the directory :code:`~/.openmpi` (create it if it doesn't already exist).  In that directory, execute this command:
+If your machine has fewer than six compute cores, and if you are using OpenMPI, you may need to explicitly give openmpi permission to run more than one MPI task on each core.  To do this, run these commands:
 
 .. code:: bash
 
-    echo "rmaps_base_oversubscribe = 1" > mca-params.conf
+    mkdir -p ~/.openmpi	  
+    echo "rmaps_base_oversubscribe = 1" > ~/.openmpi/mca-params.conf
+    echo "localhost slots=6" > ~/.openmpi/hostfile
 
 
 Step 1: Clone the Desired JEDI Bundle
