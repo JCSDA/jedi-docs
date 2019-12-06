@@ -65,8 +65,7 @@ Code:
 :code:`ufo/atmvertinterplay/`
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
-There are no configuration options.
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -86,7 +85,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -101,7 +100,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -116,7 +115,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -131,7 +130,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -146,7 +145,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -161,7 +160,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -176,7 +175,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -191,7 +190,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -206,7 +205,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -221,7 +220,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -236,7 +235,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -251,7 +250,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -266,7 +265,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -281,25 +280,140 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
-(RadarReflectivity)
------------------------------------
+Radar Reflectivity (RadarReflectivity)
+--------------------------------------
 
 Description:
 ^^^^^^^^^^^^
 
+UFO radar operator for reflectivity. It is tested with radar observations dumped from a specific modified GSI program at NSSL for the Warn-on-Forecast project.
+
 Code:
 ^^^^^
 
+.. code:: bash
+
+  ufo/radarreflectivity
+
+    CMakeLists.txt
+    ObsRadarReflectivity.cc
+    ObsRadarReflectivity.h
+    ObsRadarReflectivity.interface.F90
+    ObsRadarReflectivity.interface.h
+    ObsRadarReflectivityTLAD.cc
+    ObsRadarReflectivityTLAD.h
+    ObsRadarReflectivityTLAD.interface.F90
+    ObsRadarReflectivityTLAD.interface.h
+    ufo_radarreflectivity_mod.F90
+    ufo_radarreflectivity_tlad_mod.F90
+
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
+
+See :code:`test/testinput/reflectivity.yaml`
+
+.. code:: yaml
+
+  window_begin: 2019-05-22T21:55:00Z
+  window_end: 2019-05-22T22:05:00Z
+
+  LinearObsOpTest:
+    coefTL: 0.1
+    toleranceTL: 1.0e-13
+    toleranceAD: 1.0e-11
+
+  Observations:
+    ObsTypes:
+    - ObsOperator:
+        name: RadarReflectivity
+        VertCoord: geopotential_height
+      ObsSpace:
+        name: Radar
+        ObsDataIn:
+          obsfile: Data/radar_dbz_obs_2019052222.nc4
+        simulate:
+          variables: [equivalent_reflectivity_factor]
+      GeoVaLs:
+        filename: Data/radar_dbz_geoval_2019052222.nc4
+      vecequiv: GsiHofX
+      tolerance: 1.0e-05
+
+
+Radar Radial Velocity (Radarradialvelocity)
+-------------------------------------------
+
+Description:
+^^^^^^^^^^^^
+
+Similar to RadarReflectivity, but for radial velocity. It is tested with radar observations dumped from a specific modified GSI program at NSSL for the Warn-on-Forecast project.
+
+Code:
+^^^^^
+
+.. code:: bash
+
+   ufo/radarradialvelocity
+
+     CMakeLists.txt
+     ObsRadarRadialVelocity.cc
+     ObsRadarRadialVelocity.h
+     ObsRadarRadialVelocity.interface.F90
+     ObsRadarRadialVelocity.interface.h
+     ObsRadarRadialVelocityTLAD.cc
+     ObsRadarRadialVelocityTLAD.h
+     ObsRadarRadialVelocityTLAD.interface.F90
+     ObsRadarRadialVelocityTLAD.interface.h
+     ufo_radarradialvelocity_mod.F90
+     ufo_radarradialvelocity_tlad_mod.F90
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+see :code:`test/testinput/radialvelocity.yaml`
+
+.. code:: yaml
+
+  window_begin: 2019-05-22T21:55:00Z
+  window_end: 2019-05-22T22:05:00Z
+
+  LinearObsOpTest:
+    coefTL: 0.1
+    toleranceTL: 1.0e-13
+    toleranceAD: 1.0e-11
+
+  Observations:
+    ObsTypes:
+    - ObsOperator:
+        name: RadarRadialVelocity
+      ObsSpace:
+        name: Radar
+        ObsDataIn:
+          obsfile: Data/radar_rw_obs_2019052222.nc4
+        simulate:
+          variables: [radial_velocity]
+      ObsFilters:
+      - Filter: Domain Check
+        variables: [radial_velocity]
+        where:
+        - variable: height@MetaData
+          minvalue: 0
+          maxvalue: 10000
+      GeoVaLs:
+        filename: Data/radar_rw_geoval_2019052222.nc4
+      vecequiv: GsiHofX
+      tolerance: 1.0e-05
+
 
 (RTTOV)
 -----------------------------------
@@ -311,7 +425,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -326,7 +440,7 @@ Code:
 ^^^^^
 
 Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
