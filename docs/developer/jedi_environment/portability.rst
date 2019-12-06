@@ -54,10 +54,17 @@ However, there is one distinguishing feature of Docker is that is worth mentioni
 
 .. code:: bash
 
-    docker pull jcsda/docker
+    docker pull jcsda/docker-<name>:latest
 
-Again, this is **not** the recommended practice.  While it is possible to use the docker container directly, it is not supported and to be used at your own risk. There are a number of known quirks with MPI under docker which are not receiving active attention. Meanwhile, these issues do not exist when running :doc:`Singularity <singularity>` or :doc:`CharlieCloud <charliecloud>` which are both actively supported.
+Where ``<name>`` specifies the compiler suite, mpi library, and container type (e.g. development, application, or tutorial).  For example, a name of ``gnu-openmpi-dev`` is used for the Docker image built with the gnu compiler suite and the openmpi mpi library.  For a list of currently available JEDI Docker containers, `go to Docker Hub <https://hub.docker.com>`_ and search for ``jcsda``.
 
-The recommended practice for JEDI users and developers is to first establish a linux environment on their laptop or PC using a virtual machine provider like :doc:`Vagrant <vagrant>` and then to run the JEDI :doc:`Singularity <singularity>` or :doc:`Charliecloud <charliecloud>` container there.
+Again, this is **not** the recommended practice.  The JEDI :doc:`Singularity <singularity>` and :doc:`CharlieCloud <charliecloud>` containers are better supported and  provide a more familiar working environment for most users and developers.   The recommended practice is therefore to first establish a linux environment on your laptop or PC using a virtual machine provider like :doc:`Vagrant <vagrant>` and then to run the JEDI :doc:`Singularity <singularity>` or :doc:`Charliecloud <charliecloud>` container there.
 
+If you do decide to run the JEDI Docker containers directly, be sure to log in as the user jedi, for example:
 
+.. code:: bash
+
+    docker run -u jedi --rm -it jcsda/docker-<name>:latest 
+
+    
+If you log in as root (the default) then the mpi tests will likely fail.

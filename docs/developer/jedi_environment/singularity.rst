@@ -3,7 +3,7 @@
 Singularity
 ===========
 
-`Singularity <https://www.sylabs.io/docs/>`_ is arguably the leading provider of software containers for HPC applications.  It was originally developed at Lawrence Berkeley Labs but then branched off into it's own enterprise that is now called SysLabs.  It is designed to be used for scientific applications on HPC systems, and to support general scientific use cases.  Singularity encapsulates your software environment in a single disk **image file** that can be copied to and invoked on any system on which Singularity itself is installed.  The JEDI environment is contained in one such image file (see :ref:`below <build_env>`).
+`Singularity <https://www.sylabs.io/docs/>`_ is arguably the leading provider of software containers for HPC applications.  It was originally developed at Lawrence Berkeley Labs but then branched off into it's own enterprise that is now called SyLabs.  It is designed to be used for scientific applications on HPC systems, and to support general scientific use cases.  Singularity encapsulates your software environment in a single disk **image file** that can be copied to and invoked on any system on which Singularity itself is installed.  The JEDI environment is contained in one such image file (see :ref:`below <build_env>`).
 
 **For these reasons, Singularity is the recommended container platform for JEDI users and developers.**
 
@@ -23,7 +23,7 @@ You can check to see if Singularity is already installed (and if it is, which ve
 
   singularity --version
 
-**To use the JEDI container, you'll need Singularity version 3.0 or later.**  If an up-to-date version of Singularity is already installed on your system, you can skip ahead to :ref:`Building the JEDI Environment <build_env>`.
+**To use the JEDI container, you'll need Singularity version 3.0 or later.**  If an up-to-date version of Singularity is already installed on your system, you can skip ahead to :ref:`Using the JEDI Singularity Container <build_env>`.
 
 If an up-to-date version is not available, then you can ask your system administrator to install or update it.  Alternatively, if you have root privileges, then you can install it yourself as described in the remainder of this section.  If Singularity is not installed and if you cannot install it because you do not have root privileges, then we recommend that you use :doc:`charliecloud` instead.  Root privileges are not needed to install and use the JEDI Charliecloud container and it provides the same software libraries as the Singularity container.  
 
@@ -41,27 +41,46 @@ Briefly, the installation process consists of first installing required system d
 
 .. _build_env:
 
-Building the JEDI environment
------------------------------
+Using the JEDI Singularity Container
+------------------------------------
 
-Once singularity is installed on your system, the rest is easy.  The next step is to download the **JEDI Singularity image** from the singularity hub (shub):
+Once singularity is installed on your system, the rest is easy.  The next step is to download one of the **JEDI Singularity images** from the Sylabs Cloud. You can do this with the following command:  
 
 .. code:: bash
 
-   singularity pull shub://JCSDA/singularity
-   872.87 MiB / 872.87 MiB [======================================================================================] 100.00% 17.98 MiB/s 48s
+   singularity pull library://jcsda/public/jedi-<name>
+   962.73 MiB / 962.73 MiB [========================================================================================================] 100.00% 11.26 MiB/s 1m25s   
+   
+.. note::
 
-Strictly speaking, you only have to do this step once but in practice you will likely want to update your JEDI image occasionally as the software environment continues to evolve.  The pull statement above should grab the most recent development version of the JEDI image file (it may take a few minutes to execute).
+   If you're using version 3.3 or earlier of Singularity, you may get a warning during the pull that the :code:`Container might not be trusted...`.  You can either ignore this warning or suppress it (in future pulls) with the :code:`-U` option to :code:`singularity pull`.  In either case, you can always verify the sigature by running :code:`singularity verify` as described below.
 
-The name of the image file may vary depending on your version of Singularity and the name of the file on the Singularity Hub (shub).  For example, if you are running Singularity version 2.4 or 2.6, the above command may retrieve a file called :code:`JCSDA-singularity-master-latest.simg`.  In Singularity version 3.0, it may be called :code:`singularity_latest.sif`.  In what follows, we will represent this name as :code:`<image-file>` - you should replace this with the name of the file retrieved by the pull command.
+.. note::
 
-Though you can execute individual commands or scripts within the singularity container defined by your image file (see the **exec** and **run** commands in the `Singularity documentation <https://www.sylabs.io/docs/>`_), for most JEDi applications you will want to invoke a **singularity shell**, as follows:
+   You can optionally add :code:`:latest` to the name of the container in the above ``singularity pull`` command.  This is the tag.  If omitted, the default tag is :code:`latest`.
+
+Here :code:`<name>` is the name of the container you wish to download.  Available names include :code:`gnu-openmpi-dev` and :code:`clang-mpich-dev`.  Both of these are development containers, as signified by the :code:`-dev` extension.  This means that they have the compilers and jedi dependencies included, but they do not have the jedi code itself, which developers are expected to download and build.  By contrast, application containers (not yet available) are designated by :code:`-app`.  For further information :doc:`see the JEDI portability document <portability>`.  The first component of the name reflects the compiler used to build the dependencies, in this case :code:`gnu` or :code:`clang` (note: the clang containers currently use gnu :code:`gfortran` as the Fortran compiler).  The second component of the name reflects the MPI library used, in this case :code:`openmpi` or :code:`mpich`.  For a list of available containers, see `https://cloud.sylabs.io/library/jcsda <https://cloud.sylabs.io/library/jcsda>`_.
+
+The pull command above will download a singularity image file onto your computer.  The name of this file will generally be :code:`jedi-<name>_latest.sif`, though it may be somewhat different for earlier versions of Singularity.   The :code:`.sif` extension indicates that it is a Singularity image file (in earlier versions of Singularity the extension was :code:`.simg`).   In what follows, we will represent this name as :code:`<image-file>` - you should replace this with the name of the file retrieved by the pull command.
+
+Strictly speaking, you only have to execute the pull command once but in practice you will likely want to update your JEDI image occasionally as the software environment continues to evolve.  The pull statement above should grab the most recent development version of the JEDI image file (it may take a few minutes to execute).  Singularity also offers a signature service so you can verify that the container came from JCSDA:
+
+.. code:: bash
+
+   singularity verify <image-file>   # (optional)
+
+You may see a name you recognize - this will generally be signed by a member of the JEDI core team.  If you don't recognize the name, then at least you can verify that it was signed by someone with a :code:`ucar.edu` email address.
+
+Though you can execute individual commands or scripts within the singularity container defined by your image file (see the **exec** and **run** commands in the `Singularity documentation <https://www.sylabs.io/docs/>`_), for many JEDI applications you may wish to invoke a **singularity shell**, as follows:
 
 .. code:: bash
 
    singularity shell -e <image-file>
 
 Now you are inside the **Singularity Container** and you have access to all the software infrastructure needed to build, compile, and run JEDI.  The :code:`-e` option helps prevent conflicts between the host environment and the container environment (e.g. conflicting library paths) by cleaning the environment before running the container.  Note that this does not mean that the container is isolated from the host environment; you should still be able to access files and directories on your host computer (or on your virtual machine if you are using Vagrant) from within the Singularity container.
+
+Working with Singularity
+------------------------
 
 If you installed singularity from within a :doc:`Vagrant <vagrant>` virtual machine (Mac or Windows), then you probably set up a a :code:`/home/vagrant/vagrant_data` directory (you may have given it a different name and/or path) that is shared between the host machine and the virtual machine.  Since this is mounted in your home directory, you should be able to access it from within the container.  However, sometimes you may wish to mount another directory in the container that is not accessible from Singularity by default.  For example, let's say that you are working on an HPC system and you have a designated workspace in a directory called :code:`$SCRATCH`.  We have included a mount point in the JEDI singularity container called :code:`/worktmp` that will allow you to access such a directory.  For this example, you would mount your work directory as follows:
 
