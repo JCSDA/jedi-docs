@@ -16,3 +16,4 @@ Therefore, we have adopted several methodologies and tools that we ask everyone 
    doxygen
    cmake
    debuggers
+   gcov
