@@ -243,9 +243,9 @@ The recommended compiler suite to use for JEDI is version 17.0.6.  So, you can b
    ecbuild -DMPIEXEC=/bin/srun -DMPIEXEC_EXECUTABLE=/usr/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
 
-Note that the :code:`jedi/intel17-impi` module includes a patched version of :code:`eckit` that is needed to have mpi jobs run correctly with :code:`srun`.  This patch has been communicated to ECMWF and will be included in future versions of :code:`eckit`.  As is standard JEDI practice, :code:`fckit` is not included in the :code:`jedi/intel17-impi` module and should be built within the bundle.  Note also that you have to tell ecbuild to use :code:`srun` as its mpi executable, as shown above.
+As is standard JEDI practice, :code:`fckit` is not included in the :code:`jedi/intel17-impi` module and should be built within the bundle.  Note also that you have to tell ecbuild to use :code:`srun` as its mpi executable, as shown above.
 
-To run parallel jobs, you'll need to create a batch script (a file) with contents similar to the following example:
+To run parallel jobs, you'll need to create a batch script (a file).  For example, to run ctest you can create a file similar to this (call it what you wish: for example ``ctest-ufo.sh``):
 
 .. code:: bash
    
@@ -253,14 +253,14 @@ To run parallel jobs, you'll need to create a batch script (a file) with content
 	  #SBATCH --job-name=<name>
 	  #SBATCH --partition=ivy
 	  #SBATCH --nodes=1
-	  #SBATCH --ntasks=4
 	  #SBATCH --cpus-per-task=1
 	  #SBATCH --time=0:10:00
 	  #SBATCH --mail-user=<email-address>
 
 	  source /etc/bashrc
 	  module purge
-	  module use /data/users/mmiesch/modules/modulefiles/core
+	  export OPT=/data/users/mmiesch/modules
+	  module use $OPT/modulefiles/core
 	  module load jedi/intel17-impi
 	  module list
 	  ulimit -s unlimited
@@ -268,15 +268,38 @@ To run parallel jobs, you'll need to create a batch script (a file) with content
           export SLURM_EXPORT_ENV=ALL
           export HDF5_USE_FILE_LOCKING=FALSE	  
 
-	  # run a particular application directly with srun
+	  cd <path-to-bundle-build-directory>
+          ctest
+	  
+	  exit 0
+
+Note that the options specified with ``#SBATCH`` include the number of nodes but not the number of tasks needed.  This is most appropriate for running ``ctest`` because some tests require a different number of MPI tasks than others.  However, if you run an application individually, you should specify ``#SBATCH --ntasks <number>`` instead of ``#SBATCH --nodes=<number>``, as shown in the following example.  The slurm job scheduler will then determine how many nodes you need.  For example, if you are running with the ivy partition as shown here, then each node has 20 cpu cores.  So, if your application takes more than 20 MPI tasks, slurm will allocate more than one node.  Specifying ``--ntasks`` instead of ``--nodes`` in the ``#SBATCH`` header commands will ensure that your computing allocation will only be charged for what you use.  So, this is preferable for more computationally intensive jobs:
+
+.. code:: bash
+   
+	  #!/usr/bin/bash
+	  #SBATCH --job-name=<name>
+	  #SBATCH --partition=ivy
+	  #SBATCH --ntasks=4
+	  #SBATCH --cpus-per-task=1
+	  #SBATCH --time=0:10:00
+	  #SBATCH --mail-user=<email-address>
+
+	  source /etc/bashrc
+	  module purge
+	  export OPT=/data/users/mmiesch/modules
+	  module use $OPT/modulefiles/core
+	  module load jedi/intel17-impi
+	  module list
+	  ulimit -s unlimited
+
+          export SLURM_EXPORT_ENV=ALL
+          export HDF5_USE_FILE_LOCKING=FALSE	  
+
+	  # make sure the number of tasks it requires matches the SBATCH --ntasks specification above
 	  cd <path-to-bundle-build-directory>/test/ufo
 	  srun --ntasks=4 --cpu_bind_core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
 
-	  # ...or run one or more ctests - but make sure the number of tasks it requires matches the
-	  # --ntasks SBATCH specification above
-	  cd <path-to-bundle-build-directory>
-          ctest -R <mytest>
-	  
 	  exit 0
    
 Then you can submit and monitor your jobs with these commands
@@ -284,6 +307,6 @@ Then you can submit and monitor your jobs with these commands
 .. code:: bash
 
 	  sbatch <batch-script>
-	  squeue | grep <your-user-name>
+	  squeue -u <your-user-name>
 
-You can delete jobs with the :code:`scancel` command.  For further information please consult the S4 user documentation.	  
+You can delete jobs with the :code:`scancel` command.  For further information please consult `the S4 user documentation <https://groups.ssec.wisc.edu/groups/S4/>`_.	  
