@@ -210,24 +210,108 @@ The syntax of this ObsFilter is also identical to that of "where" statement, but
 Gaussian Thinning Filter
 -------------------------
 
-This filter thins observations to a two- or three-dimensional equidistant grid.  This is horizontally defined in kilometers (the mesh is generated relative to the mean radius of the earth) and vertically in pressure (Pa).  For 2D thinning, simply specify a horizontal_mesh:  
+This filter thins observations by preserving only one observation in each cell of a grid. Cell assignment can be based on an arbitrary combination of:
+
+- horizontal position
+- vertical position (in terms of air pressure)
+- time
+- category (arbitrary integer associated with each observation).
+
+Selection of the observation to preserve in each cell is based on
+
+- its position in the cell
+- optionally, its priority.
+
+The following YAML parameters are supported:
+
+- Horizontal grid:
+
+  * :code:`horizontal_mesh`: Approximate width (in km) of zonal bands into which the 
+    Earth's surface is split. Thinning in the horizontal direction is disabled if
+    this parameter is negative. Default: approx. 111 km (= 1 deg of latitude).
+
+  * :code:`use_reduced_horizontal_grid`: True to use a reduced grid, with high-latitude 
+    zonal bands split into fewer cells than low-latitude bands to keep cell size nearly uniform.
+    False to use a regular grid, with the same number of cells at all latitudes. Default: :code:`true`.
+
+  * :code:`round_horizontal_bin_count_to_nearest`: 
+    True to set the number of zonal bands so that the band width is as close as possible to
+    :code:`horizontal_mesh`, and the number of cells ("bins") in each zonal band so that the 
+    cell width in the zonal direction is as close as possible to that in the meridional direction.
+    False to set the number of zonal bands so that the band width is as small as possible, but
+    no smaller than :code:`horizontal_mesh`, and the cell width in the zonal direction is as small as
+    possible, but no smaller than in the meridional direction. Default: :code:`false`.
+
+- Vertical grid:
+
+  * :code:`vertical_mesh`: Cell size (in Pa) in the vertical direction. 
+    Thinning in the vertical direction is disabled
+    if this parameter is not specified or negative.
+
+  * :code:`vertical_min`: Lower bound of the pressure interval split into cells of size
+    :code:`vertical_mesh`. Default: 100 Pa.
+
+  * :code:`vertical_max`: Upper bound of the pressure interval split into cells of size 
+    :code:`vertical_mesh`. This parameter is rounded upwards to the nearest multiple of 
+    :code:`vertical_mesh` starting from :code:`vertical_min`. Default: 110,000 Pa.
+
+- Temporal grid:
+
+  * :code:`time_mesh`: Cell size in the temporal direction. 
+    Temporal thinning is disabled if this this parameter is not specified or set to 0.
+
+  * :code:`time_min`: Lower bound of the time interval split into cells of size :code:`time_mesh`. 
+    Temporal thinning is disabled if this parameter is not specified.
+
+  * :code:`time_max`: Upper bound of the time interval split into cells of size :code:`time_mesh`.
+    This parameter is rounded upwards to the nearest multiple of :code:`time_mesh` starting from
+    :code:`time_min`. Temporal thinning is disabled if this parameter is not specified.
+
+- Observation categories:
+
+  * :code:`category_variable`: Variable storing integer-valued IDs associated with observations. 
+    Observations belonging to different categories are thinned separately.
+
+- Selection of observations to retain:
+
+  * :code:`priority_variable`: Variable storing observation priorities. 
+    Among all observations in a cell, only those with the highest priority are considered 
+    as candidates for retaining. If not specified, all observations are assumed to have equal priority.
+
+  * :code:`distance_norm`: Determines which of the highest-priority observations lying in a cell
+    is retained. Allowed values:
+
+    + :code:`geodesic`: retain the observation closest to the cell center in the horizontal direction
+      (air pressure and time are ignored when selecting the observation to retain)
+
+    + :code:`maximum`: retain the observation lying furthest from the cell's bounding box in the
+      system of coordinates in which the cell is a unit cube (all dimensions along which thinning
+      is enabled are taken into account).
+
+    Default: :code:`geodesic`.
+
+Example 1 (thinning by the horizontal position only):
 
 .. code:: yaml
 
     - Filter: Gaussian_Thinning
       horizontal_mesh:   1111.949266 #km = 10 deg at equator
 
-The observation nearest to each thinning centroid will be retained, while all others within the thinning mesh will be excluded.  
-
-For a 3D mesh, specify a vertical_mesh in addition to a horizontal_mesh:
+Example 2 (thinning observations from multiple categories and with non-equal priorities by their horizontal position, pressure and time):
 
 .. code:: yaml
 
     - Filter: Gaussian_Thinning
-      horizontal_mesh:   1111.949266 #km = 10 deg at equator
-      vertical_mesh:     10000 #Pa
-
-In a 3D mesh, the observation nearest the horizontal centroid in each vertical bin will be retained.  There is no weighting towards the vertical midpoint of the bin.
+      distance_norm:     maximum
+      horizontal_mesh:   5000
+      vertical_mesh:    10000
+      time_mesh: PT01H
+      time_min: 2018-04-14T21:00:00Z
+      time_max: 2018-04-15T03:00:00Z
+      category_variable:
+        name: instrument_id@MetaData
+      priority_variable:
+        name: priority@MetaData
 
 Difference filter
 -----------------
