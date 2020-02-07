@@ -87,38 +87,27 @@ The jedi module is really multiple nested modules.   To list the modules you cur
 
 When you are happy with this, you are ready to :ref:`build and run your JEDI bundle <build-jedi>`.
 
-Theia
+Hera
 -----
 
-Theia is an HPC system located in NOAA's NESCC facility in Fairmont, WV.  On Theia, users can access the installed jedi modules by first entering
+Hera is an HPC system located in NOAA's NESCC facility in Fairmont, WV.  On Hera, users can access the installed jedi modules by first entering
 
 .. code :: bash
 
-   module use -a /contrib/da/modulefiles
+  module use -a /scratch1/NCEPDEV/da/Daniel.Holdaway/opt/modulefiles/
 
-Current options for setting up the JEDI environment include (choose only one)
+Currently the intel 19 module is preferred:
 
 .. code :: bash
 
-   module load jedi # intel compiler suite
-   module load jedi/jedi-gcc-7.3.0 # GNU 7.3.0 compiler suite
-   module load jedi/jedi-gcc-8.2.0 # GNU 8.2.0 compiler suite
+  module load apps/jedi/intel-19.0.5.281
 
-Some system-specific tips for Theia include:
-
-* If you are using intel compilers, run ecbuild with the following option in order to make sure you have the correct run command for parallel jobs:
-
+Also, it is recommended that you specify :code:`srun` as your mpi process manager when building, like so:
+  
 .. code:: bash
 
-    ecbuild -DMPIEXEC=$MPIEXEC <...>
-
-* Use up to 12 MPI tasks to speed up the compilation
-
-.. code:: bash
-
-    make -j12
-
-
+   ecbuild -DMPIEXEC_EXECUTABLE=/usr/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
+   make -j4
 
 Cheyenne
 --------
@@ -136,7 +125,6 @@ Current options for setting up the JEDI environment include (choose only one)
 .. code :: bash
 
    module load jedi/gnu-openmpi # GNU compiler suite and openmpi
-   module load jedi/intel-impi # Intel 17.0.1 compiler suite and Intel mpi
    module load jedi/intel19-impi # Intel 19.0.5 compiler suite and Intel mpi
 
 Run ecbuild and pull the latest code.  Note - because of space limitations on your home directory, it's a good idea to locate your build directory on glade:
@@ -176,7 +164,7 @@ The system configuration on Cheyenne will not allow you to run mpi jobs from the
     module purge
     export OPT=/glade/work/miesch/modules
     module use $OPT/modulefiles/core
-    module load jedi/intel-impi
+    module load jedi/intel19-impi
 
     # cd to your build directory.  Make sure that these binaries were built
     # with the same module that is loaded above, in this case jedi/intel-impi
@@ -190,19 +178,27 @@ The system configuration on Cheyenne will not allow you to run mpi jobs from the
 Discover
 --------
 
-      `Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.  On Discover, users can access the installed JEDI modules by first entering
+`Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.  On Discover, users can access the installed JEDI modules by first entering
 
 .. code :: bash
 
-   module use -a /discover/nobackup/projects/gmao/obsdev/rmahajan/opt/modulefiles
+   export OPT=/discover/nobackup/mmiesch/modules
+   module use -a $OPT/modulefiles
 
-Current options for setting up the JEDI environment include (choose only one)
+Currently the intel17 and gnu 7.3 stacks are maintained (choose only one):
 
 .. code :: bash
 
-   module load apps/jedi/gcc-7.3          # GNU v7.3.0 compiler suite
-   module load apps/jedi/intel-17.0.7.259 # Intel v17.0.7.259 compiler suite
+   module load apps/jedi/intel17-impi # aka apps/jedi/intel-17.0.7.259
+   module load apps/jedi/gnu-openmpi # aka apps/jedi/gcc-7.3_openmpi-3.0.0
 
+Or, alternatively, there are also modules built with ESMA baselibs
+
+.. code :: bash
+
+   module load apps/jedi/intel-17.0.7.259-baselibs
+   module load apps/jedi/jedi/gcc-7.3_openmpi-3.0.0-baselibs
+   
 * Run ecbuild with the following option to provide the correct path for :code:`MPIEXEC`
 
 .. code:: bash
@@ -240,7 +236,7 @@ The recommended compiler suite to use for JEDI is version 17.0.6.  So, you can b
 .. code:: bash
 
    module load jedi/intel17-impi
-   ecbuild -DMPIEXEC=/bin/srun -DMPIEXEC_EXECUTABLE=/usr/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
+   ecbuild -DMPIEXEC_EXECUTABLE=/usr/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
 
 As is standard JEDI practice, :code:`fckit` is not included in the :code:`jedi/intel17-impi` module and should be built within the bundle.  Note also that you have to tell ecbuild to use :code:`srun` as its mpi executable, as shown above.
@@ -251,7 +247,6 @@ To run parallel jobs, you'll need to create a batch script (a file).  For exampl
    
 	  #!/usr/bin/bash
 	  #SBATCH --job-name=<name>
-	  #SBATCH --partition=ivy
 	  #SBATCH --nodes=1
 	  #SBATCH --cpus-per-task=1
 	  #SBATCH --time=0:10:00
