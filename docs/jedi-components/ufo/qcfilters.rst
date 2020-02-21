@@ -136,39 +136,6 @@ The second filter would flag wind component observations where abs((y+bias)-H(x)
 
 Please see the "Filter Action" for more detail.
 
-Where statement and processWhere function
-------------------------------------------
-
-Where statment can be included in the yaml file in conjuncton with observation filters as the condition for filtering. The processWhere function takes the condition in where statement from yaml and creates a mask that restricts where the filter will apply. The default is true so that if there is no where the filter applies everywhere. Eveywhere the condition is false, the filter will not be applied.
-
-The valid condition set by where statment include the following 5 categories:
-
-- :code:`minvalue` and/or :code:`maxvalue` : filter applied if value is within the valid range
-- :code:`is_defined`                       : filter applied if data has a valid value (not missing) 
-- :code:`is_not_defined`                   : filter applied if data is missing  
-- :code:`is_in`                            : filter applied if data is in the given whitelist 
-- :code:`is_not_in`                        : filter applied if data is not in the given blacklist
-
-The :code:`is_in` and :code:`is_not_in` capabiities are implemented but not available to users yet. 
-
-.. code:: yaml
-
-   where:
-   - variable: sea_surface_temperature@GeoVaLs
-     minvalue: 200
-     maxvalue: 300
-   - variable: latitude@MetaData
-     maxvalue: 60. 
-   - variable: height@MetaData
-     is_defined
-   - variable: station_id@MetaData
-     is_in: 3, 6, 11-120
-
-In the example above, four maskes are created for radiosonde observation filtering. The filter will be applied in sequence at observation location where the sea surface temperature is within the range of [200,300] Kelvin and where the latitude is <= than 60 degree and where the height of the observation has a valid value (not missing) and where the station id matches the ids in the whitelist. 
-
-The Where statement and processWhere function are used in generic filters such as BackgroundCheck, DifferenceCheck, ObsBoundsCheck, ObsDomainCheck, and BlackList.
-
-
 Domain Check Filter
 --------------------
 
@@ -426,3 +393,33 @@ In addition to, e.g., @GeoVaLs, @MetaData, @ObsValue, @HofX, there are two new s
 So far, @ObsFunction variables can be used in where statements in any of the generic filters.  In the future, they may be used to inflate ObsError as an "action".
 
 - @ObsDiagnostic will be used to store non-h(x) diagnostic values from the simulateObs function in individual ObsOperator classes.  The ObsDiagnostics interface class to OOPS is used to pass those diagnostics to the ObsFilters.  Because the diagnostics are provided by simulateObs, they can only be used in a PostFilter.  The generic filters will need to have PostFilter functions implemented (currently only Background Check) in order to use ObsDiagnostics.  The simulateObs interface to ObsDiagnostics will be first demonstrated in CRTM.
+
+Where statement and processWhere function
+------------------------------------------
+
+The :code:`where` statement can be included in the yaml file in conjunction with observation filters as the condition for filtering. The :code:`processWhere` function takes the condition in the :code:`where` statement from yaml and creates a mask that restricts where the filter will apply. The default is true, so if there is no :code:`where`, the filter applies everywhere. Everywhere the condition is false, the filter will not be applied.
+
+The following conditions are accepted by the :code:`where` statement:
+
+- :code:`minvalue` and/or :code:`maxvalue` : filter applied if value is within the valid range
+- :code:`is_defined`                       : filter applied if data has a valid value (not missing)
+- :code:`is_not_defined`                   : filter applied if data is missing
+- :code:`is_in`                            : filter applied if data is in the given whitelist
+- :code:`is_not_in`                        : filter applied if data is not in the given blacklist
+
+.. code:: yaml
+
+   where:
+   - variable: sea_surface_temperature@GeoVaLs
+     minvalue: 200
+     maxvalue: 300
+   - variable: latitude@MetaData
+     maxvalue: 60.
+   - variable: height@MetaData
+     is_defined
+   - variable: station_id@MetaData
+     is_in: 3, 6, 11-120
+
+In the example above, four masks are created for radiosonde observation filtering. The filter will be applied in sequence at observation locations where the sea surface temperature is within the range of [200, 300] kelvin, the latitude is <= than 60 degrees, the height of the observation has a valid value (not missing), and the station id is one of the ids in the whitelist. 
+
+The :code:`where` statement and :code:`processWhere` function are used in generic filters such as BackgroundCheck, DifferenceCheck, ObsBoundsCheck, ObsDomainCheck, and BlackList.
