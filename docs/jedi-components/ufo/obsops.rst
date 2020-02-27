@@ -81,14 +81,79 @@ Examples of yaml:
 Description:
 ^^^^^^^^^^^^
 
+Interface to the Community Radiative Transfer Model (CRTM) as an observational operator.
+
 Code:
 ^^^^^
+
+:code:`ufo/crtm/`
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
 
+The CRTM operator has some required geovals (see varin_default in ufo/crtm/ufo_radiancecrtm_mod.F90). The configurable geovals are as follows:
+
+* Absorbers : CRTM atmospheric absorber species that will be requested as geovals.  H2O and O3 are always required. So far H2O, O3, CO2 are implemented. More species can be added readily by extending UFO_Absorbers and CRTM_Absorber_Units in ufo/crtm/ufo_crtm_utils_mod.F90.
+* Clouds [optional] : CRTM cloud constituents that will be requested as geovals; can include any of Water, Ice, Rain, Snow, Graupel, Hail
+* Cloud_Fraction [optional] : sets the CRTM Cloud_Fraction to a constant value across all profiles (e.g., 1.0). Omit this option in order to request cloud_area_fraction_in_atmosphere_layer as a geoval from the model.
+
+* LinearObsOperator [optional] : used to indicate a different configuration for K-Matrix multiplication of tangent linear and adjoint operators from the configuration used for the Forward operator.  The same profile is used in the CRTM Forward and K_Matrix calculations. Only the interface to the model will be altered. Omit LinearObsOperator in order to use the same settings across Forward, Tangent Linear, and Adjoint operators.
+* LinearObsOperator.Absorbers [optional] : controls which of the selected Absorbers will be acted upon in K-Matrix multiplication
+* LinearObsOperator.Clouds [optional] : controls which of the selected Clouds will be acted upon in K-Matrix multiplication
+
+ObsOptions configures the tabulated coeffecient files that are used by CRTM
+* ObsOptions.Sensor_ID : {sensor}_{platform} prefix of the sensor-specific coefficient files, e.g., amsua_n19
+* ObsOptions.EndianType : Endianness of the coefficient files. Either little_endian or big_endian.
+* ObsOptions.CoefficientPath : location of all coefficient files
+
+* ObsOptions.IRwaterCoeff [optional] : options: [Nalli (D), WuSmith]
+* ObsOptions.VISwaterCoeff [optional] : options: [NPOESS (D)]
+* ObsOptions.IRVISlandCoeff [optional] : options: [NPOESS (D), USGS, IGBP]
+* ObsOptions.IRVISsnowCoeff [optional] : options: [NPOESS (D)]
+* ObsOptions.IRVISiceCoeff [optional] : options: [NPOESS (D)]
+* ObsOptions.MWwaterCoeff [optional] : options: [FASTEM6 (D), FASTEM5, FASTEM4]
+
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
+
+.. code:: yaml
+
+  ObsOperator:
+    name: CRTM
+    Absorbers: [H2O, O3]
+    Clouds: [Water, Ice, Rain, Snow, Graupel, Hail]
+    LinearObsOperator:
+      Absorbers: [H2O]
+      Clouds: [Water, Ice]
+    ObsOptions:
+      Sensor_ID: amsua_n19
+      EndianType: little_endian
+      CoefficientPath: Data/
+
+.. code:: yaml
+
+  ObsOperator:
+    name: CRTM
+    Absorbers: [H2O, O3, CO2]
+    Clouds: [Water, Ice]
+    Cloud_Fraction: 1.0
+    ObsOptions:
+      Sensor_ID: iasi_metop-a
+      EndianType: little_endian
+      CoefficientPath: Data/
+      IRVISlandCoeff: USGS
+
+.. code:: yaml
+
+  ObsOperator:
+    name: CRTM
+    Absorbers: [H2O, O3]
+    LinearObsOperator:
+      Absorbers: [H2O]
+    ObsOptions:
+      Sensor_ID: abi_g16
+      EndianType: little_endian
+      CoefficientPath: Data/
 
 (AOD)
 -----------------------------------
