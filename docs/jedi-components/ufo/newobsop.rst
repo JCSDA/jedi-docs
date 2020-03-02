@@ -8,11 +8,6 @@ Existing Observation Operators
 
 Before implementing a new observation operator, check if one of the :doc:`observation operators already implemented in UFO <obsops>` is suitable.
 
-1. Interface to CRTM for radiances and aerosol optical depth (:code:`ufo/src/ufo/crtm/` , "CRTM" for radiances, "AOD" for aod in the config files)
-2. Linear vertical interpolation in log pressure for the variables specified in the config file (:code:`ufo/src/ufo/atmvertinterp`, "Radiosonde", "Aircraft", "Satwind", more names could be added to :code:`ObsAtmVertInterp.cc`).
-3. Identity observation operator for 2D fields (takes the result of the horizontal interpolation from the geovals and returns it as H(x)) (:code:`ufo/src/ufo/identity`, "Surface", more names could be added to :code:`ObsIdentity.cc`)
-4. Several GNSSRO observation operators.
-
 Creating files for a new Observation Operator
 ---------------------------------------------
 
