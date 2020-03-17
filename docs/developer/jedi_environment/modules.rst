@@ -94,13 +94,13 @@ Hera is an HPC system located in NOAA's NESCC facility in Fairmont, WV.  On Hera
 
 .. code :: bash
 
-  module use -a /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi/modules/
+  module use -a /scratch1/NCEPDEV/da/Daniel.Holdaway/opt/modulefiles/
 
-Currently the intel 18 module is preferred:
+Currently the intel 19 module is preferred:
 
 .. code :: bash
 
-  module load jedi-stack/intel-impi-18.0.5
+  module load apps/jedi/intel-19.0.5.281
 
 Also, it is recommended that you specify :code:`srun` as your mpi process manager when building, like so:
   

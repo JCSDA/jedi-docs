@@ -280,144 +280,59 @@ Example 2 (thinning observations from multiple categories and with non-equal pri
       priority_variable:
         name: priority@MetaData
 
-Poisson Disk Thinning Filter
-----------------------------
+TemporalThinning Filter
+------------------------
 
-This filter thins observations by iterating over them in random order and retaining each observation
-lying outside the *exclusion volumes* (ellipsoids or cylinders) surrounding observations that
-have already been retained.
+This filter thins observations so that the retained ones are sufficiently separated in time. It supports
+the following YAML parameters:
 
-The following YAML parameters are supported:
+* :code:`min_spacing`:  Minimum spacing between two successive retained observations. Default: :code:`PT1H`.
 
-- Exclusion volume:
-
-  * :code:`min_horizontal_spacing`: Size of the exclusion volume in the horizontal direction (in km).
+* :code:`seed_time`: If not set, the thinning filter will consider observations as candidates for retaining
+  in chronological order.
   
-    If the priority_variable parameter is not set and hence all observations have the same
-    priority, this parameter must be a floating-point constant. Otherwise it may also be a map
-    assigning an exclusion volume size to each observation priority. Exclusion volumes of
-    lower-priority observations must be at least as large as those of higher-priority ones.
-    If this parameter is not set, horizontal position is ignored during thinning.
-    
-    Note: Owing to a bug in the eckit YAML parser, maps need to be written in the JSON style,
-    with keys quoted. Example::
-    
-      min_horizontal_spacing: {"1": 123, "2": 321}
-    
-    This will not work::
-    
-      min_horizontal_spacing: {1: 123, 2: 321}
-    
-    and neither will this::
-    
-      min_horizontal_spacing:
-        1: 123
-        2: 321
-    
-    or this::
-    
-      min_horizontal_spacing:
-        "1": 123
-        "2": 321
+  If set, the filter will start from the observation taken as close as possible to :code:`seed_time`,
+  then consider all successive observations in chronological order, and finally all preceding
+  observations in reverse chronological order.
 
-  * :code:`min_vertical_spacing`: Size of the exclusion volume in the vertical direction (in Pa).
-  
-    Like :code:`min_horizontal_spacing`, this parameter can be either a constant or a map.
-    If not set, vertical position is ignored during thinning.
+* :code:`category_variable`: Variable storing integer-valued IDs associated with observations.
+  Observations belonging to different categories are thinned separately. If not specified, all 
+  observations are thinned together.
 
-  * :code:`min_time_spacing`: Size of the exclusion volume in the temporal direction.
-  
-    Like :code:`min_horizontal_spacing`, this parameter can be either a constant or a map.
-    If not set, observation time is ignored during thinning.
+* :code:`priority_variable`: Variable storing integer-valued observation priorities. 
+  If not specified, all observations are assumed to have equal priority.
 
-  * :code:`exclusion_volume_shape`: Shape of the exclusion volume surrounding each observation.
-  
-    Allowed values:
+* :code:`tolerance`: Only relevant if :code:`priority_variable` is set.
+ 
+  If set to a nonzero duration, then whenever an observation *O* lying at least :code:`min_spacing`
+  from the previous retained observation *O'* is found, the filter will inspect all observations
+  lying no more than :code:`tolerance` further from *O'* and retain the one with the highest priority.
+  In case of ties, observations closer to *O'* are preferred.
 
-    - :code:`cylinder`: the exclusion volume of an observation taken at latitude *lat*, longitude *lon*,
-      pressure *p* and time *t* is the set of all locations (lat', lon', p', t') for which all of
-      the following conditions are met:
-    
-      * the geodesic distance between (lat, lon) and (lat', lon') is smaller than
-        min_horizontal_spacing
-    
-      * \|p - p'| < min_vertical_spacing
-    
-      * \|t - t'| < min_time_spacing.
-    
-    - :code:`ellipsoid`: the exclusion volume of an observation taken at latitude *lat*, longitude *lon*,
-      pressure *p* and time *t* is the set of all locations (lat', lon', p', t') for which
-      the following condition is met:
-    
-      geodesic_distance((lat, lon), (lat', lon'))^2 / min_horizontal_spacing^2 +
-      (p - p')^2 / min_vertical_spacing^2 + (t - t')^2 / min_time_spacing^2 < 1.
-  
-    Default: :code:`cylinder`.
-
-- Observation categories:
-
-  * :code:`category_variable`: Variable storing integer-valued IDs associated with observations.
-    Observations belonging to different categories are thinned separately. If not set, all
-    observations are thinned together.
-
-- Selection of observations to retain:
-
-  * :code:`priority_variable`: Variable storing observation priorities. An observation will not
-    be retained if it lies within the exclusion volume of an observation with a higher priority.
-  
-    As noted in the documentation of :code:`min_horizontal_spacing`, the exclusion volume size must be a
-    (weakly) monotonically decreasing function of observation priority, i.e. the exclusion volumes
-    of all observations with the same priority must have the same size, and the exclusion volumes
-    of lower-priority observations must be at least as large as those of higher-priority ones.
-    
-    If this parameter is not set, all observations are assumed to have equal priority.
-
-  * :code:`shuffle`: If true, observations will be randomly shuffled before being inspected as 
-    candidates for retaining. Default: true.
-  
-    Note: It is recommended to leave shuffling enabled in production code, since the performance
-    of the spatial point index (kd-tree) used in the filter's implementation may be degraded if
-    observation locations are ordered largely monotonically (and random shuffling essentially
-    prevents that from happening).
-
-  * :code:`random_seed`: Seed with which to initialize the random number generator used to shuffle
-    the observations if :code:`shuffle` is set to true.
-  
-    If omitted, a seed will be generated based on the current (calendar) time.
-
-Example 1 (thinning by horizontal position only; exclusion volume size dependent on observation priority;
-each scan thinned separately):
+Example 1 (selecting at most one observation taken by each station per 1.5 h,
+starting from the observation closest to seed time):
 
 .. code:: yaml
 
-    - Filter: Poisson Disk Thinning
-      min_horizontal_spacing: {"0": 600, "1": 200} # priority -> km
+    - Filter: TemporalThinning
+      min_spacing: PT01H30M
+      seed_time: 2018-04-15T00:00:00Z
       category_variable:
-        name: scan_index@MetaData
-      priority_variable:
-        name: priority@MetaData
-      random_seed: 12345
+        name: call_sign@MetaData
 
-.. figure:: images/poisson-disk-thinning.png
-   
-   Results of running the Poisson-disk thinning filter on sample data with the above parameters and two 
-   different random seeds. All observations have the same scan index. Observations with priorities 1 and 0 
-   are marked with red and blue circles, respectively. Circles denoting retained observations are filled;
-   those denoting rejected observations are empty. Note how blue (low-priority) observations are retained 
-   only in regions without red (high-priority) observations.
-
-Example 2 (thinning by horizontal position, vertical position and time; ellipsoidal exclusion volumes;
-shuffling disabled):
+Example 2 (selecting at most one observation taken by each station per 1 h, 
+starting from the earliest observation, and allowing the filter to retain an observation 
+taken up to 20 min after the first qualifying observation if its quality score is higher):
 
 .. code:: yaml
 
-    - Filter: Poisson Disk Thinning
-      min_horizontal_spacing: 1000 # km
-      min_vertical_spacing: 10000 # Pa
-      min_time_spacing: PT1H
-      exclusion_volume_shape: ellipsoid
-      shuffle: false
-
+    - Filter: TemporalThinning
+      min_spacing: PT01H
+      tolerance: PT20M
+      category_variable:
+        name: call_sign@MetaData
+      priority_variable:
+        name: score@MetaData
 
 Difference filter
 -----------------
