@@ -280,6 +280,60 @@ Example 2 (thinning observations from multiple categories and with non-equal pri
       priority_variable:
         name: priority@MetaData
 
+TemporalThinning Filter
+------------------------
+
+This filter thins observations so that the retained ones are sufficiently separated in time. It supports
+the following YAML parameters:
+
+* :code:`min_spacing`:  Minimum spacing between two successive retained observations. Default: :code:`PT1H`.
+
+* :code:`seed_time`: If not set, the thinning filter will consider observations as candidates for retaining
+  in chronological order.
+  
+  If set, the filter will start from the observation taken as close as possible to :code:`seed_time`,
+  then consider all successive observations in chronological order, and finally all preceding
+  observations in reverse chronological order.
+
+* :code:`category_variable`: Variable storing integer-valued IDs associated with observations.
+  Observations belonging to different categories are thinned separately. If not specified, all 
+  observations are thinned together.
+
+* :code:`priority_variable`: Variable storing integer-valued observation priorities. 
+  If not specified, all observations are assumed to have equal priority.
+
+* :code:`tolerance`: Only relevant if :code:`priority_variable` is set.
+ 
+  If set to a nonzero duration, then whenever an observation *O* lying at least :code:`min_spacing`
+  from the previous retained observation *O'* is found, the filter will inspect all observations
+  lying no more than :code:`tolerance` further from *O'* and retain the one with the highest priority.
+  In case of ties, observations closer to *O'* are preferred.
+
+Example 1 (selecting at most one observation taken by each station per 1.5 h,
+starting from the observation closest to seed time):
+
+.. code:: yaml
+
+    - Filter: TemporalThinning
+      min_spacing: PT01H30M
+      seed_time: 2018-04-15T00:00:00Z
+      category_variable:
+        name: call_sign@MetaData
+
+Example 2 (selecting at most one observation taken by each station per 1 h, 
+starting from the earliest observation, and allowing the filter to retain an observation 
+taken up to 20 min after the first qualifying observation if its quality score is higher):
+
+.. code:: yaml
+
+    - Filter: TemporalThinning
+      min_spacing: PT01H
+      tolerance: PT20M
+      category_variable:
+        name: call_sign@MetaData
+      priority_variable:
+        name: score@MetaData
+
 Difference filter
 -----------------
 
