@@ -106,7 +106,7 @@ Also, it is recommended that you specify :code:`srun` as your mpi process manage
   
 .. code:: bash
 
-   ecbuild -DMPIEXEC_EXECUTABLE=/usr/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
+   ecbuild -DMPIEXEC_EXECUTABLE=`which srun` -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
 
 Cheyenne
