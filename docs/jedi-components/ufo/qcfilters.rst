@@ -61,6 +61,10 @@ Creating a new Filter
 If your observation operator is different from the above, you may need to create a new
 filter. Typically, all the files for a new filter are in :code:`ufo/src/ufo/filters`.
 
+When writing a new filter, consider using the :code:`Parameter` and :code:`OptionalParameter` 
+class templates to automate extraction of filter parameters from YAML files. See the
+:ref:`Parameter-classes` section for more information.
+
 Filter tests
 ------------
 
