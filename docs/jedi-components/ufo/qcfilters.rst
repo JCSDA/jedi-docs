@@ -61,6 +61,10 @@ Creating a new Filter
 If your observation operator is different from the above, you may need to create a new
 filter. Typically, all the files for a new filter are in :code:`ufo/src/ufo/filters`.
 
+When writing a new filter, consider using the :code:`Parameter` and :code:`OptionalParameter` 
+class templates to automate extraction of filter parameters from YAML files. See the
+:ref:`Parameter-classes` section for more information.
+
 Filter tests
 ------------
 
@@ -403,6 +407,103 @@ The options for YAML include:
  - :code:`maxvalue`: the maximum value the derivative can be without the observations being rejected
  - :code:`i1`: the index of the first observation location in the record to use
  - :code:`i2`: the index of the last observation location in the record to use
+
+Track Check Filter
+------------------
+
+This filter checks tracks of mobile weather stations, rejecting observations inconsistent with the
+rest of the track.
+
+Each track is checked separately. The algorithm performs a series of sweeps over the
+observations from each track. For each observation, multiple estimates of the instantaneous
+speed and (optionally) ascent/descent rate are obtained by comparing the reported position with the
+positions reported during a number a nearby (earlier and later) observations that haven't been
+rejected in previous sweeps. An observation is rejected if a certain fraction of these
+estimates lie outside the valid range. Sweeps continue until one of them fails to reject any
+observations, i.e. the set of retained observations is self-consistent.
+
+Note that this filter was originally written with aircraft observations in mind. However, it can
+potentially be useful also for other observation types.
+
+The following YAML parameters are supported:
+
+- :code:`temporal_resolution`: Assumed temporal resolution of the observations, 
+  i.e. absolute accuracy of the reported observation times. Default: PT1M.
+
+- :code:`spatial_resolution`: Assumed spatial resolution of the observations (in km), 
+  i.e. absolute accuracy of the reported positions. 
+
+  Instantaneous speeds are estimated conservatively with the formula
+
+  speed_estimate = (reported_distance - spatial_resolution) / (reported_time + temporal_resolution).
+
+  The default spatial resolution is 1 km.
+
+- :code:`num_distinct_buddies_per_direction`, :code:`distinct_buddy_resolution_multiplier`:
+  Control the size of the set of observations against which each observation is compared.
+  
+  Let O_i (i = 1, ..., N) be the observations from a particular track ordered chronologically. 
+  Each observation O_i is compared against *m* observations immediately preceding it and 
+  *n* observations immediately following it. The number *m* is chosen so that 
+  {O_{i-m}, ..., O_{i-1}} is the shortest sequence of observations preceding O_i that contains 
+  :code:`num_distinct_buddies_per_direction` observations *distinct* from O_i that have not yet
+  been rejected. Two observations taken at times *t* and *t*' and locations *x* and *x*'
+  are deemed to be distinct if the following conditions are met:
+  
+  - \|t' - t| > :code:`distinct_buddy_resolution_multiplier` * :code:`temporal_resolution`
+  
+  - \|x' - x| > :code:`distinct_buddy_resolution_multiplier` * :code:`spatial_resolution`
+  
+  Similarly, the number *n* is chosen so that {O_{i+1}, ..., O_{i+n)} is the shortest sequence 
+  of observations following O_i that contains :code:`num_distinct_buddies_per_direction` 
+  observations distinct from O_i that have not yet been rejected. 
+
+  Both parameters default to 3.
+
+- :code:`max_climb_rate`: Maximum allowed rate of ascent and descent (in Pa/s). 
+  If not specified, climb rate checks are disabled.
+
+- :code:`max_speed_interpolation_points`: Encoding of the function mapping air pressure 
+  (in Pa) to the maximum speed (in m/s) considered to be realistic.
+
+  The function is taken to be a linear interpolation of a series of (pressure, speed) points.
+  The pressures and speeds at these points should be specified as keys and values of a
+  JSON-style map. Owing to a bug in the eckit YAML parser, the keys must be enclosed in quotes.
+  For example,
+  ::
+  
+    max_speed_interpolation_points: { "0": 900, "100000": 100 }
+  
+  encodes a linear function equal to 900 m/s at 0 Pa and 100 m/s at 100000 Pa.
+
+- :code:`rejection_threshold`: Maximum fraction of climb rate or speed estimates obtained by
+  comparison with other observations that are allowed to fall outside the allowed ranges before
+  an observation is rejected. Default: 0.5.
+
+- :code:`station_id_variable`: Variable storing string- or integer-valued station IDs. 
+  Observations taken by each station are checked separately.
+  
+  If not set and observations were grouped into records when the observation space was
+  constructed, each record is assumed to consist of observations taken by a separate
+  station. If not set and observations were not grouped into records, all observations are
+  assumed to have been taken by a single station.
+  
+  Note: the variable used to group observations into records can be set with the
+  :code:`ObsSpace.ObsDataIn.obsgrouping.group_variable` YAML option.
+
+Example:
+
+.. code:: yaml
+
+   - Filter: Track Check
+     temporal_resolution: PT30S
+     spatial_resolution: 20 # km
+     num_distinct_buddies_per_direction: 3
+     distinct_buddy_resolution_multiplier: 3
+     max_climb_rate: 200 # Pa/s
+     max_speed_interpolation_points: {"0": 1000, "20000": 400, "110000": 200} # Pa: m/s
+     rejection_threshold: 0.5
+     station_id_variable: station_id@MetaData
 
 Filter actions
 --------------
