@@ -178,39 +178,74 @@ The system configuration on Cheyenne will not allow you to run mpi jobs from the
 Discover
 --------
 
-`Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.  On Discover, users can access the installed JEDI modules by first entering
+`Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.
+
+As of March, 2020, JCSDA users of Discover have been encouraged to migrate to the new SLES-12 (SuSE Linux Enterprise Server version 12) operating system.  To access these nodes, login to Discover as you normally would and then enter
 
 .. code :: bash
 
-   export OPT=/discover/nobackup/mmiesch/modules
-   module use -a $OPT/modulefiles
+   ssh discover-sles12
 
-Currently the intel17 and gnu 7.3 stacks are maintained (choose only one):
-
-.. code :: bash
-
-   module load apps/jedi/intel17-impi # aka apps/jedi/intel-17.0.7.259
-   module load apps/jedi/gnu-openmpi # aka apps/jedi/gcc-7.3_openmpi-3.0.0
-
-Or, alternatively, there are also modules built with ESMA baselibs
+During NASA's transition period, it can be tricky to remember whether you are logged in to the old SLES-11 or the new SLES-12 because they share many of the same filesystems, including your home directory and your ``/discover/nobackup`` work directory.  So, at any time, if you want to make sure you are logged into the SLES-12 system, you can enter this:
 
 .. code :: bash
 
-   module load apps/jedi/intel-17.0.7.259-baselibs
-   module load apps/jedi/jedi/gcc-7.3_openmpi-3.0.0-baselibs
+   cat /etc/os-release
+
+If you are on the SLES-12 system, this will let you know.
+
+To access the jedi modules on Discover SLES-12, it is recommended that you add this to your ``$HOME/.bashrc`` file (or the equivalent if you use another shell):
+
+.. code :: bash
+
+   export OPT=/discover/swdev/jcsda/modules
+   module use $OPT/modulefiles
+
+Currently two stacks are maintained (choose only one)
+
+.. code :: bash
+
+   module load apps/jedi/intel-impi # aka apps/jedi/intel-impi/20.0.0.166
+   module load apps/jedi/gnu-impi # aka apps/jedi/9.2.0
+
    
-* Run ecbuild with the following option to provide the correct path for :code:`MPIEXEC`
+Despite the name (``20.0.0.166``), the first loads version 19.1.0.166 of the intel compiler and mpi suite.
+
+The second option may seem a little surprising, pairing the gnu 9.2.0 compiler suite with the intel 19.1.0.166 mpi library.  However, this is intentional.  Intel MPI is currently the recommended MPI library on SLES-12 for both Intel and gnu compilers.  Note that OpenMPI is not yet available on SLES-12, though they do have hpcx, which is a proprietary variant of OpenMPI from Mellanox.
+
+Each of these jedi modules defines the environment variable ``MPIEXEC`` which points to the recommended ``mpirun`` executable and which should then be explicitly specified when you build jedi:
+
+.. code :: bash
+
+   ecbuild -DMPIEXEC_EXECUTABLE=$MPIEXEC -DMPIEXEC_NUMPROC_FLAG="-np" <path-to-bundle>
+
+There is also another module that is built from the ESMA ``baselibs`` libraries.  To use this, enter:
+
+.. code :: bash
+
+    module purge
+    module load apps/jedi/baselibs/intel-impi
+
+Currently only ``intel-impi/19.1.0.166`` is the only baselibs option available but more may be added in the future.  Specify the MPI excutable explicitly when you build as with the previous modules.
 
 .. code:: bash
 
-    ecbuild -DMPIEXEC=$MPIEXEC <path_of_the_jedi_source_code>
+    ecbuild -DMPIEXEC_EXECUTABLE=$MPIEXEC -DMPIEXEC_NUMPROC_FLAG="-np" <path-to-bundle>
+    make -j4
 
-* Use up to 12 MPI tasks to speed up the compilation
+Whichever module you use, after building you will want to run the ``get`` tests from the login node to get the test data from AWS S3:
 
 .. code:: bash
 
-    make -j12
+    ctest -R get
 
+To run the remaining tests, particularly those that require MPI, you'll need to acquire a compute node.  You can do this interactively with
+
+.. code:: bash
+
+    salloc --nodes=1 --time=30
+
+Or, you can submit a batch script to the queue through ``sbatch`` as described in the S4 instructions below.    
 
 S4
 --
