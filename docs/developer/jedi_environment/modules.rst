@@ -270,11 +270,13 @@ The recommended compiler suite to use for JEDI is version 17.0.6.  So, you can b
 
 .. code:: bash
 
-   module load jedi/intel17-impi
+   module load jedi/intel19-impi
    ecbuild -DMPIEXEC_EXECUTABLE=/usr/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
 
-As is standard JEDI practice, :code:`fckit` is not included in the :code:`jedi/intel17-impi` module and should be built within the bundle.  Note also that you have to tell ecbuild to use :code:`srun` as its mpi executable, as shown above.
+As is standard JEDI practice, :code:`fckit` is not included in the :code:`jedi/intel19-impi` module and should be built within the bundle.  Note also that you have to tell ecbuild to use :code:`srun` as its mpi executable, as shown above.
+
+There is also a :code:`jedi/intel17-impi` available but we've noticed performance issues with this so it is recommended that you use the intel 19 module as shown above.  The intel17 module will be not be maintained after March, 2020.
 
 To run parallel jobs, you'll need to create a batch script (a file).  For example, to run ctest you can create a file similar to this (call it what you wish: for example ``ctest-ufo.sh``):
 
