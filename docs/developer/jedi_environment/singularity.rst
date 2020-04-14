@@ -79,6 +79,8 @@ Though you can execute individual commands or scripts within the singularity con
 
 Now you are inside the **Singularity Container** and you have access to all the software infrastructure needed to build, compile, and run JEDI.  The :code:`-e` option helps prevent conflicts between the host environment and the container environment (e.g. conflicting library paths) by cleaning the environment before running the container.  Note that this does not mean that the container is isolated from the host environment; you should still be able to access files and directories on your host computer (or on your virtual machine if you are using Vagrant) from within the Singularity container.
 
+.. _working-with-singularity:
+
 Working with Singularity
 ------------------------
 

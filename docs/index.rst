@@ -22,6 +22,7 @@ Table of Contents
    developer/jedi_environment/index.rst
    developer/building_and_testing/index.rst
    jedi-components/index.rst
+   tutorials/index.rst
    cloud/index.rst
 
 
