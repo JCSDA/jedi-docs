@@ -109,6 +109,27 @@ Also, it is recommended that you specify :code:`srun` as your mpi process manage
    ecbuild -DMPIEXEC_EXECUTABLE=`which srun` -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
 
+Orion
+-----
+
+Orion is an HPC system located at Missisippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
+
+A few actions you need to take to access the installed jedi modules.  The first is to include these commands in your :code:`.bashrc` file (or implement their c shell equivalents):
+
+.. code :: bash
+
+   export OPT=/home/rmahajan/opt
+   module use -a /home/rmahajan/opt/modulefiles/core
+   module use -a /home/rmahajan/opt/modulefiles/apps
+
+Currently the Intel 2019 with OpenMPI suite is available:
+
+.. code :: bash
+
+   module load jedi/intel-2019.5_openmpi-4.0.2
+   ecbuild <path-to-bundle>
+   make -j6
+
 Cheyenne
 --------
 
