@@ -119,16 +119,24 @@ A few actions you need to take to access the installed jedi modules.  The first 
 .. code :: bash
 
    export OPT=/home/rmahajan/opt
-   module use -a /home/rmahajan/opt/modulefiles/core
-   module use -a /home/rmahajan/opt/modulefiles/apps
+   module use /home/rmahajan/opt/modulefiles/core
+   module use /home/rmahajan/opt/modulefiles/apps
 
-Currently the Intel 2019 with OpenMPI suite is available:
+Currently the Intel 2019 with OpenMPI 4.0.2 and Intel MPI 2019 suites is available:
 
 .. code :: bash
 
-   module load jedi/intel-2019.5_openmpi-4.0.2
-   ecbuild <path-to-bundle>
-   make -j6
+   module load jedi/intel-2019.5_openmpi-4.0.2 # Intel compiler suite with OpenMPI
+   module load jedi/intel-2019.5_impi-2019.6 # Intel compiler suite with Intel MPI
+
+Run ecbuild and use multiple threads to speed up the compilation
+
+.. code:: bash
+
+    git clone https://github.com/jcsda/<jedi-bundle>
+    mkdir -p jedi/build; cd jedi/build
+    ecbuild <path-to-jedi-bundle>
+    make -j4
 
 Cheyenne
 --------
