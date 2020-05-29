@@ -176,14 +176,79 @@ Examples of yaml:
 Description:
 ^^^^^^^^^^^^
 
-Code:
+A one-dimensional observation operator for calculating the Global
+Navigation Satellite System (GNSS) Radio Occultation (RO) bending
+angle data based on the  NBAM (NCEP's Bending Angle Method)
+
+Code: 
 ^^^^^
+
+:code:`ufo/gnssro/BndNBAM`
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
+* 1. configurables in "ObsOperator" section:
+*    1a. vertlayer: if air pressure and geopotential height are read on the interface layer or the middle layer
+         options: "mass" or "full" (default is full)
+     1b. super_ref_qc: if use the "NBAM" or "ECMWF" method to do super refraction check.
+         options: "NBAM" or "ECMWF" ("NBAM" is default)
+     1c. sr_steps: when using the "NBAM" suepr refraction, if apply one or two step QC. 
+         options: default is two-step QC following NBAM implementation in GSI.
+     1d. use_compress: compressibility factors in geopotential heights. Only for NBAM.
+         options: 1 to turn on; 0 to turn off. Defualt is 1. 
+
+* 2. configurables in "ObsSpace" section:
+*    2a. obsgrouping: applying record_number as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
+
+* 3. configurables in "ObsFilters" section:
+*    3a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation.Default value is 50 km.
+*    3b. ROobserror: A RO specific filter. use generic filter class to apply observation error method.
+         options: NBAM, NRL,ECMWF, and more to come. (NBAM is default)
+*    3c. Background Check: the background check for RO can use either the generic one (see the filter documents) or the  RO specific one based on the NBAM implementation in GSI. 
+        options: "Background Check" for the JEDI generic one or "Background Check RONBAM" for the NBAM method.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
+
+.. code:: ufo/test/testinput/gnssrobndnbam.yaml
+
+ ObsOperator:
+     name: GnssroBndNBAM
+     ObsOptions:
+       use_compress: 1
+       vertlayer: mass
+       super_ref_qc: NBAM
+       sr_steps: 2
+   ObsSpace:
+     name: GnssroBnd
+     ObsDataIn:
+       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_l.nc4
+       obsgrouping:
+         group_variable: "record_number"
+         sort_variable: "impact_height"
+         sort_order: "ascending"
+     ObsDataOut:
+       obsfile: Data/gnssro_bndnbam_2018041500_l_output.nc4
+     simulate:
+       variables: [bending_angle]
+    ObsFilters:
+    - Filter: Domain Check
+      filter variables:
+      - name: [bending_angle]
+      where:
+      - variable:
+          name: impact_height@MetaData
+        minvalue: 0
+        maxvalue: 50000
+    - Filter: ROobserror
+      filter variables:
+      - name: bending_angle
+      errmodel: NRL
+    - Filter: Background Check
+      filter variables:
+      - name: [bending_angle]
+      threshold: 3
+
 
 (GnssroBndROPP1D)
 -----------------------------------
@@ -191,14 +256,61 @@ Examples of yaml:
 Description:
 ^^^^^^^^^^^^
 
+The JEDI UFO interface of the Eumetsat ROPP package that implements 
+a one-dimensional observation operator for calculating the Global
+Navigation Satellite System (GNSS) Radio Occultation (RO) bending
+angle data 
+
 Code:
 ^^^^^
+:code:`ufo/gnssro/BndROPP1D`
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
+* 1. configurables in "ObsSpace" section:
+*    1a. obsgrouping: applying record_number as a group_variable can get RO profiles in ufo. Otherwise RO data would be  treated as single observations.
+
+* 2. configurables in "ObsFilters" section:
+*    2a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
+*    2b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.
+         options: NBAM, NRL,ECMWF, and more to come. (NBAM is default, but not recommended for ROPP operators). One has to specific a error model.
+*    2c. Background Check: can only use the generic one (see the filter documents).
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
+.. code:: ufo/test/testinput/gnssrobndropp1d.yaml
+
+  - ObsSpace:
+      name: GnssroBndROPP1D
+      ObsDataIn:
+       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+       obsgrouping:
+         group_variable: "record_number"
+         sort_variable: "impact_height"
+      ObsDataOut:
+       obsfile: Data/gnssro_bndropp1d_2018041500_m_output.nc4
+      simulate:
+        variables: [bending_angle]
+    ObsOperator:
+      name:  GnssroBndROPP1D
+      ObsOptions:
+    ObsFilters:
+    - Filter: Domain Check
+      filter variables:
+      - name: [bending_angle]
+      where:
+      - variable:
+          name: impact_height@MetaData
+        minvalue: 0
+        maxvalue: 50000
+    - Filter: ROobserror
+      filter variables:
+      - name: bending_angle
+      errmodel: NRL
+    - Filter: Background Check 
+      filter variables:
+      - name: [bending_angle]
+      threshold: 3
 
 (GnssroBndROPP2D)
 -----------------------------------
@@ -206,29 +318,122 @@ Examples of yaml:
 Description:
 ^^^^^^^^^^^^
 
+The JEDI UFO interface of the Eumetsat ROPP package that implements
+a two-dimensional observation operator for calculating the Global
+Navigation Satellite System (GNSS) Radio Occultation (RO) bending
+angle data
+
 Code:
 ^^^^^
+:code:`ufo/gnssro/BndROPP2D`
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
+* 1. configurables in "ObsOperator" section:
+*    1a. n_horiz: The horizontal points the operator integrates along the 2d plane. Default is 31. Has to be a even number.
+*    1b. res: The horizontal resolution of the 2d plance. Default is 40 km.   
+*    1c. top_2d: the highest height to apply the 2d operator. Default is 20 km.
+
+* 2. configurables in "ObsSpace" section:
+*    2a. obsgrouping: applying record_number as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
+
+* 3. configurables in "ObsFilters" section:
+*    3a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
+*    3b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.
+         options: NBAM, NRL,ECMWF, and more to come. (NBAM is default, but not recommended for ROPP operators). One has to specific a error model.
+*    3c. Background Check: can only use the generic one (see the filter documents).
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
+.. code:: ufo/test/testinput/gnssrobndropp2d.yaml
 
-(GnssroRefGsi)
+  - ObsSpace:
+      name: GnssroBndROPP2D
+      ObsDataIn:
+       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+       obsgrouping:
+         group_variable: "record_number"
+         sort_variable: "impact_height"
+      ObsDataOut:
+       obsfile: Data/gnssro_bndropp2d_2018041500_m_output.nc4
+      simulate:
+        variables: [bending_angle]
+    ObsOperator:
+      name:  GnssroBndROPP2D
+      ObsOptions:
+        n_horiz: 31
+        res: 40.0
+        top_2d: 12.0
+    ObsFilters:
+    - Filter: Domain Check
+      filter variables:
+      - name: [bending_angle]
+      where:
+      - variable:
+          name: impact_height@MetaData
+        minvalue: 0
+        maxvalue: 50000
+    - Filter: ROobserror
+      filter variables:
+      - name: bending_angle
+      errmodel: NRL
+    - Filter: Background Check
+      filter variables:
+      - name: [bending_angle]
+      threshold: 3
+
+(GnssroRef)
 -----------------------------------
 
 Description:
 ^^^^^^^^^^^^
 
+A one-dimensional observation operator for calculating the Global
+Navigation Satellite System (GNSS) Radio Occultation (RO)
+refractivity data.
+
 Code:
 ^^^^^
+:code:`ufo/gnssro/Ref`
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
+* 1. configurables in "ObsFilters" section:
+*    1a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Recommended value is 30 km for GnssroRef.
+*    1b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.
+         options: Only NBAM (default) is implemented now.
+*    1c. Background Check: can only use the generic one (see the filter documents).
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
+.. code:: ufo/test/testinput/gnssroref.yaml
+
+ - ObsOperator:
+    name: GnssroRef
+    ObsOptions:
+   ObsSpace:
+    name: GnssroRef
+    ObsDataIn:
+     obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
+    simulate:
+     variables: [refractivity]
+    ObsFilters:
+    - Filter: Domain Check
+      filter variables:
+      - name: [refractivity]
+      where:
+      - variable:
+          name: altitude@MetaData
+        minvalue: 0
+        maxvalue: 30000
+    - Filter: ROobserror
+      filter variables:
+      - name: refractivity
+      errmodel: NBAM
+    - Filter: Background Check
+      filter variables:
+      - name: [refractivity]
+      threshold: 3
 
 (Identity)
 -----------------------------------
