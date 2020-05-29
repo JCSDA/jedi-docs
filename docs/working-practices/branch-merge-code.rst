@@ -2,7 +2,7 @@
 Branching and merging code
 ##########################
 
-Following the git flow structure, repositories contain two special branches:
+Following the :doc:`git flow structure <../developer/practices/gitflow>`, repositories contain two special branches:
 the master branch which contains released versions of the code, and the develop
 branch which will contain all developments to be included in future releases.
 The branching model also provides three categories for other branches: feature
