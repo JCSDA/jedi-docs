@@ -334,7 +334,7 @@ To run parallel jobs, you'll need to create a batch script (a file).  For exampl
 	  module purge
 	  export OPT=/data/users/mmiesch/modules
 	  module use $OPT/modulefiles/core
-	  module load jedi/intel17-impi
+	  module load jedi/intel19-impi
 	  module list
 	  ulimit -s unlimited
 
@@ -362,7 +362,7 @@ Note that the options specified with ``#SBATCH`` include the number of nodes but
 	  module purge
 	  export OPT=/data/users/mmiesch/modules
 	  module use $OPT/modulefiles/core
-	  module load jedi/intel17-impi
+	  module load jedi/intel19-impi
 	  module list
 	  ulimit -s unlimited
 
