@@ -158,17 +158,41 @@ Examples of yaml:
 (AOD)
 -----------------------------------
 
-Description:
+Description: The operator to calculate Aerosol Optical Depth for GOCART aerosol parameterization. It relies on the implementation of GOCART in the CRTM. This implementation includes hydorphillic and hydrophobic black and organic carbonaceous species, sulphate, five dust bins (radii: 0.1-1, 1.4-1.8, 1.8-3.0, 3.0-6.0, 6.0-10. um), and four sea-salt bins (dry aerosol radii: 0.1-0.5, 0.5-1.5, 1.5-5.0, 5.0-10.0 um). AOD is calculated using CRTM's tables of optical properties for these aerosols. Some modules are shared with CRTM radiance UFO.
+On input, the operator requires aerosol mixing ratios, interface and mid-layer pressure, air temperature and specific / relative humidity for each model layer.
+
 ^^^^^^^^^^^^
 
 Code:
+:code:`ufo/crtm/`
+
 ^^^^^
 
 Configuration options:
+Absorbers: [H2O,O3]
+* Both are required:
+  * H2O to determine radii of hygrophillic aerosols particles
+  * O3 not stricly affecting aerosol raditive properties but required to be entered by the CRTM (here mixing ratio assigned a default value) 
+* No clouds since AOD retrievals are not obtained in cloudy regions   
+ObsOptions:
+  Sensor_ID: v.viirs-m_npp
+* Other possibilites: v.modis_aqua, v.modis_terra
+AerosolOption: aerosols_gocart_default
+* Currently, that's the only one that works       
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Examples of yaml:
+Example of a yaml:
 ^^^^^^^^^^^^^^^^^
+.. code:: yaml
+
+   ObsOperator:
+     name: Aod
+     Absorbers: [H2O,O3]
+     ObsOptions:
+       Sensor_ID: v.viirs-m_npp
+       EndianType: little_endian
+       CoefficientPath: Data/
+       AerosolOption: aerosols_gocart_default
 
 (GnssroBndBNAM)
 -----------------------------------
