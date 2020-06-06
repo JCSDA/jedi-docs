@@ -32,6 +32,8 @@ When you create a pull request, you should fill it in completely, as suggested b
 
 The same Mneumonic also applies to creating tasks as ZenHub issues.  However, in that case, the **Reviewers** item would be replaced by **Assignees**, identifying those responsible for carrying out the task.
 
+All the items in the mnemonic refer to pull request metadata that can be specified through the text box in the center of the GUI or the drop-down menus that appear on the right.
+
 To appreciate the mnemonic, consider the following screenshot; something like this should appear when you create a new pull request:
 
 .. image:: images/PullRequest.png
@@ -42,7 +44,7 @@ The **R** in PREMELT stands for **Reviewers**.  Though any JEDI team member can 
 
 Reviewers may offer comments or questions on specific lines of code or in the general **Conversation** area of the GitHub Pull Request console.  It **your responsibility** to respond to these comments and questions and, if applicable, make appropriate changes in the code.
 
-The *P* in PREMELT stands for the Pipeline.  This refers to the corresponding ZenHub project board that categorizes and organizes all tasks, including pull requests (documentation coming soon).  Most Zenhub workspaces include a **Review/QA** pipeline.  This is where Pull Requests should generally be placed.
+The **P** in PREMELT stands for the Pipeline.  This refers to the corresponding ZenHub project board that categorizes and organizes all tasks, including pull requests (documentation coming soon).  Most Zenhub workspaces include a **Review/QA** pipeline.  This is where Pull Requests should generally be placed.
 
 Next in line come **E** for Epics and **M** for Milestones.  These are valuable tools for record keeping and project management.  Filling these out will greatly facilitate the tracking of core and in-kind contributions and will earn you the eternal gratitude of the JEDI team.
 
@@ -58,4 +60,4 @@ If this pull request addresses and completes a task (ZenHub issue) that had been
 
 For much more information on Epics, Milestones, and Estimates see the excellent documentation available from the `ZenHub Help Center <https://help.zenhub.com/support/home>`_.
 
-Last but not least, the **L** in PREMELT refers to giving your pull request a label.  Again, this is a drop-down menu of labels that are standardized across JCSDA repositories.   Examples include **bug** if this fixes a problem or **enhancement** if it adds a new feature.
+Last but not least, the **L** in PREMELT refers to giving your pull request a label.  Again, this is a drop-down menu that is standardized across JCSDA repositories.   Examples include **bug** if this fixes a problem or **enhancement** if it adds a new feature.
