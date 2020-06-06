@@ -71,6 +71,8 @@ Under the git flow paradigm, and using the git flow application, the typical lif
 
    If you haven't previously, you may need to initialize git flow for the repository by running :code:`git flow init`
 
+For further details on working with :code:`git` and :code:`git flow`, see our accompanying document on :doc:`the Git Flow application <../developer_tools/getting-started-with-gitflow>`.
+
 Step 1: Start the feature branch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
