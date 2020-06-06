@@ -6,5 +6,6 @@ Best Practices for Developers
    :maxdepth: 2
 
    gitflow.rst
+   pullrequest.rst
    document.rst
    ecmwf_forks.rst
