@@ -1,7 +1,7 @@
 .. _pullrequest-top:
 
-PREMELT your GitHub Pull Requests
-=================================
+TRIPLE the impact of your GitHub Pull Requests
+==============================================
 
 According to the :doc:`Git flow paradigm <gitflow>` followed by JEDI, all changes to the develop branch must meet the following conditions:
 
@@ -20,44 +20,35 @@ Then, from the GitHub web console, you can navigate to the repository in questio
 
 The action of creating a pull request will trigger a number of automated tests.  These will compile and run the code with different compilers and MPI libraries and it will check to see that the code you have added is actually executed by the tests (code coverage).  Your branch will not be merged until it passes all of these tests.  So, if you see any test failures, you should work to understand and fix them.
 
-When you create a pull request, you should fill it in completely, as suggested by the PREMELT mnemonic:
+The title of this section refers to **TRIPLE**, which is actually a mnemonic analogous to the :ref:`PLEATED mnemonic described in the context of issues <pleated>`:
 
-  * **P**: Pipeline
-  * **R**: Reviewers
-  * **E**: Epic
-  * **M**: Milestone
-  * **E**: Estimate
-  * **L**: Label
   * **T**: Title/Description
+  * **R**: Reviewers
+  * **I**: Issue
+  * **P**: Pipeline
+  * **L**: Label
+  * **E**: Epic
 
-The same Mneumonic also applies to creating tasks as ZenHub issues.  However, in that case, the **Reviewers** item would be replaced by **Assignees**, identifying those responsible for carrying out the task.
-
-All the items in the mnemonic refer to pull request metadata that can be specified through the text box in the center of the GUI or the drop-down menus that appear on the right.
-
-To appreciate the mnemonic, consider the following screenshot; something like this should appear when you create a new pull request:
+All the items in the mnemonic refer to metadata that can be specified through the window that appears when you create a pull request:
 
 .. image:: images/PullRequest.png
 
-We'll start with the last item in the PREMELT mnemonic: **T** for Title and description.  Give your pull request an appropriate title and a description that is thorough enough to give reviewers a good idea for **what** has been changed and **why**.  In other words, an overview of the changes that have been made and the motivation behind them.
+We'll start with the first item in the TRIPLE mnemonic: **T** for Title (and description).  Give your pull request an appropriate title and a description that is thorough enough to give reviewers a good idea for **what** has been changed and **why**.  In other words, an overview of the changes that have been made and the motivation behind them.
 
-The **R** in PREMELT stands for **Reviewers**.  Though any JEDI team member can review your pull request, some may not be aware of it.  If you explicitly ask someone to review it, they will get an email notification and they are more likely to review it in a timely manner.  **All pull requests require at least two approvals from reviewers before they can be merged**.
+The **R** in TRIPLE stands for **Reviewers**.  Though any JEDI team member can review your pull request, some may not be aware of it.  If you explicitly ask someone to review it, they will get an email notification and they are more likely to review it in a timely manner.  **All pull requests require at least two approvals from reviewers before they can be merged**.
 
-Reviewers may offer comments or questions on specific lines of code or in the general **Conversation** area of the GitHub Pull Request console.  It **your responsibility** to respond to these comments and questions and, if applicable, make appropriate changes in the code.
+Reviewers may offer comments or questions on specific lines of code or in the general discussion thread in of the GitHub Pull Request console.  It is **your responsibility** to respond to these comments and questions and, if applicable, make appropriate changes in the code.
 
-The **P** in PREMELT stands for the Pipeline.  This refers to the corresponding ZenHub project board that categorizes and organizes all tasks, including pull requests (documentation coming soon).  Most Zenhub workspaces include a **Review/QA** pipeline.  This is where Pull Requests should generally be placed.
+Each pull requests *does* something - for example, it may fix a bug or implement a new feature.  Thus, most pull requests do not appear spontaneously.  Rather, they reflect code changes that were implemented to address some previously idenfied :doc:`Issue <issues>`.
 
-Next in line come **E** for Epics and **M** for Milestones.  These are valuable tools for record keeping and project management.  Filling these out will greatly facilitate the tracking of core and in-kind contributions and will earn you the eternal gratitude of the JEDI team.
+If that is the case, then there is an button below the description box that lets you **Connect this pull request with an existing issue**.  This is what the **I** in TRIPLE refers to.
 
-The difference between Epics and Milestones has to do with scope and time limits.  For JEDI, Epics are generally linked to the JCSDA Annual Operating Plan (AOP).  As such, Epics describe long-term project objectives that may span months of work.  If your feature branch contributes to one or more of these long-term objectives, you should make this known to the reviewers and project managers by selecting the appropriate Epic from the searchable drop-down in the right column of the Pull Request GUI.
+Occasionally you may generate a pull request that does not address a pre-existing issue.  This is particularly common for small tasks like fixing a bug that might have arisen spontaneously and that may be fixed on the spot without taking the time to create a separate issue.  If this is the case, then you should replace the **I** with **E** - give the task an **Estimate** that reflects the amount of effort, as described in our document on :doc:`creating issues <issues>`.
 
-By contrast, Milestones refer to project goals that are to be carried out over a specific time frame of a month or less.  This includes designated code sprints, so if your feature branch contributes to a sprint, this is where you would indicate that.  More generally, all JCSDA projects also define monthly milestones so you should add this to the appropriate project and month.
+Just be sure not to double-count; the total amount of effort should be reflected by the sum of the estimates in the issue (if applicable) and the pull request that addresses it.
 
-The second **E** stands for Estimate - how much work did this feature branch involve?  This is notoriously difficult to get right and it is often acknowledged that all estimates are wrong to some degree.  Nevertheless, it is important to distinguish between minor changes that took only an afternoon to complete and major refactoring of code that may have taken several weeks.  This is essential for project management, both for retrospective reporting and for planning future code sprints and milestones; project managers need to know roughly how much work their team can complete over a given time frame.
+The remaining items in TRIPLE remind you to assign this pull request a **Pipeline**, a **Label**, and an **Epic**, :doc:`as described in the context of Issue creation <issues>`.
 
-The numerical scale you see when you select the drop-down menu for Estimate is nonlinear.  There is little rationale behind this scale other than the idea that some tasks are much harder than others.  The most accurate way to assign a numerical value to an amount of work is to collaboratively compare it to other tasks as an agile team.  But, in the absence of this process, a good rule of thumb is 1 point for half a day's work.  So, if this feature branch only took an afternoon to implement, give it a story point of 1.  If it took a week or so of dedicated work, maybe give it an 8 or a 13.  Note that this need not mean it was done in a week because it is likely that not all your time has been solely dedicated to this particular feature branch.
+The Epic and the initial label(s) should generally be the same as the corresponding items in the issue that the pull request is connected to.  However, as the code review procees proceeds, more labels may be added that reflect the state of the pull request.  For example: **changes requested** or **Waiting for other repos**.
 
-If this pull request addresses and completes a task (ZenHub issue) that had been defined previously, then you can select the option to **Connect this pull request with an existing issue**.  This brings up a searchable dialog box where you can select the issue in question.  If this issue already has an estimate attached to it, then you may not need to attach a new estimate for the pull request itself (unless the previous estimate was wrong and you want to adjust it).  In this case, the sum of the estimates assigned to the issue and the pull request should reflect the total amount of effort.
-
-For much more information on Epics, Milestones, and Estimates see the excellent documentation available from the `ZenHub Help Center <https://help.zenhub.com/support/home>`_.
-
-Last but not least, the **L** in PREMELT refers to giving your pull request a label.  Again, this is a drop-down menu that is standardized across JCSDA repositories.   Examples include **bug** if this fixes a problem or **enhancement** if it adds a new feature.
+The Pipeline for pull requests should generally be set to **Review/QA**.
