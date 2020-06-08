@@ -7,7 +7,7 @@ Issues in Github serve several functions.
 
 First, issues serve as a **To Do** list to keep track of work that needs to be done.  For example, they may describe a feature that needs to be added or a bug that needs to be fixed.
 
-Equally important, the second function of issues is that they enhance cooporation.  By moving an issue into the **In Progress** pipeline (see below), you are telling your teammates that you are working on this task.  Furthermore, GitHub issues serve as discussion threads, so others who are interested in the task at hand can comment, ask questions, offer to help, etc.
+Equally important, the second function of issues is that they enhance cooperation.  By moving an issue into the **In Progress** pipeline (see below), you are telling your teammates that you are working on this task.  Furthermore, GitHub issues serve as discussion threads, so others who are interested in the task at hand can comment, ask questions, offer to help, etc.
 
 A third use of issues in JEDI is that they form an essential building block for project management, promoting accountability in issue tracking, facilitating project reporting, and promoting the planning of events such as code sprints.
 
