@@ -1,7 +1,9 @@
-.. _gitflow-top:
+.. _gitflowapp-top:
 
 Git flow
 ========
+
+As described :doc:`elsewhere <../practices/gitflow>` git flow is both a paradigm and an application.  Here we describe the application.
 
 The `git flow primer <http://nvie.com/posts/a-successful-git-branching-model>`_ describes
 how to use native git commands to implement the flow.
@@ -191,4 +193,3 @@ And/or, you can run this command periodically which will remove (:code:`-p` is f
 .. code:: bash
 
    git remote update -p
-
