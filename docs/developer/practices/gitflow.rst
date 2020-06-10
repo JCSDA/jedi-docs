@@ -117,7 +117,7 @@ Step 4: Keep your branch up to date with develop
 
 Step 4 does not really come after Step 3 - it should accompany it - they should be executed together.
 
-As you make changes to the code, you don't want you feature branch to diverge too much from the develop branch.  If it does, then when you try to merge it you may find many conflicts.  Furthermore, as noted above, feature branches with multiple changes are difficult to review by your peers.  You want to make it easier on them by making sure that the changes you intend to merge into develop are only the changes you've added, not previous code that is left over from past versions of develop.
+As you make changes to the code, you don't want your feature branch to diverge too much from the develop branch.  If it does, then when you try to merge it you may find many conflicts.  Furthermore, as noted above, feature branches with multiple changes are difficult to review by your peers.  You want to make it easier on them by making sure that the changes you intend to merge into develop are only the changes you've added, not previous code that is left over from past versions of develop.
 
 So, every day or two, you should execute these commands to merge in the latest changes from the develop branch on GitHub:
 
@@ -137,7 +137,7 @@ Though the git flow application has a :code:`finish` function to do this, you sh
 
 For tips on properly issuing a GitHub pull request, :doc:`see the next item in our list of Best Practices for Developers <pullrequest>`.
 
-After your feature branch is triumphantly merged into develop, the remote branch (on GithHub) will be deleted.  But, it will still exist on your computer.  To bring your computer up to date, you can issue the following commands:
+After your feature branch is triumphantly merged into develop, the remote branch (on GitHub) will be deleted.  But, it will still exist on your computer.  To bring your computer up to date, you can issue the following commands:
 
 .. code:: bash
 
