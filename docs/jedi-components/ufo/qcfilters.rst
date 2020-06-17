@@ -505,6 +505,268 @@ Example:
      rejection_threshold: 0.5
      station_id_variable: station_id@MetaData
 
+Profile consistency checks
+--------------------------
+
+This filter comprises several QC checks that can be applied to atmospheric profile data (e.g. as measured by radiosondes).
+The following checks are available:
+
+- **Basic**: These checks ensure the profile pressures lie in a reasonable range and are in the correct order.
+
+- **SamePDiffT**: If two levels have the same pressure, but their temperature difference is larger than a threshold, reject one of the levels.
+
+- **Sign**: This check determines whether an observed temperature may have had its sign (in degrees Celsius) recorded incorrectly.
+  To do this the temperature is compared to the model background value.
+  If the check is failed a temperature correction is calculated.
+
+- **UnstableLayer**: The temperature in a particular level is used to compute the expected temperature in the level above given the dry adiabatic lapse rate.
+  If the measured temperature in the level above is lower than its expected value by a certain threshold then both levels are flagged.
+
+- **Interpolation**: The temperature between adjacent significant pressure levels is interpolated onto any encompassed standard pressure levels.
+  If the interpolated temperature differs from the observed value by more than a particular threshold then the relevant standard and significant levels are flagged.
+
+- **Hydrostatic**: This is a check of the consistency between the observed values of temperature and geopotential height at each pressure level.
+  The check relies on the hydrostatic equation and has a complicated decision making algorithm.
+  If a particular level fails this check then a height correction is (sometimes) computed.
+
+- **UInterp**: The wind speed between adjacent significant pressure levels is interpolated onto any encompassed standard pressure levels.
+  If the vector difference of the interpolated and measured wind speeds is larger than a certain threshold then the relevant standard and significant levels are flagged.
+
+- **RH**: This check detects relative humidity errors at the top of cloud layers and during sonde ascents.
+
+More than one check can be applied by this filter. Please note the following:
+
+- The total number of errors that have occurred is recorded as the filter proceeds through each check.
+  If this number exceeds a threshold (set by defining the parameter :code:`nErrorsFail`) then the entire profile is rejected.
+
+- The basic checks are always performed unless they are specifically disabled.
+
+- The checks must be performed in a particular order if it is desired to exactly reproduce the operation of the OPS code.
+  This is because the QC flags (and values of temperature or height) that are modified in one routine may then be read by a subsequent routine.
+  To achieve the same outcome as in the OPS code the following order must be used:
+  Basic, SamePDiffT, Sign, UnstableLayer, Interpolation, Hydrostatic, UInterp, RH.
+
+The value of :code:`filter variables` for each check should be:
+
+- Basic, SamePDiffT, Sign, UnstableLayer, Interpolation, Hydrostatic: :code:`air_temperature`, :code:`geopotential_height`.
+
+- UInterp: :code:`eastward_wind`, :code:`northward_wind`.
+
+- RH: :code:`air_temperature`, :code:`relative_humidity`.
+
+The :code:`obsgrouping` category should be set up in one of two ways. The first applies a descending sort to the air pressures:
+
+.. code:: yaml
+
+        obsgrouping:
+          group_variable: "station_id"
+          sort_variable: "air_pressure"
+          sort_order: "descending"
+
+The second does not sort the air pressures:
+
+.. code:: yaml
+
+        obsgrouping:
+          group_variable: "station_id"
+
+The second formulation could be used if the pressures have been sorted prior to applying this filter.
+An ascending sort order is not valid; if this is selected the checks will throw an error.
+In both cases the station ID is used to discriminate between different sonde profiles.
+
+
+The most generic yaml parameters are as follows:
+
+- :code:`Checks`: List of checks to perform. The checks will be performed in the specified order.  Examples: ["Basic"], ["Basic", "Hydrostatic", "UInterp"].
+
+- :code:`compareWithOPS`: Compare values obtained in these checks with the equivalent values produced in the OPS code (default false). This is set to true for certain unit tests (\ :code:`*OPScomparison*`) for which the relevant quantities are present in the input files.
+
+- :code:`flagBasicChecksFail`: Reject a profile if it fails the basic checks (default true). This should only be set to false for testing purposes.
+
+- :code:`nErrorsFail`: Total number of errors at which an entire profile is rejected (default 8).
+
+- :code:`Comparison_Tol`: Tolerance for comparisons with OPS, enabling rounding errors to be accommodated (default 0.1).
+
+The yaml parameters which apply to the basic checks are as follows:
+
+- :code:`BChecks_minValidP`: Minimum pressure in profile (default 0.0 Pa).
+
+- :code:`BChecks_maxValidP`: Maximum pressure in profile (default 110.0e3 Pa).
+
+- :code:`BChecks_Skip`: Do not perform the basic checks (default false). Only set to true for unit tests in which the input sample consists of pressures that should not be sorted.
+
+The yaml parameter which applies to the same pressure/different temperature check is as follows:
+
+- :code:`SPDTCheck_TThresh:`: Tempreature difference threshold (default 1.0 K).
+
+The yaml parameters which apply to the sign check are as follows:
+
+- :code:`SCheck_PstarThresh:` Threshold for difference between observed pressure and model surface pressure (default 5000.0 Pa).
+
+- :code:`SCheck_tObstBkgThresh`: Threshold for absolute temperature difference between observation and background (default 20.0 K).
+
+- :code:`SCheck_ProfileSignTol`: Threshold for temperature difference in degrees C between observation and background (default 5.0 degrees C).
+
+- :code:`SCheck_PrintLargeTThresh`: Pressure threshold above which large temperature differences are printed (default 1000.0 Pa).
+
+- :code:`SCheck_CorrectT`: Compute correction to temperature (default true).
+
+The yaml parameters which apply to the unstable layer check are as follows:
+
+- :code:`ULCheck_MinP`: Minimum pressure at which the checks are performed (default 0.0 Pa).
+
+- :code:`ULCheck_PBThresh`: Threshold on difference between level pressure and 'bottom' pressure (which can change during the routine) (default 5000.0 Pa).
+
+- :code:`ULCheck_SuperadiabatTol`: Temperature difference threshold between observed temperature and temperature computed assuming dry adiabatic lapse rate (default -2.0 K). 
+
+The yaml parameters which are used in the standard level computation are as follows:
+
+- :code:`FS_MinP:` Minimum pressure for including a level in standard level calculations (default 0.0 Pa).
+
+- :code:`StandardLevels`: list of standard levels (default [1000, 925, 850, 700, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10, 7, 3, 2, 1] hPa).
+
+The yaml parameters which apply to the interpolation check are as follows:
+
+- :code:`ICheck_BigGapInit`: Initial value of 'big gap' (default 1000.0 Pa).
+
+- :code:`ICheck_TolRelaxPThresh`: Pressure below which temperature difference threshold is relaxed (default 30000.0 Pa).
+
+- :code:`ICheck_TolRelax`: Multiplicative factor for temperature difference threshold, used if pressure is lower than :code:`ICheck_TolRelaxPThresh` (default 1.5).
+
+- :code:`ICheck_TInterpTol`: Threshold for temperature difference between observed and interpolated value (default 2.0 K).
+
+- :code:`ICheck_BigGaps`: 'Big gaps' for use in this check (default [150, 150, 150, 150, 100, 100, 100, 75, 75, 50, 50, 20, 20, 20, 10, 10, 10, 10, 10, 10] hPa).
+
+The yaml parameters which apply to the hydrostatic check are as follows:
+
+- :code:`HCheck_CorrectZ`: Compute correction to Z (default true).
+
+- :code:`HydDesc`: Text description of hydrostatic errors.
+
+- There are a large number of thresholds used in the decision making algorithm. Their default values are listed here:
+
+  - :code:`HCheck_SurfacePThresh`: 15100.0 Pa
+
+  - :code:`HCheck_ETolMult`: 0.375
+
+  - :code:`HCheck_ETolMax`: 50.0 m
+
+  - :code:`HCheck_ETolMaxPThresh`: 40100.0 Pa
+
+  - :code:`HCheck_ETolMaxLarger`: 80.0 m
+
+  - :code:`HCheck_ETolMin`: 30.0 m
+
+  - :code:`HCheck_EThresh`: 15.0 m
+
+  - :code:`HCheck_EThreshB`: 15.0 m
+
+  - :code:`HCheck_ESumThresh`: 30.0 m
+
+  - :code:`HCheck_MinAbsEThresh`: 20.0 m
+
+  - :code:`HCheck_ESumThreshLarger`: 60.0 m
+
+  - :code:`HCheck_MinAbsEThreshLarger`: 200.0 m
+
+  - :code:`HCheck_CorrThresh`: 10.0 m
+
+  - :code:`HCheck_ESumNextThresh`: 30.0 m
+
+  - :code:`HCheck_MinAbsEThreshT`: 15.0 m
+
+  - :code:`HCheck_CorrDiffThresh`: 5.0
+
+  - :code:`HCheck_CorrMinThresh`: 4.0
+
+The yaml parameters which apply to the wind speed interpolation check are as follows:
+
+- :code:`UICheck_TInterpIdenticalPTolSq`: threshold for squared difference between observed wind speeds for levels with identical pressures (default 4.0 m\ :sup:`2` s\ :sup:`-2`).
+
+- :code:`UICheck_TInterpTolSq`: threshold for squared difference between observed and interpolated wind speeds (default 64.0 m\ :sup:`2` s\ :sup:`-2`).
+
+- :code:`UICheck_BigGapLowP`: Minimum 'big gap' in pressure (default 1000.0 Pa).
+
+- :code:`UICheck_BigGaps`: Big gaps for pressures larger than a certain amount (default [15000.0, 10000.0, 7500.0, 5000.0, 2000.0] Pa).
+
+- :code:`UICheck_BigGapsPThresh`: Pressure threshold corresponding to the big gaps listed in :code:`UICheck_BigGaps` (default [65000.0, 27500.0, 17500.0, 8500.0, 2500.0] Pa).
+
+The yaml parameters which apply to the relative humidity check are as follows:
+
+- :code:`RHCheck_TminInit`: Initial (deliberately large) value of minimum temperature (default 400.0 K).
+
+- :code:`RHCheck_SondeRHHiTol`: Threshold for relative humidity in sonde ascent check (default 20.0%).
+
+- :code:`RHCheck_PressInitThresh`: Pressure below which O-B mean is calculated (default 100.0 Pa).
+
+- :code:`RHCheck_PressThresh`: Pressure threshold for check at top of cloud layers (default 400.0 Pa).
+
+- :code:`RHCheck_PressDiff0Thresh`: Threshold for difference between pressure at the current level and pressure at the lowest level (default 100.0 Pa). 
+
+- :code:`RHCheck_tdDiffThresh`: Threshold for difference in dew point temperature (default 2.0 K).
+
+- :code:`RHCheck_RHThresh`: Threshold for relative humidity (default 90.0%).
+
+- :code:`RHCheck_PressDiffAdjThresh`: Pressure threshold for adjusting cloud layer minimum RH (default 20.0 Pa).
+
+- :code:`RHCheck_MinRHThresh`: Threshold for minimum RH at top of cloud layers (default 85.0%).
+
+- :code:`RHCheck_TminThresh`: Temperature threshold for sonde ascent moisture check (default 223.15 K).
+
+- :code:`RHCheck_TempThresh`: Temperature threshold for additional flagging of sonde ascent moisture check (default 233.15 K).
+
+This example runs the basic checks on the input data:
+
+.. code:: yaml
+
+    - Filter: ProfileConsistencyChecks
+      filter variables:
+      - name: air_temperature
+      - name: geopotential_height
+      Checks: ["Basic"]
+      flagBasicChecksFail: true
+      nErrorsFail: 8
+      BChecks_minValidP: 0.0
+      BChecks_maxValidP: 110.0e3
+
+This example runs the basic and SamePDiffT checks on the input data, using separate instances of the filter to do so:
+
+.. code:: yaml
+
+    - Filter: ProfileConsistencyChecks
+      filter variables:
+      - name: air_temperature
+      - name: geopotential_height
+      Checks: ["Basic"]
+      flagBasicChecksFail: true
+      nErrorsFail: 8
+      BChecks_minValidP: 0.0
+      BChecks_maxValidP: 110.0e3
+    - Filter: ProfileConsistencyChecks
+      filter variables:
+      - name: air_temperature
+      - name: geopotential_height
+      Checks: ["SamePDiffT"]
+      nErrorsFail: 8
+      SPDTCheck_TThresh: 1.0
+
+
+This example runs the basic and SamePDiffT checks on the input data, using the same filter instance:
+
+.. code:: yaml
+
+    - Filter: ProfileConsistencyChecks
+      filter variables:
+      - name: air_temperature
+      - name: geopotential_height
+      Checks: ["Basic", "SamePDiffT"]
+      flagBasicChecksFail: true
+      nErrorsFail: 8
+      BChecks_minValidP: 0.0
+      BChecks_maxValidP: 110.0e3
+      SPDTCheck_TThresh: 1.0
+
+
 Filter actions
 --------------
 The action taken on filtered observations is configurable in the YAML.  So far this capability is only implemented for the background check through a FilterAction object, but the functionality is generic and can be extended to all other generic filters.  The two action options available now are rejection or inflating the ObsError, which are activated as follows:
