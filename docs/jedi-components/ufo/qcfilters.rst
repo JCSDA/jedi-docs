@@ -861,7 +861,7 @@ RH check
 
 The RH check is designed to detect errors in relative humidity that may be caused by ascents through clouds. Two checks are employed:
 
-- Transient humidity error at the cloud top.
+- Transient humidity error at the cloud top,
 
 - Persistent humidity error at high altitude (low pressure) levels after passing through a cloud.
 
@@ -881,7 +881,7 @@ The following conditions must be met in order for a level to fail the high-altit
 
 - The minimum temperature in the ascent must be less than a particular threshold (\ :code:`RHCheck_TminThresh`),
 
-- The difference between the observed and model background relative humidity must be larger than a particular threshold (\ :code:`RHCheck_SondeRHHiTol`),
+- The difference between the observed and model background relative humidity must be larger than a particular threshold (\ :code:`RHCheck_SondeRHHiTol`).
 
 **Summary of yaml parameters**
 
