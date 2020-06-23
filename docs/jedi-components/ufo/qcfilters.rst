@@ -534,7 +534,7 @@ The following checks are available:
 
 - **Interpolation**: The temperature between adjacent significant pressure levels is interpolated onto any encompassed standard pressure levels.
   If the interpolated temperature differs from the observed value by more than a particular threshold then the relevant standard and significant levels are flagged.
-  Further information on standard and significant levels can be found :ref:`here <profconcheck_standardlevels>`.
+  (Further information on standard and significant levels can be found :ref:`here <profconcheck_standardlevels>`.)
   :ref:`Click here for more details <profconcheck_interpolation>`.
 
 - **Hydrostatic**: This is a check of the consistency between the observed values of temperature and geopotential height at each pressure level.
@@ -716,9 +716,9 @@ UnstableLayer check
 **Operation**
 
 The temperature at a particular level is used to compute the temperature at the adjacent level (upwards) in the profile.
-The calculation assumes that the temperature-pressure relationship followes the dry adiabatic lapse rate.
-If the obsersved temperature at the adjacent level is lower than the calculated temperature by more than a particular amount (\ :code:`ULCheck_SuperadiabatTol`) the level is flagged.
-This check is only applied to levels whose pressure is larger than a minimum threshold (\ :code:`ULCheck_PBThresh`) and lower by a certain amount (\ :code:`ULCheck_PBThresh`) than the surface pressure.
+The calculation assumes that the temperature-pressure relationship follows the dry adiabatic lapse rate.
+If the observed temperature at the adjacent level is lower than the calculated temperature by more than a particular amount (\ :code:`ULCheck_SuperadiabatTol`) the level is flagged.
+This check is only applied to levels whose pressure is larger than a minimum threshold (\ :code:`ULCheck_MinP`) and lower by a certain amount (\ :code:`ULCheck_PBThresh`) than the surface pressure.
 
 **Summary of yaml parameters**
 
@@ -740,12 +740,12 @@ Interpolation check
 The temperature is interpolated from significant levels onto any encompassed standard levels.
 If the absolute difference between the standard level temperature and the interpolated value is more than a particular threshold (\ :code:`ICheck_TInterpTol`) then the level in question, together with the relevant significant levels,
 are all flagged.
-Below a particular pressure (\ :code:`ICheck_TolRelaxPThresh`) the threshold is relaxed by multiplying it by the factor :code:`ICheck_TolRelax`).
+Below a particular pressure (\ :code:`ICheck_TolRelaxPThresh`) the threshold is relaxed by multiplying it by the factor :code:`ICheck_TolRelax`.
 
 This check is only performed if the pressure difference between the standard and significant levels is not too large.
-The difference, known lossely as a 'big gap', depends upon the pressure of the standard level.
-The largest big gap is defined as :code:`ICheck_BigGapInit`; as the standard level pressure decreases, the big gaps also decrease in size
-according to the list in :code:`ICheck_BigGaps`.
+The difference, known loosely as a 'big gap', depends upon the pressure of the standard level.
+As the standard level pressure decreases, the big gaps also decrease in size
+according to the list in :code:`ICheck_BigGaps`; the smallest big gap is defined as :code:`ICheck_BigGapInit`.
 
 **Summary of yaml parameters**
 
@@ -755,9 +755,9 @@ according to the list in :code:`ICheck_BigGaps`.
 
 - :code:`ICheck_TolRelax`: Multiplicative factor for temperature difference threshold, used if pressure is lower than :code:`ICheck_TolRelaxPThresh` (default 1.5).
 
-- :code:`ICheck_BigGapInit`: Initial value of 'big gap' (default 1000.0 Pa).
-
 - :code:`ICheck_BigGaps`: 'Big gaps' for use in this check (default [150, 150, 150, 150, 100, 100, 100, 75, 75, 50, 50, 20, 20, 20, 10, 10, 10, 10, 10, 10] hPa).
+
+- :code:`ICheck_BigGapInit`: Smallest value of 'big gap' (default 1000.0 Pa).
 
 :ref:`Back to overview of profile consistency checks <profconcheck_overview>`
 
@@ -825,10 +825,10 @@ UInterp check
 
 This check is used to detect two types of error in the observed wind speed.
 The first occurs when two levels have identical pressures but a large vector difference between their measured wind speeds.
-If the squared difference in the measured wind speeds is larger than a threshold (\ :code:`UICheck_TInterpIdenticalPTolSq`) then both levels are flagged.
+If the squared difference between the measured wind speeds is larger than a threshold (\ :code:`UICheck_TInterpIdenticalPTolSq`) then both levels are flagged.
 
 The second type of error is detected by interpolating the significant level wind speeds onto any encompassed standard levels,
-as is done for temperature in the Interpolation check (\ :ref:`see here <profconcheck_overview>`).
+as is done for temperature in the Interpolation check (\ :ref:`see here <profconcheck_interpolation>`).
 If the squared difference between the interpolated and measured wind speeds is larger than a certain amount (\ :code:`UICheck_TinterpTolSq`) then
 both levels are flagged.
 
@@ -875,19 +875,18 @@ The following conditions must be met in order for a level to fail the cloud top 
 
 - The level pressure must be larger than the threshold :code:`RHCheck_RHThresh`,
 
-- The minimum relative humidity above the present level, whose pressure is less than a certain threshold (\ :code:`RHCheck_PressDiffAdjThresh`) away from the current level pressure, must be greater than a certain threshold (\ :code:`RHCheck_MinRHThresh`).
+- The minimum relative humidity of all levels above the present level must be less than a certain threshold (\ :code:`RHCheck_MinRHThresh`).
+  Only levels whose pressure is close to that of the current level (with a difference threshold of (\ :code:`RHCheck_PressDiffAdjThresh`) are considered.
 
 The following conditions must be met in order for a level to fail the high-altitude check:
 
 - The minimum temperature in the ascent must be less than a particular threshold (\ :code:`RHCheck_TminThresh`),
 
-- The difference between the observed and model background relative humidity must be larger than a particular threshold (\ :code:`RHCheck_SondeRHHiTol`).
+- The difference between the observed and model background (O-B) relative humidity must be larger than a particular threshold (\ :code:`RHCheck_SondeRHHiTol`).
 
 **Summary of yaml parameters**
 
 The following parameters are used in the cloud top check:
-
-- :code:`RHCheck_RHThresh`: Threshold for relative humidity check to be applied (default 90.0%).
 
 - :code:`RHCheck_PressThresh`: Pressure threshold for check at top of cloud layers (default 400.0 Pa).
 
@@ -895,17 +894,19 @@ The following parameters are used in the cloud top check:
 
 - :code:`RHCheck_tdDiffThresh`: Threshold for difference in dew point temperature (default 2.0 K).
 
-- :code:`RHCheck_PressDiffAdjThresh`: Pressure threshold for adjusting cloud layer minimum RH (default 20.0 Pa).
+- :code:`RHCheck_RHThresh`: Threshold for relative humidity check to be applied (default 90.0%).
 
 - :code:`RHCheck_MinRHThresh`: Threshold for minimum RH at top of cloud layers (default 85.0%).
+
+- :code:`RHCheck_PressDiffAdjThresh`: Pressure threshold for determining cloud layer minimum RH (default 20.0 Pa).
 
 The following parameters are used in the high-altitude check:
 
 - :code:`RHCheck_TminThresh`: Threshold value of minimum temperature (default 223.15 K).
 
-- :code:`RHCheck_TminInit`: Initial value of minimum temperature. This is eventually equal to the lower observed temperature (default 400.0 K).
+- :code:`RHCheck_TminInit`: Initial value used in the algorithm that determines the minimum temperature (default 400.0 K).
 
-- :code:`RHCheck_SondeRHHiTol`: Threshold for relative humidity in sonde ascent check (default 20.0%).
+- :code:`RHCheck_SondeRHHiTol`: Threshold for relative humidity O-B difference in sonde ascent check (default 20.0%).
 
 - :code:`RHCheck_PressInitThresh`: Pressure below which O-B mean is calculated (default 100.0 Pa).
 
