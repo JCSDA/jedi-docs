@@ -1,7 +1,7 @@
 .. _gitflowapp-top:
 
-Git flow
-========
+Git flow (Application)
+======================
 
 As described :doc:`elsewhere <../practices/gitflow>` git flow is both a paradigm and an application.  Here we describe the application.
 
@@ -11,8 +11,7 @@ Since the writing of the primer, several modules have been created that provide 
 extensions that bundle native git commands into much simpler commands for each of the
 steps in git flow.
 
-The cheat sheet below includes instructions on how to install git flow, as well as how
-to use git flow.
+The cheat sheet below includes instructions on how to install :code:`git-flow` as an extension to :code:`git`, as well as tips on how to use it.
 
     `Click here for a git flow cheat sheet <https://danielkummer.github.io/git-flow-cheatsheet/>`_
 
@@ -48,116 +47,20 @@ These steps only need to be done once when you start a local repository.
 
 It is possible to initialize git flow with different values but using all default values is very strongly recommended.
 
-.. _gitflow-feature:
+.. _gitflow-branches:
 
-Adding a feature
-----------------
+Working with git-flow branches
+------------------------------
 
 Implementing a planned change is called "adding a feature" in the git flow terminology.
 This is a common operating mode and would include improvements, new features,
 and non-emergency defect repair.
 
-The idea is to repeat the following sequence for each feature:
-  #. Make the change in your local repository in a new "feature" branch.
-  #. Push the new feature branch to the remote GitHub repository.
-  #. Issue a pull request on GitHub to merge the new feature branch into the develop branch in the remote repository.
-      The owner of the GitHub repository will review and merge in your new feature branch
-  #. After your new feature branch is merged in, sync up with the remote GitHub repository.
-
-In git flow, the "feature" command is used to assist with this process.
-Let's say you want to call your new feature "perf-enhance" since you are working on
-performance enhancements.
-
-.. code:: bash
-
-  git flow feature start perf-enhance  # a new branch called feature/perf-enhance
-                                       # is created and checked out
-
-  # make edits, test code, etc.
-
-  git flow feature publish perf-enhance   # this pushes your new branch
-                                          # onto the GitHub remote repo
-
-On git hub switch to your new branch feature/perf-enhance, and issue a pull request by hitting
-the "pull request" button.
-When the pull request screen comes up, make sure that you have your "feature/perf-enhance"
-branch designated as the "compare" branch and "develop" designated as the "base" branch.
-
-    `Click here to see details for creating a pull request on GitHub <https://help.github.com/articles/creating-a-pull-request/>`_
-
-The owner of the GitHub repository will work with you to review and make any adjustments
-necessary as part of the process of accepting your changes.
-Once approved, the owner will merge in your "feature/perf-enhance" branch into the
-"develop" branch in the GitHub repository.
-Note that since "feature/perf-enhance" on the remote repository is no longer needed
-(it has been merged into the "develop" branch), it will be deleted in the remote
-repository (but not in you local repository).
-
-Once the merge on the remote GitHub repository has occurred, you need to get your local
-repository back in sync with the remote repository.
-This can be done by running the following:
-
-.. code:: bash
-
-  git remote update -p   # This synchronizes the metadata describing the changes that have
-                         # been done on the remote repository. The -p option "prunes" branches
-                         # that have been deleted on the remote repository which will include
-                         # your "feature/perf-enhance" branch.
-
-  git checkout develop   # Switch to the develop branch in the local repository
-
-  git pull origin develop  # Sync up the local repository with changes in the remote
-                           # repository (which will include your feature/perf-enhance changes).
-
-  git branch -d feature/perf-enhance  # Remove feature/perf-enhance branch from your
-                                      # local repository. Don't need the feature/perf-enhance
-                                      # branch any more since those changes are included in
-                                      # the develop branch.
-
-
-Staying in sync with the remote GitHub repository
--------------------------------------------------
-
-All of the work to add in new features is done on the develop branch in the git flow
-methodology.
-Since there will be multiple people contributing to the develop branch, it is a good idea
-to sync up often to the develop branch (of the remote GitHub repository).
-A reason for doing this is to make sure that changes other people make are compatible with
-the code you are developing (and vice versa).
-One way to get into the habit is to sync up every morning before getting started on your
-work.
-
-Let's say you are midway through the work on your feature/perf-enhance branch and you decide
-it's a good time to sync up with the GitHub develop branch.
-
-.. code:: bash
-
-  git checkout develop                 # Switch to the develop branch
-                                       # in your local repository.
-
-  git pull origin develop              # Bring in the changes, if any, from the
-                                       # remote GitHub repository.
-
-  git checkout feature/perf-enhance    # Go back to the local feature/perf-enhance branch.
-
-  git merge develop                    # Merge in the changes that were just
-                                       # pulled into the local develop branch.
-                                       # Note that this command is not necessary
-                                       # if the pull command above did not modify
-                                       # the develop branch.
-
-
-bugfix and hotfix branches
---------------------------
+For instructions on how to create a feature branch, make changes, and merge them back into the develop branch see :ref:`Life Cycle of a Feature Branch <gitflow-lifecycle>`.
 
 Feature branches are intended for exactly that - new features or enhancements of existing code.  If instead you want to fix a known bug in some branch of the repository, you should create a :code:`bugfix` or :code:`hotfix` branch.
 
-The difference between bugfix and hotfix has to do with where they fit into the :ref:`git flow workflow <gitflow-top>`:
-
-* **bugfix**: branches off of the :code:`develop` branch or a specified :code:`feature` branch
-* **hotfix**: branches off of the :code:`master` branch
-
-These branches are created and finalized :ref:`as described above <gitflow-feature>` for feature branches, e.g.:
+The difference between bugfix and hotfix has to do with where they fit into the :ref:`git flow workflow <gitflow-top>`.  These branches are created and finalized :ref:`just like feature branches <gitflow-lifecycle>`:
 
 .. code:: bash
 
@@ -174,7 +77,7 @@ The default base for a bugfix branch is develop but you can also fix a bug in a 
    git flow bugfix start wrongoutput feature/myfeature # branches off of myfeature
 
 
-Bugfix and hotfix branches can be published and finalized :ref:`as described above <gitflow-feature>` for feature branches, for example:
+Bugfix and hotfix branches can be published and finalized :ref:`as described elsewhere for feature branches <gitflow-lifecycle>`, for example:
 
 .. code:: bash
 

@@ -34,8 +34,8 @@ In the git flow model, the code is organized into the following branches that ar
    - Temporary: deleted after they are merged
 - :code:`bugfix/*` branches
    - For correcting errors or omissions
-   - Branch off of develop
-   - Merge back into develop
+   - Branch off of develop (or a feature branch)
+   - Merge back into develop (or a feature branch)
    - Temporary: deleted after they are merged
 - :code:`hotfix/*` branches
    - For correcting errors or omissions
@@ -56,6 +56,8 @@ Ideally, feature branches should exist for no more than a week or two.  You shou
 
 Large feature branches that exist for weeks and change dozens of files become too cumbersome to review and will likely diverge from the develop branch, leading to multiple conflicts when it finally comes time to merge.
 
+.. _gitflow-lifecycle:
+
 Life Cycle of a Feature Branch
 ------------------------------
 
@@ -72,6 +74,8 @@ Under the git flow paradigm, and using the git flow application, the typical lif
    If you haven't previously, you may need to initialize git flow for the repository by running :code:`git flow init`
 
 For further details on working with :code:`git` and :code:`git flow`, see our accompanying document on :doc:`the Git Flow application <../developer_tools/getting-started-with-gitflow>`.
+
+The following steps demonstrate how to work with a feature branch.  :ref:`Other git-flow branches are handled in a similar way <gitflow-branches>`.
 
 Step 1: Start the feature branch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -141,5 +145,11 @@ After your feature branch is triumphantly merged into develop, the remote branch
 
 .. code:: bash
 
-   git remote update -p
-   git branch -D feature/newstuff
+  git remote update -p
+  git checkout develop
+  git pull origin develop
+  git branch -D feature/newstuff
+
+The first command synchronizes the metadata that describe the changes that have been made on the remote repository (i.e. GitHub).  The :code:`-p` option prunes branches that have been deleted on the remote repository, including your :code:`feature/perf-enhance` branch (if it was merged). Then the next two commands switch to the develop branch and synchronize it with GitHub.   If your pull request was merged, your local copy of develop should now include your changes.
+
+The last command deletes your local copy of the feature branch.  You don't need it any more since those changes are now included in the develop branch.

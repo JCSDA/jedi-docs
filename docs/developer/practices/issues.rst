@@ -19,7 +19,7 @@ You can create a new issue by going to the ZenHub project board and selecting th
 
 .. image:: images/issuebox.png
 
-What is a PLEATED issue?  PLEATED is a mnemonic to guide you in created a proper issue that can be used for all the functions referred to above (tracking, collaboration, and project management).  Each of the letters corresponds to metadata that you should provide, namely:
+What is a PLEATED issue?  PLEATED is a mnemonic to guide you in creating a proper issue that can be used for all the functions referred to above (tracking, collaboration, and project management).  Each of the letters corresponds to metadata that you should provide, namely:
 
 .. _pleated:
 
@@ -47,6 +47,8 @@ The second **E** stands for **EPIC**.  In JEDI, Epics are generally linked to th
 
 You may optionally also specify a Milestone from the drop-down menu on the right.  The appropriate milestone should generally be determined at the project team meetings but it can be useful to suggest a value here.
 
-The principle differences between Epics and Milestones are their scope and duration.  Milestones generally refer to focused efforts such as code sprints that span a month or less whereas Epics refer to longer-term objectives or projects.
+Milestones are used to track monthly projects in the form of `burndown charts <https://help.zenhub.com/support/solutions/articles/43000010356-track-sprint-progress-with-burndown-charts>`_ and other reports.  In addition to tracking monthly goals, milestones can also be used for planning and managing focused one or two-week code sprints.
+
+Like milestones, Epics are high-level objectives that band together multiple issues.  But, unlike milestones, Epics in JEDI are directly linked to deliverables in `JCSDA's Annual Operating Plan (AOP) <https://www.jcsda.org/aop>`_.  Each of the five JEDI Tasks in the AOP is a Project from the point of view of ZenHub, and each subtask is an Epic. Some Epics may further be divided into one or more sub-Epics that link several focused issues in pursuit of a common goal.  Some Epics and sub-Epics may be completed in a matter of weeks but others may last months, until they are completed, renewed, or revised in the next AOP.
 
 For much more information on Epics, Milestones, and Estimates see the excellent documentation available from the `ZenHub Help Center <https://help.zenhub.com/support/home>`_.
