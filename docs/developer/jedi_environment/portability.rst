@@ -21,6 +21,8 @@ The (public) JCSDA `jedi-stack repository <https://github.com/JCSDA/jedi-stack>`
 
 In the remainder of this page, we describe in a bit more detail the rationale behind the use of software containers and how we use Docker.  :doc:`Singularity <singularity>`, :doc:`Charliecloud <charliecloud>`, and :doc:`environment modules <modules>` are then described in separate pages.   Stay tuned for further details on how to run JEDI in the cloud.
 	   
+.. _Software-Containers:
+
 Software Containers
 -------------------
 

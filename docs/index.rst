@@ -18,10 +18,12 @@ Table of Contents
 
    background/index.rst
    working-practices/index.rst
+   developer/practices/index.rst
    developer/developer_tools/index.rst
    developer/jedi_environment/index.rst
    developer/building_and_testing/index.rst
    jedi-components/index.rst
+   tutorials/index.rst
    cloud/index.rst
 
 

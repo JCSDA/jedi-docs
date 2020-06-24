@@ -4,3 +4,6 @@ _templates
 docs/_static
 .DS_Store
 *~
+.vscode
+*workspace
+*.swp

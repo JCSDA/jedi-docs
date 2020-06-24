@@ -28,8 +28,8 @@ These modules are functionally equivalent to the JEDI Singularity and Charlieclo
 
 We begin with some general instructions on how to use modules that apply across all systems.  We then give more detailed usage tips for specific systems.
 
-General Usage
--------------
+Module Usage
+------------
 
 As a first step, it is a good idea to remove pre-existing modules that might conflict with the software libraries contained in the JEDI modules.  Experienced users may wish to do this selectively to avoid disabling commonly used packages that are unrelated to JEDI.  However, a quick and robust way to ensure that there are no conflicts is to unload all modules with
 
@@ -87,6 +87,18 @@ The jedi module is really multiple nested modules.   To list the modules you cur
 
 When you are happy with this, you are ready to :ref:`build and run your JEDI bundle <build-jedi>`.
 
+General Tips for HPC Systems
+----------------------------
+
+Many HPC systems do not allow you to run MPI jobs from the login nodes.  So, after building JEDI, you'll have to run the tests either in batch mode through a job submission program such as :code:`sbatch` or by accessing a batch node interactively through a program such as :code:`salloc`.  Often these batch nodes do not have access to the internet.  So, after you build JEDI, you may need to run the following command from a login node:
+
+.. code :: bash
+
+    ctest -R get_
+
+This runs several tests. The purpose of these tests is to download data files from the cloud that are then used by many of the other tests.  If the :code:`get_*` tests are successful, then the data was downloaded successfully and you can proceed to run the remainder of the tests in batch using :code:`sbatch`, :code:`salloc`, or the equivalent process management command on your system.
+
+
 Hera
 -----
 
@@ -103,11 +115,40 @@ Currently the intel 18 module is preferred:
   module load jedi-stack/intel-impi-18.0.5
 
 Also, it is recommended that you specify :code:`srun` as your mpi process manager when building, like so:
-  
+
 .. code:: bash
 
    ecbuild -DMPIEXEC_EXECUTABLE=`which srun` -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
+
+Orion
+-----
+
+Orion is an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
+
+A few actions you need to take to access the installed jedi modules.  The first is to include these commands in your :code:`.bashrc` file (or implement their c shell equivalents):
+
+.. code :: bash
+
+   export OPT=/home/rmahajan/opt
+   module use /home/rmahajan/opt/modulefiles/core
+   module use /home/rmahajan/opt/modulefiles/apps
+
+Currently the Intel 2019 with OpenMPI 4.0.2 and Intel MPI 2019 suites is available:
+
+.. code :: bash
+
+   module load jedi/intel-2019.5_openmpi-4.0.2 # Intel compiler suite with OpenMPI
+   module load jedi/intel-2019.5_impi-2019.6 # Intel compiler suite with Intel MPI
+
+Run ecbuild and use multiple threads to speed up the compilation
+
+.. code:: bash
+
+    git clone https://github.com/jcsda/<jedi-bundle>
+    mkdir -p jedi/build; cd jedi/build
+    ecbuild <path-to-jedi-bundle>
+    make -j4
 
 Cheyenne
 --------
@@ -131,7 +172,7 @@ Run ecbuild and pull the latest code.  Note - because of space limitations on yo
 
 .. code:: bash
 
-    cd /glade/work/<username>	  
+    cd /glade/work/<username>
     mkdir jedi/build; cd jedi/build
     ecbuild <path-to-jedi-bundle>
     make update
@@ -168,13 +209,13 @@ The system configuration on Cheyenne will not allow you to run mpi jobs from the
 
     # cd to your build directory.  Make sure that these binaries were built
     # with the same module that is loaded above, in this case jedi/intel-impi
-    
+
     cd /glade/work/<username>/jedi/ufo-bundle/build-intel-impi
 
     # now run ctest
     ctest
-    
-    
+
+
 Discover
 --------
 
@@ -208,7 +249,7 @@ Currently two stacks are maintained (choose only one)
    module load apps/jedi/intel-impi # aka apps/jedi/intel-impi/20.0.0.166
    module load apps/jedi/gnu-impi # aka apps/jedi/9.2.0
 
-   
+
 Despite the name (``20.0.0.166``), the first loads version 19.1.0.166 of the intel compiler and mpi suite.
 
 The second option may seem a little surprising, pairing the gnu 9.2.0 compiler suite with the intel 19.1.0.166 mpi library.  However, this is intentional.  Intel MPI is currently the recommended MPI library on SLES-12 for both Intel and gnu compilers.  Note that OpenMPI is not yet available on SLES-12, though they do have hpcx, which is a proprietary variant of OpenMPI from Mellanox.
@@ -226,7 +267,7 @@ There is also another module that is built from the ESMA ``baselibs`` libraries.
     module purge
     module load apps/jedi/baselibs/intel-impi
 
-Currently only ``intel-impi/19.1.0.166`` is the only baselibs option available but more may be added in the future.  Specify the MPI excutable explicitly when you build as with the previous modules.
+Currently only ``intel-impi/19.1.0.166`` is the only baselibs option available but more may be added in the future.  Specify the MPI executable explicitly when you build as with the previous modules.
 
 .. code:: bash
 
@@ -245,11 +286,11 @@ To run the remaining tests, particularly those that require MPI, you'll need to 
 
     salloc --nodes=1 --time=30
 
-Or, you can submit a batch script to the queue through ``sbatch`` as described in the S4 instructions below.    
+Or, you can submit a batch script to the queue through ``sbatch`` as described in the S4 instructions below.
 
 S4
 --
-S4 is the **Satellite Simulations and Data Assimilation Studes** supercomputer located at the University of Wisconsin-Madison's Space Science and Engineering Center.
+S4 is the **Satellite Simulations and Data Assimilation Studies** supercomputer located at the University of Wisconsin-Madison's Space Science and Engineering Center.
 
 There are a few platform-specific features of S4 that affect how you build and run JEDI.  First, the system currently only supports intel compilers.  Second, S4 uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs.  Though some slurm implementations allow you to use the usual mpi job scripts :code:`mpirun` or :code:`mpiexec`, these may not function properly on S4.  Instead, you are advised to use the slurm run script :code:`srun`.  A Third S4 feature is that mpi jobs cannot be run interactively and must instead be submitted with the slurm :code:`sbatch` command.  Finally, S4 system administrators have disabled file locking on their work disks, which can cause problems with HDF5.
 
@@ -281,7 +322,7 @@ There is also a :code:`jedi/intel17-impi` available but we've noticed performanc
 To run parallel jobs, you'll need to create a batch script (a file).  For example, to run ctest you can create a file similar to this (call it what you wish: for example ``ctest-ufo.sh``):
 
 .. code:: bash
-   
+
 	  #!/usr/bin/bash
 	  #SBATCH --job-name=<name>
 	  #SBATCH --nodes=1
@@ -293,22 +334,22 @@ To run parallel jobs, you'll need to create a batch script (a file).  For exampl
 	  module purge
 	  export OPT=/data/users/mmiesch/modules
 	  module use $OPT/modulefiles/core
-	  module load jedi/intel17-impi
+	  module load jedi/intel19-impi
 	  module list
 	  ulimit -s unlimited
 
           export SLURM_EXPORT_ENV=ALL
-          export HDF5_USE_FILE_LOCKING=FALSE	  
+          export HDF5_USE_FILE_LOCKING=FALSE
 
 	  cd <path-to-bundle-build-directory>
           ctest
-	  
+
 	  exit 0
 
 Note that the options specified with ``#SBATCH`` include the number of nodes but not the number of tasks needed.  This is most appropriate for running ``ctest`` because some tests require a different number of MPI tasks than others.  However, if you run an application individually, you should specify ``#SBATCH --ntasks <number>`` instead of ``#SBATCH --nodes=<number>``, as shown in the following example.  The slurm job scheduler will then determine how many nodes you need.  For example, if you are running with the ivy partition as shown here, then each node has 20 cpu cores.  So, if your application takes more than 20 MPI tasks, slurm will allocate more than one node.  Specifying ``--ntasks`` instead of ``--nodes`` in the ``#SBATCH`` header commands will ensure that your computing allocation will only be charged for what you use.  So, this is preferable for more computationally intensive jobs:
 
 .. code:: bash
-   
+
 	  #!/usr/bin/bash
 	  #SBATCH --job-name=<name>
 	  #SBATCH --partition=ivy
@@ -321,19 +362,19 @@ Note that the options specified with ``#SBATCH`` include the number of nodes but
 	  module purge
 	  export OPT=/data/users/mmiesch/modules
 	  module use $OPT/modulefiles/core
-	  module load jedi/intel17-impi
+	  module load jedi/intel19-impi
 	  module list
 	  ulimit -s unlimited
 
           export SLURM_EXPORT_ENV=ALL
-          export HDF5_USE_FILE_LOCKING=FALSE	  
+          export HDF5_USE_FILE_LOCKING=FALSE
 
 	  # make sure the number of tasks it requires matches the SBATCH --ntasks specification above
 	  cd <path-to-bundle-build-directory>/test/ufo
 	  srun --ntasks=4 --cpu_bind_core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
 
 	  exit 0
-   
+
 Then you can submit and monitor your jobs with these commands
 
 .. code:: bash
@@ -341,4 +382,4 @@ Then you can submit and monitor your jobs with these commands
 	  sbatch <batch-script>
 	  squeue -u <your-user-name>
 
-You can delete jobs with the :code:`scancel` command.  For further information please consult `the S4 user documentation <https://groups.ssec.wisc.edu/groups/S4/>`_.	  
+You can delete jobs with the :code:`scancel` command.  For further information please consult `the S4 user documentation <https://groups.ssec.wisc.edu/groups/S4/>`_.

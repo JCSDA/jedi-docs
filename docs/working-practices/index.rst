@@ -1,6 +1,6 @@
-#################
-Working Practices
-#################
+##################
+Working Principles
+##################
 
 .. toctree::
    :maxdepth: 2
