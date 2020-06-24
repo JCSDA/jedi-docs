@@ -61,7 +61,8 @@ Large feature branches that exist for weeks and change dozens of files become to
 Life Cycle of a Feature Branch
 ------------------------------
 
-Under the git flow paradigm, and using the git flow application, the typical life cycle of a feature branch is as described below.  If you do not wish to use the git flow application, you can achieve the same steps just with standard :code:`git`.  For example, :code:`git flow feature start newstuff` is equivalent to:
+Under the git flow paradigm, and using the git flow application, the typical life cycle of a feature branch is as described below. :ref:`Other git-flow branches are handled in a similar way <gitflow-branches>`.  If you do not wish to use the git flow application,
+`you can achieve the same steps just with standard git <http://nvie.com/posts/a-successful-git-branching-model>`_.  For example, :code:`git flow feature start newstuff` is equivalent to:
 
 .. code::
 
@@ -73,9 +74,7 @@ Under the git flow paradigm, and using the git flow application, the typical lif
 
    If you haven't previously, you may need to initialize git flow for the repository by running :code:`git flow init`
 
-For further details on working with :code:`git` and :code:`git flow`, see our accompanying document on :doc:`the Git Flow application <../developer_tools/getting-started-with-gitflow>`.
-
-The following steps demonstrate how to work with a feature branch.  :ref:`Other git-flow branches are handled in a similar way <gitflow-branches>`.
+For further tips on working with :code:`git` and :code:`git-flow`, see our accompanying document on :doc:`the git-flow application <../developer_tools/getting-started-with-gitflow>`.
 
 Step 1: Start the feature branch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

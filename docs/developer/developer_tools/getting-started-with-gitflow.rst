@@ -16,11 +16,7 @@ The cheat sheet below includes instructions on how to install :code:`git-flow` a
     `Click here for a git flow cheat sheet <https://danielkummer.github.io/git-flow-cheatsheet/>`_
 
 The primer and cheat sheet both assume that you have permission to push commits
-into the develop branches of the remote GitHub repository.
-The typical case will be that in which the developer does not have such push permission, and
-instead must issue pull requests to get their code merged into the develop branch.
-The following steps are included to describe how to use git flow when you will be issuing
-pull requests (instead of directly pushing commits into the GitHub develop branch).
+into the develop branches of the remote GitHub repository.  In JEDI we do not follow this approach; all changes to the :code:`develop` and :code:`master` branches of a repository must only be done through :doc:`GitHub pull requests <../practices/pullrequest>`.
 
 Installing git flow
 -------------------
@@ -45,7 +41,7 @@ These steps only need to be done once when you start a local repository.
 
   git flow init -d                             # initializes git flow with default values
 
-It is possible to initialize git flow with different values but using all default values is very strongly recommended.
+It is possible to initialize git flow with different values but using all default values is required for JEDI.
 
 .. _gitflow-branches:
 
