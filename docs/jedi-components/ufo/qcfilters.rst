@@ -882,7 +882,12 @@ The following conditions must be met in order for a level to fail the high-altit
 
 - The minimum observed temperature in the profile must be less than a particular threshold (\ :code:`RHCheck_TminThresh`),
 
-- The difference between the observed and model background (O-B) relative humidity must be larger than a particular threshold (\ :code:`RHCheck_SondeRHHiTol`).
+- At least one of the following is true:
+
+  - The difference between the observed and model background (O-B) relative humidity in the present level must be larger than a particular threshold (\ :code:`RHCheck_SondeRHHiTol`),
+
+  - The present level has a pressure lower than :code:`RHCheck_PressInitThresh` and the mean RH O-B, computed over all levels with a pressure lower than :code:`RHCheck_PressInitThresh`,
+    is larger than :code:`RHCheck_SondeRHHiTol`.
 
 **Summary of yaml parameters**
 
