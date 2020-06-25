@@ -546,7 +546,7 @@ The following checks are available:
   If the vector difference of the interpolated and measured wind speeds is larger than a certain threshold then the relevant standard and significant levels are flagged.
   :ref:`Click here for more details <profconcheck_uinterp>`.
 
-- **RH**: This check detects relative humidity errors at the top of cloud layers and during sonde ascents.
+- **RH**: This check detects relative humidity errors at the top of cloud layers and at high altitudes.
   :ref:`Click here for more details <profconcheck_rh>`.
 
 This filter can apply more than one check in turn. Please note the following:
@@ -869,18 +869,18 @@ The following conditions must be met in order for a level to fail the cloud top 
 
 - The level pressure must be larger than a particular value (\ :code:`RHCheck_PressThresh`),
 
-- The difference between the level pressure and largest pressure in the column must be larger than a particular threshold (\ :code:`RHCheck_PressDiff0Thresh`),
+- The pressure difference between the present level and the lowest level must be larger than a particular threshold (\ :code:`RHCheck_PressDiff0Thresh`),
 
-- The dew point temperature between the present level and the level below must be larger than the threshold :code:`RHCheck_tdDiffThresh`,
+- The dew point temperature difference between the present level and the level below must be larger than the threshold :code:`RHCheck_tdDiffThresh`,
 
-- The level pressure must be larger than the threshold :code:`RHCheck_RHThresh`,
+- The level relative humidity must be larger than the threshold :code:`RHCheck_RHThresh`,
 
 - The minimum relative humidity of all levels above the present level must be less than a certain threshold (\ :code:`RHCheck_MinRHThresh`).
   Only levels whose pressure is close to that of the current level (with a difference threshold of (\ :code:`RHCheck_PressDiffAdjThresh`) are considered.
 
 The following conditions must be met in order for a level to fail the high-altitude check:
 
-- The minimum temperature in the ascent must be less than a particular threshold (\ :code:`RHCheck_TminThresh`),
+- The minimum observed temperature in the profile must be less than a particular threshold (\ :code:`RHCheck_TminThresh`),
 
 - The difference between the observed and model background (O-B) relative humidity must be larger than a particular threshold (\ :code:`RHCheck_SondeRHHiTol`).
 
@@ -890,21 +890,21 @@ The following parameters are used in the cloud top check:
 
 - :code:`RHCheck_PressThresh`: Pressure threshold for check at top of cloud layers (default 400.0 Pa).
 
-- :code:`RHCheck_PressDiff0Thresh`: Threshold for difference between pressure at the current level and pressure at the lowest level (default 100.0 Pa). 
+- :code:`RHCheck_PressDiff0Thresh`: Threshold for difference between pressure at the present level and pressure at the lowest level (default 100.0 Pa).
 
-- :code:`RHCheck_tdDiffThresh`: Threshold for difference in dew point temperature (default 2.0 K).
+- :code:`RHCheck_tdDiffThresh`: Threshold for difference in dew point temperature between the present level and the level below (default 2.0 K).
 
 - :code:`RHCheck_RHThresh`: Threshold for relative humidity check to be applied (default 90.0%).
 
-- :code:`RHCheck_MinRHThresh`: Threshold for minimum RH at top of cloud layers (default 85.0%).
+- :code:`RHCheck_MinRHThresh`: Threshold for minimum relative humidity at top of cloud layers (default 85.0%).
 
 - :code:`RHCheck_PressDiffAdjThresh`: Pressure threshold for determining cloud layer minimum RH (default 20.0 Pa).
 
 The following parameters are used in the high-altitude check:
 
-- :code:`RHCheck_TminThresh`: Threshold value of minimum temperature (default 223.15 K).
+- :code:`RHCheck_TminThresh`: Threshold value of minimum observed temperature in the profile (default 223.15 K).
 
-- :code:`RHCheck_TminInit`: Initial value used in the algorithm that determines the minimum temperature (default 400.0 K).
+- :code:`RHCheck_TminInit`: Initial value used in the algorithm that determines the minimum observed temperature (default 400.0 K).
 
 - :code:`RHCheck_SondeRHHiTol`: Threshold for relative humidity O-B difference in sonde ascent check (default 20.0%).
 
