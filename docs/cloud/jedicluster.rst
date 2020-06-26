@@ -1,5 +1,5 @@
-Installing the jedicluster app
-==============================
+Installing the ParallelCluster Application
+==========================================
 
 After you have :doc:`gained access to the JCSDA AWS resources <overview>`, the next step is to install and configure the `AWS Command Line interface (CLI) <https://docs.aws.amazon.com/cli/index.html>`_.  This will allow you to launch either a single compute node or a multi-node cluster from your computer.  After you have created a compute instance or a cluster, you can then log into it and proceed to build and run JEDI.
 
@@ -51,9 +51,9 @@ This builds the :code:`jedicluster` executable and installs it somewhere in your
 
     export PATH=$HOME/.local/bin:$PATH
 
-    
-   
-Once the :code:`jedicluster` app is installed on your system, you may use it as much as you wish; in principle you only need to follow this procedure once.  However, occasionally the jedi stack is updated with new packages or new versions of old packages.  These compiled packages are stored in what is called an Amazon Machine Image (AMI), from which the EC2 instances and clusters are created.  So, if there is a change in the AMIs, then you'll have to pull the latest version of :code:`jedi-tools` and re-install: 
+
+
+Once the :code:`jedicluster` app is installed on your system, you may use it as much as you wish; in principle you only need to follow this procedure once.  However, occasionally the jedi stack is updated with new packages or new versions of old packages.  These compiled packages are stored in what is called an Amazon Machine Image (AMI), from which the EC2 instances and clusters are created.  So, if there is a change in the AMIs, then you'll have to pull the latest version of :code:`jedi-tools` and re-install:
 
 .. code:: bash
 
