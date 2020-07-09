@@ -408,6 +408,9 @@ The options for YAML include:
  - :code:`i1`: the index of the first observation location in the record to use
  - :code:`i2`: the index of the last observation location in the record to use
 
+A special case exists for when the independent variable is 'distance', meaning the dx is computed from the difference of latitude/longitude pairs converted to distance.
+ Additionally, when the independent variable is 'datetime' and the dependent variable is set to 'distance', the derivative filter becomes a speed filter, removing moving observations when the horizontal speed is outside of some range.
+
 Track Check Filter
 ------------------
 

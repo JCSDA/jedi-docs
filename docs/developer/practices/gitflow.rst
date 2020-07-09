@@ -34,8 +34,8 @@ In the git flow model, the code is organized into the following branches that ar
    - Temporary: deleted after they are merged
 - :code:`bugfix/*` branches
    - For correcting errors or omissions
-   - Branch off of develop
-   - Merge back into develop
+   - Branch off of develop (or a feature branch)
+   - Merge back into develop (or a feature branch)
    - Temporary: deleted after they are merged
 - :code:`hotfix/*` branches
    - For correcting errors or omissions
@@ -56,10 +56,13 @@ Ideally, feature branches should exist for no more than a week or two.  You shou
 
 Large feature branches that exist for weeks and change dozens of files become too cumbersome to review and will likely diverge from the develop branch, leading to multiple conflicts when it finally comes time to merge.
 
+.. _gitflow-lifecycle:
+
 Life Cycle of a Feature Branch
 ------------------------------
 
-Under the git flow paradigm, and using the git flow application, the typical life cycle of a feature branch is as described below.  If you do not wish to use the git flow application, you can achieve the same steps just with standard :code:`git`.  For example, :code:`git flow feature start newstuff` is equivalent to:
+Under the git flow paradigm, and using the git flow application, the typical life cycle of a feature branch is as described below. :ref:`Other git-flow branches are handled in a similar way <gitflow-branches>`.  If you do not wish to use the git flow application,
+`you can achieve the same steps just with standard git <http://nvie.com/posts/a-successful-git-branching-model>`_.  For example, :code:`git flow feature start newstuff` is equivalent to:
 
 .. code::
 
@@ -71,7 +74,7 @@ Under the git flow paradigm, and using the git flow application, the typical lif
 
    If you haven't previously, you may need to initialize git flow for the repository by running :code:`git flow init`
 
-For further details on working with :code:`git` and :code:`git flow`, see our accompanying document on :doc:`the Git Flow application <../developer_tools/getting-started-with-gitflow>`.
+For further tips on working with :code:`git` and :code:`git-flow`, see our accompanying document on :doc:`the git-flow application <../developer_tools/getting-started-with-gitflow>`.
 
 Step 1: Start the feature branch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -117,7 +120,7 @@ Step 4: Keep your branch up to date with develop
 
 Step 4 does not really come after Step 3 - it should accompany it - they should be executed together.
 
-As you make changes to the code, you don't want you feature branch to diverge too much from the develop branch.  If it does, then when you try to merge it you may find many conflicts.  Furthermore, as noted above, feature branches with multiple changes are difficult to review by your peers.  You want to make it easier on them by making sure that the changes you intend to merge into develop are only the changes you've added, not previous code that is left over from past versions of develop.
+As you make changes to the code, you don't want your feature branch to diverge too much from the develop branch.  If it does, then when you try to merge it you may find many conflicts.  Furthermore, as noted above, feature branches with multiple changes are difficult to review by your peers.  You want to make it easier on them by making sure that the changes you intend to merge into develop are only the changes you've added, not previous code that is left over from past versions of develop.
 
 So, every day or two, you should execute these commands to merge in the latest changes from the develop branch on GitHub:
 
@@ -137,9 +140,15 @@ Though the git flow application has a :code:`finish` function to do this, you sh
 
 For tips on properly issuing a GitHub pull request, :doc:`see the next item in our list of Best Practices for Developers <pullrequest>`.
 
-After your feature branch is triumphantly merged into develop, the remote branch (on GithHub) will be deleted.  But, it will still exist on your computer.  To bring your computer up to date, you can issue the following commands:
+After your feature branch is triumphantly merged into develop, the remote branch (on GitHub) will be deleted.  But, it will still exist on your computer.  To bring your computer up to date, you can issue the following commands:
 
 .. code:: bash
 
-   git remote update -p
-   git branch -D feature/newstuff
+  git remote update -p
+  git checkout develop
+  git pull origin develop
+  git branch -D feature/newstuff
+
+The first command synchronizes the metadata that describe the changes that have been made on the remote repository (i.e. GitHub).  The :code:`-p` option prunes branches that have been deleted on the remote repository, including your :code:`feature/perf-enhance` branch (if it was merged). Then the next two commands switch to the develop branch and synchronize it with GitHub.   If your pull request was merged, your local copy of develop should now include your changes.
+
+The last command deletes your local copy of the feature branch.  You don't need it any more since those changes are now included in the develop branch.
