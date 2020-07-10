@@ -1,6 +1,8 @@
 Running JEDI on a Multi-Node Cluster
 ====================================
 
+[remember to run jedi_setup.sh]
+
 The prerequisites for running a cluster are the same as for running a :doc:`single node <singlenode>`:
 
 1. :doc:`Gain access to the JCSDA AWS Account <overview>`
