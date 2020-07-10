@@ -102,6 +102,7 @@ The CRTM operator has some required geovals (see varin_default in ufo/crtm/ufo_r
 * LinearObsOperator.Clouds [optional] : controls which of the selected Clouds will be acted upon in K-Matrix multiplication
 
 ObsOptions configures the tabulated coeffecient files that are used by CRTM
+
 * ObsOptions.Sensor_ID : {sensor}_{platform} prefix of the sensor-specific coefficient files, e.g., amsua_n19
 * ObsOptions.EndianType : Endianness of the coefficient files. Either little_endian or big_endian.
 * ObsOptions.CoefficientPath : location of all coefficient files
