@@ -9,21 +9,39 @@ As described elsewhere in :doc:`this chapter <index>`, there are several steps y
 
 1. :doc:`Gain access to the JCSDA AWS Account <overview>`
 2. :doc:`Create an ssh key pair so you can log into your instances <overview>`
-3. :doc:`install the jedicluster app <jedicluster>`
+3. :doc:`Install AWS CLI, boto3, and click <jedicluster>`
 
-When you have completed these three steps, you are ready to launch your node with the following command:
+There is one more step that is needed - you need to clone the :code:`jedi-tools` GitHub repository from JCSDA:
 
 .. code:: bash
 
-    jedicluster start --stack-name <name> --key <ssh-key> --spot
+    git clone https://github.com/jcsda/jedi-tools.git
+    cd jedi-tools/AWS/ParallelCluster
+
+There you will find a script called :code:`jedinode.py`.  This is what you'll use to launch a single AWS node that is equipped with the following features:
+
+- Intel compilers and accompanying jedi-stack environment modules
+- gnu compilers, openmpi, and accompanying jedi-stack environment modules
+- Singularity, for running containers
+
+For usage information, enter
+.. code:: bash
+
+    jedinode.py --help
+
+For most options we recommend using the defaults.  However, one required option is to specify your personal ssh key that you will use to log in to your node (see item 2 above).  So, to launch an EC2 instance, enter (omit the :code:`.pem` extension if you are using a pem file):
+
+.. code:: bash
+
+    jedinode.py --key=<your-ssh-key>
 
 .. warning::
 
-   The jedicluster AMIs are currently located in the us-east-1 region on AWS.  So, make sure you choose an ssh key that is available in that region.
+   The JEDI AMIs and snapshots may not be available in all AWS regions.  We recommend that you use the default region, which is us-east-1.  So, make sure you choose an ssh key that is available in that region.
 
-The first (required) option is :code:`--stack-name`.  It's good practice to include somthing to identify you, the user, such as your initials or user name, as well as some information about the application and/or the date (dashes and underscores are not allowed).  This will help you distinguish your node from others when you view it from the AWS console.
 
-The next argument is also required and specifies the name of the ssh key that you will use to log into your instance.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The (optional) :code:`--spot` argument asks AWS to reduce costs by running the instance in the `spot market <https://aws.amazon.com/ec2/spot/>`_.  Though this can be a substantial cost savings, spot instances run the risk of being interrupted.  Furthermore, unlike on-demand instances, they cannot be stopped and started at will.  For more information see :ref:`Running JEDI on a Multi-Node Cluster <spot-pricing>` and :ref:`Suspending or terminating your compute node <stop-ec2>`.
 
@@ -48,7 +66,7 @@ The syntax for all options is as above, with only a space separating the option 
     jedicluster start --stack-name <name> --key <ssh-key> --spot --ec2type c4.4xlarge --disk-size 100
 
 If you log into the AWS console (not required), you will see your compute node listed both on the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ and on the `CloudFormation Dashboard <https://console.aws.amazon.com/cloudformation>`_.
-       
+
 .. _aws-ssh:
 
 Logging in
@@ -57,13 +75,13 @@ Logging in
 After running the :code:`jedicluster` command as described above you will likely see multiple messages like this:
 
 .. code:: bash
-   
+
     CREATE_IN_PROGRESS: IP address is not assigned yet, please wait...
 
 These are repeated for the several minutes it takes for AWS to create your node by means of the **CloudFormation** and **EC2** services.  When your compute node is ready you may get a message like this:
 
 .. code:: bash
-   
+
     CREATE_IN_PROGRESS: Cluster started:
     ssh -A ubuntu@3.221.253.217
     The head node may still be booting and SSH may not work immediately,
@@ -77,12 +95,12 @@ Similarly, the :code:`-A` option for ssh isn't really needed for a single node; 
 
 .. code:: bash
 
-    ssh -i <pem-file> ubuntu@<ip-address>	  
+    ssh -i <pem-file> ubuntu@<ip-address>
 
-:code:`ssh` may warn you that the authenticity of the host can't be established and may ask you whether you wish to continue to connect.  Enter :code:`yes` at the prompt.    
-    
+:code:`ssh` may warn you that the authenticity of the host can't be established and may ask you whether you wish to continue to connect.  Enter :code:`yes` at the prompt.
+
 If all went as planned, you should now be logged into your compute node.
-    
+
 .. _jedi-ami:
 
 Working with the JEDI AMI
@@ -134,9 +152,9 @@ After you have loaded one of these options for the :code:`jedi/<compiler>-<mpi>`
 
     module list
 
-You should see the full jedi stack, including :code:`boost-headers`, :code:`netcdf`, :code:`eckit`, :code:`ecbuild`, etc.    
+You should see the full jedi stack, including :code:`boost-headers`, :code:`netcdf`, :code:`eckit`, :code:`ecbuild`, etc.
 
-Now you are ready to :doc:`build and run JEDI <../developer/building_and_testing/building_jedi>`.    
+Now you are ready to :doc:`build and run JEDI <../developer/building_and_testing/building_jedi>`.
 
 Note that versions of :code:`ufo-bundle` and :code:`fv3-bundle` are already included in the :code:`~/jedi` directory.  These are intended to make it easier on the user because a fresh clone of some of the repositories such as :code:`crtm`, :code:`ioda`, and :code:`fv3-jedi` can take some time.  If most of the data files are already there, a :code:`git pull` will only download those files that have been added or modified, making the build much more efficient.  Still, make sure you do a :code:`make update` when you build these bundles to ensure that you have the latest versions of the repositories; they have likely changed since the AMI was created.
 
@@ -165,7 +183,7 @@ Instead, to temporarily suspend your node, go to the EC2 Dashboard and select th
 Later, when you want to work with the node again, you can go back to the EC2 Dashboard, select the instance, and again access the :code:`Action` menu.  There select :code:`Instance State` and then :code:`Start`.  It will take a few minutes to reboot.  When it does, it will be assigned a different IP address.  You can find its new IP address by looking in the :code:`IPv4 Public IP` column of the table or by selecting the node and viewing the :code:`Description` information at the bottom of the window.
 
 When a node is stopped, it incurs a minimal cost for the associated storage space but JCSDA is not charged for compute time.
-    
+
 .. _aws-instance-types:
 
 Choosing a different EC2 Instance Type
@@ -177,11 +195,11 @@ Recommended options include but are not limited to the following.  The prices li
 
 * **m5.2xlarge** ($0.38 per hour)
   This is a good, inexpensive choice for code development, equipped with 4 compute cores, 32 GiB memory, and reasonable network bandwidth (up to 10 Gbps). This is the default if the :code:`--ec2type` option is omitted from the call to :code:`jedicluster start`.
-  
+
 * **c4.4xlarge** ($0.80 per hour)
   With 8 compute cores and high network performance, these nodes can handle more computationally expensive tests and applications than the m5.2xlarge nodes.  As such, they can be a good choice for running models such as FV3 or MPAS for development or training purposes (these are the nodes used for the JEDI Academy).
-  
+
 * **c5n.18xlarge** ($3.89 per hour)
   These currently provide the highest single-node performance and can be used for intermediate-sized applications that are still small enough to fit on a single node.  This could enhance performance by avoiding communication across nodes which is often inferior to the single-node bandwidth.  They offer dedicated use of a 36-core compute node with 192 GiB memory and 100 Gbps network bandwith. They also offer 14 Gbps IO bandwith to (EBS) disk.
-  
+
 There are also a number of other nodes available that optimize memory or IO bandwith for a given core count: See the `AWS documentation <https://aws.amazon.com/ec2/instance-types/>`_ for details.
