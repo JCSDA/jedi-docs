@@ -36,6 +36,7 @@ Enter your secret access key ID and the access key itself at the prompts.  When 
 In order to use the single-node launch script described in :doc:`the next section <singlenode>`, you will also need to install the following python packages using :code:`pip`, :code:`pip3`, or :code:`conda`:
 
 - os
+- time
 - click
 - boto3
 
