@@ -1029,11 +1029,11 @@ The :code:`where` statement can be included in the yaml file in conjunction with
 
 The following conditions are accepted by the :code:`where` statement:
 
-- :code:`minvalue` and/or :code:`maxvalue` : filter applied if value is within the valid range
+- :code:`minvalue` and/or :code:`maxvalue` : filter applied if value is within the valid range, supporting float and ISO 8601 format date time strings.
 - :code:`is_defined`                       : filter applied if data has a valid value (not missing)
 - :code:`is_not_defined`                   : filter applied if data is missing
-- :code:`is_in`                            : filter applied if data is in the given whitelist
-- :code:`is_not_in`                        : filter applied if data is not in the given blacklist
+- :code:`is_in`                            : filter applied if data is in the given whitelist, supporting integer and string types.
+- :code:`is_not_in`                        : filter applied if data is not in the given blacklist, supporting integer and string types.
 
 .. code:: yaml
 
