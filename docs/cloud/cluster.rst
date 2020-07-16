@@ -1,15 +1,85 @@
 Running JEDI on a Multi-Node Cluster
 ====================================
 
-[remember to run jedi_setup.sh]
-
 The prerequisites for running a cluster are the same as for running a :doc:`single node <singlenode>`:
 
 1. :doc:`Gain access to the JCSDA AWS Account <overview>`
 2. :doc:`Create an ssh key pair so you can log into your instances <overview>`
-3. :doc:`install the jedicluster app <jedicluster>`
+3. :doc:`install the required python tools, including AWS ParallelCluster <jedicluster>`
 
-When you have completed these three steps, you are ready to launch your cluster with the :code:`jedicluster` command.  The syntax is the same as described for a :doc:`singlenode` but now you need to specify the number of nodes.  And, you'll likely want to choose the :ref:`EC2 instance type <aws-instance-types>` to be something other than the default.
+When you have completed these three steps, you are ready to launch a cluster using the `AWS ParallelCluster application <https://docs.aws.amazon.com/parallelcluster/latest/ug/what-is-aws-parallelcluster.html>`_.
+
+
+Configuring Parallel Cluster
+----------------------------
+
+The first step is to set up a ParallelCluster configuration file that is equipped to run a multi-node jedi application efficiently.  We provide such a configuration file in the jedi-tools repository on GitHub.  The easiest way to proceed is to clone the jedi-tools repository and copy this configuration file over as your default configuration:
+
+.. code:: bash
+
+    git clone https://github.com/jcsda/jedi-tools.git
+    cp jedi-tools/AWS/jedi/config ~/.parallelcluster/config
+
+.. note::
+
+    Alternatively, if you do not wish to over-write your default configuration file, you can give this a different name and then specify the filename using the :code:`--config` option to :code:`pcluster create`.
+
+Now you should edit the config file to customize it for your personal use.  There is only one entry you need to change.  Find the :code:`key_name` item and replace the :code:`<key-name>` text with your personal ssh key name.  As for the :doc:`single node case <singlenode>`, omit the :code:`.pem` extension if you are using a pem file.  As you become a more experienced user, there are other things you may wish to change.  Note in particular where the EC2 instance types are specified for the master and the compute nodes.  Note also the :code:`max_queue_size` which specifies the maximum number of compute nodes in your cluster (see the description of autoscaling below).
+
+If you installed ParallelCluster in a python virtual environment as recommended, then the next step is to activate your virtual environment with a command like this (this may vary if your install location is different):
+
+.. code:: bash
+
+     source ~/apc-ve/bin/activate
+
+
+To see the ParallelCluster commands available to you, you can then enter
+
+.. code:: bash
+
+    pcluster --help
+
+And, for further information on any one of these commands, you can request help for that particular commmand, e.g.:
+
+.. code:: bash
+
+    pcluster create --help
+
+
+
+Creating a Parallel Cluster
+---------------------------
+
+Since most of your specifications and customizations are in the config file, there is not much you need to specify on the command line.  All you really have to do is to give your cluster a name.  You may wish to include your initials and a date.  Avoid special characters like dashes and periods.  It's best to stick to letters and numbers.
+
+So, when you are ready, create your cluster with
+
+.. code:: bash
+
+    pcluster create <name>
+
+Do not worry at this point about the size or the cost of your cluster.  ParallelCluster makes use of the `AWS autoscaling <https://aws.amazon.com/autoscaling/>`_ capability.  This means that the number of nodes in your cluster will automatically adjust to the workload you give it.
+
+.. note::
+
+    In this document we refer to **nodes** and **EC2 instances** interchangeably.  The nodes of your cluster are just EC2 instances that you can see on your `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ like any other instances.  But, these nodes are tied together using placement groups that coordinate their physical location and a virtual private cloud that isolates their networking.  This is all orchestrated through the `AWS CloudFormation service <https://aws.amazon.com/cloudformation/>`_, which is what ParallelCluster uses to create your cluster.
+
+Note this line in the config file:
+
+.. code:: bash
+
+   initial_queue_size = 0
+
+This means that the cluster will boot up with only the master node.  It will not create any compute nodes until you ask it to by submitting a batch job (see :ref:`below <awspc-run>`).
+
+.. _awspc-run:
+
+Running JEDI Applications across nodes
+--------------------------------------
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+[remember to run jedi_setup.sh]
 
 For example, to start a 6-node cluster with 216 cores (36 cores per node) and a 200 GB (root) disk, you would enter this:
 
@@ -21,7 +91,7 @@ For example, to start a 6-node cluster with 216 cores (36 cores per node) and a 
 
    The jedicluster AMIs are currently located in the us-east-1 region on AWS.  So, make sure you choose an ssh key that is available in that region.
 
-.. _spot-pricing:    
+.. _spot-pricing:
 
 The (optional) :code:`--spot` argument tells AWS to run this instance in the `spot market <https://aws.amazon.com/ec2/spot/>`_ which takes advantange of idle nodes.  This can be a substantial cost savings relative to on-demand pricing.  But of course, this raises the possibility that there are not enough idle nodes sitting around to meet your request.  If that is the case, the :code:`jedicluster` command above will fail after a few minutes with messages that look something like this:
 
@@ -29,7 +99,7 @@ The (optional) :code:`--spot` argument tells AWS to run this instance in the `sp
 
     [...]
     ROLLBACK_IN_PROGRESS: IP address is not assigned yet, please wait...
-    ROLLBACK_COMPLETE: 
+    ROLLBACK_COMPLETE:
 
 If you were to then go to the `CloudFormation Dashboard on the AWS console <https://console.aws.amazon.com/cloudformation>`_, select your cluster, and then select :code:`Events` you might see an error message like this:
 
@@ -45,10 +115,10 @@ If this is the case then you have a few different courses of action available to
 
    If your stack fails to form for any reason, with a ROLLBACK_COMPLETE message, then change the name if you resubmit it.  AWS remembers the names of your previous stacks until they are manually deleted and won't let you submit a stack with the same name.  Also, it's good practice to manually delete any failed stacks: see :ref:`Suspending or Terminating your cluster <terminate-aws-cluster>` below.
 
-   
+
 Now you may be wondering: "if there are not enough idle nodes to meet my request then how can I get them on demand?"  The answer is that you take them from the spot market users!  In other words, when you run in the spot market, you run the risk of your cluster being interrupted if the demand for those nodes is high.  This is why it is so much less expensive.
 
-Currently, if your JEDI spot cluster is interrupted, the nodes will be terminated and you will lose any data you have.  Interruption is rare for some :ref:`EC2 instance types <aws-instance-types>` but is more common for high-performance nodes like c5n.18xlarge which are often in high demand.  Therefore, we recommend that you use on demand pricing (omit the :code:`--spot` option) for time-critical production runs.  In the future we plan to allow for spot clusters to be temporarily stopped upon interruption and then re-started when availability allows.  However, this capability has not yet been implemented.  
+Currently, if your JEDI spot cluster is interrupted, the nodes will be terminated and you will lose any data you have.  Interruption is rare for some :ref:`EC2 instance types <aws-instance-types>` but is more common for high-performance nodes like c5n.18xlarge which are often in high demand.  Therefore, we recommend that you use on demand pricing (omit the :code:`--spot` option) for time-critical production runs.  In the future we plan to allow for spot clusters to be temporarily stopped upon interruption and then re-started when availability allows.  However, this capability has not yet been implemented.
 
 For more information, `Amazon has a nice description of how the spot market works <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html>`_.
 
@@ -65,7 +135,7 @@ After your cluster has been successfully created, the instructions for :ref:`log
 
 .. code:: bash
 
-    ssh -i <pem-file> -A ubuntu@<ip-address>	  
+    ssh -i <pem-file> -A ubuntu@<ip-address>
 
 After you log in, you are now ready to build your JEDI bundle.  The build procedure as described for the :ref:`single node instructions <jedi-ami>`.  Simply load your :code:`jedi/<compiler>-<mpi>` module and then run :code:`ecbuild` and `make -j<n>` :doc:`as you would on any other system <../developer/building_and_testing/building_jedi>`.
 
@@ -74,10 +144,10 @@ As noted for the :ref:`single-node case <jedi-ami>`, we have already included a 
 For example, here is the build procedure for **fv3-bundle**:
 
 .. code:: bash
-	  
+
     module purge
     module load jedi/gnu-openmpi
-    
+
     cd ~/jedi/build
     rm -rf *
     ecbuild --build=Release ../fv3-bundle
@@ -122,17 +192,17 @@ Working with slurm will likely be familiar to any JEDI users who have experience
     mkdir -p Data/hofx
     mkdir -p Data/bump
     mkdir -p output
-    
+
     # No hyperthreading
     export OMP_NUM_THREADS=1
-    
+
     # path to JEDI executables
     JEDIBIN=/home/ubuntu/jedi/build/bin
 
     # run directory - put your config files in $JEDIRUN/conf
     # This application also requires input files in $JEDIRUN/fv3files and $JEDIRUN/Data
     JEDIRUN=/home/ubuntu/runs/example1
-    
+
     # run job
     cd $JEDIRUN
     mpirun -np 216 $JEDIBIN/fv3jedi_parameters.x config/bumpparameters_loc_geos.yaml
@@ -141,10 +211,10 @@ Working with slurm will likely be familiar to any JEDI users who have experience
 
     # successful exit
     exit 0
-	  
 
-The script begins with several slurm directives that specify the number of nodes, tasks, and other options for :code:`sbatch`.  These may alternatively be specified on the command line.  There are many more options availalble; for a full list see the `sbatch man page <https://slurm.schedmd.com/sbatch.html>`_. 
-	  
+
+The script begins with several slurm directives that specify the number of nodes, tasks, and other options for :code:`sbatch`.  These may alternatively be specified on the command line.  There are many more options availalble; for a full list see the `sbatch man page <https://slurm.schedmd.com/sbatch.html>`_.
+
 The slurm directives are followed by various environment commands that may include loading modules, setting environment variables, navigating to the working directory and/or other commands.  These environment commands are executed by all nodes.
 
 After the environment is established, the slurm script executes the command using :code:`mpirun`.
@@ -152,16 +222,16 @@ After the environment is established, the slurm script executes the command usin
 You can then run this script by entering
 
 .. code:: bash
-     
+
    sbatch <script-file>
-   
+
 Though you are the only one in the queue, you can monitor your job in a way that is similar to what you might do on an HPC system.  Useful slurm commands include
 
 .. code:: bash
 
     squeue           # to list running or pending jobs
     scancel <job-id> # to kill a job in the queue
-   
+
 The head node is the only one with a public IP address so this is the one you log in to when you connect to your cluster via :code:`ssh` as described above.  So, this is typically where you would initiate your jobs using :code:`mpirun`.  However, each compute node has a private IP address that is accessible from the head node.  You can see the private IP addresses of all the nodes of your cluster by entering :code:`cat /etc/hosts`.  Or, you can just use the aliases :code:`node`, :code:`node2`... as listed in :code:`~/hostfile`.  So, if you wish, you can log into one of them while your job is running and confirm that your job is indeed running on that node:
 
 .. code:: bash
@@ -169,7 +239,7 @@ The head node is the only one with a public IP address so this is the one you lo
     ssh node2 # from the head node
     ps -e | grep fv3jedi
 
-Note that authentication across nodes is not necessary; this is your reward for including the :code:`-A` option when you connected via :code:`ssh`. 
+Note that authentication across nodes is not necessary; this is your reward for including the :code:`-A` option when you connected via :code:`ssh`.
 
 After your job completes, successfully or not, a log file named :code:`slurm-<job-id>.out` will be written to the run directory.  For more slurm commands and usage tips, see `Slurm's quickstart page <https://slurm.schedmd.com/quickstart.html>`_.
 
@@ -189,7 +259,7 @@ Then wait a few moments for the job to terminate.  You can check the status of y
 .. code:: bash
 
     sinfo -l
-    
+
 
 Ideally, all your nodes should be in an :code:`idle` state.  This means they are ready to run a new job.  Sometimes, in the :code:`state` column you may see another value such as :code:`drain` or :code:`down`.  You can usually reset a problem node as follows (example is for node1):
 
@@ -201,7 +271,7 @@ Then you should be ready to go.  If not, the `slurm troubleshooting guide <https
 
 .. code:: bash
 
-    scontrol show node node1	  
+    scontrol show node node1
 
 .. _terminate-aws-cluster:
 
@@ -225,6 +295,3 @@ When you delete your stack using :code:`jedicluster stop` or through the CloudFo
 To suspend an on-demand cluster, navigate to the `EC2 Dashboard <https://console.aws.amazon.com/cloudformation>`_.  Then manually select each node of your cluster and from the **Actions** drop-down menu at the top, select **Instance State** and then **Stop**.  Then, when you want to restart it later, again select all the nodes, and then **Actions -> Instance State -> Start**.
 
 When a node is stopped, it incurs a minimal cost for the associated storage space but JCSDA is not charged for compute time.
-
-
-

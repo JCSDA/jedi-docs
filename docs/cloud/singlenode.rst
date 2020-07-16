@@ -119,6 +119,13 @@ Now you are ready to :doc:`build and run JEDI <../developer/building_and_testing
 
 Note that one or more bundles may already be present in the :code:`~/jedi` directory.  These are intended to make it easier on the user because a fresh clone of some of the repositories can take some time.  If most of the data files are already there, a :code:`git pull` will only download those files that have been added or modified, making the build much more efficient.  Still, make sure you do a :code:`make update` when you build these bundles to ensure that you have the latest versions of the repositories; they have likely changed since the AMI was created.
 
+The JEDI AMI also comes with **Singularity**, **Docker**, and **Charliecloud** pre-installed.  So, you can also use your node to run inside a container.  For example, if you wish to do some development using the clang C and C++ compilers and the mpich MPI library, then you can pull that container and enter it:
+
+.. code:: bash
+
+    singularity pull library://jcsda/public/jedi-clang-mpich-dev
+    singularity shell -e jedi-clang-mpich-dev_latest.sif
+
 .. _stop-ec2:
 
 
