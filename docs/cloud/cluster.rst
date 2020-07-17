@@ -24,7 +24,20 @@ The first step is to set up a ParallelCluster configuration file that is equippe
 
     Alternatively, if you do not wish to over-write your default configuration file, you can give this a different name and then specify the filename using the :code:`--config` option to :code:`pcluster create`.
 
-Now you should edit the config file to customize it for your personal use.  There is only one entry you need to change.  Find the :code:`key_name` item and replace the :code:`<key-name>` text with your personal ssh key name.  As for the :doc:`single node case <singlenode>`, omit the :code:`.pem` extension if you are using a pem file.  As you become a more experienced user, there are other things you may wish to change.  Note in particular where the EC2 instance types are specified for the master and the compute nodes.  Note also the :code:`max_queue_size` which specifies the maximum number of compute nodes in your cluster (see the description of autoscaling below).
+Now you should edit the config file to customize it for your personal use.  There is only one entry you need to change.  Find the :code:`key_name` item and replace the :code:`<key-name>` text with your personal ssh key name.  As for the :doc:`single node case <singlenode>`, omit the :code:`.pem` extension if you are using a pem file.  Note the aws region specified at the top of the config file.  Make sure your ssh key is available in that region.
+
+Take a look at the other entries in the config file.  As you become a more experienced user, there are other things you may wish to change.  Note in particular where the EC2 instance types are specified for the master and the compute nodes.  Note also the :code:`max_queue_size` which specifies the maximum number of compute nodes in your cluster (see the description of autoscaling below).
+
+Notice also the entry :code:`enable_efa = compute`.  This creates a cluster that is equipped with Amazon's `elastic fabric adapter <https://aws.amazon.com/hpc/efa/>`_, a high-performance network interface that rivals the infiniband interconnects on HPC systems.
+
+Note that the EFA is not available for all EC2 instance types, so your possible choices for :code:`compute_instance_type` are limited.  For high performance, it is recommended that you use the default value specified in the config file.
+
+For descriptions and examples of other configuration options, see the `AWS documentation <https://aws-parallelcluster.readthedocs.io/en/latest/configuration.html>`_.
+
+.. _awspc-create:
+
+Creating a Parallel Cluster
+---------------------------
 
 If you installed ParallelCluster in a python virtual environment as recommended, then the next step is to activate your virtual environment with a command like this (this may vary if your install location is different):
 
@@ -47,9 +60,6 @@ And, for further information on any one of these commands, you can request help 
 
 
 
-Creating a Parallel Cluster
----------------------------
-
 Since most of your specifications and customizations are in the config file, there is not much you need to specify on the command line.  All you really have to do is to give your cluster a name.  You may wish to include your initials and a date.  Avoid special characters like dashes and periods.  It's best to stick to letters and numbers.
 
 So, when you are ready, create your cluster with
@@ -57,6 +67,16 @@ So, when you are ready, create your cluster with
 .. code:: bash
 
     pcluster create <name>
+
+It will take up to 5-10 minutes to create your cluster so be patient.  AWS must provision the required resources and configure the JEDI environment.
+
+ParallelCluster will print messages detailing its progress.  You can allso follow the progress of your cluster creation on the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ and the `CloudFormation Dashboard <https://console.aws.amazon.com/cloudformation>`_.  When you cluster is ready, you should see a message like this from :code:`pcluster`:
+
+.. code:: bash
+
+    Status: parallelcluster-<name> - CREATE_COMPLETE
+    ClusterUser: ubuntu
+    MasterPrivateIP: <private-ip-address>
 
 Do not worry at this point about the size or the cost of your cluster.  ParallelCluster makes use of the `AWS autoscaling <https://aws.amazon.com/autoscaling/>`_ capability.  This means that the number of nodes in your cluster will automatically adjust to the workload you give it.
 
@@ -70,28 +90,114 @@ Note this line in the config file:
 
    initial_queue_size = 0
 
-This means that the cluster will boot up with only the master node.  It will not create any compute nodes until you ask it to by submitting a batch job (see :ref:`below <awspc-run>`).
+This means that the cluster will boot up with only the master node.  It will not create any compute nodes until you ask it to by submitting a batch job (see :ref:`below <awspc-run>`).  Furthermore, the Master node is typically a smaller, less expensive instance type than the compute nodes so charges should be comparable to the :doc:`single-node <singlenode>` case until you actually run something substantial.
+
+.. _awspc-login:
+
+Logging in and Building JEDI
+----------------------------
+
+To log in to your cluster from your python virtual environment, enter
+
+.. code:: bash
+
+    pcluster ssh <name> -i ~/.ssh/<key>.pem
+
+Or, alternatively, you can navigate to the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ and find your node there.  It should be labelled :code:`Master` and have a tag of :code:`Application:parallelcluster-<name>`.  Then you can find the public IP address in the instance description and log into it as you would a :doc:`single EC2 instance <singlenode>`.
+
+After logging in (enter "yes" at the ssh prompt), enter this and follow the instructions:
+
+.. code:: bash
+
+    jedi-setup.sh
+
+This will set up your git/GitHub configuration in preparation for building JEDI.
+
+Now you can choose which compiler/mpi combination you with to use and load the appropriate module.  Currently two options are available (choose only one):
+
+.. code:: bash
+
+    module load jedi/gnu-openmpi # choose only one
+    module load jedi/intel-impi  # choose only one
+
+If you switch from one to the other you should first run :code:`module purge`.  You can disregard any error messages you see about being unable to locate modulefiles.
+
+Now you are ready to :doc:`build your preferred JEDI bundle <../developer/building_and_testing/building_jedi>`.
 
 .. _awspc-run:
 
 Running JEDI Applications across nodes
 --------------------------------------
 
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+The ParallelCluster AMI used for JEDI employs the `Slurm workload manager <https://slurm.schedmd.com/documentation.html>`_ to launch and coordinate applications across multiple compute nodes.
 
-[remember to run jedi_setup.sh]
-
-For example, to start a 6-node cluster with 216 cores (36 cores per node) and a 200 GB (root) disk, you would enter this:
+So, after compiling your bundle, you will want to create a run directory and create a slurm batch script within it.  A slurm batch script is just a file with contents similar to the following example:
 
 .. code:: bash
 
-    jedicluster start --stack-name <name> --key <ssh-key> --nodes 6 --ec2type c5n.18xlarge --disk-size 200 --spot
+    #!/bin/bash
+    #SBATCH --job-name=<job-name>
+    #SBATCH --ntasks=216
+    #SBATCH --cpus-per-task=1
+    #SBATCH --time=0:30:00
+    #SBATCH --mail-user=<email-address>
 
-.. warning::
+    source /usr/share/modules/init/bash
+    module purge
+    export OPT=/optjedi/modules
+    module use /optjedi/modules/modulefiles/core
+    module load jedi/intel-impi
+    module list
 
-   The jedicluster AMIs are currently located in the us-east-1 region on AWS.  So, make sure you choose an ssh key that is available in that region.
+    ulimit -s unlimited
+    ulimit -v unlimited
 
-.. _spot-pricing:
+    export SLURM_EXPORT_ENV=ALL
+    export OMP_NUM_THREADS=1
+
+    export I_MPI_FABRICS=shm:ofi
+    export I_MPI_OFI_PROVIDER=efa
+
+    JEDIBIN=<jedi-build-dir>/bin
+
+    cd <run-dir>
+
+    mpiexec -np 216 ${JEDIBIN}/fv3jedi_var.x Config/3dvar.yaml
+
+    exit 0
+
+Here :code:`<job-name>` is the name you wish to give to your job, :code:`<email-address>` is your email address (you'll get an email when it run), :code:`<jedi-build-bin>` is the directory where you built your jedi bundle, and :code:`<run-dir>` is your desired run directory - often the same directory where the batch script is located.
+
+Note that this is just an example.  For it to work, you would need to ensure that all the proper configuration and input files are accessible from the run directory.
+
+This example calls for 216 MPI tasks.  If you are using the (default) c5.18xlarge nodes, then there are 36 compute cores per node.  So, since there is one cpu per mpi task (:code:`cpus-per-task=1`), this will require 6 compute nodes (i.e. 6 EC2 instances).
+
+The value for the :code:`--time` entry isn't important because there is no queue - you are the only user.  But, it can help to ensure that your cluster does not run indefinitely if there is a problem that causes it to hang.
+
+This example uses the intel modules and sets some compiler flags to ensure that the EFA fabric is used for communication across nodes.
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+[More info about auto-scaling]
+
+[more info in the previous section about the spot option]
+
+.. _awspc-sin:
+
+Running Multi-Node JEDI Applications with Singularity
+-----------------------------------------------------
+
+Terminating or stopping your cluster
+------------------------------------
+
+[logout]
+
+.. code:: bash
+
+   pcluster delete <name>
+
+[don't just kill the Master EC2 node]
+
 
 The (optional) :code:`--spot` argument tells AWS to run this instance in the `spot market <https://aws.amazon.com/ec2/spot/>`_ which takes advantange of idle nodes.  This can be a substantial cost savings relative to on-demand pricing.  But of course, this raises the possibility that there are not enough idle nodes sitting around to meet your request.  If that is the case, the :code:`jedicluster` command above will fail after a few minutes with messages that look something like this:
 
@@ -291,7 +397,5 @@ You can also terminate your cluster from a web browser through the AWS console. 
 It is also possible to suspend your node and return to it again later.  When an EC2 instance is running, it will incur charges to JCSDA.  So, it is requested that you not leave it running overnight or at other times when you are not actively working with it.
 
 When you delete your stack using :code:`jedicluster stop` or through the CloudFormation Dashboard as described above, you have permanently destroyed all compute resources and you will not be able to retrieve them.  As mentioned for the :ref:`single-node case <stop-ec2>`, you can also suspend your cluster and restart it later.  However, you can only do this if you created your cluster with on-demand pricing.  If you used the :code:`--spot` option then you will not be able to stop it and restart it.
-
-To suspend an on-demand cluster, navigate to the `EC2 Dashboard <https://console.aws.amazon.com/cloudformation>`_.  Then manually select each node of your cluster and from the **Actions** drop-down menu at the top, select **Instance State** and then **Stop**.  Then, when you want to restart it later, again select all the nodes, and then **Actions -> Instance State -> Start**.
 
 When a node is stopped, it incurs a minimal cost for the associated storage space but JCSDA is not charged for compute time.
