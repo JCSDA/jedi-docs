@@ -32,7 +32,13 @@ Notice also the entry :code:`enable_efa = compute`.  This creates a cluster that
 
 Note that the EFA is not available for all EC2 instance types, so your possible choices for :code:`compute_instance_type` are limited.  For high performance, it is recommended that you use the default value specified in the config file.
 
+By default, your cluster will launch in the spot market.  This is less expensive but :doc:`subject to interruption and termination if others out-bid you for the resources <singlenode>`.  If you would instead like to use on demand, you can edit the configuration file and replace :code:`cluster_type = spot` with :code:`cluster_type = ondemand`.  Note that this specification only applies to the compute nodes.  The Master node is always of type :code:`ondemand`.
+
 For descriptions and examples of other configuration options, see the `AWS documentation <https://aws-parallelcluster.readthedocs.io/en/latest/configuration.html>`_.
+
+.. tip::
+
+   If the :code:`cluster_type` is set to :code:`spot`, then the default spot price is the on demand price.  This means that you are willing to pay no more than the on demand price for your resources.  However, in some circumstances, you may not even want to pay this.  You may wish to tell AWS to wait until the spot price is no more than 80 percent of the on demand price before launching your cluster.  To achieve this you can add a line to the config file (right after the :code:`cluster_type` specification) that reads :code:`spot_bid_percentage = 80`.
 
 .. _awspc-create:
 
@@ -52,7 +58,7 @@ To see the ParallelCluster commands available to you, you can then enter
 
     pcluster --help
 
-And, for further information on any one of these commands, you can request help for that particular commmand, e.g.:
+And, for further information on any one of these commands, you can request help for that particular command, e.g.:
 
 .. code:: bash
 
@@ -69,6 +75,10 @@ So, when you are ready, create your cluster with
     pcluster create <name>
 
 It will take up to 5-10 minutes to create your cluster so be patient.  AWS must provision the required resources and configure the JEDI environment.
+
+.. tip::
+
+   If the :code:`cluster_type` is set to :code:`spot` (either in the config file or on the command line with the :code:`-p` option as shown above), then the default spot price is the on demand price.  This means that you are willing to pay no more than the on demand price for your resources.  However, in some circumstances, you may not even want to pay this.  You may wish to tell AWS to wait until the spot price is no more than 80 percent of the on demand price before launching your cluster.  To achieve this you can add the :code:`-p '{"spot_bid_percentage":"80"}'` option to :code:`pcluster create` (or add it to the config file).
 
 ParallelCluster will print messages detailing its progress.  You can allso follow the progress of your cluster creation on the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ and the `CloudFormation Dashboard <https://console.aws.amazon.com/cloudformation>`_.  When you cluster is ready, you should see a message like this from :code:`pcluster`:
 
@@ -90,7 +100,7 @@ Note this line in the config file:
 
    initial_queue_size = 0
 
-This means that the cluster will boot up with only the master node.  It will not create any compute nodes until you ask it to by submitting a batch job (see :ref:`below <awspc-run>`).  Furthermore, the Master node is typically a smaller, less expensive instance type than the compute nodes so charges should be comparable to the :doc:`single-node <singlenode>` case until you actually run something substantial.
+This means that the cluster will boot up with only the master node.  It will not create any compute nodes until you ask it to by submitting a batch job (see :ref:`below <awspc-run>`).  Furthermore, the Master node is typically a smaller, less expensive instance type than the compute nodes so charges should be comparable to the :doc:`single-node <singlenode>` case until you actually run something substantial across multiple nodes.
 
 .. _awspc-login:
 
@@ -176,16 +186,41 @@ The value for the :code:`--time` entry isn't important because there is no queue
 
 This example uses the intel modules and sets some compiler flags to ensure that the EFA fabric is used for communication across nodes.
 
+When you are ready, submit your batch script with
+
+.. code:: bash
+
+    sbatch <batch-script>
+
+
+where :code:`<batch-script>` is the name of the file that contains your batch script.
+
+Now slurm will trigger the autoscaling capability of AWS to create as many compute nodes as are needed to run your job.  In the example above, this would be 6.
+
+You can follow the status of your cluster creation on the web by monitoring the EC2 Dashboard and/or through the slurm commands :code:`sinfo` and :code:`squeue`.
+
+It is important to monitor your cluster to **make sure your cluster creation does not hang due to lack of resources**.
+
+For example, let's say you submitted a batch job that requires 24 nodes.  Then, after, say, 15 minutes, only 20 of them are available (as reported by :code:`sinfo`).  The reason for this may be that there are only 20 nodes of that type available at that time in the chosen AWS availability zone.  So, it may stay in this state for many minutes, even hours, until four more nodes free up.  Meanwhile, JCSDA is incurring charges for the 20 nodes that are active.  Twenty c5n.18xlarge nodes standing idle for an hour would cost more than $80.  So, don't wait for more than about 10-15 minutes: if your cluster creation seems to have stalled, then cancel the job with :code:`scancel <job-id>`.  This will terminate all of the compute nodes but it will leave the Master node up.  You can then try again at a later time.
+
+.. tip::
+
+    To immediately change the number of active compute nodes to a value of your choice you do not have to wait for slurm.  You can navigate to the EC2 Dashboard and find the **Auto Scaling Groups** item all the way at the bottom of the menu of services on the left.  You find your cluster's group by name; the name should start with :code:`parallelcluster` and should contain your custom name.  Select it and then select the **Edit** button just above the list of groups.  Now change the **Desired capacity** to be the value of your choice.  You can also alter the minimum and maximum cluster size if you wish.  When you are finished, scroll all the way to the bottom of the page and select **Update**.  You should soon see your changes reflected in the EC2 Dashboard.
+
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
-[More info about auto-scaling]
-
-[more info in the previous section about the spot option]
 
 .. _awspc-sin:
 
 Running Multi-Node JEDI Applications with Singularity
 -----------------------------------------------------
+
+You can also run multi-node JEDI applications using an HPC-ready Singularity application container.  Check with a `JEDI Master <miesch@ucar.edu>`_ for availability of suitable containers.
+
+When you have obtained a container file, you can run applications with a batch script like this:
+
+.. code:: bash
+
+
 
 Terminating or stopping your cluster
 ------------------------------------
@@ -199,7 +234,7 @@ Terminating or stopping your cluster
 [don't just kill the Master EC2 node]
 
 
-The (optional) :code:`--spot` argument tells AWS to run this instance in the `spot market <https://aws.amazon.com/ec2/spot/>`_ which takes advantange of idle nodes.  This can be a substantial cost savings relative to on-demand pricing.  But of course, this raises the possibility that there are not enough idle nodes sitting around to meet your request.  If that is the case, the :code:`jedicluster` command above will fail after a few minutes with messages that look something like this:
+The (optional) :code:`--spot` argument tells AWS to run this instance in the `spot market <https://aws.amazon.com/ec2/spot/>`_ which takes advantage of idle nodes.  This can be a substantial cost savings relative to on-demand pricing.  But of course, this raises the possibility that there are not enough idle nodes sitting around to meet your request.  If that is the case, the :code:`jedicluster` command above will fail after a few minutes with messages that look something like this:
 
 .. code:: bash
 
@@ -319,7 +354,7 @@ Working with slurm will likely be familiar to any JEDI users who have experience
     exit 0
 
 
-The script begins with several slurm directives that specify the number of nodes, tasks, and other options for :code:`sbatch`.  These may alternatively be specified on the command line.  There are many more options availalble; for a full list see the `sbatch man page <https://slurm.schedmd.com/sbatch.html>`_.
+The script begins with several slurm directives that specify the number of nodes, tasks, and other options for :code:`sbatch`.  These may alternatively be specified on the command line.  There are many more options available; for a full list see the `sbatch man page <https://slurm.schedmd.com/sbatch.html>`_.
 
 The slurm directives are followed by various environment commands that may include loading modules, setting environment variables, navigating to the working directory and/or other commands.  These environment commands are executed by all nodes.
 
