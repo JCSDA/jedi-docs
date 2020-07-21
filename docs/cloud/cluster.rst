@@ -220,10 +220,12 @@ When you have obtained a container file, you can run applications with a batch s
 
 .. code:: bash
 
-
-
 Terminating or stopping your cluster
 ------------------------------------
+
+When you are finished with your cluster, you have the option to either stop it or terminate it.
+
+[since the master node is always ondemand, you can 
 
 [logout]
 
