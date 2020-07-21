@@ -220,12 +220,44 @@ When you have obtained a container file, you can run applications with a batch s
 
 .. code:: bash
 
+    #!/bin/bash
+    #SBATCH --job-name=<job-name>
+    #SBATCH --ntasks=864
+    #SBATCH --cpus-per-task=1
+    #SBATCH --time=0:30:00
+    #SBATCH --mail-user=<email-address>
+
+    source /usr/share/modules/init/bash
+    module purge
+    module use /home/ubuntu/runs/Hofx_benchmark/modulefiles
+    module load intelmpi/2019.6.166
+    module load singularityvars
+    module list
+
+    ulimit -s unlimited
+    ulimit -v unlimited
+
+    export SLURM_EXPORT_ENV=ALL
+    export OMP_NUM_THREADS=1
+
+    export I_MPI_FABRICS=shm:ofi
+    export I_MPI_OFI_PROVIDER=efa
+
+    JEDICON=/home/ubuntu
+    JEDIBIN=/opt/jedi/fv3-bundle/build/bin
+
+    cd /home/ubuntu/runs/Hofx_benchmark/conpc
+
+    mpiexec -np 864 singularity exec --home=$PWD $JEDICON/jedi-intel19-impi-hpc-app.sif ${JEDIBIN}/fv3jedi_var.x Config/3dvar_new.yaml
+
+    exit 0
+
 Terminating or stopping your cluster
 ------------------------------------
 
 When you are finished with your cluster, you have the option to either stop it or terminate it.
 
-[since the master node is always ondemand, you can 
+[since the master node is always ondemand, you can
 
 [logout]
 
