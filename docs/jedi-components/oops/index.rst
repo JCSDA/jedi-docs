@@ -6,5 +6,5 @@ OOPS
    :maxdepth: 2
 
    introduction
-   applications
+   applications/index.rst
    toy-models
