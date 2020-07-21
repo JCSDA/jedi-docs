@@ -37,6 +37,8 @@ By default, your cluster will launch in the `spot market <https://aws.amazon.com
 
 If your JEDI spot cluster is interrupted, the nodes will be terminated and you will lose any data you have.  Interruption is rare for some :ref:`EC2 instance types <aws-instance-types>` but is more common for high-performance nodes like c5n.18xlarge which are often in high demand.  Therefore, we recommend that you use on demand pricing for time-critical production runs.  For more information, `Amazon has a nice description of how the spot market works <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html>`_.
 
+You can also configure your cluster to use an `Amazon FSx Lustre filesystem <https://aws.amazon.com/fsx>`_ for optimal IO performance.  Currently the minimum file system size is 1.2 TB and it is more expensive per GB-hour than the root (NFS-mounted) EBS file system so FSx should only be used for computationally intensive applications.  You can attach an FSx volume by means of a `straightforward modification of the config file <https://aws-parallelcluster.readthedocs.io/en/latest/configuration.html#fsx>`_.
+
 For descriptions and examples of other configuration options, see the `AWS documentation <https://aws-parallelcluster.readthedocs.io/en/latest/configuration.html>`_.
 
 .. tip::
@@ -81,7 +83,7 @@ It will take up to 5-10 minutes to create your cluster so be patient.  AWS must 
 
    If the :code:`cluster_type` is set to :code:`spot` (either in the config file or on the command line with the :code:`-p` option as shown above), then the default spot price is the on demand price.  This means that you are willing to pay no more than the on demand price for your resources.  However, in some circumstances, you may not even want to pay this.  You may wish to tell AWS to wait until the spot price is no more than 80 percent of the on demand price before launching your cluster.  To achieve this you can add the :code:`-p '{"spot_bid_percentage":"80"}'` option to :code:`pcluster create` (or add it to the config file).
 
-ParallelCluster will print messages detailing its progress.  You can allso follow the progress of your cluster creation on the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ and the `CloudFormation Dashboard <https://console.aws.amazon.com/cloudformation>`_.  When you cluster is ready, you should see a message like this from :code:`pcluster`:
+ParallelCluster will print messages detailing its progress.  You can also follow the progress of your cluster creation on the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ and the `CloudFormation Dashboard <https://console.aws.amazon.com/cloudformation>`_.  When you cluster is ready, you should see a message like this from :code:`pcluster`:
 
 .. code:: bash
 
@@ -133,14 +135,14 @@ Now you can choose which compiler/mpi combination you with to use and load the a
 
 If you switch from one to the other you should first run :code:`module purge`.  You can disregard any error messages you see about being unable to locate modulefiles.
 
-Now you are ready to :doc:`build your preferred JEDI bundle <../developer/building_and_testing/building_jedi>`.
+Now you are ready to :doc:`build your preferred JEDI bundle <../developer/building_and_testing/building_jedi>`.  You can run :code:`ctest` as usual but it will only run on one node.  To run across multiple nodes, read on.
 
 .. _awspc-run:
 
 Running JEDI Applications across nodes
 --------------------------------------
 
-The ParallelCluster AMI used for JEDI employs the `Slurm workload manager <https://slurm.schedmd.com/documentation.html>`_ to launch and coordinate applications across multiple compute nodes.
+The ParallelCluster AMI used for JEDI employs the `Slurm workload manager <https://slurm.schedmd.com/documentation.html>`_ to launch and coordinate modules and applications across multiple compute nodes.  Working with slurm will likely be familiar to any JEDI users who have experience running parallel jobs on HPC systems.
 
 So, after compiling your bundle, you will want to create a run directory and create a slurm batch script within it.  A slurm batch script is just a file with contents similar to the following example:
 
@@ -179,6 +181,8 @@ So, after compiling your bundle, you will want to create a run directory and cre
 
 Here :code:`<job-name>` is the name you wish to give to your job, :code:`<email-address>` is your email address (you'll get an email when it run), :code:`<jedi-build-bin>` is the directory where you built your jedi bundle, and :code:`<run-dir>` is your desired run directory - often the same directory where the batch script is located.
 
+The script begins with several slurm directives that specify the number of nodes, tasks, and other options for :code:`sbatch`.  These may alternatively be specified on the command line.  There are many more options available; for a full list see the `sbatch man page <https://slurm.schedmd.com/sbatch.html>`_.
+
 Note that this is just an example.  For it to work, you would need to ensure that all the proper configuration and input files are accessible from the run directory.
 
 This example calls for 216 MPI tasks.  If you are using the (default) c5.18xlarge nodes, then there are 36 compute cores per node.  So, since there is one cpu per mpi task (:code:`cpus-per-task=1`), this will require 6 compute nodes (i.e. 6 EC2 instances).
@@ -200,7 +204,7 @@ Now slurm will trigger the autoscaling capability of AWS to create as many compu
 
 You can follow the status of your cluster creation on the web by monitoring the EC2 Dashboard and/or through the slurm commands :code:`sinfo` and :code:`squeue`.
 
-It is important to monitor your cluster to **make sure your cluster creation does not hang due to lack of resources**.
+It is important to monitor your cluster to **make sure your cluster creation does not hang due to lack of available resources**.
 
 For example, let's say you submitted a batch job that requires 24 nodes.  Then, after, say, 15 minutes, only 20 of them are available (as reported by :code:`sinfo`).  The reason for this may be that there are only 20 nodes of that type available at that time in the chosen AWS availability zone.  So, it may stay in this state for many minutes, even hours, until four more nodes free up.  Meanwhile, JCSDA is incurring charges for the 20 nodes that are active.  Twenty c5n.18xlarge nodes standing idle for an hour would cost more than $80.  So, don't wait for more than about 10-15 minutes: if your cluster creation seems to have stalled, then cancel the job with :code:`scancel <job-id>`.  This will terminate all of the compute nodes but it will leave the Master node up.  You can then try again at a later time.
 
@@ -210,6 +214,22 @@ For example, let's say you submitted a batch job that requires 24 nodes.  Then, 
 
     To immediately change the number of active compute nodes to a value of your choice you do not have to wait for slurm.  You can navigate to the EC2 Dashboard and find the **Auto Scaling Groups** item all the way at the bottom of the menu of services on the left.  You find your cluster's group by name; the name should start with :code:`parallelcluster` and should contain your custom name.  Select it and then select the **Edit** button just above the list of groups.  Now change the **Desired capacity** to be the value of your choice.  You can also alter the minimum and maximum cluster size if you wish.  When you are finished, scroll all the way to the bottom of the page and select **Update**.  You should soon see your changes reflected in the EC2 Dashboard.
 
+The head node is the only one with a public IP address so this is the one you log in to when you connect to your cluster via :code:`pcluster ssh` as described above.  So, this is where you would submit your slurm jobs.  However, each compute node has a private IP address that is accessible from the head node.  You can see the private IP addresses of all the nodes of your cluster through the :code:`NODELIST` field of :code:`sinfo`.  For example:
+
+.. code:: bash
+
+    ubuntu@ip-10-0-0-127:~$ sinfo
+    PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+    compute*     up   infinite      2   idle ip-10-0-1-[193,215]
+
+Then, if you wish, you can log into one of them while your job is running and confirm that your job is indeed running on that node:
+
+.. code:: bash
+
+    ssh ip-10-0-1-215 # from the head node
+    ps -e | grep fv3jedi
+
+After your job completes, successfully or not, a log file named :code:`slurm-<job-id>.out` will be written to the run directory.  For more slurm commands and usage tips, see `Slurm's quickstart page <https://slurm.schedmd.com/quickstart.html>`_ and :ref:`Working with slurm <slurm-commands>` below.
 
 .. _awspc-sin:
 
@@ -264,7 +284,7 @@ When you are finished with your cluster, you have the option to either stop it o
 
 As for a :doc:`single node <singlenode>`, termination means that all computing resources and data volumes are destroyed and cannot be recovered.  So, if you want to save the results of your applications it is up to you to move them to AWS S3 or some other site.
 
-If the autoscaling has reduced your cluster to zero compute nodes, you may be tempted to terminate your cluster by terminating your master node from the EC2 console.  **Please do not do this**.  Though this will delete the compute resources and associated charges, it will leave other (now orphaned) resources active, such as the CloudFormation stack for your cluster and it's associated Virtual Private Cloud.
+If the autoscaling has reduced your cluster to zero compute nodes, you may be tempted to terminate your cluster by terminating your master node from the EC2 console.  **Please do not do this**.  Though this will delete the compute resources and associated charges, it will leave other (now orphaned) resources active, such as the CloudFormation stack for your cluster and its associated Virtual Private Cloud.
 
 The proper way to terminate your cluster is the same way you created it: from the command line using the :code:`pcluster` application:
 
@@ -280,128 +300,9 @@ To stop your cluster, first make sure that there are zero compute nodes active. 
 
 When the size of the cluster is zero, then you can stop your cluster by navigating to the EC2 Dashboard.  There you can select the Master instance and access the **Actions** menu to choose **Instance State -> Stop**, as described for a :ref:`single compute node <stop-ec2>`.
 
-When you restart your Master node at a later time, it will take a few minutes to reboot.  And, it will have a different public ip address; it will be a different physical machine.  But, the contents of your disk will have been saved so you can pick up where you left off.
+When a node is stopped, it incurs a minimal cost for the associated storage space but JCSDA is not charged for compute time.
 
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
-In the future we will add an option to :code:`jedicluster` that will allow you to mount an `Amazon FSx Lustre <https://aws.amazon.com/fsx>`_ instead of enlarging the root EBS disk.  FSx is a parallel Lustre filesystem that is mounted homogeneously across all nodes and that offers improved parallel performance over EBS (EBS is NFS mounted).  Check back on this page for updates on availability.
-
-.. _work-jedicluster:
-
-Logging in and Building JEDI
-----------------------------
-
-After your cluster has been successfully created, the instructions for :ref:`logging in <aws-ssh>` and :ref:`working with the JEDI AMI <jedi-ami>` are the same as for a single node.  But here you will need the :code:`-A` option for :code:`ssh`.  So, for example, after the creation process is complete, you can log in to the head node as follows:
-
-.. code:: bash
-
-    ssh -i <pem-file> -A ubuntu@<ip-address>
-
-After you log in, you are now ready to build your JEDI bundle.  The build procedure as described for the :ref:`single node instructions <jedi-ami>`.  Simply load your :code:`jedi/<compiler>-<mpi>` module and then run :code:`ecbuild` and `make -j<n>` :doc:`as you would on any other system <../developer/building_and_testing/building_jedi>`.
-
-As noted for the :ref:`single-node case <jedi-ami>`, we have already included a copy of :code:`ufo-bundle` and :code:`fv3-bundle` in the :code:`/data/jedi` directory of the AMI.  So, if you use these bundles, you should be able to just update these repositories instead of having to do a fresh clone from GitHub/LFS.  If you use other bundles, you may wish to copy or move some of these repos into your bundle directory, which will likely take less time than doing a fresh clone.
-
-For example, here is the build procedure for **fv3-bundle**:
-
-.. code:: bash
-
-    module purge
-    module load jedi/gnu-openmpi
-
-    cd ~/jedi/build
-    rm -rf *
-    ecbuild --build=Release ../fv3-bundle
-    make update
-    make -j4
-
-You can run :code:`ctest` as usual but it will only run on one node.  To run across multiple nodes, read on.
-
-.. _running-on-jedicluster:
-
-Running JEDI on an AWS Cluster
-------------------------------
-
-The process of running jobs is is somewhat different on a multi-node cluster compared to a single node.  Ensuring that all nodes have the same modules loaded and have the same environment variables set requires the use of a parallel process manager.  For the :code:`jedicluster` we use `Slurm <https://slurm.schedmd.com/documentation.html>`_.
-
-Working with slurm will likely be familiar to any JEDI users who have experience running parallel jobs on HPC systems.  It's best to start with an example slurm script file:
-
-.. code:: bash
-
-    #!/bin/bash
-    #SBATCH --job-name=<job-name>     # job name
-    #SBATCH --nodes=6                 # number of nodes
-    #SBATCH --ntasks=216              # number of MPI tasks
-    #SBATCH --cpus-per-task=1         # One task per cpu core
-    #SBATCH --ntasks-per-node=36      # multiple tasks/cores per node
-    #SBATCH --time=0:15:00            # optional time limit
-    #SBATCH --mail-type=END,FAIL      # Mail events (NONE, BEGIN, END, FAIL, ALL)
-    #SBATCH --mail-user=<your-email>  # your email
-
-    # set up modules
-    source /opt/lmod/lmod/init/bash
-    module purge
-    module use /opt/modules/modulefiles/core
-    module load jedi/intel-impi
-    module list
-
-    # disable memory limits
-    ulimit -s unlimited
-    ulimit -v unlimited
-
-    # directories for output
-    mkdir -p Data/hofx
-    mkdir -p Data/bump
-    mkdir -p output
-
-    # No hyperthreading
-    export OMP_NUM_THREADS=1
-
-    # path to JEDI executables
-    JEDIBIN=/home/ubuntu/jedi/build/bin
-
-    # run directory - put your config files in $JEDIRUN/conf
-    # This application also requires input files in $JEDIRUN/fv3files and $JEDIRUN/Data
-    JEDIRUN=/home/ubuntu/runs/example1
-
-    # run job
-    cd $JEDIRUN
-    mpirun -np 216 $JEDIBIN/fv3jedi_parameters.x config/bumpparameters_loc_geos.yaml
-    mpirun -np 216 $JEDIBIN/fv3jedi_parameters.x config/bumpparameters_cor_geos.yaml
-    mpirun -np 216 $JEDIBIN/fv3jedi_var.x config/hyb-3dvar_geos.yaml
-
-    # successful exit
-    exit 0
-
-
-The script begins with several slurm directives that specify the number of nodes, tasks, and other options for :code:`sbatch`.  These may alternatively be specified on the command line.  There are many more options available; for a full list see the `sbatch man page <https://slurm.schedmd.com/sbatch.html>`_.
-
-The slurm directives are followed by various environment commands that may include loading modules, setting environment variables, navigating to the working directory and/or other commands.  These environment commands are executed by all nodes.
-
-After the environment is established, the slurm script executes the command using :code:`mpirun`.
-
-You can then run this script by entering
-
-.. code:: bash
-
-   sbatch <script-file>
-
-Though you are the only one in the queue, you can monitor your job in a way that is similar to what you might do on an HPC system.  Useful slurm commands include
-
-.. code:: bash
-
-    squeue           # to list running or pending jobs
-    scancel <job-id> # to kill a job in the queue
-
-The head node is the only one with a public IP address so this is the one you log in to when you connect to your cluster via :code:`ssh` as described above.  So, this is typically where you would initiate your jobs using :code:`mpirun`.  However, each compute node has a private IP address that is accessible from the head node.  You can see the private IP addresses of all the nodes of your cluster by entering :code:`cat /etc/hosts`.  Or, you can just use the aliases :code:`node`, :code:`node2`... as listed in :code:`~/hostfile`.  So, if you wish, you can log into one of them while your job is running and confirm that your job is indeed running on that node:
-
-.. code:: bash
-
-    ssh node2 # from the head node
-    ps -e | grep fv3jedi
-
-Note that authentication across nodes is not necessary; this is your reward for including the :code:`-A` option when you connected via :code:`ssh`.
-
-After your job completes, successfully or not, a log file named :code:`slurm-<job-id>.out` will be written to the run directory.  For more slurm commands and usage tips, see `Slurm's quickstart page <https://slurm.schedmd.com/quickstart.html>`_.
+When you restart your Master node at a later time, it will take a few minutes to reboot.  And, it will have a different public ip address; it will also be a different physical machine.  But, the contents of your disk will have been saved so you can pick up where you left off.
 
 .. _slurm-commands:
 
@@ -420,36 +321,14 @@ Then wait a few moments for the job to terminate.  You can check the status of y
 
     sinfo -l
 
-
-Ideally, all your nodes should be in an :code:`idle` state.  This means they are ready to run a new job.  Sometimes, in the :code:`state` column you may see another value such as :code:`drain` or :code:`down`.  You can usually reset a problem node as follows (example is for node1):
+Ideally, all your nodes should be in an :code:`idle` state.  This means they are ready to run a new job.  Sometimes, in the :code:`state` column you may see another value such as :code:`drain` or :code:`down`.  You can usually reset a problem node as follows (you can get the node name from the :code:`NODELIST` output of `sinfo`):
 
 .. code:: bash
 
-    sudo scontrol update nodename=node1 state=idle
+    sudo scontrol update nodename=ip-10-0-1-193 state=idle
 
 Then you should be ready to go.  If not, the `slurm troubleshooting guide <https://slurm.schedmd.com/troubleshoot.html>`_ has some good tips for helping to figure out what is wrong.  For example, if you wish to find more information about a node you can enter
 
 .. code:: bash
 
-    scontrol show node node1
-
-.. _terminate-aws-cluster:
-
-Suspending or terminating your cluster
---------------------------------------
-
-When you are finished working with your cluster, you can terminate it with the command:
-
-.. code:: bash
-
-    jedicluster stop --stack-name <name>
-
-It will take a few minutes to fully terminate.
-
-You can also terminate your cluster from a web browser through the AWS console.  Navigate to the `CloudFormation Dashboard <https://console.aws.amazon.com/cloudformation>`_, select your cluster and select :code:`Delete`.
-
-It is also possible to suspend your node and return to it again later.  When an EC2 instance is running, it will incur charges to JCSDA.  So, it is requested that you not leave it running overnight or at other times when you are not actively working with it.
-
-When you delete your stack using :code:`jedicluster stop` or through the CloudFormation Dashboard as described above, you have permanently destroyed all compute resources and you will not be able to retrieve them.  As mentioned for the :ref:`single-node case <stop-ec2>`, you can also suspend your cluster and restart it later.  However, you can only do this if you created your cluster with on-demand pricing.  If you used the :code:`--spot` option then you will not be able to stop it and restart it.
-
-When a node is stopped, it incurs a minimal cost for the associated storage space but JCSDA is not charged for compute time.
+    scontrol show node ip-10-0-1-193
