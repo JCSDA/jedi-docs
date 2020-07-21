@@ -9,6 +9,7 @@ The prerequisites for running a cluster are the same as for running a :doc:`sing
 
 When you have completed these three steps, you are ready to launch a cluster using the `AWS ParallelCluster application <https://docs.aws.amazon.com/parallelcluster/latest/ug/what-is-aws-parallelcluster.html>`_.
 
+.. _awspc-config:
 
 Configuring Parallel Cluster
 ----------------------------
@@ -32,7 +33,9 @@ Notice also the entry :code:`enable_efa = compute`.  This creates a cluster that
 
 Note that the EFA is not available for all EC2 instance types, so your possible choices for :code:`compute_instance_type` are limited.  For high performance, it is recommended that you use the default value specified in the config file.
 
-By default, your cluster will launch in the spot market.  This is less expensive but :doc:`subject to interruption and termination if others out-bid you for the resources <singlenode>`.  If you would instead like to use on demand, you can edit the configuration file and replace :code:`cluster_type = spot` with :code:`cluster_type = ondemand`.  Note that this specification only applies to the compute nodes.  The Master node is always of type :code:`ondemand`.
+By default, your cluster will launch in the `spot market <https://aws.amazon.com/ec2/spot/>`_, which takes advantage of idle resources.  This can be a substantial cost savings but is :doc:`subject to interruption and termination if others out-bid you for the resources <singlenode>`.  If you would instead like to use on demand, you can edit the configuration file and replace :code:`cluster_type = spot` with :code:`cluster_type = ondemand`.  Note that this specification only applies to the compute nodes.  The Master node is always of type :code:`ondemand`.
+
+If your JEDI spot cluster is interrupted, the nodes will be terminated and you will lose any data you have.  Interruption is rare for some :ref:`EC2 instance types <aws-instance-types>` but is more common for high-performance nodes like c5n.18xlarge which are often in high demand.  Therefore, we recommend that you use on demand pricing for time-critical production runs.  For more information, `Amazon has a nice description of how the spot market works <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html>`_.
 
 For descriptions and examples of other configuration options, see the `AWS documentation <https://aws-parallelcluster.readthedocs.io/en/latest/configuration.html>`_.
 
@@ -63,8 +66,6 @@ And, for further information on any one of these commands, you can request help 
 .. code:: bash
 
     pcluster create --help
-
-
 
 Since most of your specifications and customizations are in the config file, there is not much you need to specify on the command line.  All you really have to do is to give your cluster a name.  You may wish to include your initials and a date.  Avoid special characters like dashes and periods.  It's best to stick to letters and numbers.
 
@@ -154,8 +155,8 @@ So, after compiling your bundle, you will want to create a run directory and cre
 
     source /usr/share/modules/init/bash
     module purge
-    export OPT=/optjedi/modules
-    module use /optjedi/modules/modulefiles/core
+    export $JEDI_OPT=/optjedi/modules
+    module use $JEDI_OPT/modulefiles/core
     module load jedi/intel-impi
     module list
 
@@ -203,11 +204,12 @@ It is important to monitor your cluster to **make sure your cluster creation doe
 
 For example, let's say you submitted a batch job that requires 24 nodes.  Then, after, say, 15 minutes, only 20 of them are available (as reported by :code:`sinfo`).  The reason for this may be that there are only 20 nodes of that type available at that time in the chosen AWS availability zone.  So, it may stay in this state for many minutes, even hours, until four more nodes free up.  Meanwhile, JCSDA is incurring charges for the 20 nodes that are active.  Twenty c5n.18xlarge nodes standing idle for an hour would cost more than $80.  So, don't wait for more than about 10-15 minutes: if your cluster creation seems to have stalled, then cancel the job with :code:`scancel <job-id>`.  This will terminate all of the compute nodes but it will leave the Master node up.  You can then try again at a later time.
 
+.. _tip-autoscaling:
+
 .. tip::
 
     To immediately change the number of active compute nodes to a value of your choice you do not have to wait for slurm.  You can navigate to the EC2 Dashboard and find the **Auto Scaling Groups** item all the way at the bottom of the menu of services on the left.  You find your cluster's group by name; the name should start with :code:`parallelcluster` and should contain your custom name.  Select it and then select the **Edit** button just above the list of groups.  Now change the **Desired capacity** to be the value of your choice.  You can also alter the minimum and maximum cluster size if you wish.  When you are finished, scroll all the way to the bottom of the page and select **Update**.  You should soon see your changes reflected in the EC2 Dashboard.
 
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 .. _awspc-sin:
 
@@ -222,14 +224,15 @@ When you have obtained a container file, you can run applications with a batch s
 
     #!/bin/bash
     #SBATCH --job-name=<job-name>
-    #SBATCH --ntasks=864
+    #SBATCH --ntasks=216
     #SBATCH --cpus-per-task=1
     #SBATCH --time=0:30:00
     #SBATCH --mail-user=<email-address>
 
     source /usr/share/modules/init/bash
     module purge
-    module use /home/ubuntu/runs/Hofx_benchmark/modulefiles
+    export JEDI_OPT=/optjedi/modules
+    module use $JEDI_OPT/modulefiles
     module load intelmpi/2019.6.166
     module load singularityvars
     module list
@@ -246,58 +249,40 @@ When you have obtained a container file, you can run applications with a batch s
     JEDICON=/home/ubuntu
     JEDIBIN=/opt/jedi/fv3-bundle/build/bin
 
-    cd /home/ubuntu/runs/Hofx_benchmark/conpc
+    cd <run-dir>
 
-    mpiexec -np 864 singularity exec --home=$PWD $JEDICON/jedi-intel19-impi-hpc-app.sif ${JEDIBIN}/fv3jedi_var.x Config/3dvar_new.yaml
+    mpiexec -np 216 singularity exec --home=$PWD $JEDICON/jedi-intel19-impi-hpc-app.sif ${JEDIBIN}/fv3jedi_var.x Config/3dvar.yaml
 
     exit 0
+
+Here :code:`JEDICON` is the directory where the container image file is located.  You may be tempted to change the :code:`JEDIBIN` directory but do not do so.  This refers to a path *inside the container* where the JEDI executable lies.  Note also the use of the :code:`singularityvars` module.  This is needed to eliminate conflicts between the host environment and container environment.  Explanations for the remaining items in the batch script are similar to the :ref:`version without the container <awspc-run>`.
 
 Terminating or stopping your cluster
 ------------------------------------
 
-When you are finished with your cluster, you have the option to either stop it or terminate it.
+When you are finished with your cluster, you have the option to either stop it or terminate it.  In either case, the first step is to cancel all running or pending slurm batch jobs and log out of the Master node.
 
-[since the master node is always ondemand, you can
+As for a :doc:`single node <singlenode>`, termination means that all computing resources and data volumes are destroyed and cannot be recovered.  So, if you want to save the results of your applications it is up to you to move them to AWS S3 or some other site.
 
-[logout]
+If the autoscaling has reduced your cluster to zero compute nodes, you may be tempted to terminate your cluster by terminating your master node from the EC2 console.  **Please do not do this**.  Though this will delete the compute resources and associated charges, it will leave other (now orphaned) resources active, such as the CloudFormation stack for your cluster and it's associated Virtual Private Cloud.
 
-.. code:: bash
+The proper way to terminate your cluster is the same way you created it: from the command line using the :code:`pcluster` application:
 
-   pcluster delete <name>
+.. code::
 
-[don't just kill the Master EC2 node]
+    pcluster delete <name>
 
+If you set up :code:`pcluster` inside a :doc:`virtual environment <jedicluster>`, then this command should be executed within that virtual environment.
 
-The (optional) :code:`--spot` argument tells AWS to run this instance in the `spot market <https://aws.amazon.com/ec2/spot/>`_ which takes advantage of idle nodes.  This can be a substantial cost savings relative to on-demand pricing.  But of course, this raises the possibility that there are not enough idle nodes sitting around to meet your request.  If that is the case, the :code:`jedicluster` command above will fail after a few minutes with messages that look something like this:
+Since the Master node is always :code:`ondemand` (as opposed to spot, :ref:`see above <awspc-config>`), you also have the option to stop it and restart it later.
 
-.. code:: bash
+To stop your cluster, first make sure that there are zero compute nodes active.  If you are using the default configuration file (with :code:`min_queue_size` set to zero), then you can do this by cancelling all slurm jobs and waiting for the compute nodes to terminate.  Or, you can manually reduce the size of the cluster to zero as described in the :ref:`tip above <tip-autoscaling>`.
 
-    [...]
-    ROLLBACK_IN_PROGRESS: IP address is not assigned yet, please wait...
-    ROLLBACK_COMPLETE:
+When the size of the cluster is zero, then you can stop your cluster by navigating to the EC2 Dashboard.  There you can select the Master instance and access the **Actions** menu to choose **Instance State -> Stop**, as described for a :ref:`single compute node <stop-ec2>`.
 
-If you were to then go to the `CloudFormation Dashboard on the AWS console <https://console.aws.amazon.com/cloudformation>`_, select your cluster, and then select :code:`Events` you might see an error message like this:
+When you restart your Master node at a later time, it will take a few minutes to reboot.  And, it will have a different public ip address; it will be a different physical machine.  But, the contents of your disk will have been saved so you can pick up where you left off.
 
-.. code:: bash
-
-    There is no Spot capacity available that matches your request. (Service: AmazonEC2; Status Code: 500; Error Code: InsufficientInstanceCapacity; Request ID: 892644a6-eb2f-4e20-976e-5eafa36d3cbb)
-
-If this is the case then you have a few different courses of action available to you: you can try back later, you can try a different EC2 instance type [#]_, or you can submit your request again without the :code:`--spot` option, thus defaulting to on demand.  Still, because of the cost savings, we request that you try the spot market first.
-
-.. [#] For example, try using c5.18xlarge instead of c5n.18xlarge.  The c5n nodes have better networking performance but if they are unavailable, the c5 nodes may be sufficient; both have 36 cores.
-
-.. warning::
-
-   If your stack fails to form for any reason, with a ROLLBACK_COMPLETE message, then change the name if you resubmit it.  AWS remembers the names of your previous stacks until they are manually deleted and won't let you submit a stack with the same name.  Also, it's good practice to manually delete any failed stacks: see :ref:`Suspending or Terminating your cluster <terminate-aws-cluster>` below.
-
-
-Now you may be wondering: "if there are not enough idle nodes to meet my request then how can I get them on demand?"  The answer is that you take them from the spot market users!  In other words, when you run in the spot market, you run the risk of your cluster being interrupted if the demand for those nodes is high.  This is why it is so much less expensive.
-
-Currently, if your JEDI spot cluster is interrupted, the nodes will be terminated and you will lose any data you have.  Interruption is rare for some :ref:`EC2 instance types <aws-instance-types>` but is more common for high-performance nodes like c5n.18xlarge which are often in high demand.  Therefore, we recommend that you use on demand pricing (omit the :code:`--spot` option) for time-critical production runs.  In the future we plan to allow for spot clusters to be temporarily stopped upon interruption and then re-started when availability allows.  However, this capability has not yet been implemented.
-
-For more information, `Amazon has a nice description of how the spot market works <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html>`_.
-
-Currently, the disks mounted by :code:`jedicluster` application (root and :code:`/opt`) are `Amazon Elastic Block Store (EBS) devices <https://aws.amazon.com/ebs>`_ that are attached to the head node (node 0) and cross-mounted on all the other nodes.  This is why, when you view them on the EC2 Dashboard, you may notice a distinction between the head node and the other (compute) nodes: because of this asymmetry, they have slightly different AMIs.  However, when you run an application, all nodes will be
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 In the future we will add an option to :code:`jedicluster` that will allow you to mount an `Amazon FSx Lustre <https://aws.amazon.com/fsx>`_ instead of enlarging the root EBS disk.  FSx is a parallel Lustre filesystem that is mounted homogeneously across all nodes and that offers improved parallel performance over EBS (EBS is NFS mounted).  Check back on this page for updates on availability.
 

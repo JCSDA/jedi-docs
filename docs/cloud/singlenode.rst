@@ -42,7 +42,7 @@ For most options we recommend using the defaults.  However, one required option 
 
    The JEDI AMIs and snapshots may not be available in all AWS regions.  Unless otherwise advised by a JEDI master, we recommend that you use the default region, which is us-east-1.  So, make sure you choose an ssh key that is available in that region.
 
-The (optional) :code:`--spot` argument asks AWS to reduce costs by running the instance in the `spot market <https://aws.amazon.com/ec2/spot/>`_.  Though this can be a substantial cost savings, spot instances run the risk of being interrupted.  Furthermore, unlike on-demand instances, they cannot be stopped and started at will.  For more information see :ref:`Running JEDI on a Multi-Node Cluster <spot-pricing>` and :ref:`Suspending or terminating your compute node <stop-ec2>`.
+The (optional) :code:`--spot` argument asks AWS to reduce costs by running the instance in the `spot market <https://aws.amazon.com/ec2/spot/>`_.  Though this can be a substantial cost savings, spot instances run the risk of being interrupted.  Furthermore, unlike on-demand instances, they cannot be stopped and started at will (though it is possible to configure spot instances that can be stopped and started, :ref:`the jedi launch script is deliberately not configured for this - see below <stop-ec2>`).
 
 Another notable option is :code:`--type`, which allows you to specify the EC2 instance type.  For further information see :ref:`Choosing a Different EC2 Instance Type <aws-instance-types>` below.  Specifying the node type should be sufficient for most use cases.  If you specify an instance type that is unfamiliar, you may get a message asking you to also specify the number of compute cores for that node type, which you can do with the :code:`--ncores` option.  This information is needed in order to disable hyperthreading, which improves performance.
 
@@ -128,7 +128,6 @@ The JEDI AMI also comes with **Singularity**, **Docker**, and **Charliecloud** p
 
 .. _stop-ec2:
 
-
 Suspending or terminating your compute node
 -------------------------------------------
 
@@ -165,3 +164,4 @@ Recommended options include but are not limited to the following.  The prices li
   These currently provide the highest single-node performance and can be used for intermediate-sized applications that are still small enough to fit on a single node.  This could enhance performance by avoiding communication across nodes which is often inferior to the single-node bandwidth.  They offer dedicated use of a 48-core compute node with 192 GiB memory and 25 Gbps network bandwidth. They also offer 14 Gbps IO bandwidth to (EBS) disk.  Due to high demand, it's possible that these nodes may not be available at a given time.
 
 There are also a number of other nodes available that optimize memory or IO bandwidth for a given core count: See the `AWS documentation <https://aws.amazon.com/ec2/instance-types/>`_ for details.
+<

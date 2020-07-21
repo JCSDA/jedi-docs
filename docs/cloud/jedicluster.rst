@@ -42,6 +42,6 @@ In order to use the single-node launch script described in :doc:`the next sectio
 
 If you only wish to run JEDI on a single node, you can :doc:`proceed to the next section <singlenode>`.
 
-Alternatively, if you wish to have the capability to run JEDI across multiple AWS nodes, you will also have to install `AWS ParallelCluster <https://docs.aws.amazon.com/parallelcluster/index.html>`_.  ParallelCluster is another python application that provides a user-friendly interface to the AWS CloudFormation. CloudFormation is ulimately responsible for creating and coordinating a cluster of collocated, interconnected compute nodes, which AWS calls `EC2 instances <https://aws.amazon.com/ec2/>`_.
+Alternatively, if you wish to have the capability to run JEDI across multiple AWS nodes, you will also have to install `AWS ParallelCluster <https://docs.aws.amazon.com/parallelcluster/index.html>`_.  ParallelCluster is another python application that provides a user-friendly interface to the AWS CloudFormation. CloudFormation is ultimately responsible for creating and coordinating a cluster of collocated, interconnected compute nodes, which AWS calls `EC2 instances <https://aws.amazon.com/ec2/>`_.
 
-AWS maintains `the most thorough, up-to-date instructions on how to install ParallelCluster <https://docs.aws.amazon.com/parallelcluster/latest/ug/install.html>`_ so we recommend that you follow those.
+AWS maintains `the most thorough, up-to-date instructions on how to install ParallelCluster <https://docs.aws.amazon.com/parallelcluster/latest/ug/install.html>`_ so we recommend that you follow those.  In particular, we recommend installed the :code:`pcluster` tool within a python virtual environment, as advised by AWS.
