@@ -164,4 +164,3 @@ Recommended options include but are not limited to the following.  The prices li
   These currently provide the highest single-node performance and can be used for intermediate-sized applications that are still small enough to fit on a single node.  This could enhance performance by avoiding communication across nodes which is often inferior to the single-node bandwidth.  They offer dedicated use of a 48-core compute node with 192 GiB memory and 25 Gbps network bandwidth. They also offer 14 Gbps IO bandwidth to (EBS) disk.  Due to high demand, it's possible that these nodes may not be available at a given time.
 
 There are also a number of other nodes available that optimize memory or IO bandwidth for a given core count: See the `AWS documentation <https://aws.amazon.com/ec2/instance-types/>`_ for details.
-<
