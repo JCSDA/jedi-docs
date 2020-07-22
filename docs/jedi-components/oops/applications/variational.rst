@@ -3,9 +3,9 @@
 Variational data assimilation in OOPS
 =====================================
 
-Variational application is a generic application for running incremental variational data assimilation.
+The variational application is a generic application for running incremental variational data assimilation.
 
-It supports the following cost functions:
+Supported cost functions and minimizers are described below.
 
 Supported cost functions
 ------------------------
@@ -18,12 +18,12 @@ Uses 3D state in the update and in the observer. Does not require model TL/AD.
 4D-Ens-Var
 ^^^^^^^^^^
 
-4DEnVar is using ensembles for estimating ensemble background error covariances. Does not require model TL/AD.
+4DEnVar uses ensembles for estimating ensemble background error covariances. Does not require model TL/AD.
 
 4D-Var
 ^^^^^^
 
-4D-Var cost function name is reserved for the strong-constraint (perfect model) 4DVar. Requires model TL/AD.
+The 4D-Var cost function name is reserved for the strong-constraint (perfect model) 4DVar. Requires model TL/AD.
 
 .. note::
 
@@ -77,4 +77,3 @@ Dual minimizers
 
 SaddlePoint minimizer
 ^^^^^^^^^^^^^^^^^^^^^
-
