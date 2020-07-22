@@ -11,7 +11,7 @@ However, if you plan to use JCSDA cloud computing resources, the documents in :d
 
 The first step is therefore to gain access to JCSDA cloud computing resources.  JEDI users share a single JCSDA account that you will need to be added to in order to launch AWS Elastic Compute Cloud (EC2) instances, create CloudFormation clusters, or access private data on AWS's Simple Storage Service (S3).
 
-I you wish, **Please** `contact us <miesch@ucar.edu>`_ **to request access to JCSDA's AWS account**
+If you wish, **Please** `contact us <miesch@ucar.edu>`_ **to request access to JCSDA's AWS account**
 
 If your request for access is granted, JCDSA staff will provide you with AWS login credentials that will allow you to access AWS resources either either through the web-based `AWS console <https://aws.amazon.com>`_ or through the `AWS command line interface <https://aws.amazon.com/cli>`_.  These credentials include a user name, a password, a secret access key, and an ID for that secret access key.
 
