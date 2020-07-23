@@ -216,8 +216,14 @@ The most useful option you're likely to want for :code:`make` other than :code:`
 
 .. code:: bash
 
-    make -j4 VERBOSE=1
+   make VERBOSE=1 -j4
 
 As usual, to see a list of other options, enter :code:`make --help`.
 
 Again, the compile can take some time (10 minutes or more) so be patient.   Then, when it finishes, the next step is to :doc:`run ctest <unit_testing>`.
+
+If the parallel compile fails, the true error may not be in the last line of the output because all processes are writing output simultaneously and some may still continue while another fails.  So, in that case, it can be useful to re-run :code:`make` with only a single process.  Omitting the :code:`-j` option is the same as including :code:`-j1`:
+
+.. code:: bash
+
+   make VERBOSE=1
