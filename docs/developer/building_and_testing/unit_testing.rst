@@ -10,7 +10,8 @@ After describing the basic functionality of ctest, we proceed to give a more det
 Running ctest
 -------------
 
-The standard practice after :doc:`building and compiling a JEDI bundle <building_jedi>` is to run ctest with no arguments in order to see if the bundle is operating correctly:
+The standard practice after :doc:`building and compiling a JEDI bundle <building_jedi>` is to run ctest with no arguments in order to see if the bundle is operating correctly.
+First you need to run :code:`ulimit -s unlimited` (on a linux machine; you may not be able to do this on Mac OS) to ensure that you don't encounter memory or stack size issues. Then you can test your build with:
 
 .. code:: bash
 
