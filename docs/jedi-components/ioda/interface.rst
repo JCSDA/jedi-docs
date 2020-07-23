@@ -121,9 +121,9 @@ The following is the YAML for the UFO test "test_ufo_radiosonde_opr".
      vector ref: GsiHofX
      tolerance: 1.0e-04  # in % so that corresponds to 10^-3
      linear obs operator test:
-       testiterTL: 12
-       toleranceTL: 1.0e-9
-       toleranceAD: 1.0e-11
+       iterations TL: 12
+       tolerance TL: 1.0e-9
+       tolerance AD: 1.0e-11
 
 Under the :code:`obs space.obsdataout.obsfile` specification, the output file is requested to be created in the path: :code:`Data/sondes_obs_2018041500_m_out.nc4`.
 If there is only one process element, then the output will appear in the file as specified.
