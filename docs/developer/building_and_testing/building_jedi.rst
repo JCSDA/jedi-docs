@@ -3,7 +3,7 @@
 Building and compiling JEDI
 =============================
 
-As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in t<he following steps:
+As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in the following steps:
 
 1. Clone the desired JEDI **bundle**
 2. Optionally edit the :code:`CMakeLists.txt` file in the bundle to choose the code branches you want to work with
