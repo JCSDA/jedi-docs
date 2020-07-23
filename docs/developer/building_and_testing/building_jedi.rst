@@ -3,12 +3,12 @@
 Building and compiling JEDI
 =============================
 
-As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in the following steps:
+As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in t<he following steps:
 
 1. Clone the desired JEDI **bundle**
 2. Optionally edit the :code:`CMakeLists.txt` file in the bundle to choose the code branches you want to work with
 3. :code:`cd` to the build directory and run :code:`ecbuild` to generate the Makefiles and other infrastructure
-4. Run :code:`make` to compile the code
+4. Run :code:`make update` to pull the latest, up-to-date code from GitHub (optional) and :code:`make` to compile the code
 5. Run :code:`ctest` to verify that the bundle is working correctly
 
 In terms of the actual commands you would enter, these steps will look something like this:
@@ -19,13 +19,13 @@ In terms of the actual commands you would enter, these steps will look something
     git clone https://github.com/JCSDA/ufo-bundle.git
     cd <build-directory>
     ecbuild <src-directory>/ufo-bundle
+    make update
     make -j4
     ctest
 
 In this document we describe Steps 1 through 4, including the various options you have available to you at each step.  For a description of Step 5, see our page on :doc:`JEDI unit testing <unit_testing>`.
 
 You will probably only need to do Step 1 once.  However, if you are a developer who is making changes to one or more JEDI repositories, you will likely find it useful to execute Steps 2 through 5 multiple times, with progressively increasing frequency.  For example, if you are working with a single repository, you may only need to do Step 2 once in order to tell ecbuild to compile your local branch.  And, you'll only need to run :code:`ecbuild` (Step 3) occasionally, when you make changes that affect the directory tree or compilation (for example, adding a file that was not there previously or substantially altering the dependencies).  By comparison, you will likely execute Steps 4 and 5 frequently as you proceed to make changes and test them.
-
 
 .. _git-config:
 
@@ -71,7 +71,7 @@ If your machine has fewer than six compute cores, and if you are using OpenMPI, 
 
 .. code:: bash
 
-    mkdir -p ~/.openmpi	  
+    mkdir -p ~/.openmpi
     echo "rmaps_base_oversubscribe = 1" > ~/.openmpi/mca-params.conf
     echo "localhost slots=6" > ~/.openmpi/hostfile
 
@@ -94,47 +94,30 @@ So, to start your JEDI adventure, the first step is to create a directory as a h
 Step 2: Choose your Repos
 -------------------------
 
-As executed above, Step 1 will create a directory called :code:`~/jedi/src/ufo-bundle`.  :code:`cd` to this directory and have a look (modify this as needed if you used a different path or a different bundle).  There's not much there.  There is a :code:`README` file that you might want to consult for specific information on how to work with this bundle.  But in this Step we'll focus on the :code:`CMakeLists.txt` file.  This contains a list of repositories that the application needs to run.  In the case of **ufo-bundle** that list looks like this:
+As executed above, Step 1 will create a directory called :code:`~/jedi/src/ufo-bundle`.  :code:`cd` to this directory and have a look (modify this as needed if you used a different path or a different bundle).  There's not much there.  There is a :code:`README` file that you might want to consult for specific information on how to work with this bundle.  But in this Step we'll focus on the :code:`CMakeLists.txt` file.  This contains a list of repositories that the application needs to run.  In the case of **ufo-bundle** that list looks something like this:
 
 .. code:: bash
 
-   #ecbuild_bundle( PROJECT eckit    GIT "https://github.com/ECMWF/eckit.git"        TAG 0.18.5 )
-   ecbuild_bundle( PROJECT fckit    GIT "https://github.com/JCSDA/fckit.git" BRANCH develop UPDATE )
-   ecbuild_bundle( PROJECT oops  GIT "https://github.com/JCSDA/oops.git"   BRANCH develop UPDATE )
-   ecbuild_bundle( PROJECT crtm  GIT "https://github.com/JCSDA/crtm.git"  BRANCH develop UPDATE )
-   ecbuild_bundle( PROJECT ioda  GIT "https://github.com/JCSDA/ioda.git"  BRANCH develop UPDATE )
-   ecbuild_bundle( PROJECT ufo   GIT "https://github.com/JCSDA/ufo.git"   BRANCH develop UPDATE )
+   ecbuild_bundle( PROJECT fckit    GIT "https://github.com/JCSDA/fckit.git"        BRANCH release-stable UPDATE )
+   ecbuild_bundle( PROJECT atlas    GIT "https://github.com/JCSDA/atlas.git"        BRANCH release-stable UPDATE )
+   ecbuild_bundle( PROJECT oops     GIT "https://github.com/JCSDA/oops.git"         BRANCH develop UPDATE )
+   ecbuild_bundle( PROJECT gsw      GIT "https://github.com/JCSDA/GSW-Fortran.git"  BRANCH develop UPDATE )
+   ecbuild_bundle( PROJECT crtm     GIT "https://github.com/JCSDA/crtm.git"         BRANCH develop UPDATE )
+   ecbuild_bundle( PROJECT ioda     GIT "https://github.com/JCSDA/ioda.git"         BRANCH develop UPDATE )
+   ecbuild_bundle( PROJECT ufo      GIT "https://github.com/JCSDA/ufo.git"          BRANCH develop UPDATE )
 
-Note that the first line is commented out with :code:`#`.  This is because eckit is already installed in the JEDI :doc:`CharlieCloud <../jedi_environment/charliecloud>` and :doc:`Singularity <../jedi_environment/singularity>` containers so if you are running inside the container, there is no need to build them again.  If you are running outside of the containers and if you have not yet installed these packages on your system, then you may wish to uncomment the line to build eckit.  Or, you may wish to install eckit yourself so you can comment this line out in the future.  Be warned that can be a bit of a challenge if you are on an HPC system, for example, and you do not have write access to :code:`/usr/local`.  For more information on how to install eckit and ecbuild see our JEDI page on :doc:`ecbuild and cmake <../developer_tools/cmake>`.
-
-As described :doc:`there <../developer_tools/cmake>`, **eckit** and **fckit** are software utilities provided by ECMWF that are currently used by JEDI to read configuration files, handle error messages, configure MPI libraries, test Fortran code, call Fortran files from C++, and perform other general tasks.  Note that the eckit repository identified is obtained directly from ECMWF whereas the fckit repository is a JCSDA fork.  This is because the JEDI team frequently makes changes to fckit so we generally work from our own fork and build it as part of each bundle.
 
 The lines shown above tell ecbuild which specific branches to retrieve from each GitHub repository.  **Modify these accordingly if you wish to use different branches.**  When you then run :code:`ecbuild` as described in :ref:`Step 3 <build-step3>` below, it will first check to see if these repositories already exist on your system, within the directory of the bundle you are building.  If not, it will clone them from GitHub.  Then :code:`ecbuild` will proceed to checkout the branch specified by the :code:`BRANCH` argument, fetching it from GitHub if necessary.
 
 If the specified branch of the repository already exists on your system, then :code:`ecbuild` will **not** fetch it from GitHub.   If you want to make sure that you are using the latest and greatest version of the branch, then there are two things you need to do.
 
-First, you need to include the (optional) :code:`UPDATE` argument in the :code:`ecbuild_bundle()` call as shown in each of the lines above.  Second, you need to explicitly initiate the update as follows:
-
-.. code:: bash
-
-   cd <build-directory>
-   make update
+First, you need to include the (optional) :code:`UPDATE` argument in the :code:`ecbuild_bundle()` call as shown in each of the lines above.  Second, you need to explicitly initiate the update by running :code:`make update` as described in Step 4.
 
 This will tell ecbuild to do a fresh pull of each of the branches that include the :code:`UPDATE` argument.  Note that :code:`make update` will not work if there is no Makefile in the build directory.  So, this command will only work *after* you have already run :code:`ecbuild` at least once.
 
-.. warning::
-
-   Running :code:`make update` will initiate a :code:`git pull` operation for each of the repositories that include the :code:`GIT` and :code:`UPDATE` arguments in the call to :code:`ecbuild_bundle()` in :code:`CMakeLists.txt`.  So, if you have modified these repositories on your local system, there may be merge conflicts that you have to resolve before proceeding.
-
 If you are a developer, you will, by definition, be modifying the code.  And, if you are a legitimate *JEDI Master*, you will be following the :doc:`git flow <../developer_tools/getting-started-with-gitflow>` workflow.  So, you will have created a feature (or bugfix) branch on your local computer where you are implementing your changes.
 
-For illustration, let's say we created a feature branch of ufo called :code:`feature/newstuff`, which exists on your local system.  Now we want to tell :code:`ecbuild` to use this branch to compile the bundle instead of some other remote branch on GitHub.  To achieve this, we would change the appropriate line in the CMakeLists.txt file as follows:
-
-.. code:: bash
-
-   ecbuild_bundle( PROJECT ufo SOURCE "~/jedi/src/ufo-bundle/ufo" )
-
-This will use whatever branch of the specified repository that is currently checked out on your system.  As written above, ecbuild will not check out the branch for you.  This is usually not a problem because it is likely that you have the appropriate branch checked out already if you are making modifications to it.  However, if you do want to insist that ecbuild switch to a particular local branch before compiling, then there is indeed a way to do that:
+For illustration, let's say we created a feature branch of ufo called :code:`feature/newstuff`, which exists on your local system.  Now we want to tell :code:`ecbuild` to use this branch to compile the bundle instead of some other remote branch on GitHub.  To achieve this, we would change the appropriate line in the CMakeLists.txt file to point to the correct branch and we would remove the :code:`UPDATE` argument:
 
 .. code:: bash
 
@@ -211,14 +194,23 @@ For more information, enter :code:`ecbuild --help` and see our JEDI page on :doc
 Step 4: Run make (from the build directory)
 -------------------------------------------
 
+After running ecbuild, the next step is to make sure the code is up to date.  You can do this by running :code:`make update` from the build directory as described in Step 2:
+
+.. code:: bash
+
+    make update
+
+.. warning::
+
+   Running :code:`make update` will initiate a :code:`git pull` operation for each of the repositories that include the :code:`GIT` and :code:`UPDATE` arguments in the call to :code:`ecbuild_bundle()` in :code:`CMakeLists.txt`.  So, if you have modified these repositories on your local system, there may be merge conflicts that you have to resolve before proceeding.
+
 Now, at long last, you are ready to compile the code.  From the build directory, just type
 
 .. code:: bash
 
-    make -j4
+   make -j4
 
-
-The :code:`-j4` flag tells make to use four parallel processes.  Since many desktops, laptops, and of course HPC systems come with 4 or more compute cores, this can greatly speed up the compile time.
+The :code:`-j4` flag tells make to use four parallel processes.  Since many desktops, laptops, and of course HPC systems come with 4 or more compute cores, this can greatly speed up the compile time.  Feel free to increase this number if appropriate for your hardware.
 
 The most useful option you're likely to want for :code:`make` other than :code:`-j` is the verbose option, which will tell you the actual commands that are being executed in glorious detail:
 
