@@ -124,6 +124,6 @@ specified branch.  To prevent this fetch command, either:
 1. Manually ``git checkout`` the correct branch for the package.  This can be done without internet access.
 2. Or, replace the ``UPDATE`` keyword with ``NOREMOTE`` in the ``ecbuild_bundle()`` command.
 
-If at some point you need to fetch changes from a remote repository, this can be done with ``git`` in a separate
+If at some point you need to fetch changes from a remote repository, this can be done with ``make update`` in a separate
 terminal window connected to the login-node.  Once the fetch and checkout are complete, the build can proceed on
 the compute node without internet access.
