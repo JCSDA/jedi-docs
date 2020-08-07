@@ -1,6 +1,6 @@
-#############################
-Developer Tools and Practices
-#############################
+###############
+Developer Tools
+###############
 
 A certain amount of consistency is required on the part of the developers so that we can
 maintain efficient software development.

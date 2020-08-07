@@ -221,21 +221,7 @@ Discover
 
 `Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.
 
-As of March, 2020, JCSDA users of Discover have been encouraged to migrate to the new SLES-12 (SuSE Linux Enterprise Server version 12) operating system.  To access these nodes, login to Discover as you normally would and then enter
-
-.. code :: bash
-
-   ssh discover-sles12
-
-During NASA's transition period, it can be tricky to remember whether you are logged in to the old SLES-11 or the new SLES-12 because they share many of the same filesystems, including your home directory and your ``/discover/nobackup`` work directory.  So, at any time, if you want to make sure you are logged into the SLES-12 system, you can enter this:
-
-.. code :: bash
-
-   cat /etc/os-release
-
-If you are on the SLES-12 system, this will let you know.
-
-To access the jedi modules on Discover SLES-12, it is recommended that you add this to your ``$HOME/.bashrc`` file (or the equivalent if you use another shell):
+To access the jedi modules on Discover, it is recommended that you add this to your ``$HOME/.bashrc`` file (or the equivalent if you use another shell):
 
 .. code :: bash
 
@@ -334,7 +320,7 @@ To run parallel jobs, you'll need to create a batch script (a file).  For exampl
 	  module purge
 	  export OPT=/data/users/mmiesch/modules
 	  module use $OPT/modulefiles/core
-	  module load jedi/intel17-impi
+	  module load jedi/intel19-impi
 	  module list
 	  ulimit -s unlimited
 
@@ -362,7 +348,7 @@ Note that the options specified with ``#SBATCH`` include the number of nodes but
 	  module purge
 	  export OPT=/data/users/mmiesch/modules
 	  module use $OPT/modulefiles/core
-	  module load jedi/intel17-impi
+	  module load jedi/intel19-impi
 	  module list
 	  ulimit -s unlimited
 
