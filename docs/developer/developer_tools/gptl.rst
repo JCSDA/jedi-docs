@@ -9,9 +9,9 @@ JEDI-specific modifications for GPTL live in the OOPS repository. Enabling GPTL 
 
 1. whether to enable GPTL support (:code:`-DENABLE_GPTL=ON`)
 
-2. whether to enable function-based auto-profiling (:code:`-DENABLE_AUTOPROFILE=ON`)
+2. whether to enable function-based auto-profiling (:code:`-DENABLE_AUTOPROFILE=ON`; requires also :code:`-DENABLE_GPTL=ON`)
 
-For example, to enable both you would enter:
+For example, to enable GPTL with autoprofiling you would enter:
 
 .. code:: bash
 
@@ -26,9 +26,9 @@ Based on these settings code will be enabled inside of OOPS to check at run-time
 
 The profiling output will be placed in :code:`timing.*` files located in the directory where the application is executed.  So, for the above example, this would be in the :code:`oops/qg/test` directory that branches from the build directory.
 
-Output from rank 0 will be placed in a file called :code:`timing.000000`.  For parallel applications that use more than one MPI task and/or thread, there will also be a `timing.summary` file that summarizes profiling results across tasks and threads.  For tips on interpreting these output files, see the `GPTL documentation <https://jmrosinski.github.io/GPTL/>`_.
+Output from rank 0 will be placed in a file called :code:`timing.000000`.  For parallel applications that use more than one MPI task and/or thread, there will also be a :code:`timing.summary` file that summarizes profiling results across tasks and threads.  For tips on interpreting these output files, see the `GPTL documentation <https://jmrosinski.github.io/GPTL/>`_.
 
-It is expected that the MPI auto-profiling capability provided by GPTL will be enabled for most apps wishing to utilize the GPTL library. This requires that the GPTL library be built with the :code:`configure` flag :code:`--enable-pmpi`. In this case GPTL will automatically intercept MPI calls from the invoking app and gather timing and data volume statistics for those calls. GPTL provides an additional run-time setting to automatically synchronize, and time the synchronization, prior to MPI collective and Recv calls. Enabling this synchronization is critical for apps with large load imbalance across MPI tasks. Otherwise it is easy to misinterpret reported MPI time as all due to communication and none due to synchronization. OOPS run-time environment variable :code:`OOPS_SYNC_MPI` is queried (0=no, 1=yes) to determine whether or not to apply this synchronization to MPI calls.
+It is expected that the MPI auto-profiling capability provided by GPTL will be enabled for most apps wishing to utilize the GPTL library. This requires that the GPTL library be built with the :code:`configure` flag :code:`--enable-pmpi` (done by default in most JEDI stacks and containers). In this case GPTL will automatically intercept MPI calls from the invoking app and gather timing and data volume statistics for those calls. GPTL provides an additional run-time setting to automatically synchronize, and time the synchronization, prior to MPI collective and Recv calls. Enabling this synchronization is critical for apps with large load imbalance across MPI tasks. Otherwise it is easy to misinterpret reported MPI time as all due to communication and none due to synchronization. OOPS run-time environment variable :code:`OOPS_SYNC_MPI` is queried (0=no, 1=yes) to determine whether or not to apply this synchronization to MPI calls.
 
 Function-based auto-profiling is facilitated by the compiler through use of compile-time flags. These flags for C/C++ and Fortran are the same for both GNU and Intel compilers (:code:`-finstrument-functions`), and are set automatically when ecbuild is passed :code:`-DENABLE_AUTOPROFILE=ON`. OOPS run-time environment variable :code:`$OOPS_PROFILE=1` also needs to be set in order to produce these statistics. In this case a dynamic call tree will be generated along with detailed statistics regarding number of times the function was called, total time, parent and children routines, and more. These results are reported for each MPI task, and have the name timing."number", where "number" represents the MPI rank in :code:`MPI_COMM_WORLD` of the process (or 0 when MPI is not active). This function-based auto-profiling can be especially useful to learn who calls who for a given app, and to get an idea which are the expensive routines. But, depending on the app there can be substantial overhead if some routines are called many times. So users should employ function-based auto-profiling with caution.
 
