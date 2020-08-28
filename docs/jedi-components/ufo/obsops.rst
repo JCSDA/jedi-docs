@@ -471,9 +471,8 @@ Examples of yaml:
 
 .. code:: yaml
 
-window begin: 2019-05-06T21:00:00Z
-window end: 2019-05-07T03:00:00Z
-
+observations: 
+- obs operator:
     name: GnssroBendMetOffice
     obs options:
       vert_interp_ops: true
