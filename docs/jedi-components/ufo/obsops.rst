@@ -434,6 +434,65 @@ Examples of yaml:
       - name: [bending_angle]
       threshold: 3
 
+(GnssroBendMetOffice)
+-----------------------------------
+
+Description:
+^^^^^^^^^^^^
+
+The JEDI UFO interface of the Met Office's one-dimensional observation
+operator for calculating the Global
+Navigation Satellite System (GNSS) Radio Occultation (RO) bending
+angle data
+
+Code:
+^^^^^
+:code:`ufo/gnssro/BendMetOffice`
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+1. configurables in "obs operator" section:
+
+  a. none.
+
+2. configurables in "obs space" section:
+
+  a. vert_interp_ops: if true, then use log(pressure) for vertical interpolation, if false then use exner function for vertical interpolation.
+  
+  b. pseudo_ops: if true then calculate data on intermediate "pseudo" levels between model levels, to minimise interpolation artifacts.
+  
+3. configurables in "ObsFilters" section:
+
+  a. Background Check: not currently well configured.  More detail to follow.
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+:code:`ufo/test/testinput/gnssrobendmetoffice.yaml`
+
+.. code:: yaml
+
+window begin: 2019-05-06T21:00:00Z
+window end: 2019-05-07T03:00:00Z
+
+    name: GnssroBendMetOffice
+    obs options:
+      vert_interp_ops: true
+      pseudo_ops: true
+  obs space:
+    name: GnssroBnd
+    obsdatain:
+      obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2019050700_1obs.nc4
+    simulated variables: [bending_angle]
+  geovals:
+    filename: Data/gnssro_geoval_2019050700_1obs.nc4
+  obs filters:
+  - filter: Background Check
+    filter variables:
+    - name: bending_angle
+    threshold: 3.0
+  norm ref: MetOfficeHofX
+  tolerance: 1.0e-5
+
 (GnssroRef)
 -----------------------------------
 
