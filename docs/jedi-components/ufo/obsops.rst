@@ -471,26 +471,25 @@ Examples of yaml:
 
 .. code:: yaml
 
-observations: 
-- obs operator:
-    name: GnssroBendMetOffice
-    obs options:
-      vert_interp_ops: true
-      pseudo_ops: true
-  obs space:
-    name: GnssroBnd
-    obsdatain:
-      obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2019050700_1obs.nc4
-    simulated variables: [bending_angle]
-  geovals:
-    filename: Data/gnssro_geoval_2019050700_1obs.nc4
-  obs filters:
-  - filter: Background Check
-    filter variables:
-    - name: bending_angle
-    threshold: 3.0
-  norm ref: MetOfficeHofX
-  tolerance: 1.0e-5
+  - obs operator:
+      name: GnssroBendMetOffice
+      obs options:
+        vert_interp_ops: true
+        pseudo_ops: true
+    obs space:
+      name: GnssroBnd
+      obsdatain:
+        obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2019050700_1obs.nc4
+      simulated variables: [bending_angle]
+    geovals:
+      filename: Data/gnssro_geoval_2019050700_1obs.nc4
+    obs filters:
+    - filter: Background Check
+      filter variables:
+      - name: bending_angle
+      threshold: 3.0
+    norm ref: MetOfficeHofX
+    tolerance: 1.0e-5
 
 (GnssroRef)
 -----------------------------------
