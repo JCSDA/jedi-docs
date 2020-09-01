@@ -491,6 +491,23 @@ Examples of yaml:
     norm ref: MetOfficeHofX
     tolerance: 1.0e-5
 
+References:
+^^^^^^^^^^^
+
+The scientific configuration of this operator has been documented in a number of
+publications:
+
+ - Buontempo C, Jupp A, Rennie M, 2008. Operational NWP assimilation of GPS
+   radio occultation data, *Atmospheric Science Letters*, **9**: 129--133.
+   doi: http://dx.doi.org/10.1002/asl.173
+ - Burrows CP, 2014. Accounting for the tangent point drift in the assimilation of
+   gpsro data at the Met Office, *Satellite applications technical memo 14*, Met
+   Office.
+ - Burrows CP, Healy SB, Culverwell ID, 2014. Improving the bias
+   characteristics of the ROPP refractivity and bending angle operators,
+   *Atmospheric Measurement Techniques*, **7**: 3445--3458.
+   doi: http://dx.doi.org/10.5194/amt-7-3445-2014
+
 (GnssroRef)
 -----------------------------------
 
