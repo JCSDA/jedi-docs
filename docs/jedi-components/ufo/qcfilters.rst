@@ -1051,3 +1051,17 @@ The following conditions are accepted by the :code:`where` statement:
 In the example above, four masks are created for radiosonde observation filtering. The filter will be applied in sequence at observation locations where the sea surface temperature is within the range of [200, 300] kelvin, the latitude is <= than 60 degrees, the height of the observation has a valid value (not missing), and the station id is one of the ids in the whitelist. 
 
 The :code:`where` statement and :code:`processWhere` function are used in generic filters such as BackgroundCheck, DifferenceCheck, ObsBoundsCheck, ObsDomainCheck, and BlackList.
+
+.. code:: yaml
+
+    - where: 
+      - variable:
+          name:  datetime@MetaData
+        minvalue: 0000-01-01T00:00:00Z
+        maxvalue: 0000-25-05T00:00:00Z 
+      - variable:
+          name:  datetime@MetaData
+        minvalue: 0000-00-00T09:00:00Z
+        maxvalue: 0000-00-00T18:00:00Z
+
+In the example above, a mask is created for times between 09:00 and 18:00, between 1st January and 25th May of every year.
