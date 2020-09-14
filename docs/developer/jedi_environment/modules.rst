@@ -225,18 +225,17 @@ To access the jedi modules on Discover, it is recommended that you add this to y
 
 .. code :: bash
 
-   export OPT=/discover/swdev/jcsda/modules
-   module use $OPT/modulefiles
+   export JEDI_OPT=/discover/swdev/jcsda/modules
+   module use $JEDI_OPT/modulefiles/core
+   module use $JEDI_OPT/modulefiles/apps
 
 Currently two stacks are maintained (choose only one)
 
 .. code :: bash
 
-   module load apps/jedi/intel-impi # aka apps/jedi/intel-impi/20.0.0.166
-   module load apps/jedi/gnu-impi # aka apps/jedi/9.2.0
+   module load jedi/intel-impi
+   module load jedi/gnu-impi
 
-
-Despite the name (``20.0.0.166``), the first loads version 19.1.0.166 of the intel compiler and mpi suite.
 
 The second option may seem a little surprising, pairing the gnu 9.2.0 compiler suite with the intel 19.1.0.166 mpi library.  However, this is intentional.  Intel MPI is currently the recommended MPI library on SLES-12 for both Intel and gnu compilers.  Note that OpenMPI is not yet available on SLES-12, though they do have hpcx, which is a proprietary variant of OpenMPI from Mellanox.
 
@@ -251,7 +250,7 @@ There is also another module that is built from the ESMA ``baselibs`` libraries.
 .. code :: bash
 
     module purge
-    module load apps/jedi/baselibs/intel-impi
+    module load jedi/baselibs/intel-impi
 
 Currently only ``intel-impi/19.1.0.166`` is the only baselibs option available but more may be added in the future.  Specify the MPI executable explicitly when you build as with the previous modules.
 
@@ -264,7 +263,7 @@ Whichever module you use, after building you will want to run the ``get`` tests 
 
 .. code:: bash
 
-    ctest -R get
+    ctest -R get_
 
 To run the remaining tests, particularly those that require MPI, you'll need to acquire a compute node.  You can do this interactively with
 
