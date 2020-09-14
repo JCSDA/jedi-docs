@@ -166,33 +166,47 @@ Current options for setting up the JEDI environment include (choose only one)
 .. code :: bash
 
    module load jedi/gnu-openmpi # GNU compiler suite and openmpi
-   module load jedi/intel19-impi # Intel 19.0.5 compiler suite and Intel mpi
+   module load jedi/intel-impi # Intel 19.0.5 compiler suite and Intel mpi
 
-Run ecbuild and pull the latest code.  Note - because of space limitations on your home directory, it's a good idea to locate your build directory on glade:
+Because of space limitations on your home directory, it's a good idea to locate your build directory on glade:
 
 .. code:: bash
 
     cd /glade/work/<username>
     mkdir jedi/build; cd jedi/build
-    ecbuild <path-to-jedi-bundle>
-    make update
 
-Use multiple threads to speed up the compilation
+If you choose the :code:`jedi/gnu-openmpi` module, you can proceed run ecbuild as you would on most other systems:
 
 .. code:: bash
 
-    make -j4
+   ecbuild <path-to-bundle>
+   make update
+   make -j4
 
 .. warning::
 
-    Please do not use too many threads to speed up the compilation, Cheyenne system administrator might terminate your login node.
+   Please do not use too many threads to speed up the compilation, Cheyenne system administrator might terminate your login node.
+
+However, if you choose to compile with the `jedi/intel-impi` module you must use a toolchain.  This is required in order enable C++14 and to link to the proper supporting libraries.
+
+So, first clone the :code:`jedi-cmake` repository:
+
+.. code:: bash
+
+   git clone git@github.com:jcsda/jedi-cmake.git
+
+Then pass this toolchain to :code:`ecbuild`:
+
+.. code:: bash
+
+   ecbuild --toolchain=<path-to-jedi-cmake>/jedi-cmake/cmake/Toolchains/jcsda-Cheyenne-Intel.cmake <path-to-bundle>
 
 The system configuration on Cheyenne will not allow you to run mpi jobs from the login node.  So, if you try to run :code:`ctest` from here, the mpi tests will fail.  So, to run the jedi unit tests you will have to either submit a batch job or request an interactive session with :code:`qsub -I`.  The following is a sample batch script to run the unit tests for ufo-bundle.  Note that some ctests require up to 6 MPI tasks so requesting 6 cores should be sufficient.
 
 .. code:: bash
 
     #!/bin/bash
-    #PBS -N ctest-impi
+    #PBS -N ctest-ufo-gnu
     #PBS -A <account-number>
     #PBS -l walltime=00:20:00
     #PBS -l select=1:ncpus=6:mpiprocs=6
@@ -201,19 +215,20 @@ The system configuration on Cheyenne will not allow you to run mpi jobs from the
     #PBS -m abe
     #PBS -M <your-email>
 
-    source /glade/u/apps/ch/opt/lmod/7.2.1/lmod/lmod/init/bash
+    source /glade/u/apps/ch/opt/lmod/8.1.7/lmod/lmod/init/bash
     module purge
     export OPT=/glade/work/miesch/modules
     module use $OPT/modulefiles/core
-    module load jedi/intel19-impi
+    module load jedi/gnu-openmpi
+    module list
 
     # cd to your build directory.  Make sure that these binaries were built
     # with the same module that is loaded above, in this case jedi/intel-impi
 
-    cd /glade/work/<username>/jedi/ufo-bundle/build-intel-impi
+    cd <build-directory>
 
     # now run ctest
-    ctest
+    ctest -E get_
 
 
 Discover
@@ -287,7 +302,7 @@ So, to load the JEDI intel module you can use the following commands (as on othe
    module use $JEDI_OPT/modulefiles/core
    module load jedi/intel-impi
 
-The recommended way to compile JEDI on S4 is to first clone the `jedi-cmake` repository, which contains an S4 toolchain:
+The recommended way to compile JEDI on S4 is to first clone the :code:`jedi-cmake` repository, which contains an S4 toolchain:
 
 .. code:: bash
 
