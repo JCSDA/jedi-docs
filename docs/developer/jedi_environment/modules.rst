@@ -90,7 +90,7 @@ When you are happy with this, you are ready to :ref:`build and run your JEDI bun
 General Tips for HPC Systems
 ----------------------------
 
-Many HPC systems do not allow you to run MPI jobs from the login nodes.  So, after building JEDI, you'll have to run the tests either in batch mode through a job submission program such as :code:`sbatch` or by accessing a batch node interactively through a program such as :code:`salloc`.  Often these batch nodes do not have access to the internet.  So, after you build JEDI, you may need to run the following command from a login node:
+Many HPC systems do not allow you to run MPI jobs from the login nodes.  So, after building JEDI, you'll have to run the tests either in batch mode through a job submission program such as :code:`slurm` via :code:`sbatch` directives, or by accessing a batch compute node interactively through a program such as :code:`salloc`.  Often these batch nodes do not have access to the internet; after you build JEDI, you may need to run the following command from a login node:
 
 .. code :: bash
 
@@ -121,34 +121,130 @@ Also, it is recommended that you specify :code:`srun` as your mpi process manage
    ecbuild -DMPIEXEC_EXECUTABLE=`which srun` -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
 
+
 Orion
 -----
 
 Orion is an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
 
-A few actions you need to take to access the installed jedi modules.  The first is to include these commands in your :code:`.bashrc` file (or implement their c shell equivalents):
+A few steps are necessary to access the installed jedi modules.  The first is to include these commands in your :code:`.bashrc` file (or implement their c-shell equivalents):
 
 .. code :: bash
 
-   export OPT=/home/rmahajan/opt
-   module use /home/rmahajan/opt/modulefiles/core
-   module use /home/rmahajan/opt/modulefiles/apps
+   export JEDI_OPT=/work/noaa/da/grubin/opt/modules
+   module use $JEDI_OPT/modulefiles/core
+   
 
-Currently the Intel 2019 with OpenMPI 4.0.2 and Intel MPI 2019 suites is available:
+Currently there are two sets of compiler / MPI module suites available (choose only one): 
+
+Intel compiler suite v20.0.166 and associated Intel MPI:
 
 .. code :: bash
 
-   module load jedi/intel-2019.5_openmpi-4.0.2 # Intel compiler suite with OpenMPI
-   module load jedi/intel-2019.5_impi-2019.6 # Intel compiler suite with Intel MPI
+   module load jedi/intel-impi # Intel compiler suite v20.0.166 with Intel MPI
+ 
+ 
+and GNU compilers v8.3.0 and OpenMPI v4.0.2
 
-Run ecbuild and use multiple threads to speed up the compilation
+.. code :: bash
+
+   module load jedi/gnu-openmpi # GNU compiler suite v8.3.0 with OpenMPI v4.0.2
+
+
+Orion uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs.  Though some slurm implementations allow you to use the usual mpi job scripts :code:`mpirun` or :code:`mpiexec`, these may not function properly on orion.  Instead, you are advised to use the slurm run script :code:`srun`; an appropriate jedi cmake toolchain is available to set this up.
+
+First, clone the :code:`jedi-cmake` repository:
+
+.. code:: bash
+
+   git clone git@github.com:jcsda/jedi-cmake.git
+
+Then pass the following toolchain to :code:`ecbuild`, and use multiple threads to speed up the compilation:
 
 .. code:: bash
 
     git clone https://github.com/jcsda/<jedi-bundle>
     mkdir -p jedi/build; cd jedi/build
-    ecbuild <path-to-jedi-bundle>
+    ecbuild --toolchain=<path-to-jedi-cmake>/jedi-cmake/cmake/Toolchains/jcsda-Orion-Intel.cmake <path-to-bundle>
     make -j4
+   
+
+Alternatively, you can specify the MPI executable directly on the command line:
+
+.. code:: bash
+
+   ecbuild -DMPIEXEC_EXECUTABLE=/opt/slurm/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
+   make -j4
+
+
+Note that this specifying :code:`srun` as the MPI executable is really only necessary for the ctests.  If you run an application directly (outside of ctest), you may simply use :code:`srun`.
+
+Here is a sample `slurm <https://slurm.schedmd.com/>`_ batch script for running ctest. Note that you will need to add appropriate :code:`#SBATCH` directives for specifying a computing account, quality of service, job partition, and so on; please consult `the Orion Usage and Guidelines documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/cluster_guide.php#orion-use>`_.
+
+.. code:: bash
+
+   #!/usr/bin/bash
+   #SBATCH --job-name=<name>
+   #SBATCH --nodes=1
+   #SBATCH --account <account>
+   #SBATCH --partition <partition>
+   #SBATCH --qos <qos>
+   #SBATCH --time=0:10:00
+   #SBATCH --mail-user=<email-address>
+
+   source /etc/bashrc
+   module purge
+   export JEDI_OPT=/work/noaa/da/grubin/opt/modules
+   module use $JEDI_OPT/modulefiles/core
+   module load jedi/intel-impi
+   module list
+   ulimit -s unlimited
+
+   export SLURM_EXPORT_ENV=ALL
+   export HDF5_USE_FILE_LOCKING=FALSE
+
+   cd <path-to-bundle-build-directory>
+   ctest -E get_
+
+   exit 0
+
+Note that the options specified with ``#SBATCH`` include the number of nodes but not the number of tasks needed.  This is most appropriate for running ``ctest`` because some tests require a different number of MPI tasks than others.  However, if you run an application individually, you should specify ``#SBATCH --ntasks <number>`` instead of ``#SBATCH --nodes=<number>``, as shown in the following example.  The slurm job scheduler will properly determine how many nodes your job requires. Specifying ``--ntasks`` instead of ``--nodes`` in the ``#SBATCH`` header commands will mandate that your computing allocation will only be charged for what you use.  This is preferable for more computationally intensive jobs:
+
+.. code:: bash
+
+   #!/usr/bin/bash
+   #SBATCH --job-name=<name>
+   #SBATCH --ntasks=4
+   #SBATCH --cpus-per-task=1
+   #SBATCH --time=0:10:00
+   #SBATCH --mail-user=<email-address>
+
+   source /etc/bashrc
+   module purge
+   export JEDI_OPT=/work/noaa/da/grubin/opt/modules
+   module use $JEDI_OPT/modulefiles/core
+   module load jedi/intel-impi
+   module list
+   ulimit -s unlimited
+
+   export SLURM_EXPORT_ENV=ALL
+   export HDF5_USE_FILE_LOCKING=FALSE
+
+   # make sure the number of tasks it requires matches the SBATCH --ntasks specification above
+   cd <path-to-bundle-build-directory>
+   srun --ntasks=4 --cpu_bind_core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
+
+   exit 0
+
+Submit and monitor your jobs with these commands
+
+.. code:: bash
+
+	  sbatch <batch-script>
+	  squeue -u <your-user-name>
+
+You can delete jobs with the :code:`scancel` command.  For further information please consult `the Orion Cluster Computing Basics documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/clusters_getting_started.php>`_.
+
 
 Cheyenne
 --------
