@@ -167,7 +167,7 @@ With few exceptions, all JEDI repositories contain a :code:`test` directory that
 
 Within each :code:`test` directory you will find a file called :code:`CMakeLists.txt`.  This is where each test is added, one by one, to the suite of tests that is executed by **ctest**.  As described in the `CMake documentation <https://cmake.org/documentation/>`_, this is ultimately achieved by repeated calls to the CMake :code:`add_test()` command.
 
-However, the :doc:`ecbuild package <../developer_tools/cmake>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`. Application tests are added by specifying :code:`TYPE SCRIPT` and :code:`COMMAND "compare.sh"` to :code:`ecbuild_add_test()`. For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
+However, the :doc:`ecbuild package <../developer_tools/cmake>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`. Application tests are added by specifying :code:`TYPE SCRIPT` and :code:`COMMAND "compare.py"` to :code:`ecbuild_add_test()`. For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
 
 Since it relies on the net result of an application, each Application test is typically associated with a single **ctest** executable.  However, applications of type :code:`oops::Test` (see :ref:`next section <test-apps>`) will typically execute multiple unit tests for each executable, or in other words each item in the ctest suite.  So, in this sense, the suite of unit tests is nested within each of the individual tests defined by **ctest**.  And, it is this nested suite of unit tests. (see :ref:`below <init-test>`).
 
@@ -348,7 +348,7 @@ When the test is executed, the :code:`compare.sh` script in the :code:`test` dir
 
 .. warning::
 
-   The **compare.sh** script may have problems if you run with multiple processors.
+   The **compare.py** script may have problems if you run with multiple processors.
 
 .. _test-framework:
 
