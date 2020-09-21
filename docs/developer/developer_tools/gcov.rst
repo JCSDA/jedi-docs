@@ -20,7 +20,7 @@ Next, compiling the program and running tests will generate ``*.gcno`` and ``*.g
 
 .. code:: bash
 
-  lcov --direcetory . --capture --output-file coverage.info
+  lcov --directory . --capture --output-file coverage.info
   genhtml coverage.info --output-directory out
 
 
