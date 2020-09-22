@@ -23,6 +23,7 @@ Next, compiling the program and running tests will generate ``*.gcno`` and ``*.g
   lcov --directory . --capture --output-file coverage.info
   genhtml coverage.info --output-directory out
 
+lcov can be installed from the source code or with package managers such as brew, apt, and yum. 
 
 gcov for Fortran files
 ----------------------
