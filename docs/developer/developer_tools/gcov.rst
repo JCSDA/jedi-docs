@@ -8,11 +8,11 @@ work only with the GNU compilers. Use with other compilers is not guaranteed.
 
 Generating code coverage files
 ------------------------------
-To generate coverage analysis, at the build stage, you need to pass ``DENABLE_GPROF=ON`` option to cmak and turn off the optimizations. For example, if you are using the `JSCDA GNU container <https://hub.docker.com/r/jcsda/docker-gnu-openmpi-dev>`_ you can build your bundle using the command below:
+To generate coverage analysis, at the build stage, you need to pass ``DENABLE_GPROF=ON`` option to cmake (ecbuild) and turn off the optimizations. For example, if you are using the `JSCDA GNU container <https://hub.docker.com/r/jcsda/docker-gnu-openmpi-dev>`_ you can build your bundle using the command below:
 
 .. code:: bash
 
-  cmake -DCMAKE_MODULE_PATH=/usr/local/share/ecbuild/cmake/ -DCMAKE_BUILD_TYPE=Debug -DENABLE_GPROF=ON ../src-bundle
+  ecbuild -DCMAKE_BUILD_TYPE=Debug -DENABLE_GPROF=ON ../src-bundle
 
 Next, compiling the program and running tests will generate ``*.gcno`` and ``*.gcda`` files for each object file. These are intermediate files and include coverage and profile data and by default are stored in the same directory as the corresponding object file. The next step is to run **gcov** to generate coverage report. For ``*.gcno`` or ``*.gcda`` files you can simple run ``gcov *.gcda`` or ``gcov *.gcno`` to generate ``*.gcov`` files.
 
