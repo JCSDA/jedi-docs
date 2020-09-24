@@ -127,15 +127,14 @@ Orion
 
 Orion is an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
 
-A few steps are necessary to access the installed jedi modules.  The first is to include these commands in your :code:`.bashrc` file (or implement their c-shell equivalents):
+A few steps are necessary to access the installed jedi modules.  The following bash shell commands are necessary to access the installed jedi modules (substitute equivalent csh shell commands as appropriate):
 
 .. code :: bash
 
    export JEDI_OPT=/work/noaa/da/grubin/opt/modules
    module use $JEDI_OPT/modulefiles/core
-   
 
-Currently there are two sets of compiler / MPI module suites available (choose only one): 
+Currently there are two sets of compiler / MPI module suites available to load (choose only one): 
 
 Intel compiler suite v20.0.166 and associated Intel MPI:
 
