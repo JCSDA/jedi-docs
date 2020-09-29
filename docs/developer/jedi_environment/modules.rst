@@ -121,6 +121,14 @@ Also, it is recommended that you specify :code:`srun` as your mpi process manage
    ecbuild -DMPIEXEC_EXECUTABLE=`which srun` -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
 
+To run tests with slurm and :code:`srun`, you also need to have the following environment variables defined:
+
+.. code:: bash
+
+   export SLURM_ACCOUNT=<account you can run slurm jobs under>
+   export SALLOC_ACCOUNT=$SLURM_ACCOUNT
+   export SBATCH_ACCOUNT=$SLURM_ACCOUNT
+
 
 Orion
 -----
@@ -134,15 +142,15 @@ A few steps are necessary to access the installed jedi modules.  The following b
    export JEDI_OPT=/work/noaa/da/grubin/opt/modules
    module use $JEDI_OPT/modulefiles/core
 
-Currently there are two sets of compiler / MPI module suites available to load (choose only one): 
+Currently there are two sets of compiler / MPI module suites available to load (choose only one):
 
 Intel compiler suite v20.0.166 and associated Intel MPI:
 
 .. code :: bash
 
    module load jedi/intel-impi # Intel compiler suite v20.0.166 with Intel MPI
- 
- 
+
+
 and GNU compilers v8.3.0 and OpenMPI v4.0.2
 
 .. code :: bash
@@ -166,7 +174,7 @@ Then pass the following toolchain to :code:`ecbuild`, and use multiple threads t
     mkdir -p jedi/build; cd jedi/build
     ecbuild --toolchain=<path-to-jedi-cmake>/jedi-cmake/cmake/Toolchains/jcsda-Orion-Intel.cmake <path-to-bundle>
     make -j4
-   
+
 
 Alternatively, you can specify the MPI executable directly on the command line:
 
