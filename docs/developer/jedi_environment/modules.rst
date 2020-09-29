@@ -121,6 +121,15 @@ Also, it is recommended that you specify :code:`srun` as your mpi process manage
    ecbuild -DMPIEXEC_EXECUTABLE=`which srun` -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
 
+To run tests with slurm and :code:`srun`, you also need to have the following environment variables defined:
+
+.. code:: bash
+
+   export SLURM_ACCOUNT=<account you can run slurm jobs under>
+   export SALLOC_ACCOUNT=$SLURM_ACCOUNT
+   export SBATCH_ACCOUNT=$SLURM_ACCOUNT
+
+
 Orion
 -----
 
