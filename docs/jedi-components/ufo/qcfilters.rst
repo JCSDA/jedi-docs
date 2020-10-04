@@ -608,7 +608,7 @@ The following yaml parameters can be used to configure the filter itself:
 
 - :code:`Checks`: List of checks to perform. The checks will be performed in the specified order.  Examples: ["Basic"], ["Basic", "Hydrostatic", "UInterp"].
 
-- :code:`nErrorsFail`: Total number of errors at which an entire profile is rejected (default 8).
+- :code:`nErrorsFail`: Total number of errors at which an entire profile is rejected (default 1).
 
 - :code:`flagBasicChecksFail`: Reject a profile if it fails the basic checks (default true). This should only be set to false for testing purposes.
 
@@ -678,7 +678,7 @@ The level with the larger absolute difference between the observed and model bac
 
 **Summary of yaml parameters**
 
-- :code:`SPDTCheck_TThresh`: Absolute temperature difference threshold (default 1.0 K).
+- :code:`SPDTCheck_TThresh`: Absolute temperature difference threshold (default 0.0 K).
 
 :ref:`Back to overview of profile consistency checks <profconcheck_overview>`
 
@@ -699,11 +699,11 @@ The sign check for a particular level is failed in the following case:
 
 **Summary of yaml parameters**
 
-- :code:`SCheck_tObstBkgThresh`: Threshold for absolute temperature difference between observation and background (default 20.0 K).
+- :code:`SCheck_tObstBkgThresh`: Threshold for absolute temperature difference between observation and background (default 5.0 K).
 
-- :code:`SCheck_ProfileSignTol`: Threshold for absolute temperature difference between observation and background after the observation sign has been changed (default 5.0 degrees C).
+- :code:`SCheck_ProfileSignTol`: Threshold for absolute temperature difference between observation and background after the observation sign has been changed (default 100.0 degrees C).
 
-- :code:`SCheck_PstarThresh`: Threshold for difference between observed pressure and model surface pressure (default 5000.0 Pa).
+- :code:`SCheck_PstarThresh`: Threshold for difference between observed pressure and model surface pressure (default 1000.0 Pa).
 
 - :code:`SCheck_PrintLargeTThresh`: Pressure threshold above which large temperature differences are printed (default 1000.0 Pa).
 
@@ -725,9 +725,9 @@ This check is only applied to levels whose pressure is larger than a minimum thr
 
 **Summary of yaml parameters**
 
-- :code:`ULCheck_SuperadiabatTol`: Temperature difference threshold between observed temperature and temperature computed assuming dry adiabatic lapse rate (default -2.0 K). 
+- :code:`ULCheck_SuperadiabatTol`: Temperature difference threshold between observed temperature and temperature computed assuming dry adiabatic lapse rate (default -1.0 K).
 
-- :code:`ULCheck_PBThresh`: Threshold on difference between level pressure and 'bottom' pressure (which can change during the routine) (default 5000.0 Pa).
+- :code:`ULCheck_PBThresh`: Threshold on difference between level pressure and 'bottom' pressure (which can change during the routine) (default 10000.0 Pa).
 
 - :code:`ULCheck_MinP`: Minimum pressure at which the checks are performed (default 0.0 Pa).
 
@@ -752,13 +752,13 @@ according to the list in :code:`ICheck_BigGaps`; the smallest big gap is defined
 
 **Summary of yaml parameters**
 
-- :code:`ICheck_TInterpTol`: Threshold for temperature difference between observed and interpolated value (default 2.0 K).
+- :code:`ICheck_TInterpTol`: Threshold for temperature difference between observed and interpolated value (default 1.0 K).
 
-- :code:`ICheck_TolRelaxPThresh`: Pressure below which temperature difference threshold is relaxed (default 30000.0 Pa).
+- :code:`ICheck_TolRelaxPThresh`: Pressure below which temperature difference threshold is relaxed (default 50000.0 Pa).
 
-- :code:`ICheck_TolRelax`: Multiplicative factor for temperature difference threshold, used if pressure is lower than :code:`ICheck_TolRelaxPThresh` (default 1.5).
+- :code:`ICheck_TolRelax`: Multiplicative factor for temperature difference threshold, used if pressure is lower than :code:`ICheck_TolRelaxPThresh` (default 1.0).
 
-- :code:`ICheck_BigGaps`: 'Big gaps' for use in this check (default [150, 150, 150, 150, 100, 100, 100, 75, 75, 50, 50, 20, 20, 20, 10, 10, 10, 10, 10, 10] hPa).
+- :code:`ICheck_BigGaps`: 'Big gaps' for use in this check (default [500, 500, 500, 500, 100, 100, 100, 100, 50, 50, 50, 50, 10, 10, 10, 10, 10, 10, 10, 10] hPa).
 
 - :code:`ICheck_BigGapInit`: Smallest value of 'big gap' (default 1000.0 Pa).
 
@@ -783,39 +783,39 @@ A decision-making algorithm is used to classify the levels as having height or t
 
 - There are a large number of thresholds used in the decision-making algorithm. Their default values are listed here:
 
-  - :code:`HCheck_SurfacePThresh`: 15100.0 Pa
+  - :code:`HCheck_SurfacePThresh`: 10000.0 Pa
 
-  - :code:`HCheck_ETolMult`: 0.375
+  - :code:`HCheck_ETolMult`: 0.5
 
-  - :code:`HCheck_ETolMax`: 50.0 m
+  - :code:`HCheck_ETolMax`: 1.0 m
 
-  - :code:`HCheck_ETolMaxPThresh`: 40100.0 Pa
+  - :code:`HCheck_ETolMaxPThresh`: 50000.0 Pa
 
-  - :code:`HCheck_ETolMaxLarger`: 80.0 m
+  - :code:`HCheck_ETolMaxLarger`: 1.0 m
 
-  - :code:`HCheck_ETolMin`: 30.0 m
+  - :code:`HCheck_ETolMin`: 1.0 m
 
-  - :code:`HCheck_EThresh`: 15.0 m
+  - :code:`HCheck_EThresh`: 100.0 m
 
-  - :code:`HCheck_EThreshB`: 15.0 m
+  - :code:`HCheck_EThreshB`: 100.0 m
 
-  - :code:`HCheck_ESumThresh`: 30.0 m
+  - :code:`HCheck_ESumThresh`: 50.0 m
 
-  - :code:`HCheck_MinAbsEThresh`: 20.0 m
+  - :code:`HCheck_MinAbsEThresh`: 10.0 m
 
-  - :code:`HCheck_ESumThreshLarger`: 60.0 m
+  - :code:`HCheck_ESumThreshLarger`: 100.0 m
 
-  - :code:`HCheck_MinAbsEThreshLarger`: 200.0 m
+  - :code:`HCheck_MinAbsEThreshLarger`: 100.0 m
 
-  - :code:`HCheck_CorrThresh`: 10.0 m
+  - :code:`HCheck_CorrThresh`: 5.0 m
 
-  - :code:`HCheck_ESumNextThresh`: 30.0 m
+  - :code:`HCheck_ESumNextThresh`: 50.0 m
 
-  - :code:`HCheck_MinAbsEThreshT`: 15.0 m
+  - :code:`HCheck_MinAbsEThreshT`: 10.0 m
 
-  - :code:`HCheck_CorrDiffThresh`: 5.0
+  - :code:`HCheck_CorrDiffThresh`: 10.0
 
-  - :code:`HCheck_CorrMinThresh`: 4.0
+  - :code:`HCheck_CorrMinThresh`: 1.0
 
 :ref:`Back to overview of profile consistency checks <profconcheck_overview>`
 
@@ -843,15 +843,15 @@ down to a minimum value given by the value of :code:`UICheck_BigGapLowP`.
 
 **Summary of yaml parameters**
 
-- :code:`UICheck_TInterpIdenticalPTolSq`: threshold for squared difference between observed wind speeds for levels with identical pressures (default 4.0 m\ :sup:`2` s\ :sup:`-2`).
+- :code:`UICheck_TInterpIdenticalPTolSq`: threshold for squared difference between observed wind speeds for levels with identical pressures (default 0.0 m\ :sup:`2` s\ :sup:`-2`).
 
-- :code:`UICheck_TInterpTolSq`: threshold for squared difference between observed and interpolated wind speeds (default 64.0 m\ :sup:`2` s\ :sup:`-2`).
+- :code:`UICheck_TInterpTolSq`: threshold for squared difference between observed and interpolated wind speeds (default 064.0 m\ :sup:`2` s\ :sup:`-2`).
 
-- :code:`UICheck_BigGapsPThresh`: Maximum pressure thresholds corresponding to the big gaps as defined in :code:`UICheck_BigGaps` (default [65000.0, 27500.0, 17500.0, 8500.0, 2500.0] Pa).
+- :code:`UICheck_BigGapsPThresh`: Maximum pressure thresholds corresponding to the big gaps as defined in :code:`UICheck_BigGaps` (default [50000.0, 10000.0, 5000.0, 1000.0] Pa).
 
-- :code:`UICheck_BigGaps`: Big gaps corresponding to the pressure thresholds defined in :code:`UICheck_BigGapsPThresh` (default [15000.0, 10000.0, 7500.0, 5000.0, 2000.0] Pa).
+- :code:`UICheck_BigGaps`: Big gaps corresponding to the pressure thresholds defined in :code:`UICheck_BigGapsPThresh` (default [100000.0, 50000.0, 10000.0, 5000.0] Pa).
 
-- :code:`UICheck_BigGapLowP`: Minimum 'big gap' in pressure (default 1000.0 Pa).
+- :code:`UICheck_BigGapLowP`: Minimum 'big gap' in pressure (default 500.0 Pa).
 
 :ref:`Back to overview of profile consistency checks <profconcheck_overview>`
 
@@ -896,29 +896,29 @@ The following conditions must be met in order for a level to fail the high-altit
 
 The following parameters are used in the cloud top check:
 
-- :code:`RHCheck_PressThresh`: Pressure threshold for check at top of cloud layers (default 400.0 Pa).
+- :code:`RHCheck_PressThresh`: Pressure threshold for check at top of cloud layers (default 500.0 Pa).
 
-- :code:`RHCheck_PressDiff0Thresh`: Threshold for difference between pressure at the present level and pressure at the lowest level (default 100.0 Pa).
+- :code:`RHCheck_PressDiff0Thresh`: Threshold for difference between pressure at the present level and pressure at the lowest level (default 50.0 Pa).
 
-- :code:`RHCheck_tdDiffThresh`: Threshold for difference in dew point temperature between the present level and the level below (default 2.0 K).
+- :code:`RHCheck_tdDiffThresh`: Threshold for difference in dew point temperature between the present level and the level below (default 5.0 K).
 
-- :code:`RHCheck_RHThresh`: Threshold for relative humidity check to be applied (default 90.0%).
+- :code:`RHCheck_RHThresh`: Threshold for relative humidity check to be applied (default 75.0%).
 
-- :code:`RHCheck_MinRHThresh`: Threshold for minimum relative humidity at top of cloud layers (default 85.0%).
+- :code:`RHCheck_MinRHThresh`: Threshold for minimum relative humidity at top of cloud layers (default 75.0%).
 
-- :code:`RHCheck_PressDiffAdjThresh`: Pressure threshold for determining cloud layer minimum RH (default 20.0 Pa).
+- :code:`RHCheck_PressDiffAdjThresh`: Pressure threshold for determining cloud layer minimum RH (default 50.0 Pa).
 
 The following parameters are used in the high-altitude check:
 
-- :code:`RHCheck_TminThresh`: Threshold value of minimum observed temperature in the profile (default 223.15 K).
+- :code:`RHCheck_TminThresh`: Threshold value of minimum observed temperature in the profile (default 200.0 K).
 
 - :code:`RHCheck_TminInit`: Initial value used in the algorithm that determines the minimum observed temperature (default 400.0 K).
 
-- :code:`RHCheck_SondeRHHiTol`: Threshold for relative humidity O-B difference in sonde ascent check (default 20.0%).
+- :code:`RHCheck_SondeRHHiTol`: Threshold for relative humidity O-B difference in sonde ascent check (default 0.0%).
 
-- :code:`RHCheck_PressInitThresh`: Pressure below which O-B mean is calculated (default 100.0 Pa).
+- :code:`RHCheck_PressInitThresh`: Pressure below which O-B mean is calculated (default 500.0 Pa).
 
-- :code:`RHCheck_TempThresh`: Minimum temperature threshold for accumulating an error counter (default 233.15 K).
+- :code:`RHCheck_TempThresh`: Minimum temperature threshold for accumulating an error counter (default 250.0 K).
 
 :ref:`Back to overview of profile consistency checks <profconcheck_overview>`
 
