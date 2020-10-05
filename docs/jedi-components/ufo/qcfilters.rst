@@ -845,7 +845,7 @@ down to a minimum value given by the value of :code:`UICheck_BigGapLowP`.
 
 - :code:`UICheck_TInterpIdenticalPTolSq`: threshold for squared difference between observed wind speeds for levels with identical pressures (default 0.0 m\ :sup:`2` s\ :sup:`-2`).
 
-- :code:`UICheck_TInterpTolSq`: threshold for squared difference between observed and interpolated wind speeds (default 064.0 m\ :sup:`2` s\ :sup:`-2`).
+- :code:`UICheck_TInterpTolSq`: threshold for squared difference between observed and interpolated wind speeds (default 0.0 m\ :sup:`2` s\ :sup:`-2`).
 
 - :code:`UICheck_BigGapsPThresh`: Maximum pressure thresholds corresponding to the big gaps as defined in :code:`UICheck_BigGaps` (default [50000.0, 10000.0, 5000.0, 1000.0] Pa).
 
