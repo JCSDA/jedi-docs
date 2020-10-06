@@ -248,41 +248,42 @@ Examples of yaml:
 
 .. code:: yaml
 
+ observations:
  - obs space:
-     name: GnssroBnd
-     obsdatain:
-       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
-       obsgrouping:
-         group variable: "record_number"
-         sort variable: "impact_height"
-         sort order: "ascending"
-     obsdataout:
-       obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
-     simulate variables: [bending_angle]
-   obs operator:
-     name: GnssroBndNBAM
-     obs options:
-       use_compress: 1
-       vertlayer: full
-       super_ref_qc: NBAM
-       sr_steps: 2
-   obs filters: 
-   - filter: Domain Check
-     filter variables:
-     - name: [bending_angle]
-     where:
-     - variable:
-         name: impact_height@MetaData
-       minvalue: 0
-       maxvalue: 50000
-   - filter: ROobserror
-     filter variables:
-     - name: bending_angle
-     errmodel: NRL
-   - filter: Background Check
-     filter variables:
-     - name: [bending_angle]
-     threshold: 3
+      name: GnssroBnd
+      obsdatain:
+        obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
+        obsgrouping:
+          group variable: "record_number"
+          sort variable: "impact_height"
+          sort order: "ascending"
+      obsdataout:
+        obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
+      simulate variables: [bending_angle]
+    obs operator:
+      name: GnssroBndNBAM
+      obs options:
+        use_compress: 1
+        vertlayer: full
+        super_ref_qc: NBAM
+        sr_steps: 2
+    obs filters: 
+    - filter: Domain Check
+      filter variables:
+      - name: [bending_angle]
+      where:
+      - variable:
+          name: impact_height@MetaData
+        minvalue: 0
+        maxvalue: 50000
+    - filter: ROobserror
+      filter variables:
+      - name: bending_angle
+      errmodel: NRL
+    - filter: Background Check
+      filter variables:
+      - name: [bending_angle]
+      threshold: 3
 
 
 (GnssroBndROPP1D)
@@ -320,6 +321,8 @@ Examples of yaml:
 :code:`ufo/test/testinput/gnssrobndropp1d.yaml`
 
 .. code:: yaml
+
+ observations:
  - obs space:
      name: GnssroBndROPP1D
      obsdatain:
@@ -396,6 +399,7 @@ Examples of yaml:
 
 .. code:: yaml
 
+ observations:
  - obs space:
      name: GnssroBndROPP2D
      obsdatain:
@@ -537,6 +541,7 @@ Examples of yaml:
 
 .. code:: yaml
 
+ observations:
  - obs space:
      name: GnssroRef
      obsdatain:
