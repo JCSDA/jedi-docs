@@ -248,42 +248,41 @@ Examples of yaml:
 
 .. code:: yaml
 
- ObsOperator:
+ - obs space:
+     name: GnssroBnd
+     obsdatain:
+       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
+       obsgrouping:
+         group variable: "record_number"
+         sort variable: "impact_height"
+         sort order: "ascending"
+     obsdataout:
+       obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
+     simulate variables: [bending_angle]
+   obs operator:
      name: GnssroBndNBAM
-     ObsOptions:
+     obs options:
        use_compress: 1
-       vertlayer: mass
+       vertlayer: full
        super_ref_qc: NBAM
        sr_steps: 2
-   ObsSpace:
-     name: GnssroBnd
-     ObsDataIn:
-       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_l.nc4
-       obsgrouping:
-         group_variable: "record_number"
-         sort_variable: "impact_height"
-         sort_order: "ascending"
-     ObsDataOut:
-       obsfile: Data/gnssro_bndnbam_2018041500_l_output.nc4
-     simulate:
-       variables: [bending_angle]
-    ObsFilters:
-    - Filter: Domain Check
-      filter variables:
-      - name: [bending_angle]
-      where:
-      - variable:
-          name: impact_height@MetaData
-        minvalue: 0
-        maxvalue: 50000
-    - Filter: ROobserror
-      filter variables:
-      - name: bending_angle
-      errmodel: NRL
-    - Filter: Background Check
-      filter variables:
-      - name: [bending_angle]
-      threshold: 3
+   obs filters: 
+   - filter: Domain Check
+     filter variables:
+     - name: [bending_angle]
+     where:
+     - variable:
+         name: impact_height@MetaData
+       minvalue: 0
+       maxvalue: 50000
+   - filter: ROobserror
+     filter variables:
+     - name: bending_angle
+     errmodel: NRL
+   - filter: Background Check
+     filter variables:
+     - name: [bending_angle]
+     threshold: 3
 
 
 (GnssroBndROPP1D)
@@ -321,38 +320,36 @@ Examples of yaml:
 :code:`ufo/test/testinput/gnssrobndropp1d.yaml`
 
 .. code:: yaml
-
-  - ObsSpace:
-      name: GnssroBndROPP1D
-      ObsDataIn:
+ - obs space:
+     name: GnssroBndROPP1D
+     obsdatain:
        obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
        obsgrouping:
-         group_variable: "record_number"
-         sort_variable: "impact_height"
-      ObsDataOut:
+         group variable: "record_number"
+         sort variable: "impact_height"
+     obsdataout:
        obsfile: Data/gnssro_bndropp1d_2018041500_m_output.nc4
-      simulate:
-        variables: [bending_angle]
-    ObsOperator:
+     simulate variables: [bending_angle]
+   obs operator:
       name:  GnssroBndROPP1D
-      ObsOptions:
-    ObsFilters:
-    - Filter: Domain Check
-      filter variables:
-      - name: [bending_angle]
-      where:
-      - variable:
-          name: impact_height@MetaData
-        minvalue: 0
-        maxvalue: 50000
-    - Filter: ROobserror
-      filter variables:
-      - name: bending_angle
-      errmodel: NRL
-    - Filter: Background Check
-      filter variables:
-      - name: [bending_angle]
-      threshold: 3
+      obs options:
+   obs filters:
+   - filter: Domain Check
+     filter variables:
+     - name: [bending_angle]
+     where:
+     - variable:
+         name: impact_height@MetaData
+       minvalue: 0
+       maxvalue: 50000
+   - filter: ROobserror
+     filter variables:
+     - name: bending_angle
+     errmodel: NRL
+   - filter: Background Check
+     filter variables:
+     - name: [bending_angle]
+     threshold: 3
 
 (GnssroBndROPP2D)
 -----------------------------------
@@ -399,40 +396,39 @@ Examples of yaml:
 
 .. code:: yaml
 
-  - ObsSpace:
-      name: GnssroBndROPP2D
-      ObsDataIn:
+ - obs space:
+     name: GnssroBndROPP2D
+     obsdatain:
        obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
        obsgrouping:
          group_variable: "record_number"
          sort_variable: "impact_height"
-      ObsDataOut:
+     obsdataout:
        obsfile: Data/gnssro_bndropp2d_2018041500_m_output.nc4
-      simulate:
-        variables: [bending_angle]
-    ObsOperator:
-      name:  GnssroBndROPP2D
-      ObsOptions:
+     simulate variables: [bending_angle]
+   obs operator:
+      name: GnssroBndROPP2D
+      obs options:
         n_horiz: 31
         res: 40.0
-        top_2d: 12.0
-    ObsFilters:
-    - Filter: Domain Check
-      filter variables:
-      - name: [bending_angle]
-      where:
-      - variable:
-          name: impact_height@MetaData
-        minvalue: 0
-        maxvalue: 50000
-    - Filter: ROobserror
-      filter variables:
-      - name: bending_angle
-      errmodel: NRL
-    - Filter: Background Check
-      filter variables:
-      - name: [bending_angle]
-      threshold: 3
+        top_2d: 1O.0
+   obs filters:
+   - filter: Domain Check
+     filter variables:
+     - name: [bending_angle]
+     where:
+     - variable:
+         name: impact_height@MetaData
+       minvalue: 0
+       maxvalue: 50000
+   - filter: ROobserror
+     filter variables:
+     - name: bending_angle
+     errmodel: NRL
+   - filter: Background Check
+     filter variables:
+     - name: [bending_angle]
+     threshold: 3
 
 (GnssroBendMetOffice)
 -----------------------------------
@@ -541,32 +537,31 @@ Examples of yaml:
 
 .. code:: yaml
 
- - ObsOperator:
-    name: GnssroRef
-    ObsOptions:
-   ObsSpace:
-    name: GnssroRef
-    ObsDataIn:
-     obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
-    simulate:
-     variables: [refractivity]
-    ObsFilters:
-    - Filter: Domain Check
-      filter variables:
-      - name: [refractivity]
-      where:
-      - variable:
-          name: altitude@MetaData
-        minvalue: 0
-        maxvalue: 30000
-    - Filter: ROobserror
-      filter variables:
-      - name: refractivity
-      errmodel: NBAM
-    - Filter: Background Check
-      filter variables:
-      - name: [refractivity]
-      threshold: 3
+ - obs space:
+     name: GnssroRef
+     obsdatain:
+       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
+     simulate variables: [refractivity]
+   obs operator:
+     name: GnssroRef
+     obs options:
+   obs filters:
+   - filter: Domain Check
+     filter variables:
+     - name: [refractivity]
+     where:
+     - variable:
+         name: altitude@MetaData
+       minvalue: 0
+       maxvalue: 30000
+   - filter: ROobserror
+     filter variables:
+     - name: refractivity
+     errmodel: NBAM
+   - filter: Background Check
+     filter variables:
+     - name: [refractivity]
+     threshold: 3
 
 (Identity)
 -----------------------------------
