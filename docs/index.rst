@@ -8,13 +8,13 @@ JEDI Documentation
 
 Welcome to the Joint Effort for Data assimilation Integration (JEDI)!
 
-JEDI is an innovative data assimilation system for Earth System Prediction.
+JEDI is a sophisticated and versatile **data assimilation (DA)** system for Earth System Prediction.  The JEDI software package can be run on a variety of platforms from laptops to supercomputers, for a variety of purposes, from teaching and learning DA fundamentals to the development and validation of new DA algorithms and observational operators, to leading-edge atmospheric and oceanic research, to operational weather forecasting.  It is designed to readily accommodate new atmospheric and oceanic models and new observation systems.
 
-It is a project for the `Joint Center for Data Assimilation <https://jcsda.org>`_.
+JEDI is developed and distributed by the `Joint Center for Data Assimilation <https://jcsda.org>`_, a `multi-agency <https://jcsda.org/partners>`_ research center hosted by `the University Corporation for Atmospheric Research (UCAR) <https://www.ucar.edu>`_ and `UCAR Community Programs (UCP) <https://www.ucar.edu/community-programs>`_.  JCSDA is dedicated to improving and accelerating the quantitative use of research and operational satellite data in weather, ocean, climate and environmental analysis and prediction systems.
 
+JEDI is a community effort and external contributions are welcome.  This document serves as both a user manual and a developers' guide.
 
-
-.. This documentation will help you get started with JEDI whether you are a user or a developer.
+If you have questions about the JEDI project, JEDI usaage, JEDI components, or this document, please `visit our forums <https://forums.jcsda.org>`_.
 
 Table of Contents
 -----------------
