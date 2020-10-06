@@ -64,9 +64,9 @@ The CRTM operator has some required geovals (see varin_default in ufo/crtm/ufo_r
 * :code:`Clouds` [optional] : CRTM cloud constituents that will be requested as geovals; can include any of Water, Ice, Rain, Snow, Graupel, Hail
 * :code:`Cloud_Fraction` [optional] : sets the CRTM Cloud_Fraction to a constant value across all profiles (e.g., 1.0). Omit this option in order to request cloud_area_fraction_in_atmosphere_layer as a geoval from the model.
 
-* :code:`LinearObsOperator` [optional] : used to indicate a different configuration for K-Matrix multiplication of tangent linear and adjoint operators from the configuration used for the Forward operator.  The same profile is used in the CRTM Forward and K_Matrix calculations. Only the interface to the model will be altered. Omit LinearObsOperator in order to use the same settings across Forward, Tangent Linear, and Adjoint operators.
-* :code:`LinearObsOperator.Absorbers` [optional] : controls which of the selected Absorbers will be acted upon in K-Matrix multiplication
-* :code:`LinearObsOperator.Clouds` [optional] : controls which of the selected Clouds will be acted upon in K-Matrix multiplication
+* :code:`linear obs operator` [optional] : used to indicate a different configuration for K-Matrix multiplication of tangent linear and adjoint operators from the configuration used for the Forward operator.  The same profile is used in the CRTM Forward and K_Matrix calculations. Only the interface to the model will be altered. Omit :code:`linear obs operator` in order to use the same settings across Forward, Tangent Linear, and Adjoint operators.
+* :code:`linear obs operator.Absorbers` [optional] : controls which of the selected Absorbers will be acted upon in K-Matrix multiplication
+* :code:`linear obs operator.Clouds` [optional] : controls which of the selected Clouds will be acted upon in K-Matrix multiplication
 
 :code:`obs options` configures the tabulated coeffecient files that are used by CRTM
 
@@ -90,7 +90,7 @@ Examples of yaml:
     name: CRTM
     Absorbers: [H2O, O3]
     Clouds: [Water, Ice, Rain, Snow, Graupel, Hail]
-    LinearObsOperator:
+    linear obs operator:
       Absorbers: [H2O]
       Clouds: [Water, Ice]
     obs options:
@@ -116,7 +116,7 @@ Examples of yaml:
   obs operator:
     name: CRTM
     Absorbers: [H2O, O3]
-    LinearObsOperator:
+    linear obs operator:
       Absorbers: [H2O]
     obs options:
       Sensor_ID: abi_g16
