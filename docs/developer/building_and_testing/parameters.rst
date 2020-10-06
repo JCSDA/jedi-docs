@@ -3,6 +3,8 @@
 Parameter Classes
 =================
 
+.. _parameters-introduction:
+
 Introduction
 ------------
 
@@ -19,7 +21,8 @@ and the implementation of the OOPS :code:`Geometry` interface for that model cou
 
 .. code:: c++
 
-    MyGeometry::initialize(const eckit::Configuration &config) {
+    MyGeometry::MyGeometry(const eckit::Configuration &config, 
+                           const eckit::mpi::Comm & comm) {
       int numLats = config.getInt("num lats");
       int numLons = config.getInt("num lons");
       std::vector<float> levels = config.getFloatVector("level altitudes in km");
@@ -74,9 +77,11 @@ The :code:`validateAndDeserialize()` method loads parameter values from a :code:
 
 .. code:: c++
 
-  MyGeometry::initialize(const eckit::Configuration &config) {
+  MyGeometry::MyGeometry(const eckit::Configuration &config, 
+                         const eckit::mpi::Comm & comm) {
     MyGeometryParameters params;
     params.validateAndDeserialize(config);
+    // ...
   }
 
 Since all parameters have been declared as *required*, this method will thrown an exception if any of them cannot be found in the :code:`Configuration` object. It is also possible to treat parameters as optional; this is discussed :ref:`below <optional-parameters>`.
@@ -274,27 +279,30 @@ At this stage, :code:`Parameters` subclasses representing the top-level options 
 OOPS Interfaces Supporting :code:`Parameters`
 ---------------------------------------------
 
-Implementations of some OOPS interfaces, such as :code:`Model`, :code:`LinearModel`, and :code:`Geometry`, can opt to provide a constructor taking a const reference to a subclass of :code:`Parameters` representing the collection of options recognized by the implementation, instead of a constructor taking a const reference to an :code:`eckit::Configuration` object. Such implementations need to typedef :code:`Parameters_` to the name of the appropriate :code:`Parameters` subclass. For example,
+Implementations of some OOPS interfaces, such as :code:`Model`, :code:`LinearModel`, and :code:`Geometry`, can opt to provide a constructor taking a const reference to a subclass of :code:`Parameters` representing the collection of options recognized by the implementation, instead of a constructor taking a const reference to an :code:`eckit::Configuration` object. Such implementations need to typedef :code:`Parameters_` to the name of the appropriate :code:`Parameters` subclass. For example, in the example discussed in the :ref:`Introduction <parameters-introduction>`, the :code:`MyGeometry` class declaration would have looked like this:
 
 .. code:: c++
 
-  // Note: classes representing model parameter must inherit from ModelParametersBase 
-  // rather than directly from Parameters.
-  class MyModelParameters : public oops::ModelParametersBase {
-    OOPS_CONCRETE_PARAMETERS(MyModelParameters, ModelParametersBase)
-  
+  class MyGeometry {
    public:
-    oops::RequiredParameter<util::Duration> timeStep{"time step", this};
-  };
-  
-  class MyModel : public oops::ModelBase<MyModelTraits> {
-   public:
-    typedef MyModelParameters Parameters_;
-    MyModel(const MyModelGeometry &, const MyModelParameters &);
+    MyGeometry(const eckit::Configuration & config, const eckit::Comm & comm);
     // ...
   };
 
-OOPS interfaces that support such implementations are identified in their documentation. It is envisaged that in future this will be supported by all OOPS interfaces.
+But we could also declare it like this:
+
+.. code:: c++
+ 
+  class MyGeometry {
+   public:
+    typedef MyGeometryParameters Parameters_;
+    MyGeometry(const MyGeometryParameters & params, const eckit::Comm & comm);
+    // ...
+  };
+
+The constructor would then receive a :code:`MyGeometryParameters` object already populated with values loaded from the configuration file, without a need to call :code:`validateAndDeserialize()` separately.
+
+OOPS interfaces that support implementations with such constructors are identified in their documentation. It is envisaged that in future such constructors will be supported by all OOPS interfaces.
 
 Headers to Include; Adding Support for New Parameter Types
 ----------------------------------------------------------
