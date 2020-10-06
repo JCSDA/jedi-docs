@@ -25,6 +25,7 @@ Table of Contents
    jedi-components/index.rst
    tutorials/index.rst
    cloud/index.rst
+   FAQ/index.rst
 
 
 Background

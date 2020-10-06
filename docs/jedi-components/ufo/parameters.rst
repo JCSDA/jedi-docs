@@ -33,6 +33,7 @@ To use the parameter classes in a new filter:
       
       /// \brief My filter's parameters.
       class MyFilterParameters : public oops::Parameters {
+        OOPS_CONCRETE_PARAMETERS(MyFilterParameters, Parameters)
       public:
         /// \brief Radius (in km).
         oops::Parameter<float> radiusInKm{"radius_in_km", 10.0f, this};
@@ -51,6 +52,10 @@ To use the parameter classes in a new filter:
    * the second argument is the default value of the parameter (to be used if the key specified in the first argument is not found in the YAML file)
 
    * the third argument should be set to the address of the :code:`Parameters` object holding all the individual parameters.
+
+   * the class definition begins with an invocation of the :code:`OOPS_CONCRETE_PARAMETERS` macro, which defines the move and copy constructors and assignment operators and the clone() method in an appropriate way. The first argument to the macro is the name of the surrounding class and the second is the name of the immediate base class. This macro needs to be invoked in each concrete subclass of :code:`Parameters` (the compiler will warn you if you've forgotten to do it).
+
+     Abstract subclasses of :code:`Parameters` (those that don't need to be instantiated directly, but only serve as base classes for other classes) should invoke the :code:`OOPS_ABSTRACT_PARAMETERS` macro instead of :code:`OOPS_CONCRETE_PARAMETERS`.
 
 2. Add a member variable of type :code:`MyFilterParameters` to your filter class. To extract the parameter values from an :code:`eckit::Configuration` object into the :code:`radiusInKm` and :code:`numIterations` variables, call the :code:`deserialize()` method of :code:`MyFilterParameters`:
 
@@ -105,12 +110,14 @@ one could use the following code:
 .. code:: c++
 
   class RangeParameters : public oops::Parameters {
+    OOPS_CONCRETE_PARAMETERS(RangeParameters, Parameters)
    public:
     oops::Parameter<float> min{"min", std::numeric_limits<float>::lowest(), this};
     oops::Parameter<float> max{"max", std::numeric_limits<float>::max(), this};
   };
   
   class LatLonRangeParameters : public oops::Parameters {
+    OOPS_CONCRETE_PARAMETERS(LatLonRangeParameters, Parameters)
    public:
     oops::Parameter<RangeParameters> latitudes{"latitudes", {}, this};
     oops::Parameter<RangeParameters> longitudes{"longitudes", {}, this};
@@ -136,6 +143,7 @@ As an example, a thinning filter might allow the user to optionally specify a va
   #include "ufo/utils/parameters/ParameterTraitsVariable.h"
 
   class MyFilterParameters : public oops::Parameters {
+    OOPS_CONCRETE_PARAMETERS(MyFilterParameters, Parameters)
    public:
     oops::OptionalParameter<ufo::Variable> priorityVariable{"priority_variable", this};
     oops::RequiredParameter<int> maxNumRetainedObs{"max_num_retained_obs", this};

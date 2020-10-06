@@ -1029,11 +1029,11 @@ The :code:`where` statement can be included in the yaml file in conjunction with
 
 The following conditions are accepted by the :code:`where` statement:
 
-- :code:`minvalue` and/or :code:`maxvalue` : filter applied if value is within the valid range
+- :code:`minvalue` and/or :code:`maxvalue` : filter applied if value is within the valid range, supporting float and ISO 8601 format datetimes.  Note that datetimes can also have one or more components set to zero so as to signify ignoring these components.  See example below on where this can be useful.
 - :code:`is_defined`                       : filter applied if data has a valid value (not missing)
 - :code:`is_not_defined`                   : filter applied if data is missing
-- :code:`is_in`                            : filter applied if data is in the given whitelist
-- :code:`is_not_in`                        : filter applied if data is not in the given blacklist
+- :code:`is_in`                            : filter applied if data is in the given whitelist, supporting integer and string types.
+- :code:`is_not_in`                        : filter applied if data is not in the given blacklist, supporting integer and string types.
 
 .. code:: yaml
 
@@ -1051,3 +1051,17 @@ The following conditions are accepted by the :code:`where` statement:
 In the example above, four masks are created for radiosonde observation filtering. The filter will be applied in sequence at observation locations where the sea surface temperature is within the range of [200, 300] kelvin, the latitude is <= than 60 degrees, the height of the observation has a valid value (not missing), and the station id is one of the ids in the whitelist. 
 
 The :code:`where` statement and :code:`processWhere` function are used in generic filters such as BackgroundCheck, DifferenceCheck, ObsBoundsCheck, ObsDomainCheck, and BlackList.
+
+.. code:: yaml
+
+    - where: 
+      - variable:
+          name:  datetime@MetaData
+        minvalue: 0000-01-01T00:00:00Z
+        maxvalue: 0000-25-05T00:00:00Z 
+      - variable:
+          name:  datetime@MetaData
+        minvalue: 0000-00-00T09:00:00Z
+        maxvalue: 0000-00-00T18:00:00Z
+
+In the example above, a mask is created for times between 09:00 and 18:00, between 1st January and 25th May of every year.
