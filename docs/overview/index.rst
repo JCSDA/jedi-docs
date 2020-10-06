@@ -8,3 +8,4 @@ Overview
    what.rst
    requirements.rst
    methodology.rst
+   governance.rst
