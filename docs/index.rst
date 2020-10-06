@@ -6,9 +6,15 @@
 JEDI Documentation
 ==================
 
-Welcome to JEDI!
+Welcome to the Joint Effort for Data assimilation Integration (JEDI)!
 
-This documentation will help you get started with JEDI whether you are a user or a developer.
+JEDI is an innovative data assimilation system for Earth System Prediction.
+
+It is a project for the `Joint Center for Data Assimilation <https://jcsda.org>`_.
+
+
+
+.. This documentation will help you get started with JEDI whether you are a user or a developer.
 
 Table of Contents
 -----------------
@@ -16,7 +22,8 @@ Table of Contents
 .. toctree::
    :maxdepth: 2
 
-   background/index.rst
+   quick-start.rst
+   overview/index.rst
    working-practices/index.rst
    developer/practices/index.rst
    developer/developer_tools/index.rst
