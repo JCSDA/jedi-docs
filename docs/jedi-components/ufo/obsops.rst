@@ -847,3 +847,49 @@ Configuration options:
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
+
+Atmosphere Vertical Layer Interpolation (AtmVertInterpLev)
+----------------------------------------------------------
+
+Description:
+^^^^^^^^^^^^
+
+Observational operator for vertical interpolation of model levels for an observational atmospheric level where the pressure level is specified in cbars.
+
+Code:
+^^^^^
+
+:code:`ufo/atmvertinterplev/`
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+
+The coefficients field in the yaml file can be adjusted to change the units of the observation.
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+.. code:: yaml
+
+window begin: 2019-10-16T20:30:00Z
+window end: 2019-10-17T03:30:00Z
+
+observations:
+- obs operator:
+    name: AtmVertInterpLev
+    coefficients: [.6042290]
+  obs space:
+    name: OzoneLevel
+    obsdatain:
+      obsfile: Data/ioda/testinput_tier_1/ompslp_npp_obs_2019101700_m.nc4
+    obsdataout:
+      obsfile: Data/ompslp_npp_obs_2019101700_m_out.nc4
+    simulated variables: [mixing_ratio_ozone_in_air]
+  geovals:
+    filename: Data/ompslp_npp_geoval_2019101700_m.nc4
+  vector ref: GsiHofX
+  tolerance: 1.0e-04  # in % so that corresponds to 10^-3
+  linear obs operator test:
+    coef TL: 0.1
+    tolerance TL: 1.0e-9
+    tolerance AD: 1.0e-11
