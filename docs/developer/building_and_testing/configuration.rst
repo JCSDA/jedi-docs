@@ -156,6 +156,8 @@ Given the :ref:`YAML file above <yaml-file>`, the output of this would be:
 
 This example illustrates again the stylistic principle noted :ref:`above <yaml-file>`; YAML/JSON keys that represent single variables or vectors are rendered in lower case while those that represent configuration objects in their own right are rendered in `CamelCase <https://en.wikipedia.org/wiki/Camel_case>`_.
 
+Some JEDI components no longer use :code:`Configuration` objects directly, but instead access information read from configuration files through subclasses of the :code:`Parameters` class. Each such subclass defines member variables corresponding to individual YAML/JSON keys relevant to a given component of JEDI. This approach makes it easier to detect and report errors in input configuration files (for example, misspelled key names, out-of-range values), and its use is likely to become more widespread as JEDI evolves. For more information about :code:`Parameters`, see :doc:`Parameter Classes <parameters>`.
+
 .. _config-methods:
 
 Summary of C++ Configuration Methods
