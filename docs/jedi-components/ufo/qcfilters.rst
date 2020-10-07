@@ -1028,7 +1028,15 @@ This example runs the basic and SamePDiffT checks on the input data, using the s
 
 Filter Actions
 --------------
-The action taken on filtered observations is configurable in the YAML.  So far this capability is only implemented for the background check through a FilterAction object, but the functionality is generic and can be extended to all other generic filters.  The two action options available now are rejection or inflating the ObsError, which are activated as follows:
+The action taken on observations flagged by the filter can be adjusted using the :code:`action` option recognized by each filter.  So far, three actions have been implemented:
+
+* :code:`reject`: observations flagged by the filter are marked as rejected.
+* :code:`inflate error`: the error estimates of observations flagged by the filter are multiplied by a factor. This can be either a constant (specified using the :code:`inflation factor` option) or a variable (specified using the :code:`inflation variable` option).
+* :code:`assign error`: the error estimates of observations flagged by the filter are set to a specified value. Again. this can be either a constant (specified using the :code:`error parameter` option) or a variable (specified using the :code:`error function` option).
+
+The default action (taken when the :code:`action` keyword is omitted) is to reject the flagged observations.
+
+Examples:
 
 .. code:: yaml
 
@@ -1051,27 +1059,52 @@ The action taken on filtered observations is configurable in the YAML.  So far t
      action:
        name: inflate error
        inflation: 2.0
-
-The default action (when the :code:`action` section is omitted from the filter) is to reject the filtered observations.
+  - filter: BlackList
+    filter variables:
+    - name: brightness_temperature
+      channels: *all_channels
+    action:
+      name: assign error
+      error function:
+        name: ObsErrorModelRamp@ObsFunction
+        channels: *all_channels
+        options:
+          channels: *all_channels
+          xvar:
+            name: CLWRetSymmetricMW@ObsFunction
+            options:
+              clwret_ch238: 1
+              clwret_ch314: 2
+              clwret_types: [ObsValue, HofX]
+          x0:    [ 0.050,  0.030,  0.030,  0.020,  0.000,
+                   0.100,  0.000,  0.000,  0.000,  0.000,
+                   0.000,  0.000,  0.000,  0.000,  0.030]
+          x1:    [ 0.600,  0.450,  0.400,  0.450,  1.000,
+                   1.500,  0.000,  0.000,  0.000,  0.000,
+                   0.000,  0.000,  0.000,  0.000,  0.200]
+          err0:  [ 2.500,  2.200,  2.000,  0.550,  0.300,
+                   0.230,  0.230,  0.250,  0.250,  0.350,
+                   0.400,  0.550,  0.800,  3.000,  3.500]
+          err1:  [20.000, 18.000, 12.000,  3.000,  0.500,
+                   0.300,  0.230,  0.250,  0.250,  0.350,
+                   0.400,  0.550,  0.800,  3.000, 18.000]
 
 ObsFunction and ObsDiagnostic Suffixes
 --------------------------------------
 
 In addition to, e.g., @GeoVaLs, @MetaData, @ObsValue, @HofX, there are two new suffixes that can be used.
 
-- @ObsFunction requires that a particular variable is defined as an ObsFunction Class under ufo/src/ufo/obsfunctions.  One example of an ObsFunction is Velocity@ObsFunction, which uses the 2 wind components to produce windspeed and can be used as follows:
+- @ObsFunction requires that a particular variable is defined as an ObsFunction class under ufo/src/ufo/obsfunctions.  One example of an ObsFunction is Velocity@ObsFunction, which uses the 2 wind components to produce windspeed and can be used as follows:
 
-.. code:: yaml
+  .. code:: yaml
 
-    - filter: Domain Check
-      filter variables:
-      - name: eastward_wind
-      - name: northward_wind
-      where:
-      - variable: Velocity@ObsFunction
-        maxvalue: 20.0
-
-So far, @ObsFunction variables can be used in where statements in any of the generic filters.  In the future, they may be used to inflate ObsError as an "action".
+      - filter: Domain Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        where:
+        - variable: Velocity@ObsFunction
+          maxvalue: 20.0
 
 - @ObsDiagnostic will be used to store non-h(x) diagnostic values from the simulateObs function in individual ObsOperator classes.  The ObsDiagnostics interface class to OOPS is used to pass those diagnostics to the ObsFilters.  Because the diagnostics are provided by simulateObs, they can only be used in a PostFilter.  The generic filters will need to have PostFilter functions implemented (currently only Background Check) in order to use ObsDiagnostics.  The simulateObs interface to ObsDiagnostics will be first demonstrated in CRTM.
 
