@@ -3,8 +3,8 @@
 .. role:: raw-html(raw)
   :format: html
 
-Variation Bias Correction in UFO
-==================================
+Variational Bias Correction in UFO
+======================================
 
 VarBC implementation
 +++++++++++++++++++++++++
@@ -12,7 +12,7 @@ VarBC implementation
 Using 3DVAR as example
 -----------------------
 
-Genral 3DVAR form
+General 3DVAR form
 ^^^^^^^^^^^^^^^^^^^^^^
 
   .. math::
@@ -57,7 +57,7 @@ Incremental 3DVAR form
       \nabla J = ( \textbf{B}^{-1} + \mathcal{H}^T \textbf{R}^{-1} \mathcal{H}) \vec{\delta{x}} - \mathcal{H}^T \textbf{R}^{-1} \vec{d} = 0
 
 
-Variation Observation Bias correction
+Variational Observation Bias correction
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Define the augmented control vector
