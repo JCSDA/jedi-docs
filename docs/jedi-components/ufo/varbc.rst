@@ -50,7 +50,7 @@ Incremental 3DVAR form
 3DVAR gradient
 ^^^^^^^^^^^^^^^^^
 
-  :eq:`Incremental3dvar` is a `quadratic eqautaion <https://en.wikipedia.org/wiki/Quadratic_equation>`_, then, to find the :math:`\vec{\delta{x}}` which minimizeds :math:`J`
+  :eq:`Incremental3dvar` is a `quadratic equataion <https://en.wikipedia.org/wiki/Quadratic_equation>`_, then, to find the :math:`\vec{\delta{x}}` which minimizeds :math:`J`
 
     .. math::
 
@@ -60,13 +60,13 @@ Incremental 3DVAR form
 Variation Observation Bias correction
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Define the augmentated control vector
+  Define the augmented control vector
 
     .. math::
 
       \vec{z}^T = \lbrack \vec{x}^T \vec{\beta}^T \rbrack
 
-  Therefore, the cost function to be minimizaed
+  Therefore, the cost function to be minimized
 
     .. math::
 
@@ -100,7 +100,7 @@ Variation Observation Bias correction
 
   We take :math:`\textbf{B}_\beta` diagonal:
   
-  Also define define :math:`\vec{\delta{z}} = \vec{z} -\vec{z}_b`, then the *Increment form* is :
+  Also define :math:`\vec{\delta{z}} = \vec{z} -\vec{z}_b`, then the *Increment form* is:
 
     .. math::
       :label: Incremental3dvarVarBC
@@ -155,25 +155,25 @@ Adaptive bias correction
       \vec{y} & = H(\vec{x}) + \vec{b}^{scan} + \vec{b}^{air}(\vec{x}, \vec{\beta}) + \tilde{\vec{e}_o} , \qquad \langle \tilde{\vec{e}_o} \rangle = 0 \\
               & = H(\vec{x}) + \vec{b}^{scan} + \beta_0 + \sum_{i=1}^{N} \beta_i p_i(\vec{x}) + \tilde{\vec{e}_o} 
 
-  with scalar coefficients :math:`\beta_i, i = 0, . . . , N` . The selection of predictors :math:`p_i(\vec{x}), i = 1, . . . ,N`  is flexible and depends on the instrument and channel.
+  with scalar coefficients :math:`\beta_i, i = 0, . . . ,N` . The selection of predictors :math:`p_i(\vec{x}), i = 1, . . . ,N`  is flexible and depends on the instrument and channel.
 
-  Including the scan bias correction in the variational aanlysis
+  Including the scan bias correction in the variational analysis
 
     .. math::
 
         \vec{y} = H(\vec{x}) + \sum_{i=0}^{N} \beta_i p_i(\vec{x}) + \tilde{\vec{e}_o} 
 
 
-Augmentated control variable
+Augmented control variable
 +++++++++++++++++++++++++++++++++++
 
-  Define the augmentated control vector
+  Define the augmented control vector
 
     .. math::
 
       \vec{z}^T = \lbrack \vec{x}^T \vec{\beta}^T \rbrack
 
-  Therefore, the cost function to be minimizaed
+  Therefore, the cost function to be minimized
 
     .. math::
 
