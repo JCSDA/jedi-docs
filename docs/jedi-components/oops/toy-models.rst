@@ -14,13 +14,22 @@ OOPS includes two toy models:
 Lorenz95 model
 --------------
 
-The Lorenz95 model is an application of the Lorenz (1996) chaotic dynamics. The 40-variable version of this model is given by
+The Lorenz95 model is an application of the Lorenz (1996) chaotic dynamics. This model is governed by :math:`I` equations:
 
 .. math::
   \frac{dx_i}{dt} = -x_{i-2} x_{i-1} + x_{i-1} x_{i+1} - x_{i} + F,
   :label: eq:toy-model_l95
 
-where :math:`i = 1, 2, ..., 40`, and cyclic boundary conditions are used :math:`x_{0} = x_{40}`, :math:`x_{-1} = x_{39}`, :math:`x_{41} = x_{1}`. The magnitude of the forcing is set to :math:`F=8`. Lorenz (1996) concluded that similar error growth characteristics to operational numerical weather prediction systems are obtained if a time unit in the Lorenz95 model is associated with 5 days.
+where :math:`i = 1, 2, \ldots, I`, with cyclic boundary conditions, and the constant :math:`F` is independent of :math:`i`. The variables of this model may be tought of as values of some atmospheric quantity in :math:`I` locations of a latitude circle. The so-called 40-variable version of this model assumes :math:`I=40`, with :math:`i = 1, 2, \ldots, 40`, which implies to the cyclic boundary conditions being defined as: :math:`x_{0} = x_{40}`; :math:`x_{-1} = x_{39}`; and, :math:`x_{41} = x_{1}`.
+
+How to run a truth simulation?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+How to sample synthetic observations?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+How to Assimilate these observations?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 .. _top-oops-toymodels-model_qg:
