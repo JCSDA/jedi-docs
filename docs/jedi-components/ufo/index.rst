@@ -12,4 +12,3 @@ It provides the observational operators needed to compute departures and innovat
    obsops
    newobsop
    qcfilters
-   parameters
