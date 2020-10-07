@@ -32,11 +32,13 @@ For usage information, enter
 
     jedinode.py --help
 
-For most options we recommend using the defaults.  However, one required option is to specify your personal ssh key that you will use to log in to your node (see item 2 above).  So, to launch an EC2 instance, enter (omit the :code:`.pem` extension if you are using a pem file):
+For most options we recommend using the defaults.  However, one required option is to specify your personal ssh key that you will use to log in to your node (see item 2 above).  So, to launch an EC2 instance, enter:
 
 .. code:: bash
 
     jedinode.py --key=<your-ssh-key>
+
+Note that :code:`<your-ssh-key>` should not be your local pem file.  Rather, it should be the name of the public key as listed in the "key pairs" section of the EC2 Dashboard on AWS.  So, for example, if your private pem file is :code:`~/.ssh/mykey.pem` then you should enter :code:`jedinode.py --key=mykey`.  In other words, omit the path and the `.pem` extension.
 
 .. warning::
 
