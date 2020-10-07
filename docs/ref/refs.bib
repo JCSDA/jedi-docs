@@ -1,0 +1,81 @@
+@article{ZhuVarBC14,
+author = {Zhu, Yanqiu and Derber, John and Collard, Andrew and Dee, Dick and Treadon, Russ and Gayno, George and Jung, James A},
+title = {Enhanced radiance bias correction in the National Centers for Environmental Prediction's Gridpoint Statistical Interpolation data assimilation system},
+journal = {Quarterly Journal of the Royal Meteorological Society},
+volume = {140},
+number = {682},
+pages = {1479-1492},
+keywords = {radiance bias correction, data assimilation, GSI},
+doi = {10.1002/qj.2233},
+url = {https://rmets.onlinelibrary.wiley.com/doi/abs/10.1002/qj.2233},
+eprint = {https://rmets.onlinelibrary.wiley.com/doi/pdf/10.1002/qj.2233},
+abstract = {Abstract Radiance bias correction is an important and necessary step in the proper use of satellite observations in a data assimilation system. The original radiance bias-correction scheme used in the Gridpoint Statistical Interpolation (GSI) data assimilation system consists of two components: a variational air-mass dependent component and a scan-angle component. The air-mass component is updated within the GSI, while the scan-angle component is updated outside the GSI. This study examines and enhances several aspects of the radiance bias-correction problem. First, a modified pre-conditioning is applied to the bias-correction coefficients and the analysis variables to speed up convergence of the minimization process. A new procedure for applying the modified pre-conditioning in the GSI is utilized. Second, capabilities for detecting any new/missing/recovering radiance data and initializing the bias correction for new radiance data are implemented. A new scheme is proposed and employed to adjust the background-error variances for the bias-correction coefficients automatically, using an approximation of the analysis-error variances from the previous cycle, and to remove the pre-specified predictor scaling parameters. Finally, the capability to perform bias correction for passive channels within the GSI is developed with a new approach. The two-step bias-correction procedure originally used is replaced with a one-step variational bias-correction scheme within the GSI. Experiment results with the GSI-based hybrid ensemble-variational system show that using the modified pre-conditioning leads to a better convergence rate. Moreover, with the one-step scheme, the anomaly correlation of geopotential height at 500 mb is neutral in the Northern Hemisphere but improved in the Southern Hemisphere. The root-mean-square (RMS) error of wind is comparable to that of the two-step scheme and the biases of the global temperature 24 h and 48 h forecasts fitted to the rawinsonde are reduced.},
+year = {2014}
+}
+
+@inproceedings{DDVarBC04,
+	title = {Variational bias correction of radiance data in the ECMWF system},
+	booktitle = {ECMWF Workshop on Assimilation of high spectral resolution sounders in NWP, 28 June - 1 July 2004},
+	year = {2004},
+	pages = {97-112},
+	publisher = {ECMWF},
+	organization = {ECMWF},
+	address = {Shinfield Park, Reading},
+	url = {https://www.ecmwf.int/node/8930},
+	author = {D.P. Dee}
+}
+
+@inproceedings{MF98,
+	title = {Minimization algorithms for variational data assimilation},
+	booktitle = {Seminar on Recent Developments in Numerical Methods for Atmospheric Modelling, 7-11 September 1998},
+	year = {1998},
+	pages = {364-385},
+	publisher = {ECMWF},
+	organization = {ECMWF},
+	address = {Shinfield Park, Reading},
+	url = {https://www.ecmwf.int/node/9400},
+	author = {Mike Fisher}
+}
+
+@Book{NoceWrig06,
+  Title                    = {Numerical Optimization},
+  Author                   = {Jorge Nocedal and Stephen J. Wright},
+  Publisher                = {Springer},
+  Year                     = {2006},
+  Address                  = {New York, NY, USA},
+  Edition                  = {second}
+}
+
+@article{doi:10.1002/qj.49712656512,
+author = {Anderson, Erik and Fisher, Mike and Munro, Rosemary and McNally, Anthony},
+title = {Diagnosis of background errors for radiances and other observable quantities in a variational data assimilation scheme, and the explanation of a case of poor convergence},
+journal = {Quarterly Journal of the Royal Meteorological Society},
+volume = {126},
+number = {565},
+pages = {1455-1472},
+keywords = {Background-error specification, Convergence properties, Radiance assimilation, Variational assimilation},
+doi = {10.1002/qj.49712656512},
+url = {https://rmets.onlinelibrary.wiley.com/doi/abs/10.1002/qj.49712656512},
+eprint = {https://rmets.onlinelibrary.wiley.com/doi/pdf/10.1002/qj.49712656512},
+abstract = {Abstract In any statistical data assimilation scheme the ratio between the observation and background errors fundamentally determines the weight given to the observations. The observation errors are specified directly in terms of the observable quantities. In variational data assimilation schemes these can include satellite-measured radiances as well as conventional observations. The background errors, on the other hand, are specified in terms of those quantities that lead to a compact formulation of the background term (the Jb of the variational analysis), viz. balanced vorticity, unbalanced temperature, divergence and surface pressure, and specific humidity. It is not obvious how the magnitudes of these background errors can be compared with the various observation errors. Within the variational analysis, the background errors are implied in terms of observed quantities, i.e. not normally computed explicitly. They depend, in general, on the Jb formulation and on the observation operators. In the case of radiance observations this involves the Jacobian of the radiative-transfer model which, in turn, depends on the atmospheric state. By applying the observation operators of a variational data assimilation scheme to a set of random vectors, drawn from a population whose probability density function is given by the assumed background-error covariance matrix, we obtain grid-point fields of background-error standard deviations for any observed quantity. These are valuable for diagnosing the response of the data assimilation system to observational data, and for tuning the specified observation and background errors in general. The calculated error standard deviations can be compared with those obtained from studies of innovation statistics (i.e. observed departures from the background). The technique has been applied to a range of observable quantities, including the radiance data from both the infrared and microwave instruments of the TIROS operational vertical sounder (TOVS). We used the results for some of the higher-peaking channels to verify that the specified background errors in the recently introduced 50-level version of the ECMWF model are also reasonable in the upper stratosphere, where there are few conventional data. We also found that the operational background errors for humidity were set unrealistically large in some dry subtropical areas. A case of poor convergence of the variational analysis was found to be due to unrealistically high background errors in terms of one of the humidity-sensitive radiance channels (the Meteosat water-vapour channel, similar to TOVS channel 12). Excessively large ratios between background and observation errors locally led to larger than normal eigenvalues of the analysis Hessian—thus increasing the condition number of the minimization problem, with an associated decrease in the rate of convergence of the minimization. The mis-specification of background errors was confined to relatively small areas in the subtropics, but it affected the minimization globally.},
+year = {2000}
+}
+
+@article{10.1137/S1064827597323415,
+author = {Golub, Gene H. and Ye, Qiang},
+title = {Inexact Preconditioned Conjugate Gradient Method with Inner-Outer Iteration},
+year = {1999},
+issue_date = {Dec. 1999—March 2000},
+publisher = {Society for Industrial and Applied Mathematics},
+address = {USA},
+volume = {21},
+number = {4},
+issn = {1064-8275},
+url = {https://doi.org/10.1137/S1064827597323415},
+doi = {10.1137/S1064827597323415},
+journal = {SIAM J. Sci. Comput.},
+month = dec,
+pages = {1305–1320},
+numpages = {16},
+keywords = {conjugate gradient method, inner-outer iterations, inexact preconditioner}
+}
