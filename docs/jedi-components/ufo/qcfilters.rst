@@ -1019,7 +1019,7 @@ The YAML parameters supported by this filter are listed below.
 
   - :code:`search_radius`: Maximum distance between two observations that may be classified as buddies, in km. Default: 100 km.
 
-  - :code:`station_id_variable`: Variable storing integer-valued station IDs.
+  - :code:`station_id_variable`: Variable storing string- or integer-valued station IDs.
   
     If not set and observations were grouped into records when the observation space was constructed, each record is assumed to consist of observations taken by a separate station. If not set and observations were not grouped into records, all observations are assumed to have been taken by a single station.
   
