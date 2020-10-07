@@ -1084,6 +1084,8 @@ Example:
         min_longitude: -180
         max_longitude:  180
     search_radius: 100 # km
+    station_id_variable:
+      name: station_id@MetaData
     num_zonal_bands: 24
     sort_by_pressure: false
     max_total_num_buddies: 15
