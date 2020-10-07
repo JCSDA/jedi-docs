@@ -1,24 +1,153 @@
 .. _top-ufo-varbc:
 
+.. role:: raw-html(raw)
+  :format: html
+
 Variation Bias Correction in UFO
 ==================================
 
 VarBC implementation
 +++++++++++++++++++++++++
 
-.. role:: raw-html(raw)
-  :format: html
+Using 3DVAR as example
+-----------------------
 
-.. note::
+Genral 3DVAR form
+^^^^^^^^^^^^^^^^^^^^^^
 
-  Summarized from :
+  .. math::
+      :label: costf3
 
-    - :cite:`ZhuVarBC14`
-    - :cite:`DDVarBC04`
+      J(x) = \frac{1}{2} ( \vec{x}- \vec{x}_b ) )^T \textbf{B}^{-1} ( \vec{x} - \vec{x}_b ) +
+             \frac{1}{2} ( H(\vec{x}) - \vec{y} )^T \textbf{R}^{-1} ( H(\vec{x}) -\vec{y} )
+
+  define :math:`\vec{\delta{x}} = \vec{x} -\vec{x}_b`, called *Increment*
+  
+  thus, based on *Taylor expansion*
+
+    .. math::
+
+      H(\vec{x}) = H(\vec{x}_b) + \mathcal{H} (\vec{\delta{x}})
+
+  where :math:`\mathcal{H} = \frac{\partial H}{\partial \vec{x}} \Bigg \vert_{\vec{x}=\vec{x}_b}`, called *Linear observation operator*
+
+Incremental 3DVAR form
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+  :eq:`costf3` can be written as incremental form
+
+    .. math::
+      :label: Incremental3dvar
+
+      J(\vec{\delta{x}}) & = \frac{1}{2} \vec{\delta{x}}^T \textbf{B}^{-1} \vec{\delta{x}} + \frac{1}{2} ( H(\vec{x}_b) + \mathcal{H} (\vec{\delta{x}}) - \vec{y} )^T \textbf{R}^{-1} ( H(\vec{x}_b) + \mathcal{H} (\vec{\delta{x}}) - \vec{y} ) \\
+       & = \frac{1}{2} \vec{\delta{x}}^T \textbf{B}^{-1} \vec{\delta{x}} + \frac{1}{2} ( \mathcal{H} (\vec{\delta{x}}) - \vec{d} )^T \textbf{R}^{-1} ( \mathcal{H} (\vec{\delta{x}}) - \vec{d} ) \\
+       & = \frac{1}{2} \vec{\delta{x}}^T ( \textbf{B}^{-1} + \mathcal{H}^T \textbf{R}^{-1} \mathcal{H}) \vec{\delta{x}} -
+           \vec{\delta{x}}^T \mathcal{H}^T \textbf{R}^{-1} \vec{d} + \frac{1}{2} \vec{d}^T \textbf{R}^{-1} \vec{d}
+
+  where :math:`\vec{d} = \vec{y} - H(\vec{x}_b)`, called *Innovation*
+
+
+3DVAR gradient
+^^^^^^^^^^^^^^^^^
+
+  :eq:`Incremental3dvar` is a `quadratic eqautaion <https://en.wikipedia.org/wiki/Quadratic_equation>`_, then, to find the :math:`\vec{\delta{x}}` which minimizeds :math:`J`
+
+    .. math::
+
+      \nabla J = ( \textbf{B}^{-1} + \mathcal{H}^T \textbf{R}^{-1} \mathcal{H}) \vec{\delta{x}} - \mathcal{H}^T \textbf{R}^{-1} \vec{d} = 0
+
+
+Variation Observation Bias correction
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Define the augmentated control vector
+
+    .. math::
+
+      \vec{z}^T = \lbrack \vec{x}^T \vec{\beta}^T \rbrack
+
+  Therefore, the cost function to be minimizaed
+
+    .. math::
+
+      J(\vec{z}) = \frac{1}{2} (\vec{z}_b - \vec{z})^T \textbf{Z}^{-1} (\vec{z}_b - \vec{z}) +  \frac{1}{2} (\vec{y} - \tilde{H}(\vec{z}))^T \textbf{R}^{-1} (\vec{y} - \tilde{H}(\vec{z}))
+
+  where
+
+    .. math::
+
+      \tilde{H}(\vec{z}) & =  \begin{bmatrix}
+                                H & P  \\
+                              \end{bmatrix} \cdot
+                              \begin{bmatrix}
+                                 \vec{x} \\
+                                 \vec{\beta} \\
+                              \end{bmatrix} \\
+                          & = H(\vec{x}) + P(\vec{x}) \vec{\beta}
+
+    :math:`P(\vec{x})` is called *predictor*.
+    
+  In general the parameter estimation errors will be correlated with the state estimation errors, because they depend on the same data. We know of no practical way to account for this statistical dependence, and therefore take
+
+    .. math::
+
+      \textbf{Z} = \begin{bmatrix}
+                      \textbf{B}_x & 0 \\
+                      0 & \textbf{B}_{\beta}
+                    \end{bmatrix}
+
+  where :math:`\textbf{B}_x` denotes the usual (state) background error covariance, and :math:`\textbf{B}_\beta` the parameter background error covariance.
+
+  We take :math:`\textbf{B}_\beta` diagonal:
+  
+  Also define define :math:`\vec{\delta{z}} = \vec{z} -\vec{z}_b`, then the *Increment form* is :
+
+    .. math::
+      :label: Incremental3dvarVarBC
+
+      J(\vec{\delta{z}}) = \frac{1}{2} \vec{\delta{z}}^T ( \textbf{Z}^{-1} + \tilde{\mathcal{H}}^T \textbf{R}^{-1} \tilde{\mathcal{H}}) \vec{\delta{z}} -
+           \vec{\delta{z}}^T \tilde{\mathcal{H}}^T \textbf{R}^{-1} \vec{\tilde{d}} + \frac{1}{2} \vec{d}^T \textbf{R}^{-1} \vec{\tilde{d}}
+
+
+  The gradient is
+
+    .. math::
+
+      \nabla J = ( \textbf{Z}^{-1} + \tilde{\mathcal{H}}^T \textbf{R}^{-1} \tilde{\mathcal{H}} ) \vec{\delta{z}} - \tilde{\mathcal{H}}^T \textbf{R}^{-1} \vec{\tilde{d}}
+
+  where:
+
+    - Linear observation operator
+
+      .. math::
+
+        \tilde{\mathcal{H}}(\vec{\delta{z}}) & = \begin{bmatrix}
+                                                   \mathcal{H} \vert_{\vec{x}_b} & P \vert_{\vec{x}_b} \\
+                                                 \end{bmatrix} \cdot
+                                                 \begin{bmatrix}
+                                                   \vec{\delta{x}} \\
+                                                   \vec{\delta{\beta}} \\
+                                                 \end{bmatrix} \\
+             & = \mathcal{H} \vert_{\vec{x}_b} \vec{\delta{x}} + P \vert_{\vec{x}_b} \vec{\delta{\beta}}
+
+    - Innovation
+
+      .. math::
+
+        \vec{\tilde{d}} & = \vec{y} - \tilde{H}(\vec{z}_b) \\
+                        & = \vec{y} - H(\vec{x}_b) - P(\vec{x}_b) \vec{\beta}_b
 
 Adaptive bias correction
-============================
++++++++++++++++++++++++++
 
+  .. note::
+
+    Summarized from :
+
+      - :cite:`ZhuVarBC14`
+      - :cite:`DDVarBC04`
+
+    
   The scheme is based on a separation of the biases into scan-angle dependent and state dependent components. It is assumed that the data :math:`\vec{y}` in a given channel are related to the true model state :math:`\vec{x}` at the observed time and location by
 
     .. math::
@@ -36,7 +165,7 @@ Adaptive bias correction
 
 
 Augmentated control variable
-===============================
++++++++++++++++++++++++++++++++++++
 
   Define the augmentated control vector
 
@@ -58,7 +187,7 @@ Augmentated control variable
       \tilde{H}(\vec{z}) = H(\vec{x}) + \sum_{i=0}^{N} \beta_i p_i(\vec{x})
 
 Adjoint of the bias model
-=============================
++++++++++++++++++++++++++++++
 
   In the incremental formulation of the variational analysis, nonlinear observation operators are linearized about the latest outer-loop estimate :math:`\overline{\vec{x}}` of :math:`\vec{x}` . Similarly, for the modified operator we use
 
@@ -79,7 +208,7 @@ Adjoint of the bias model
 
 
 Background error covariance
-===============================
+++++++++++++++++++++++++++++++
 
   In general the parameter estimation errors will be correlated with the state estimation errors, because they depend on the same data. We know of no practical way to account for this statistical dependence, and therefore take
 
@@ -122,7 +251,7 @@ Background error covariance
     - The situation is, of course, very different for the state estimation, which can be extremely sensitive to the specification of the background error covariances, especially in data-sparse areas. 
 
 Preconditioning
-==================
++++++++++++++++++++++
 
   For a quadratic cost function, the shape at the minimum is completely described by the Hessian, which is
 
@@ -209,6 +338,6 @@ Preconditioning
 
 
 Bias correction of passive data
-====================================
++++++++++++++++++++++++++++++++++
 
 TODO
