@@ -18,11 +18,12 @@ The flow of this computation in OOPS is as follows:
     CostJo::initialize
       ObsFilters::ObsFilters
       Observer::Observer
-        ObsOperator::variables
-        ObsFilters::requiredGeoVaLs
+        ObsOperator::requiredVars
+        ObsFilters::requiredVars
     CostFunction::runNL
       Model::forecast
         Observer::initialize
+          ObsFilters::preProcess
           GeoVaLs::GeoVaLs
         loop over time steps
           Observer::process
@@ -36,10 +37,7 @@ The flow of this computation in OOPS is as follows:
       ObsErrors::ObsErrors
       ydep=ysimul-yobs
 
-This needs more explanation here. Just before and just after calling the :code:`simulateObs`
-method, the :code:`Observer` calls the :code:`ObsFilters` :code:`priorFilter` and
-:code:`postFilter` methods. The observation filters are very generic and can perform a
-number of tasks, but mostly they are used for quality control.
+This needs more explanation here. The :code:`Observer` calls the :code:`preProcess` method of :code:`ObsFilters` before the loop over time steps. Within the loop, it calls the :code:`priorFilter` and :code:`postFilter` methods just before and just after calling the :code:`simulateObs` method of :code:`ObsOperator`. The observation filters are very generic and can perform a number of tasks, but mostly they are used for quality control.
 
 Observation Filters
 -------------------
