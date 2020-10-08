@@ -1,0 +1,29 @@
+.. _top-oops-toymodels-model_l95:
+
+Lorenz95 model
+==============
+
+Introduction
+------------
+
+The Lorenz95 model is an application of the Lorenz (1996) chaotic dynamics. This model is governed by :math:`I` equations:
+
+.. math::
+  \frac{dx_i}{dt} = -x_{i-2} x_{i-1} + x_{i-1} x_{i+1} - x_{i} + F,
+  :label: eq:toy-model_l95
+
+where :math:`i = 1, 2, \ldots, I`, with cyclic boundary conditions, and the constant :math:`F` is independent of :math:`i`. The variables of this model may be tought of as values of some atmospheric quantity in :math:`I` locations of a latitude circle. The so-called 40-variable version of this model assumes :math:`I=40`, with :math:`i = 1, 2, \ldots, 40`, which implies to the cyclic boundary conditions being defined as: :math:`x_{0} = x_{40}`; :math:`x_{-1} = x_{39}`; and, :math:`x_{41} = x_{1}`.
+
+How to run a truth simulation?
+------------------------------
+
+How to sample synthetic observations?
+-------------------------------------
+
+How to Assimilate these observations?
+-------------------------------------
+
+References
+----------
+
+Lorenz, E., 1996: Predictability: a problem partly solved. Seminar on Predictability, 4-8 September 1995, volume 1, pages 1–18, European Centre for Medium Range Weather Forecasts, Reading, England. ECMWF.

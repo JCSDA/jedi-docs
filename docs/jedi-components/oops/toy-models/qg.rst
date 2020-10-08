@@ -1,49 +1,15 @@
-.. _top-oops-toymodels:
-
-Toy models
-==========
-
-OOPS includes two toy models:
-
-* :ref:`Lorenz95 <top-oops-toymodels-model_l95>`
-
-* :ref:`Quasi-geostrophic <top-oops-toymodels-model_qg>`
-
-.. _top-oops-toymodels-model_l95:
-
-Lorenz95 model
---------------
-
-The Lorenz95 model is an application of the Lorenz (1996) chaotic dynamics. This model is governed by :math:`I` equations:
-
-.. math::
-  \frac{dx_i}{dt} = -x_{i-2} x_{i-1} + x_{i-1} x_{i+1} - x_{i} + F,
-  :label: eq:toy-model_l95
-
-where :math:`i = 1, 2, \ldots, I`, with cyclic boundary conditions, and the constant :math:`F` is independent of :math:`i`. The variables of this model may be tought of as values of some atmospheric quantity in :math:`I` locations of a latitude circle. The so-called 40-variable version of this model assumes :math:`I=40`, with :math:`i = 1, 2, \ldots, 40`, which implies to the cyclic boundary conditions being defined as: :math:`x_{0} = x_{40}`; :math:`x_{-1} = x_{39}`; and, :math:`x_{41} = x_{1}`.
-
-How to run a truth simulation?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-How to sample synthetic observations?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-How to Assimilate these observations?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
 .. _top-oops-toymodels-model_qg:
 
 Quasi-geostrophic model
------------------------
+=======================
 
 Introduction
-^^^^^^^^^^^^
+------------
 
 This section describes the simple two-level quasi-gestrophic model, intended for use as a toy system with which to conduct idealised studies of data assimilation methods. In developing the model, the emphasis has been placed on speed and convenience rather than accuracy and conservation.
 
 The continuous equations
-^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 
 The equations of the two-level model are given by Fandry and Leslie (1984) (see also Pedlosky, 1979 pp386-393), and are expressed in terms of non-dimensionalised variables:
 
@@ -66,7 +32,7 @@ Here, :math:`\beta` is the (non-dimensionalised) northward derivative of the Cor
 The model domain is assumed to be cyclic in the zonal direction, and the meridional velocity is assumed to vanish one grid space to the north and south of the domain.
 
 Details of the non-dimensionalisation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------
 
 The non-dimensionalisation is standard, but is given here for completeness. We define a typical length scale :math:`L`, a typical velocity :math:`U`, the depths of the upper and lower layers :math:`D_1` and :math:`D_2`, the Coriolis parameter at the southern boundary :math:`f_0` and its northward derivative :math:`\beta_0`, the acceleration due to gravity :math:`g`, the difference in potential temperature across the layer interface :math:`\Delta\theta`, and the mean potential temperature :math:`\overline\theta`.
 
@@ -85,7 +51,7 @@ Denoting dimensional time, spatial coordinates and velocities with tildes, we ha
 The Rossby number is :math:`\epsilon = {\overline U} / f_0 L`.
 
 Solution algorithm
-^^^^^^^^^^^^^^^^^^
+------------------
 
 The prognostic variable of the model is streamfunction, defined on a rectangular grid of dimension :math:`nx \times ny`. The grid indices increase in the eastward and northward directions.
 
@@ -142,11 +108,9 @@ In principle, a timestep could start from values of streamfunction at a single t
   Solution of the Helmholz equation and inversion of the Laplacian are achieved using an FFT-based method. Applying a Fourier transform in the east-west direction to equation :eq:`eq:toy-model_qg_2d_helmholz_eqn` gives a set of independent equations for each wavenumber. In the case of the five-point discrete Laplacian, these are tri-diagonal matrix equations, which can be solved using the standard (Thomas) algorithm.
 
 References
-^^^^^^^^^^
+----------
 
 Fandry, C.B. and L.M. Leslie, 1984: A Two-Layer Quasi-Geostrophic Model of Summer Trough Formation in the Australian Subtropical Easterlies.  J.A.S., 41, pp807-817.
-
-Lorenz, E., 1996: Predictability: a problem partly solved. Seminar on Predictability, 4-8 September 1995, volume 1, pages 1–18, European Centre for Medium Range Weather Forecasts, Reading, England. ECMWF.
 
 Pedlosky, J., 1979: Geophysical Fluid Dynamics. Springer-Verlag.
 
