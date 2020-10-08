@@ -1145,6 +1145,17 @@ Example 2
 
 In the example above, a mask is created for times between 09:00 and 18:00, between 1st January and 25th May of every year.
 
+Outer Loop Iterations
+---------------------
+
+By default, filters are applied only before the first iteration of the outer loop of the data assimilation process. Use the :code:`apply at iterations` parameter to customize the set of iterations after which a particular filter is applied. In the example below, the Background Check filter will be run before the outer loop starts ("after the zeroth iteration") and after the first iteration:
+
+.. code:: yaml
+
+   - filter: Background Check
+     apply at iterations: 0,1
+     threshold: 0.25
+
 Creating a New Filter
 ---------------------
 
