@@ -152,7 +152,7 @@ OOPS Interface
 OOPS accesses observation data via C++ methods belonging to the ObsVector class.
 The variables being assimilated are selected in the YAML configuration using the :code:`simulated variables` sub-keyword under the :code:`obs space` keyword.
 In the :ref:`radiosonde example <radiosonde_example_yaml>` above, one variable "air_temperature" is being assimilated.
-In this case, the ObsVector will read only the air_temparature row from the ObsData table and load that into a vector.
+In this case, the ObsVector will read only the air_temperature row from the ObsData table and load that into a vector.
 
 The ObsVector class contains the following two methods, :code:`read()` for filling a vector from an ObsData array in memory and :code:`save()` for storing a vector into an ObsData array.
 
@@ -248,4 +248,3 @@ Note that the storage for "flags" has been allocated and "flags" has been filled
 
    ! Save the QC flag values
    call obsspace_put_db(self%obsdb, self%qcname, var, flags)
-
