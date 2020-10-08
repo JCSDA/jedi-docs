@@ -341,3 +341,153 @@ Bias correction of passive data
 +++++++++++++++++++++++++++++++++
 
 TODO
+
+VarBC example
++++++++++++++++++++++++++
+
+To use the VarBC in a Observation Operator, add the :code:`obs bias` section as the highlighted lines. 
+
+.. code-block:: yaml
+  :linenos:
+  :emphasize-lines: 29-66
+
+  observations:
+  - obs space:
+      name: AMSUA-NOAA19
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 1-15
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3]
+      obs options:
+        Sensor_ID: &Sensor_ID amsua_n19
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+    obs error:
+      covariance model: diagonal
+    obs filters:
+    - filter: Bounds Check
+      filter variables:
+      - name: brightness_temperature
+        channels: &channels 1-15
+      minvalue: 100.0
+      maxvalue: 500.0
+    - filter: Background Check
+      filter variables:
+      - name: brightness_temperature
+        channels: *channels
+      threshold: 3.0
+    obs bias:
+      prior:
+        biasfile: Data/obs/testinput_tier_1/satbias_crtm_in_amsua_n19.nc4
+        group: ObsBias
+      analysis:
+        biasfile: Data/hofx/satbias_crtm_out_amsua_n19.nc4
+        group: ObsBias
+      sensor: *Sensor_ID
+      jobs: *channels
+      covariance:
+        minimal required obs number: 20
+        variance range: [1.0e-6, 10.]
+        variance:
+          datain: Data/obs/testinput_tier_1/satbias_crtm_pc_in_amsua_n19.nc4
+          dataout: Data/hofx/satbias_crtm_pc_out_amsua_n19.nc4
+          group: ObsBiasCovariance
+          inflation:
+            ratio: 1.1
+            ratio for small dataset: 2.0
+      predictors:
+      - predictor:
+          name: constant
+      - predictor:
+          name: emissivity
+      - predictor:
+          name: scan_angle
+          options:
+            order: 4
+      - predictor:
+          name: scan_angle
+          options:
+            order: 3
+      - predictor:
+          name: scan_angle
+          options:
+            order: 2
+      - predictor:
+          name: scan_angle
+
+Here is the detailed explaination:
+
+  1. Defines the predictors (required)
+  
+    Here, we defined 6 predictors, which are :code:`constant`, :code:`emissivity`, and 1st, 2nd, 3rd, 4th order :code:`scan_angle`, respectively. To find what predictor functions are available, please refer to directory :code:`ufo/src/ufo/predictors/`.
+
+    .. code-block:: yaml
+
+        predictors:
+        - predictor:
+            name: constant
+        - predictor:
+            name: emissivity
+        - predictor:
+            name: scan_angle
+            options:
+              order: 4
+        - predictor:
+            name: scan_angle
+            options:
+              order: 3
+        - predictor:
+            name: scan_angle
+            options:
+              order: 2
+        - predictor:
+            name: scan_angle
+
+  2. Defines the input file for the bias coefficients prior (optional)
+
+     Usually, the prior is coming from the previous data assimilation cycle. if it is not available, all coefficients will start with zero.
+
+    .. code-block:: yaml
+
+        prior:
+          biasfile: Data/obs/testinput_tier_1/satbias_crtm_in_amsua_n19.nc4
+          group: ObsBias       #  group name in NetCDF file
+  
+  3. Defines the bias coefficients analysis output file (optional)
+
+     Usually, the analysis is the prior of the next data assimilation cycle.
+
+    .. code-block:: yaml
+
+        prior:
+          biasfile: Data/obs/testinput_tier_1/satbias_crtm_in_amsua_n19.nc4
+          group: ObsBias       #  group name in NetCDF file
+
+  4. Defines the input (from the previous DA cycle) and the output (for the next DA cycle) for variance (optional)
+  
+    Also defines the parameters which control the relationship between the number of effective observations and magnititude of the variances. please refer to :cite:`ZhuVarBC14` for more details.
+
+    .. code-block:: yaml
+
+        covariance:
+          minimal required obs number: 20
+          variance range: [1.0e-6, 10.]
+          variance:
+            datain: Data/obs/testinput_tier_1/satbias_crtm_pc_in_amsua_n19.nc4
+            dataout: Data/hofx/satbias_crtm_pc_out_amsua_n19.nc4
+            group: ObsBiasCovariance
+            inflation:
+              ratio: 1.1
+              ratio for small dataset: 2.0
+
+  5. Defines the Sensor_ID and Channels (jobs) for bias correction (required)
+
+    Usually, use the consistent values in ObsOperator
+
+    .. code-block:: yaml
+
+        sensor: *Sensor_ID
+        jobs: *channels
