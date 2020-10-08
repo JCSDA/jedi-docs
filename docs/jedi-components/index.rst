@@ -8,3 +8,4 @@ JEDI Components
    oops/index.rst
    ioda/index.rst
    ufo/index.rst
+   fv3-jedi/index.rst
