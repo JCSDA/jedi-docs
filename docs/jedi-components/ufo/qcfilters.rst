@@ -44,7 +44,7 @@ number of tasks, but mostly they are used for quality control.
 Observation Filters
 -------------------
 
-Observation filters are generic and have access to:
+Observation filters have access to:
  - Observation values and metadata
  - Model values at observations locations (GeoVaLs)
  - Simulated observation value (for post-filter)
@@ -77,15 +77,14 @@ Most filters are written once and used with many observation types; several such
 Generic QC Filters Implemented in UFO
 =====================================
 
-There are a number of existing generic filters in the UFO.
-Below is the description of how to configure each of the existing QC filters in UFO. All filters can also use the :ref:`"where" statement <where-statement>` to act only on observations meeting certain conditions. By default, each filter acts on all the variables marked as *simulated variables* in the ObsSpace. The :code:`filter variables` keyword can be used to limit the action of the filter to a subset of these variables or to specific channels, as shown in the examples from the :ref:`Bounds Check Filter <bounds-check-filter>` section below.
+This section describes how to configure each of the existing QC filters in UFO. All filters can also use the :ref:`"where" statement <where-statement>` to act only on observations meeting certain conditions. By default, each filter acts on all the variables marked as *simulated variables* in the ObsSpace. The :code:`filter variables` keyword can be used to limit the action of the filter to a subset of these variables or to specific channels, as shown in the examples from the :ref:`Bounds Check Filter <bounds-check-filter>` section below.
 
 .. _bounds-check-filter:
 
 Bounds Check Filter
 -------------------
 
-This filter checks if the observation values (@ObsValue in the ioda files) are within specified limits and rejects observations outside of this limit (only for the specified observations):
+This filter rejects observations whose values (@ObsValue in the ioda files) lie outside specified limits:
 
 .. code:: yaml
 
@@ -103,7 +102,7 @@ In the above example the filter checks if brightness temperature for channels 4,
 * channel 5: [200, 250, 270]
 * channel 6: [340, 200, 250]
 
-In this example, all observations from channel 3 will pass QC because channel 3 isn't configured in this filter. All observations for channel 4 will pass QC because they are within [minvalue, maxvalue]. 1st observation in channel 5, and first and second observations in channel 6 will be rejected.
+In this example, all observations from channel 3 will pass QC because the filter isn't configured to act on this channel. All observations for channel 4 will pass QC because they are within [minvalue, maxvalue]. 1st observation in channel 5, and first and second observations in channel 6 will be rejected.
 
 .. code:: yaml
 
