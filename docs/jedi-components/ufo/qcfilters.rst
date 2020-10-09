@@ -422,7 +422,7 @@ An example:
      maxvalue: 0
      passedBenchmark:  238      # number of passed obs
 
-The above YAML is checking the derivative of :code:`air_pressure` with respect to :code:`datetime` for a radiosonde profile and rejecting observations where the derivative is positive and less than -50 Pa/sec.
+The above YAML is checking the derivative of :code:`air_pressure` with respect to :code:`datetime` for a radiosonde profile and rejecting observations where the derivative is positive or less than -50 Pa/sec.
 
 The options for YAML include:
  - :code:`independent`: the name of the independent variable (:code:`dx`)
