@@ -13,7 +13,7 @@ MPI partition
 -------------
 
 :code:`MPI_WORLD` (the communicator containing all the tasks requested for running an application) is split into several separate communicators; as many as there are members in the ensemble. Each ensemble member is then run on one of these MPI communicators. The members only know about their **designated communicator** until the end of the run and at the moment there is no communication between different ensemble members.
-To run the Ensemble Application to completion correctly, you need to allocate members x typical number of tasks for your application MPI tasks.
+To run the Ensemble Application to completion correctly, you need to allocate :math:`members * typical number of tasks for your application` MPI tasks.
 
 Templated Ensemble Application
 ------------------------------
@@ -23,9 +23,9 @@ There is only one :code:`EnsembleApplication` to handle all three options in OOP
 How to run an Ensemble Application
 ----------------------------------
 
-Like all the other applications in OOPS, the Ensemble Application takes a yaml file as argument. The yaml file for this application differs from the typical yaml files in that it will be a **list of yaml files**, see the :ref:`example below <yaml-file-0>`.
+Like all the other applications in OOPS, the Ensemble Application takes a yaml file as argument. The yaml file for this application differs from the typical yaml files in that it will be a **list of yaml files**, see the :ref:`example below <yaml-file>` to run EnsHofX with five members.
 
-.. _yaml-file-0:
+.. _yaml-file:
 
 .. code:: yaml
 
@@ -38,9 +38,9 @@ Like all the other applications in OOPS, the Ensemble Application takes a yaml f
       - "testinput/ens_hofx_5.yaml"
 
 
-The first member of your ensemble will run the first file in the list, the second one will run the second one, ... In order to run an Ensemble Hofx with 5 members, you would need 6 yaml files.
+The first member of the ensemble will run HofX with the first file in the list, the second one will run HofX the second file, ... In order to run an Ensemble Hofx with five members, you need a total of six yaml files (the one passed to the EnsembleApplication, plus one for each member). In this case, each :code:`ens_hofx_{i}.yaml` file contains the exact HofX yaml file for member{i}.
 
-
-
-
-yaml: how to specify number of members; links to yaml explanations for Forecast, Variational, HofX
+More about how to write yaml files for:
+- Forecast
+- HofX
+- Variational
