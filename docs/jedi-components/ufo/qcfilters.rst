@@ -178,6 +178,24 @@ The syntax of this ObsFilter is also identical to that of "where" statement, but
      - variable: something@MetaData
        is_not_defined
 
+Thinning Filter
+---------------
+
+This filter rejects a specified fraction of observations, selected at random. It supports the following YAML parameters:
+
+- :code:`amount`: the fraction of observations to reject (a number between 0 and 1).
+- :code:`random seed` (optional): an integer used to initialize a random number generator if it has not been initialized yet. If not set, the seed is derived from the calendar time.
+
+Note: because of how this filter is implemented, the fraction of rejected observations may not be exactly equal to :code:`amount`, especially if the total number of observations is small.
+
+Example:
+
+.. code:: yaml
+
+  - filter: Thinning
+    amount: 0.75
+    random seed: 125
+
 Gaussian Thinning Filter
 -------------------------
 
