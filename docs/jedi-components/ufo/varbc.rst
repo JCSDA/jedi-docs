@@ -1,8 +1,5 @@
 .. _top-ufo-varbc:
 
-.. role:: raw-html(raw)
-  :format: html
-
 Variational Bias Correction in UFO
 ======================================
   .. note::
