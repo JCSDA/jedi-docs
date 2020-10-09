@@ -112,29 +112,29 @@ In this example, all observations from channel 3 will pass QC because the filter
      filter variables: 
      - name: eastward_wind
      - name: northward_wind
-     maxvalue: 40
+     minvalue: -40
+     maxvalue:  40
 
-In the above example two filters are configured, one testing temperature, and the other testing wind components. The first filter would reject all temperature observations that are below 230. The second, all wind component observations that are above 40.
+In the above example two filters are configured, one testing temperature, and the other testing wind components. The first filter would reject all temperature observations that are below 230. The second, all wind component observations whose magnitude is above 40.
 
-It is also possible to use the :code:`test variables` keyword to reject observations of a variable if the value of *another* lies outside specified bounds. For example, the following snippet filters out brightness temperature observations from channels 1-6 and 15 if the corresponding surface temperature Jacobian is below 0.2:
+In practice, one would be more likely to want to filter out wind component observations based on the value of the wind speed :code:`sqrt(eastward_wind**2 + northward_wind**2)`. This can be done using the :code:`test variables` keyword, which rejects observations of a variable if the value of *another* lies outside specified bounds. The "test variable" does not need to be a simulated variable; in particular, it can be an :ref:`ObsFunction <obs-function-and-obs-diagnostic-suffixes>`, i.e. a quantity derived from simulated variables. For example, the following snippet filters out wind component observations if the wind speed is above 40:
 
 .. code:: yaml
 
    - filter: Bounds Check
      filter variables:
-     - name: brightness_temperature
-       channels: 1-6,15
+     - name: eastward_wind
+     - name: northward_wind
      test variables:
-     - name: brightness_temperature_jacobian_surface_temperature@ObsDiag
-       channels: 1-6,15
-     minvalue: 0.2
+     - name: Velocity@ObsFunction
+     maxvalue: 40
 
 If there is only one entry in the :code:`test variables` list, the same criterion is applied to all filter variables. Otherwise the number of test variables needs to match that of filter variables, and each filter variable is filtered according to the values of the corresponding test variable.
 
 Background Check Filter
 -----------------------
 
-This filter checks for bias corrected distance between observation value and model simulated value (y-H(x)) and rejects obs where the absolute difference is larger than abs_threshold or threshold * sigma_o when the filter action is set to "reject". This filter can also adjust observation error through a constant inflation factor when the filter action is set to "inflate error". If no action section is included in the yaml, the filter is set to reject the flagged observations.
+This filter checks for bias corrected distance between observation value and model simulated value (:math:`y-H(x)`) and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * sigma_o when the filter action is set to :code:`reject`. This filter can also adjust observation error through a constant inflation factor when the filter action is set to :code:`inflate error`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
 
 .. code:: yaml
 
@@ -169,7 +169,11 @@ Please see the :ref:`Filter Actions <filter-actions>` section for more detail.
 Domain Check Filter
 -------------------
 
-This filter retains all observations selected by the :ref:`"where" statement <where-statement>` and rejects all others. For example:
+This filter retains all observations selected by the :ref:`"where" statement <where-statement>` and rejects all others. Below, the filter is configured to retain only observations
+* taken at locations where the sea surface temperature retrieved from the model is between 200 and 300 K (inclusive)
+* with valid :code:`height` metadata (not set to "missing value")
+* taken by stations with IDs 3, 6 or belonging to the range 11-120
+* without valid :code:`air_pressure` metadata.
 
 .. code:: yaml
 
@@ -186,31 +190,21 @@ This filter retains all observations selected by the :ref:`"where" statement <wh
          name: station_id@MetaData
        is_in: 3, 6, 11-120
      - variable: 
-         name: something@MetaData
+         name: air_pressure@MetaData
        is_not_defined:
 
-Blacklist Filter
+BlackList Filter
 ----------------
 
-This filter behaves like the exact opposite of Domain Check: it rejects all observations selected by the :ref:`"where" statement <where-statement>` statement and retains all others:
+This filter behaves like the exact opposite of Domain Check: it rejects all observations selected by the :ref:`"where" statement <where-statement>` statement and retains all others. Below, the filter is configured to reject observations taken by stations with IDs 1, 7 or belonging to the range 100-199:
 
 .. code:: yaml
 
-   - filter: Blacklist
+   - filter: BlackList
      where:
      - variable: 
-         name: sea_surface_temperature@GeoVaLs
-       minvalue: 200
-       maxvalue: 300
-     - variable:
-         name: height@MetaData
-       is_defined:
-     - variable:
          name: station_id@MetaData
-       is_in: 3, 6, 11-120
-     - variable:
-         name: something@MetaData
-       is_not_defined:
+       is_in: 1, 7, 100-199
 
 Gaussian Thinning Filter
 ------------------------
