@@ -83,8 +83,8 @@ The project leads assume responsibility for delivery of the JEDI software to the
 
 In terms of direct software development, project leads serve as contributors, reviewers, and administrators to the GitHub repositories that host the JEDI code.  Administrators are responsible for controlling access to the repositories and merging pull requests after they pass code reviews.  No code is merged until other developers attest to its scientific and technical quality and verify that it satisfies coding standards, is well documented, and passes all tests.
 
-Contributor
------------
+Contributors
+------------
 
 A contributor is anyone who writes code, documentation, designs, or other work to the project; a person becomes a developer when their pull request is accepted;.  This includes JCSDA core staff, in-kind staff, and external contributors or contractors.  Contributors participate in the JEDI project by submitting, reviewing and discussing GitHub pull requests and issues and participating in open and public project discussions on GitHub, mailing lists, forums, and other channels. A contributor who contributes code is a developer.  In principle all developers should be involved in reviewing other developer’s code.
 
