@@ -6,4 +6,5 @@ OOPS Applications
    :maxdepth: 2
 
    applications
+   ensemble-applications
    variational
