@@ -366,8 +366,8 @@ taken up to 20 min after the first qualifying observation if its quality score i
       priority_variable:
         name: score@MetaData
 
-Difference Filter
------------------
+Difference Check Filter
+-----------------------
 
 This filter will compare the difference between a reference variable and a second variable and assign a QC flag if the difference is outside of a prescribed range.
 
@@ -392,8 +392,8 @@ The options for YAML include:
 
 Note that :code:`threshold` supersedes :code:`minvalue` and :code:`maxvalue` in the filter.
 
-Derivative Filter
------------------
+Derivative Check Filter
+-----------------------
 
 This filter will compute a local derivative over each observation record and assign a QC flag if the derivative is outside of a prescribed range.
 
@@ -532,8 +532,8 @@ Example:
      rejection_threshold: 0.5
      station_id_variable: station_id@MetaData
 
-Profile Consistency Checks
---------------------------
+ProfileConsistencyChecks
+------------------------
 
 .. _profconcheck_overview:
 
