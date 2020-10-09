@@ -1155,7 +1155,7 @@ By default, filters are applied only before the first iteration of the outer loo
 Creating a New Filter
 ---------------------
 
-If none of the existing filters meets your requirements, you may need to write a new one. If possible, make it generic (applicable to arbitrary observation types). The source code of UFO filters is stored in the :code:`ufo/src/ufo/filters` folder.
+If none of the filters described above meets your requirements, you may need to write a new one. If possible, make it generic (applicable to arbitrary observation types). The source code of UFO filters is stored in the :code:`ufo/src/ufo/filters` folder. You may find it useful to refer to the JEDI Academy tutorials on `writing <http://academy.jcsda.org/2020-02/pages/activities/day2b.html>`_ and `testing <http://academy.jcsda.org/2020-02/pages/activities/day4a.html>`_ a filter.
 
 When writing a new filter, consider using the :ref:`Parameter-classes`
 to automate extraction of filter parameters from YAML files.
