@@ -3,142 +3,109 @@
 Observation Operators in UFO
 =============================
 
-Vertical Interpolation (VertInterp)
------------------------------------
+Vertical Interpolation
+----------------------
 
 Description:
 ^^^^^^^^^^^^
 Vertical interpolation observation operator implements linear interpolation in vertical coordinate. If vertical coordinate is air_pressure, interpolation is done in logarithm of air pressure. For all other vertical coordinates interpolation is done in specified coordinate (no logarithm applied)
 
-Code:
-^^^^^
-
-:code:`ufo/vertinterp/`
-
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
-* VertCoord [optional] : specifies which vertical coordinate to use in interpolation. If air_pressure is used, the interpolation is done in log(air pressure). Default value is air pressure.
+* :code:`vertical coordinate` [optional] : specifies which vertical coordinate to use in interpolation. If air_pressure is used, the interpolation is done in log(air pressure). Default value is air pressure.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 .. code:: yaml
 
-  ObsOperator:
+  obs operator:
     name: VertInterp
 
-ObsOperator in the above example does vertical interpolation in log(air pressure).
+Observation operator in the above example does vertical interpolation in log(air pressure).
 
 .. code:: yaml
 
-  ObsOperator:
+  obs operator:
     name: VertInterp
-    VertCoord: height
+    vertical coordinate: height
 
-ObsOperator in the above example does vertical interpolation in height.
+Observation operator in the above example does vertical interpolation in height.
 
-(AtmSfcInterp)
------------------------------------
-
-Description:
-^^^^^^^^^^^^
-
-Code:
-^^^^^
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-
-Atmosphere Vertical Layer Interpolation (AtmVertInterpLay)
-----------------------------------------------------------
+Atmosphere Vertical Layer Interpolation
+----------------------------------------
 
 Description:
 ^^^^^^^^^^^^
 
 Observational operator for vertical summation of model layers within an observational atmospheric layer where the top and bottom pressure levels are specified in cbars.
 
-Code:
-^^^^^
-
-:code:`ufo/atmvertinterplay/`
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
 .. code:: yaml
 
-  ObsOperator:
+  obs operator:
     name: AtmVertInterpLay
 
-(CRTM)
------------------------------------
+Community Radiative Transfer Model (CRTM)
+-----------------------------------------
 
 Description:
 ^^^^^^^^^^^^
 
 Interface to the Community Radiative Transfer Model (CRTM) as an observational operator.
 
-Code:
-^^^^^
-
-:code:`ufo/crtm/`
-
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The CRTM operator has some required geovals (see varin_default in ufo/crtm/ufo_radiancecrtm_mod.F90). The configurable geovals are as follows:
 
-* Absorbers : CRTM atmospheric absorber species that will be requested as geovals.  H2O and O3 are always required. So far H2O, O3, CO2 are implemented. More species can be added readily by extending UFO_Absorbers and CRTM_Absorber_Units in ufo/crtm/ufo_crtm_utils_mod.F90.
-* Clouds [optional] : CRTM cloud constituents that will be requested as geovals; can include any of Water, Ice, Rain, Snow, Graupel, Hail
-* Cloud_Fraction [optional] : sets the CRTM Cloud_Fraction to a constant value across all profiles (e.g., 1.0). Omit this option in order to request cloud_area_fraction_in_atmosphere_layer as a geoval from the model.
+* :code:`Absorbers` : CRTM atmospheric absorber species that will be requested as geovals.  H2O and O3 are always required. So far H2O, O3, CO2 are implemented. More species can be added readily by extending UFO_Absorbers and CRTM_Absorber_Units in ufo/crtm/ufo_crtm_utils_mod.F90.
+* :code:`Clouds` [optional] : CRTM cloud constituents that will be requested as geovals; can include any of Water, Ice, Rain, Snow, Graupel, Hail
+* :code:`Cloud_Fraction` [optional] : sets the CRTM Cloud_Fraction to a constant value across all profiles (e.g., 1.0). Omit this option in order to request cloud_area_fraction_in_atmosphere_layer as a geoval from the model.
 
-* LinearObsOperator [optional] : used to indicate a different configuration for K-Matrix multiplication of tangent linear and adjoint operators from the configuration used for the Forward operator.  The same profile is used in the CRTM Forward and K_Matrix calculations. Only the interface to the model will be altered. Omit LinearObsOperator in order to use the same settings across Forward, Tangent Linear, and Adjoint operators.
-* LinearObsOperator.Absorbers [optional] : controls which of the selected Absorbers will be acted upon in K-Matrix multiplication
-* LinearObsOperator.Clouds [optional] : controls which of the selected Clouds will be acted upon in K-Matrix multiplication
+* :code:`linear obs operator` [optional] : used to indicate a different configuration for K-Matrix multiplication of tangent linear and adjoint operators from the configuration used for the Forward operator.  The same profile is used in the CRTM Forward and K_Matrix calculations. Only the interface to the model will be altered. Omit :code:`linear obs operator` in order to use the same settings across Forward, Tangent Linear, and Adjoint operators.
+* :code:`linear obs operator.Absorbers` [optional] : controls which of the selected Absorbers will be acted upon in K-Matrix multiplication
+* :code:`linear obs operator.Clouds` [optional] : controls which of the selected Clouds will be acted upon in K-Matrix multiplication
 
-ObsOptions configures the tabulated coefficient files that are used by CRTM
+:code:`obs options` configures the tabulated coefficient files that are used by CRTM
 
-* ObsOptions.Sensor_ID : {sensor}_{platform} prefix of the sensor-specific coefficient files, e.g., amsua_n19
-* ObsOptions.EndianType : Endianness of the coefficient files. Either little_endian or big_endian.
-* ObsOptions.CoefficientPath : location of all coefficient files
+* :code:`obs options.Sensor_ID` : {sensor}_{platform} prefix of the sensor-specific coefficient files, e.g., amsua_n19
+* :code:`obs options.EndianType` : Endianness of the coefficient files. Either little_endian or big_endian.
+* :code:`obs options.CoefficientPath` : location of all coefficient files
 
-* ObsOptions.IRwaterCoeff [optional] : options: [Nalli (D), WuSmith]
-* ObsOptions.VISwaterCoeff [optional] : options: [NPOESS (D)]
-* ObsOptions.IRVISlandCoeff [optional] : options: [NPOESS (D), USGS, IGBP]
-* ObsOptions.IRVISsnowCoeff [optional] : options: [NPOESS (D)]
-* ObsOptions.IRVISiceCoeff [optional] : options: [NPOESS (D)]
-* ObsOptions.MWwaterCoeff [optional] : options: [FASTEM6 (D), FASTEM5, FASTEM4]
+* :code:`obs options.IRwaterCoeff` [optional] : options: [Nalli (D), WuSmith]
+* :code:`obs options.VISwaterCoeff` [optional] : options: [NPOESS (D)]
+* :code:`obs options.IRVISlandCoeff` [optional] : options: [NPOESS (D), USGS, IGBP]
+* :code:`obs options.IRVISsnowCoeff` [optional] : options: [NPOESS (D)]
+* :code:`obs options.IRVISiceCoeff` [optional] : options: [NPOESS (D)]
+* :code:`obs options.MWwaterCoeff` [optional] : options: [FASTEM6 (D), FASTEM5, FASTEM4]
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
 .. code:: yaml
 
-  ObsOperator:
+  obs operator:
     name: CRTM
     Absorbers: [H2O, O3]
     Clouds: [Water, Ice, Rain, Snow, Graupel, Hail]
-    LinearObsOperator:
+    linear obs operator:
       Absorbers: [H2O]
       Clouds: [Water, Ice]
-    ObsOptions:
+    obs options:
       Sensor_ID: amsua_n19
       EndianType: little_endian
       CoefficientPath: Data/
 
 .. code:: yaml
 
-  ObsOperator:
+  obs operator:
     name: CRTM
     Absorbers: [H2O, O3, CO2]
     Clouds: [Water, Ice]
     Cloud_Fraction: 1.0
-    ObsOptions:
+    obs options:
       Sensor_ID: iasi_metop-a
       EndianType: little_endian
       CoefficientPath: Data/
@@ -146,54 +113,53 @@ Examples of yaml:
 
 .. code:: yaml
 
-  ObsOperator:
+  obs operator:
     name: CRTM
     Absorbers: [H2O, O3]
-    LinearObsOperator:
+    linear obs operator:
       Absorbers: [H2O]
-    ObsOptions:
+    obs options:
       Sensor_ID: abi_g16
       EndianType: little_endian
       CoefficientPath: Data/
 
-(AOD)
------------------------------------
+Aerosol Optical Depth (AOD)
+----------------------------
 
-Description: The operator to calculate Aerosol Optical Depth for GOCART aerosol parameterization. It relies on the implementation of GOCART in the CRTM. This implementation includes hydorphillic and hydrophobic black and organic carbonaceous species, sulphate, five dust bins (radii: 0.1-1, 1.4-1.8, 1.8-3.0, 3.0-6.0, 6.0-10. um), and four sea-salt bins (dry aerosol radii: 0.1-0.5, 0.5-1.5, 1.5-5.0, 5.0-10.0 um). AOD is calculated using CRTM's tables of optical properties for these aerosols. Some modules are shared with CRTM radiance UFO.
-On input, the operator requires aerosol mixing ratios, interface and mid-layer pressure, air temperature and specific / relative humidity for each model layer.
-
+Description:
 ^^^^^^^^^^^^
 
-Code:
-:code:`ufo/crtm/`
+The operator to calculate Aerosol Optical Depth for GOCART aerosol parameterization. It relies on the implementation of GOCART in the CRTM. This implementation includes hydorphillic and hydrophobic black and organic carbonaceous species, sulphate, five dust bins (radii: 0.1-1, 1.4-1.8, 1.8-3.0, 3.0-6.0, 6.0-10. um), and four sea-salt bins (dry aerosol radii: 0.1-0.5, 0.5-1.5, 1.5-5.0, 5.0-10.0 um). AOD is calculated using CRTM's tables of optical properties for these aerosols. Some modules are shared with CRTM radiance UFO.
+On input, the operator requires aerosol mixing ratios, interface and mid-layer pressure, air temperature and specific / relative humidity for each model layer.
+
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Absorbers: (Both are required; No clouds since AOD retrievals are not obtained in cloudy regions):
+:code:`Absorbers`: (Both are required; No clouds since AOD retrievals are not obtained in cloudy regions):
 * H2O to determine radii of hygrophillic aerosols particles
 * O3 not strictly affecting aerosol radiative properties but required to be entered by the CRTM (here mixing ratio assigned a default value)
 
-ObsOptions:
-* Sensor_ID: v.viirs-m_npp
+:code:`obs options`:
+* :code:`Sensor_ID`: v.viirs-m_npp
 * Other possibilities: v.modis_aqua, v.modis_terra
-AerosolOption: aerosols_gocart_default (Currently, that's the only one that works)
+:code:`AerosolOption`: aerosols_gocart_default (Currently, that's the only one that works)
 
 Example of a yaml:
 ^^^^^^^^^^^^^^^^^^
 .. code:: yaml
 
-   ObsOperator:
+   obs operator:
      name: Aod
      Absorbers: [H2O,O3]
-     ObsOptions:
+     obs options:
        Sensor_ID: v.viirs-m_npp
        EndianType: little_endian
        CoefficientPath: Data/
        AerosolOption: aerosols_gocart_default
 
-(GnssroBndBNAM)
------------------------------------
+GNSS RO bending angle (NCEP)
+-----------------------------
 
 Description:
 ^^^^^^^^^^^^
@@ -201,11 +167,6 @@ Description:
 A one-dimensional observation operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO) bending
 angle data based on the  NBAM (NCEP's Bending Angle Method)
-
-Code:
-^^^^^
-
-:code:`ufo/gnssro/BndNBAM`
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -286,8 +247,8 @@ Examples of yaml:
       threshold: 3
 
 
-(GnssroBndROPP1D)
------------------------------------
+GNSS RO bending angle (ROPP 1D)
+--------------------------------
 
 Description:
 ^^^^^^^^^^^^
@@ -297,17 +258,13 @@ a one-dimensional observation operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO) bending
 angle data
 
-Code:
-^^^^^
-:code:`ufo/gnssro/BndROPP1D`
-
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
-1. configurables in "ObsSpace" section:
+1. configurables in "obs space" section:
 
    a. obsgrouping: applying record_number as a group_variable can get RO profiles in ufo. Otherwise RO data would be  treated as single observations.
 
-2. configurables in "ObsFilters" section:
+2. configurables in "obs filters" section:
 
    a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
 
@@ -354,7 +311,7 @@ Examples of yaml:
      - name: [bending_angle]
      threshold: 3
 
-(GnssroBndROPP2D)
+GNSS RO bending angle (ROPP 2D)
 -----------------------------------
 
 Description:
@@ -365,13 +322,10 @@ a two-dimensional observation operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO) bending
 angle data
 
-Code:
-^^^^^
-:code:`ufo/gnssro/BndROPP2D`
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
-1. configurables in "ObsOperator" section:
+1. configurables in "obs operator" section:
 
   a. n_horiz: The horizontal points the operator integrates along the 2d plane. Default is 31. Has to be a even number.
 
@@ -379,11 +333,11 @@ Configuration options:
 
   c. top_2d: the highest height to apply the 2d operator. Default is 20 km.
 
-2. configurables in "ObsSpace" section:
+2. configurables in "obs space" section:
 
   a. obsgrouping: applying record_number as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
 
-3. configurables in "ObsFilters" section:
+3. configurables in "obs filters" section:
 
   a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
 
@@ -395,7 +349,6 @@ Configuration options:
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
-:code:`ufo/test/testinput/gnssrobndropp2d.yaml`
 
 .. code:: yaml
 
@@ -434,7 +387,7 @@ Examples of yaml:
      - name: [bending_angle]
      threshold: 3
 
-(GnssroBendMetOffice)
+GNSS RO bending angle (MetOffice)
 -----------------------------------
 
 Description:
@@ -444,10 +397,6 @@ The JEDI UFO interface of the Met Office's one-dimensional observation
 operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO) bending
 angle data
-
-Code:
-^^^^^
-:code:`ufo/gnssro/BendMetOffice`
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -508,8 +457,8 @@ publications:
    *Atmospheric Measurement Techniques*, **7**: 3445--3458.
    doi: http://dx.doi.org/10.5194/amt-7-3445-2014
 
-(GnssroRef)
------------------------------------
+GNSS RO refractivity
+----------------------
 
 Description:
 ^^^^^^^^^^^^
@@ -518,14 +467,10 @@ A one-dimensional observation operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO)
 refractivity data.
 
-Code:
-^^^^^
-:code:`ufo/gnssro/Ref`
-
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
 
-1. configurables in "ObsFilters" section:
+1. configurables in "obs filters" section:
 
   a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Recommended value is 30 km for GnssroRef.
 
@@ -568,282 +513,64 @@ Examples of yaml:
      - name: [refractivity]
      threshold: 3
 
-(Identity)
+Identity observation operator
 -----------------------------------
 
 Description:
 ^^^^^^^^^^^^
 
-Code:
-^^^^^
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
+A simple identity observation operator, can be used for all cases where observation operator only does horizontal interpolation of model variables.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
-(ADT)
------------------------------------
+.. code:: yaml
 
-Description:
-^^^^^^^^^^^^
+   obs operator:
+     name: Identity
 
-Code:
-^^^^^
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-
-(CoolSkin)
------------------------------------
-
-Description:
-^^^^^^^^^^^^
-
-Code:
-^^^^^
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-
-(InsituTemperature)
------------------------------------
-
-Description:
-^^^^^^^^^^^^
-
-Code:
-^^^^^
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-
-(MarineVertInterp)
------------------------------------
-
-Description:
-^^^^^^^^^^^^
-
-Code:
-^^^^^
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-
-(SeaIceFraction)
------------------------------------
-
-Description:
-^^^^^^^^^^^^
-
-Code:
-^^^^^
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-
-(SeaIceThickness)
------------------------------------
-
-Description:
-^^^^^^^^^^^^
-
-Code:
-^^^^^
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-
-(RadialVelocity)
------------------------------------
-
-Description:
-^^^^^^^^^^^^
-
-Code:
-^^^^^
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-
-Radar Reflectivity (RadarReflectivity)
---------------------------------------
+Radar Reflectivity
+----------------------
 
 Description:
 ^^^^^^^^^^^^
 
 UFO radar operator for reflectivity. It is tested with radar observations dumped from a specific modified GSI program at NSSL for the Warn-on-Forecast project.
 
-Code:
-^^^^^
-
-.. code:: bash
-
-  ufo/radarreflectivity
-
-    CMakeLists.txt
-    ObsRadarReflectivity.cc
-    ObsRadarReflectivity.h
-    ObsRadarReflectivity.interface.F90
-    ObsRadarReflectivity.interface.h
-    ObsRadarReflectivityTLAD.cc
-    ObsRadarReflectivityTLAD.h
-    ObsRadarReflectivityTLAD.interface.F90
-    ObsRadarReflectivityTLAD.interface.h
-    ufo_radarreflectivity_mod.F90
-    ufo_radarreflectivity_tlad_mod.F90
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
-See :code:`test/testinput/reflectivity.yaml`
-
 .. code:: yaml
 
-  window_begin: 2019-05-22T21:55:00Z
-  window_end: 2019-05-22T22:05:00Z
-
-  LinearObsOpTest:
-    coefTL: 0.1
-    toleranceTL: 1.0e-13
-    toleranceAD: 1.0e-11
-
-  Observations:
-    ObsTypes:
-    - ObsOperator:
-        name: RadarReflectivity
-        VertCoord: geopotential_height
-      ObsSpace:
-        name: Radar
-        ObsDataIn:
-          obsfile: Data/radar_dbz_obs_2019052222.nc4
-        simulate:
-          variables: [equivalent_reflectivity_factor]
-      GeoVaLs:
-        filename: Data/radar_dbz_geoval_2019052222.nc4
-      vecequiv: GsiHofX
-      tolerance: 1.0e-05
+  observations:
+  - obs operator:
+      name: RadarReflectivity
+      VertCoord: geopotential_height
+    obs space:
+      name: Radar
+      obsdatain:
+        obsfile: Data/radar_dbz_obs_2019052222.nc4
+      simulated variables: [equivalent_reflectivity_factor]
 
 
-Radar Radial Velocity (Radarradialvelocity)
--------------------------------------------
+Radar Radial Velocity
+--------------------------
 
 Description:
 ^^^^^^^^^^^^
 
 Similar to RadarReflectivity, but for radial velocity. It is tested with radar observations dumped from a specific modified GSI program at NSSL for the Warn-on-Forecast project.
 
-Code:
-^^^^^
-
-.. code:: bash
-
-   ufo/radarradialvelocity
-
-     CMakeLists.txt
-     ObsRadarRadialVelocity.cc
-     ObsRadarRadialVelocity.h
-     ObsRadarRadialVelocity.interface.F90
-     ObsRadarRadialVelocity.interface.h
-     ObsRadarRadialVelocityTLAD.cc
-     ObsRadarRadialVelocityTLAD.h
-     ObsRadarRadialVelocityTLAD.interface.F90
-     ObsRadarRadialVelocityTLAD.interface.h
-     ufo_radarradialvelocity_mod.F90
-     ufo_radarradialvelocity_tlad_mod.F90
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
-
-see :code:`test/testinput/radialvelocity.yaml`
 
 .. code:: yaml
 
-  window_begin: 2019-05-22T21:55:00Z
-  window_end: 2019-05-22T22:05:00Z
-
-  LinearObsOpTest:
-    coefTL: 0.1
-    toleranceTL: 1.0e-13
-    toleranceAD: 1.0e-11
-
-  Observations:
-    ObsTypes:
-    - ObsOperator:
-        name: RadarRadialVelocity
-      ObsSpace:
-        name: Radar
-        ObsDataIn:
-          obsfile: Data/radar_rw_obs_2019052222.nc4
-        simulate:
-          variables: [radial_velocity]
-      ObsFilters:
-      - Filter: Domain Check
-        variables: [radial_velocity]
-        where:
-        - variable: height@MetaData
-          minvalue: 0
-          maxvalue: 10000
-      GeoVaLs:
-        filename: Data/radar_rw_geoval_2019052222.nc4
-      vecequiv: GsiHofX
-      tolerance: 1.0e-05
-
-
-(RTTOV)
------------------------------------
-
-Description:
-^^^^^^^^^^^^
-
-Code:
-^^^^^
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-
-(TimeOper)
------------------------------------
-
-Description:
-^^^^^^^^^^^^
-
-Code:
-^^^^^
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
+  observations:
+  - obs operator:
+      name: RadarRadialVelocity
+    obs space:
+      name: Radar
+      obsdatain:
+        obsfile: Data/radar_rw_obs_2019052222.nc4
+      simulated variables: [radial_velocity]
