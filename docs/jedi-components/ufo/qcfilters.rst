@@ -1085,6 +1085,8 @@ In addition to, e.g., :code:`@GeoVaLs`, :code:`@MetaData`, :code:`@ObsValue`, :c
         - variable: Velocity@ObsFunction
           maxvalue: 20.0
 
+  Warning: ObsFunctions are evaluated for all observations, including those that have been unselected by previous elements of the :code:`where` list or rejected by filters run earlier. This can lead to problems if these ObsFunctions incorrectly assume they will always be given valid inputs.
+
 - :code:`@ObsDiagnostic` will be used to store non-H(x) diagnostic values from the :code:`simulateObs` function in individual :code:`ObsOperator` classes.  The :code:`ObsDiagnostics` interface class in OOPS is used to pass those diagnostics to the :code:`ObsFilters`.  Because the diagnostics are provided by :code:`simulateObs`, they can only be used in filters that implement the :code:`postFilter` function (currently only Background Check and Met Office Buddy Check).  The :code:`simulateObs` interface to :code:`ObsDiagnostics` will be first demonstrated in CRTM.
 
 .. _where-statement:
