@@ -1,8 +1,16 @@
-.. _top-oops-toymodels:
+.. _BUMP:
 
 BUMP
 ====
 
-BUMP is the B matrix on an Unstructured Mesh Package.  It can be used to used to compute and apply background covariance matrices using either ensemble, static, or hybrid methods.
+The BUMP (B matrix on an Unstructured Mesh Package) library estimates and applies background error covariance-related operators, defined on an unstructured mesh.
 
-`BUMP documentation is available on the SABER GitHub repository <https://github.com/jcsda/saber>`_.
+A introductory video produced for the JEDI Academy is available `here <http://academy.jcsda.org/2020-02/slides/2020-02-26-BUMP.mp4>`_ (`PDF slides <http://academy.jcsda.org/2020-02/slides/2020-02-26-BUMP.pdf>`_)
+
+.. toctree::
+   :maxdepth: 2
+
+   goals_and_code_organization.rst
+   getting_started.rst
+   theoretical_documentation.rst
+   auto_documentation.rst
