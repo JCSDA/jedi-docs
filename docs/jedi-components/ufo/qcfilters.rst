@@ -82,7 +82,7 @@ This section describes how to configure each of the existing QC filters in UFO. 
 Bounds Check Filter
 -------------------
 
-This filter rejects observations whose values (@ObsValue in the ioda files) lie outside specified limits:
+This filter rejects observations whose values (:code:`@ObsValue` in the ioda files) lie outside specified limits:
 
 .. code:: yaml
 
@@ -1066,12 +1066,14 @@ Examples:
                    0.300,  0.230,  0.250,  0.250,  0.350,
                    0.400,  0.550,  0.800,  3.000, 18.000]
 
+.. _obs-function-and-obs-diagnostic-suffixes:
+
 ObsFunction and ObsDiagnostic Suffixes
 --------------------------------------
 
-In addition to, e.g., @GeoVaLs, @MetaData, @ObsValue, @HofX, there are two new suffixes that can be used.
+In addition to, e.g., :code:`@GeoVaLs`, :code:`@MetaData`, :code:`@ObsValue`, :code:`@HofX`, there are two new suffixes that can be used.
 
-- @ObsFunction requires that a particular variable is defined as an ObsFunction class under ufo/src/ufo/obsfunctions.  One example of an ObsFunction is Velocity@ObsFunction, which uses the 2 wind components to produce windspeed and can be used as follows:
+- :code:`@ObsFunction` indicates that a particular variable should be a registered :code:`ObsFunction` (:code:`ObsFunction` classes are defined in the :code:`ufo/src/ufo/filters/obsfunctions` folder).  One example of an :code:`ObsFunction` is :code:`Velocity@ObsFunction`, which uses the 2 wind components to produce wind speed and can be used as follows:
 
   .. code:: yaml
 
@@ -1083,7 +1085,7 @@ In addition to, e.g., @GeoVaLs, @MetaData, @ObsValue, @HofX, there are two new s
         - variable: Velocity@ObsFunction
           maxvalue: 20.0
 
-- @ObsDiagnostic will be used to store non-h(x) diagnostic values from the simulateObs function in individual ObsOperator classes.  The ObsDiagnostics interface class to OOPS is used to pass those diagnostics to the ObsFilters.  Because the diagnostics are provided by simulateObs, they can only be used in a PostFilter.  The generic filters will need to have PostFilter functions implemented (currently only Background Check) in order to use ObsDiagnostics.  The simulateObs interface to ObsDiagnostics will be first demonstrated in CRTM.
+- :code:`@ObsDiagnostic` will be used to store non-H(x) diagnostic values from the :code:`simulateObs` function in individual :code:`ObsOperator` classes.  The :code:`ObsDiagnostics` interface class in OOPS is used to pass those diagnostics to the :code:`ObsFilters`.  Because the diagnostics are provided by :code:`simulateObs`, they can only be used in filters that implement the :code:`postFilter` function (currently only Background Check and Met Office Buddy Check).  The :code:`simulateObs` interface to :code:`ObsDiagnostics` will be first demonstrated in CRTM.
 
 .. _where-statement:
 
