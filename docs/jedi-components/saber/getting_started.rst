@@ -96,7 +96,7 @@ This section provides some examples of the :code:`bump` section of the yaml inpu
       resol: 8.0                       # NICAS subgrid resolution
       strategy: specific_univariate    # HDIAG and NICAS multivariate strategy (here: specific auto-correlation for each variable)
 
-  Other operators that can be useful for the static covariance matrix - vertical balance and variance - can be generated simulateously using the ensemble. The corresponding yaml keys in the :code:`bump` section are:
+  Other operators that can be useful for the static covariance matrix - vertical balance and variance - can be generated simultaneously using the ensemble. The corresponding yaml keys in the :code:`bump` section are:
 
   * For the vertical balance:
 
@@ -104,7 +104,7 @@ This section provides some examples of the :code:`bump` section of the yaml inpu
 
       bump: # (continued)
         new_vbal: 1                      # Run VBAL driver
-        vbal_block: [0,1,1,0,1,0]        # Activate the multivariate blocks 
+        vbal_block: [0,1,1,0,1,0]        # Activate the multivariate blocks
                                          # Here with 3 variables, the blocks K2, K3 and K5 are activated:
                                          # K = [I  0  0  0]
                                          #     [K1 I  0  0]
@@ -205,9 +205,9 @@ This section provides some examples of the :code:`bump` section of the yaml inpu
 Alias system
 ^^^^^^^^^^^^
 
-If you wish to apply the same NICAS operator to several variables, you can define an alias that is used at both generation and application steps, in order to save computing time and memory. 
+If you wish to apply the same NICAS operator to several variables, you can define an alias that is used at both generation and application steps, in order to save computing time and memory.
 
-For instance, the static correlation operator is generated and applied with the :code:`method: specific_univariate` (specific auto-correlation for each variable), and the same length-scales for the 5 variables: :code:`u, v, T, q` that are 3D and :code:`ps` that is 2D. 
+For instance, the static correlation operator is generated and applied with the :code:`method: specific_univariate` (specific auto-correlation for each variable), and the same length-scales for the 5 variables: :code:`u, v, T, q` that are 3D and :code:`ps` that is 2D.
 
 Instead of running :code:`EstimateParams.h` for this 5 variables, you can run it for one 3D and one 2D variables only (for instance :code:`T` and :code:`ps`), and add the following keys in the yaml file:
 
