@@ -5,7 +5,7 @@ An accurate weather forecast depends on two fundamental ingredients.  First, you
 
 JEDI brings these two fundamental ingredients together within the scientific discipline of Data Assimilation (DA).
 
-The long term objective of the Joint Effort for Data assimilation Integration (JEDI) is to provide a unified data assimilation framework for research and operational use, for different components of the Earth system, and for different applications, with the objective of reducing or avoiding redundant work within the community and increasing efficiency of research and of the transition from development teams to operations.
+The long term objective of JEDI is to provide a unified data assimilation framework for research and operational use, for different components of the Earth system, and for different applications, with the objective of reducing or avoiding redundant work within the community and increasing efficiency of research and of the transition from development teams to operations.
 
 JEDI is a community effort.  The :doc:`code management structure <../working-practices/index>` welcomes engagement from the wider scientific community while remaining tightly controlled for operational use.
 

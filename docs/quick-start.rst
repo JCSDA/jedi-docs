@@ -32,7 +32,7 @@ All JEDI bundles include the base JEDI repositories of of :doc:`OOPS <jedi-compo
 
 Which JEDI bundle you build depends on which atmospheric or oceanic model you plan to work with.  For new users, a good place to start is :code:`ufo-bundle`.  This has all of the JEDI base repositories and, through OOPS, it also contains several illustrative :doc:`toy models <jedi-components/oops/toy-models>` that can be used to run fundamental data assimilation applications.
 
-When you have your JEDI dependencies all set, you can build ufo-bundle with the following commands.  :code:`<jedi-path>` represents a directory of your choice - wherever you want to download, build, and run the JEDI code.  If you're working on your laptop, this might be your home directory or if you're working on an HPC system it might be some designated work filesystem.
+When you have your JEDI dependencies all set, you can build ufo-bundle with the following commands:
 
 .. code:: bash
 
@@ -44,7 +44,7 @@ When you have your JEDI dependencies all set, you can build ufo-bundle with the 
    make update
    make -j4
 
-The :code:`-j4` option asks :code:`make` to use four parallel processes; if you have a larger system you may wish to use more.  The optional :code:`--build=Release` option tells :code:`ecbuild` to build an optimized version of the code.  If omitted the code will still build but applications may run somewhat slower.  The :code:`make update` step is not strictly necessary the first time you build a bundle but it's good to get in the habit of running it.  This updates your code to the latest release versions on GitHub.
+:code:`<jedi-path>` represents a directory of your choice - wherever you want to download, build, and run the JEDI code.  If you're working on your laptop, this might be your home directory or if you're working on an HPC system it might be some designated work filesystem.  The :code:`-j4` option asks :code:`make` to use four parallel processes; if you have a larger system you may wish to use more.  The optional :code:`--build=Release` option tells :code:`ecbuild` to build an optimized version of the code.  If omitted the code will still build but applications may run somewhat slower.  The :code:`make update` step is not strictly necessary the first time you build a bundle but it's good to get in the habit of running it.  This updates your code to the latest release versions on GitHub.
 
 For further details on build options and working with bundles see :doc:`Building and Running JEDI <developer/building_and_testing/building_jedi>`.
 
