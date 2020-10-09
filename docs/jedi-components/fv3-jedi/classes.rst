@@ -1,11 +1,15 @@
   .. _top-fv3-jedi-classes:
 
+.. _classes:
+
 Classes and Configuration
 =========================
 
 This page describes the classes that are implemented in FV3-JEDI. It explains in broad terms what
 they are responsible for, how they are implemented and explains the configuration options that are
 available for controlling their behavior.
+
+.. _geometry:
 
 Geometry
 --------
@@ -166,6 +170,7 @@ In the above :code:`nested` tells the sytem to setup a nested grid. Quantities :
 :code:`target_lat`, :code:`target_lon` and :code:`stretch_fac` tell FV3 to do a stretching and where
 to center the higher resolution region.
 
+.. _fieldmetadata:
 
 FieldMetadata
 -------------
@@ -229,6 +234,7 @@ about which file a variable is read from and to.
 How the FieldMetadata is provided is up to the user. There can be multiple files containing multiple
 FieldMetadata passed into the :code:`FieldSets` part of the Geometry configuration.
 
+.. _stateincfield:
 
 State / Increment / Field
 -------------------------
@@ -328,23 +334,168 @@ It is possible to allocate an array and copy the array part of the field into th
    call allocate_copy_field_array(state%fields, 't', t)
 
 
+.. _io:
+
 IO
 --
+
+Input/Output (IO) in FV3-JEDI appears in its own directory, although it is not technically its own
+interface class. The methods read and write are part of State and Increment but are also designed to be
+accessible from other parts of the code and are currently called by by the :ref:`pseudo` and also by
+the :ref:`a2m` variable change. The IO methods do not interact with the State and Increment objects,
+only the Fields.
+
+There are two IO classes provided, named :code:`io_geos` and :code:`io_gfs`. The former is for
+interacting with cube sphere states History and restarts as output by the GEOS model. The latter is
+for interacting with restarts for the GFS model. The class to use is controlled by the configuration
+as follows:
+
+.. code:: yaml
+
+  statefile:
+    filetype: geos # or gfs
+
+The below shows all the potential configuration for reading or writing a GEOS file.
+
+.. code:: yaml
+
+  statefile:
+    # Use GEOS IO
+    filetype: geos
+    # Path where file is located
+    datapath: Data/inputs/geos_c12
+    # Filenames for the five groups
+    filename_bkgd: geos.bkg.20180414_210000z.nc4
+    filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+    filename_core: fvcore_internal_rst
+    filename_mois: moist_internal_rst
+    filename_surf: surf_import_rst
+    # Do the netCDF files use an extra dimension for the tile [true]
+    tiledim: true
+    # Ingest the metadata [true]
+    geosingestmeta: false
+    # Clobber the files, i.e. overwrite them with new files [true]
+    clobber: false
+    # Set whether the variable ps is in the file [false] (affects input only)
+    psinfile: false
+
+For GEOS the code chooses which file to write a particular Field into based on the case, with upper
+case FieldIONames going into restart files, as predetermined by the model, and lower case going to
+the file input as :code:`filename_bkgd`. The file :code:`filename_crtm` covers a small number of
+special case variables, these variables are needed by the CRTM but no available from GEOS.
+
+GEOS can write cube sphere files in two ways, one is with a dimension of the variables being the
+tile number, where tile is synonymous with face. The other is to write with the 6 tiles
+concatenated to make give a dimensions of nx by 6*nx. FV3-JEDI assumes that the files include the
+tile dimension but it can also work with files with concatenated tiles, by setting :code:`tiledim`
+to false.
+
+It is possible to skip the ingest of the meta data from the files by setting
+:code:`geosingestmeta:false`.
+
+The default behavior for all the IO is to clobber the file being written to, that is to say that any
+existing file is completely overwritten. By setting :code:`geosingestmeta:false` this can be
+overridden so that and fields in the file that FV3-JEDI is not attempting to write remain in tact.
+
+The FV3 model does not use surface pressure as a prognostic variable, instead using :code:`delp` the
+'thickness' of the model levels measured in Pascals. Since surface pressure is commonly used in data
+assimilation applications a convenience has been added to the IO routines where surface pressure can
+be a field even when only pressure thickness is in the file. In some cases surface pressure might
+actually be included in the file and pressure thickness not, in these cases the flag
+:code:`psinfile:true` can be used to read surface pressure instead of deriving it.
+
+The below shows all the potential configuration for reading a GFS restart file:
+
+.. code:: yaml
+
+   statefile:
+     # Use GFS IO
+     filetype: gfs
+     # Path where file is located
+     datapath: Data/inputs/gfs_c12/bkg/
+     # GFS restart files that can be read/written
+     filename_core: fv_core.res.nc
+     filename_trcr: fv_tracer.res.nc
+     filename_sfcd: sfc_data.nc
+     filename_sfcw: fv_srf_wnd.res.nc
+     filename_cplr: coupler.res
+     filename_spec: gridspec.nc
+     filename_phys: phy_data.nc
+     filename_orog: oro_data.nc
+     filename_cold: gfs_data.nc
+     # Set whether surface pressure is in the file [false] (affects input only)
+     psinfile: false
+     # Skip reading the coupler.res file [false]
+     skip coupler file: false
+     # Add the date the beginning of the files [true]
+     prepend files with date: true
+
+Whereas with GEOS the file used to write a variable is determined by case, for GFS it is determined
+by a flag in the :ref:`fieldmetadata`. Listed above are the potential file names for the restarts
+used in GFS. For example there is :code:`filename_core`, this is file that all fields whose
+:ref:`fieldmetadata` uses :code:`IOFile: core` will be written to. All the other filenames in the
+configuration refer to other restarts used by GFS that group certain fields. The restarts include
+one text file :code:`filename_cplr: coupler.res` that contains metadata for the restart. Note that
+reading this coupler file can be disabled with :code:`skip coupler file: false` when it is not
+available and FV3-JEDI does not need the date and time information
+
+Similarly to GEOS, and described above, GFS offers the ability to convert from pressure thickness to
+surface pressure automatically during the read. The behavior can be turned off and surface pressure
+read directly from the file using the flag :code:`psinfile:true`.
+
+By defailt when the output for GFS is written the files are prepended with the date so they might
+look like, for example, "20200101_00000z.fv_core.res.tile1.nc". This can be turned off with
+:code:`prepend files with date: false`.
+
+.. _getvalues:
 
 GetValues
 ---------
 
+
+
+.. _lineargetvalues:
+
 LinearGetValues
 ---------------
+
+.. _model:
 
 Model
 -----
 
+.. _geos:
+
+GEOS
+~~~~
+
+.. _ufs:
+
+GFS/UFS
+~~~~~~~
+
+.. _pseudo:
+
+Pseudo model
+~~~~~~~~~~~~
+
+.. _fv3core:
+
+FV3 core model
+~~~~~~~~~~~~~~
+
+
+.. _linearmodel:
+
 LinearModel
 -----------
 
+.. _linearnonlinearvarchanges:
+
 Linear and nonlinear Variable Changes
 -------------------------------------
+
+.. _a2m:
 
 Analysis2Model
 ~~~~~~~~~~~~~~
