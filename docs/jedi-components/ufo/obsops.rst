@@ -37,7 +37,7 @@ Atmosphere Vertical Layer Interpolation
 Description:
 ^^^^^^^^^^^^
 
-Observational operator for vertical summation of model layers within an observational atmospheric layer where the top and bottom pressure levels are specified in cbars.
+Observational operator for vertical summation of model layers within an observational atmospheric layer where the top and bottom pressure levels are specified.
 
 Code:
 ^^^^^
@@ -617,7 +617,7 @@ Atmosphere Vertical Layer Interpolation (AtmVertInterpLev)
 Description:
 ^^^^^^^^^^^^
 
-Observational operator for vertical interpolation of model levels for an observational atmospheric level where the pressure level is specified in cbars.
+Observational operator for vertical interpolation of model levels for an observational atmospheric pressure level.
 
 Code:
 ^^^^^
