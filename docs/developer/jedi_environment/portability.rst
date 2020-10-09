@@ -17,10 +17,10 @@ These portability tools are themselves unified in order to further promote commo
 
 .. image:: images/portability.png
 
-The (public) JCSDA `jedi-stack repository <https://github.com/JCSDA/jedi-stack>`_ contains common build scripts that specify the software packages, versions, and configuration options that are required to build and run jedi.  Tagged versions of the jedi-stack will be coordinated with public JEDI releases when they become available.  These build scripts are used to build a :ref:`Docker container <docker_overview>` that is in turn used to build Singularity and Charliecloud containers that can be run on laptops, workstations, cloud platforms, and HPC systems.  Alternatively, we also use the jedi-stack directly to build environment modules on cloud platforms (e.g. AMIs) and HPC systems.  We also leverage the Docker containers for continuous integration testing by means of `Travis-CI <https://travis-ci.org/>`_
+The (public) JCSDA `jedi-stack repository <https://github.com/JCSDA/jedi-stack>`_ contains common build scripts that specify the software packages, versions, and configuration options that are required to build and run jedi.  Tagged versions of the jedi-stack will be coordinated with public JEDI releases when they become available.  These build scripts are used to build a :ref:`Docker container <docker_overview>` that is in turn used to build Singularity and Charliecloud containers that can be run on laptops, workstations, cloud platforms, and HPC systems.  Alternatively, we also use the jedi-stack directly to build environment modules on cloud platforms (e.g. AMIs) and HPC systems.  We also leverage the Docker containers for continuous integration testing by means of `Amazon CodeBuild <https://aws.amazon.com/codebuild/>`_ and `Travis-CI <https://travis-ci.org/>`_
 
 In the remainder of this page, we describe in a bit more detail the rationale behind the use of software containers and how we use Docker.  :doc:`Singularity <singularity>`, :doc:`Charliecloud <charliecloud>`, and :doc:`environment modules <modules>` are then described in separate pages.   Stay tuned for further details on how to run JEDI in the cloud.
-	   
+
 .. _Software-Containers:
 
 Software Containers
@@ -28,15 +28,15 @@ Software Containers
 
 A working definition of a sofware container is **A packaged user environment that can be "unpacked" and used across different systems, from laptops to cloud to HPC**.
 
-So, given our overview of JEDI Portability and use cases :ref:`above <top-Containers>`, containers seem like an ideal fit.  
+So, given our overview of JEDI Portability and use cases :ref:`above <top-Containers>`, containers seem like an ideal fit.
 
-From a JEDI perspective, the main purpose of containers is **Portability**: they provide a uniform computing environment (software tools, libraries, compilers, etc) across different systems.  So, users and developers can focus on working with the JEDI code without worrying about whether their version of cmake is up to date or whether or not NetCDF was configured with parallel HDF5 support (for example).  
+From a JEDI perspective, the main purpose of containers is **Portability**: they provide a uniform computing environment (software tools, libraries, compilers, etc) across different systems.  So, users and developers can focus on working with the JEDI code without worrying about whether their version of cmake is up to date or whether or not NetCDF was configured with parallel HDF5 support (for example).
 
 But containers offer other advantages as well, including the following.
 
 **BYOE: Bring Your Own Environment**: Containers let JEDI masters pick and choose which software packages and versions to include and which configuration options will allow them to work optimally with the JEDI code.  So, there is no need for users and developers to deal with compatibility issues.
 
-**Reproducibility**:  Like the JEDI code itself, containers can be tagged with public releases so that specific results such as forecasts/reanalyses or numerical experiments can be reproduced.  For example, a researcher can specify the version of JEDI and the version of the container that was used in a particular publication so that others can reproduce the results presented.  `Singularity <https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0177459>`_ takes particular care to ensure that results are reproducible. 
+**Reproducibility**:  Like the JEDI code itself, containers can be tagged with public releases so that specific results such as forecasts/reanalyses or numerical experiments can be reproduced.  For example, a researcher can specify the version of JEDI and the version of the container that was used in a particular publication so that others can reproduce the results presented.  `Singularity <https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0177459>`_ takes particular care to ensure that results are reproducible.
 
 **Workflow**: Containers enable new JEDI users to get up and running quickly.  They enable users to do code development on laptops and workstations, saving valuable HPC resources for production runs.  And, they allow for the optimal support of particular use cases.  For example, **development containers** include binary dependencies together with the compiler and MPI library that they were build with.  Users/developers would then download the JEDI source code from GitHub and compile it within the container.  By contrast, **application containers** include the compiled JEDI source code and dependencies, without the compilers themselves, ready to run (*plug and play*).  For a list of currently available containers, consult the `Containers page on the JCSDA Data Repository <http://data.jcsda.org/pages/containers.html>`_.
 
@@ -48,7 +48,7 @@ In contrast to virtual machines, containers do not include the necessary softwar
 Docker
 ------
 
-The most popular container provider is `Docker <https://www.docker.com>`_.  This was introduced in 2013 and quickly became the industry standard, now supported by a wide variety of applications and computing platforms.  But Docker has a fatal design flaw that makes it unsuitable for High Performance Computing (HPC).  Namely, Docker containers run as a child process of a root daemon.  This poses severe security risks on HPC systems because it could allow users to escalate their access privileges.  This is unlikely to change because Docker was developed for business enterprise applications where this level of control is beneficial. `See Kurtzer et al (2017) for further discussion <https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0177459>`_.  
+The most popular container provider is `Docker <https://www.docker.com>`_.  This was introduced in 2013 and quickly became the industry standard, now supported by a wide variety of applications and computing platforms.  But Docker has a fatal design flaw that makes it unsuitable for High Performance Computing (HPC).  Namely, Docker containers run as a child process of a root daemon.  This poses severe security risks on HPC systems because it could allow users to escalate their access privileges.  This is unlikely to change because Docker was developed for business enterprise applications where this level of control is beneficial. `See Kurtzer et al (2017) for further discussion <https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0177459>`_.
 
 By contrast, :doc:`Singularity <singularity>` and :doc:`Charliecloud <charliecloud>` were developed by HPC professionals for HPC applications.  Singularity in particular includes HPC features such as native support for MPI schedulers (e.g. slurm) and GPU compute cores.  Furthermore, both Singularity and Charliecloud containers can be built from Docker containers (or, more appropriately, from Docker images, which are multi-layered files that spawn Docker containers).  So, this justifies the workflow in the diagram shown :ref:`above <top-Containers>`: our JEDI Singulary and Charliecloud containers are both generated from a common Docker image.
 
@@ -66,7 +66,40 @@ If you do decide to run the JEDI Docker containers directly, be sure to log in a
 
 .. code:: bash
 
-    docker run -u jedi --rm -it jcsda/docker-<name>:latest 
+    docker run -u jedi --rm -it jcsda/docker-<name>:latest
 
-    
+
 If you log in as root (the default) then the mpi tests will likely fail.
+
+Available Containers
+--------------------
+
+The public containers currently offered by jcsda include:
+
+    - :code:`gnu-openmpi-dev`
+    - :code:`clang-mpich-dev`
+
+Containers that include :code:`-dev` in their name are development containers as described :ref:`above <top-Containers>`.  This means that they contain the JEDI dependencies and compilers but not the JEDI code itself.
+
+If you have it available, we recommend the use of Singularity.  To obtain the Singularity versions of these containers enter
+
+.. code:: bash
+
+   singularity pull library://jcsda/public/jedi-<name>
+
+where :code:`<name>` is one of the items from the list above.
+
+To obtain the Charliecloud versions of these containers, enter:
+
+.. code:: bash
+
+   wget http://data.jcsda.org/containers/ch-jedi-<name>.tar.gz
+
+
+The docker versions of these containers are also available on the jcsda organization on `Docker Hub <https://hub.docker.com/>`_ as :code:`docker-<name>`.
+
+For an up to date listing of all available JEDI singularity containers `go to the jcsda organization on the Sylabs cloud library web site <https://cloud.sylabs.io/library/jcsda>`_ and view the :code:`public` collection.
+
+Similarly, for an up to date listing of all available JEDI docker containers, search the :code:`jcsda` organization on Docker Hub.
+
+We also maintain Docker, Singularity, and Charliecloud development containers with Intel Parallel Studio 2020 but these are restricted access for proprietary reasons.  Contact the JEDI core team for further information.
