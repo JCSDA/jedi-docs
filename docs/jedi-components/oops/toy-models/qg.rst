@@ -101,11 +101,45 @@ In principle, a timestep could start from values of streamfunction at a single t
   .. math::
     \nabla^2 q_1 -F_2 q_1 -F_1 q_2 = \nabla^2 \left( \nabla^2 \psi_1 \right)
                                     - \left( F_1 + F_2 \right) \nabla^2 \psi_1.
-    :label: eq:toy-model_qg_2d_helmholz_eqn
+    :label: eq:toy-model_qg_2d_helmholtz_eqn
 
-  This is a two-dimensional Helmholz equation, which can be solved for :math:`\nabla^2 \psi_1`. The Laplacian can then be inverted to determine :math:`psi_1`. Once :math:`\psi_1` and :math:`\nabla^2 \psi_1` are known, the streamfunction on level 2 can be determined by substitution into equation :eq:`eq:toy-model_qg_q_1`.
+  This is a two-dimensional Helmholtz equation, which can be solved for :math:`\nabla^2 \psi_1`. The Laplacian can then be inverted to determine :math:`psi_1`. Once :math:`\psi_1` and :math:`\nabla^2 \psi_1` are known, the streamfunction on level 2 can be determined by substitution into equation :eq:`eq:toy-model_qg_q_1`.
 
-  Solution of the Helmholz equation and inversion of the Laplacian are achieved using an FFT-based method. Applying a Fourier transform in the east-west direction to equation :eq:`eq:toy-model_qg_2d_helmholz_eqn` gives a set of independent equations for each wavenumber. In the case of the five-point discrete Laplacian, these are tri-diagonal matrix equations, which can be solved using the standard (Thomas) algorithm.
+  Solution of the Helmholtz equation and inversion of the Laplacian are achieved using an FFT-based method. Applying a Fourier transform in the east-west direction to equation :eq:`eq:toy-model_qg_2d_helmholtz_eqn` gives a set of independent equations for each wavenumber. In the case of the five-point discrete Laplacian, these are tri-diagonal matrix equations, which can be solved using the standard (Thomas) algorithm.
+
+YAML parameters
+---------------
+
+The configurable Quasi-geostrophic model parameters are as follows:
+
+* :code:`geometry`: define grid parameters
+
+  * :code:`nx`: define the number of gridpoints in x-direction
+  * :code:`ny`: define the number of gridpoints in y-direction
+  * :code:`depths`: define the depths for each level
+
+* :code:`model`:
+
+  * :code:`name`: define the model
+  * :code:`tstep`: define the time step
+
+* :code:`forecast length`: define the length of the forecast
+* :code:`initial condition`: define initial condition parameters
+
+  * :code:`date`: define the initial date to issue a forecast
+  * :code:`filename`: define the name of the file to be used as initial condition
+
+* :code:`output`: define output parameters
+
+  * :code:`datadir`: define the directory to save files
+  * :code:`date`: define the output date
+  * :code:`exp`: define an experiment identification
+  * :code:`frequency`: define the frequency to save output files
+  * :code:`type`: define the type of output file
+
+* :code:`prints`: define verbose parameters
+
+  * :code:`frequency`: define the frequency to print statistics
 
 References
 ----------

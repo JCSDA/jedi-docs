@@ -14,16 +14,41 @@ The Lorenz95 model is an application of the Lorenz (1996) chaotic dynamics. This
 
 where :math:`i = 1, 2, \ldots, I`, with cyclic boundary conditions, and the constant :math:`F` is independent of :math:`i`. The variables of this model may be thought of as values of some atmospheric quantity in :math:`I` locations of a latitude circle. The so-called 40-variable version of this model assumes :math:`I=40`, with :math:`i = 1, 2, \ldots, 40`, which implies to the cyclic boundary conditions being defined as: :math:`x_{0} = x_{40}`; :math:`x_{-1} = x_{39}`; and, :math:`x_{41} = x_{1}`.
 
-How to run a truth simulation?
-------------------------------
+YAML parameters
+---------------
 
-How to sample synthetic observations?
--------------------------------------
+The configurable Lorenz95 model parameters are as follows:
 
-How to assimilate these observations?
--------------------------------------
+* :code:`geometry`: define grid parameters
+
+  * :code:`resol`: define the number of variables :math:`I`
+
+* :code:`model`: define model parameters
+
+  * :code:`f`: define the constant :math:`F`
+  * :code:`name`: define the model
+  * :code:`tstep`: define the time step
+
+* :code:`forecast length`: define the length of the forecast
+* :code:`initial condition`: define initial condition parameters
+
+  * :code:`date`: define the initial date to issue a forecast
+  * :code:`filename`: define the name of the file to be used as initial condition
+
+* :code:`output`: define output parameters
+
+  * :code:`datadir`: define the directory to save files
+  * :code:`date`: define the output date
+  * :code:`exp`: define an experiment identification
+  * :code:`frequency`: define the frequency to save output files
+  * :code:`type`: define the type of output file
+
+.. note::
+  Although the YAML parameters are defined using real time quantities for dates and time intervals (e.g., :code:`date`, :code:`tstep`, :code:`forecast length`, :code:`frequency`), the actual equivalence between real time and the time considered for this model is defined as a combination of the number of variables :math:`I` and the constant :math:`F`. See details in Lorenz (1996) and Lorenz and Emanuel (1998).
 
 References
 ----------
 
-Lorenz, E., 1996: Predictability: a problem partly solved. Seminar on Predictability, 4-8 September 1995, volume 1, pages 1–18, European Centre for Medium Range Weather Forecasts, Reading, England. ECMWF.
+Lorenz, E. N., 1996: Predictability: a problem partly solved. Seminar on Predictability, 4-8 September 1995, volume 1, pages 1–18, European Centre for Medium Range Weather Forecasts, Reading, England. ECMWF.
+
+Lorenz, E. N. and Emanuel, K. A. (1998). Optimal sites for supplementary weather observations: Simulation with a small model. J. Atmos. Sci., 55(3):399–414.
