@@ -180,7 +180,7 @@ To use the VarBC in a Observation Operator, add the :code:`obs bias` section as 
       - predictor:
           name: scan_angle
 
-Here is the detailed explaination:
+Here is the detailed explanation:
 
   1. Defines the predictors (required)
   
