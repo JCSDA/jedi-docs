@@ -7,4 +7,4 @@ OOPS
 
    introduction
    applications/index.rst
-   toy-models
+   toy-models/index.rst
