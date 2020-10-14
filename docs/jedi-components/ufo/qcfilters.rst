@@ -980,7 +980,7 @@ This example runs the basic and SamePDiffT checks on the input data, using the s
 Met Office Buddy Check Filter
 -----------------------------
 
-The filter cross-checks observations taken at nearby locations against each other, updating their gross error probabilities (PGEs) and rejecting observations whose PGE exceeds a threshold specified in the filter parameters. 
+This filter cross-checks observations taken at nearby locations against each other, updating their gross error probabilities (PGEs) and rejecting observations whose PGE exceeds a threshold specified in the filter parameters. For example, if an observation has a very different value than several other observations taken at nearby locations and times, it is likely to be grossly in error, so its PGE is increased. PGEs obtained in this way can be taken into account during variational data assimilation to reduce the weight attached to unreliable observations without necessarily rejecting them outright.
 
 The YAML parameters supported by this filter are listed below.
 
@@ -1024,11 +1024,11 @@ The YAML parameters supported by this filter are listed below.
     If not set and observations were grouped into records when the observation space was constructed, each record is assumed to consist of observations taken by a separate station. If not set and observations were not grouped into records, all observations are assumed to have been taken by a single station.
   
     Note: the variable used to group observations into records can be set with the
-    :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option.
+    :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option. An example of its use can be found in the :ref:`Profile consistency checks <profconcheck_filtervars>` section above.
 
   - :code:`num_zonal_bands`: Number of zonal bands to split the Earth's surface into when building a search data structure. 
       
-    Note: Apart from the impact on the speed of buddy identification, this parameter as well as :code:`sort_by_pressure` also affect the order in which observations are processed and thus the final estimates of gross error probabilities, since the probability updates made when checking individual observation pairs are not commutative.
+    Note: Apart from the impact on the speed of buddy identification, both this parameter and :code:`sort_by_pressure` affect the order in which observations are processed and thus the final estimates of gross error probabilities, since the probability updates made when checking individual observation pairs are not commutative.
 
     Default: 24. 
 
@@ -1036,7 +1036,7 @@ The YAML parameters supported by this filter are listed below.
 
   - :code:`max_total_num_buddies`: Maximum total number of buddies of any observation.
   
-    Note: In the context of this parameter as well as the :code:`max_num_buddies_from_single_band` and :code:`max_num_buddies_with_same_station_id` parameters, the number of buddies of any observation *O* is understood as the number of buddy pairs (*O*, *O*') where *O*' != *O*. This definition facilitates the buddy check implementation, but is an underestimate of the true number of buddies, since it doesn't take into account pairs of the form (*O*', *O*).
+    Note: In the context of this parameter, :code:`max_num_buddies_from_single_band` and :code:`max_num_buddies_with_same_station_id`, the number of buddies of any observation *O* is understood as the number of buddy pairs (*O*, *O*') where *O*' != *O*. This definition facilitates the buddy check implementation (and makes it compatible with the original version from the OPS system), but is an underestimate of the true number of buddies, since it doesn't take into account pairs of the form (*O*', *O*).
 
     Default: 15.
 
