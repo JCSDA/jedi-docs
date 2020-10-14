@@ -11,7 +11,35 @@ Configuration file (e.g. :code:`letkf.yaml`) for running LocalEnsembleDA applica
 
 * :code:`background` - ensemble background members (currently used both for computing H(x) and as backgrounds)
 
-* :code:`observations` - describes observations, observation errors, observation operators used in the assimilation
+* :code:`observations` - describes observations, observation errors, observation operators used in the assimilation, and the horizontal localization
+
+* :code:`driver` - describes optional modifications to the behavior of the LocalEnsembleDA driver
+
+* :code:`local ensemble DA` - configuration of the local ensemble DA solver package
+
+
+Supported modifications to the driver
+---------------------------------------
+
+Read HX from disk instead of computing it at run-time. 
+.. code:: yaml
+
+  driver:
+    read HX from disk: false/true
+
+Compute posterior observer and output test prints for the oma statistics. One might choose to set this flag to false in order to speed up completion of the localEnsenbleDA solver.
+
+.. code:: yaml
+
+  driver:
+  do posterior observer: true/false
+
+Run LocalEnsembleDA in observer mode to compute HX offline. This works hand-in-hand with 'read HX from disk'. One might choose to separate this into two steps because it is possible to use more efficient round-robin distribution if 'run as observer only: true'. 
+
+.. code:: yaml
+
+  driver:
+    run as observer only: false/true
 
 
 Supported Local Ensemble Kalman filters
@@ -28,7 +56,7 @@ This implementation is used when :code:`LETKF` keyword is used in :code:`solver`
 
 .. code:: yaml
 
-   letkf:
+   local ensemble DA:
      solver: LETKF
 
 * GSI-LETKF Fortran implementation using LAPACK (single precision).
@@ -37,7 +65,7 @@ This implementation is used when :code:`GSI LETKF` keywords are used in :code:`s
 
 .. code:: yaml
 
-   letkf:
+   local ensemble DA:
      solver: GSI LETKF
 
 LGETKF
@@ -57,7 +85,7 @@ An example of using LGETKF solver in FV3:
 
 .. code:: yaml
 
-   letkf:
+   local ensemble DA:
      solver: GETKF
      vertical localization:
        fraction of retained variance: .95
@@ -116,7 +144,7 @@ Parameter of multiplicative inflation is controlled by :code:`inflation.mult` co
 
 .. code:: yaml
 
-   letkf:
+   local ensemble DA:
      inflation:
        mult: 1.1
 
@@ -130,7 +158,7 @@ Parameter of RTPP inflation is controlled by :code:`inflation.rtpp` configuratio
 
 .. code:: yaml
 
-   letkf:
+   local ensemble DA:
      inflation:
        rtpp: 0.5
 
@@ -144,7 +172,7 @@ Parameter of RTPS inflation is controlled by :code:`inflation.rtps` configuratio
 
 .. code:: yaml
 
-   letkf:
+   local ensemble DA:
      inflation:
        rtps: 0.6
 
