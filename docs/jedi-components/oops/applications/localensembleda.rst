@@ -21,25 +21,26 @@ Configuration file (e.g. :code:`letkf.yaml`) for running LocalEnsembleDA applica
 Supported modifications to the driver
 ---------------------------------------
 
-Read HX from disk instead of computing it at run-time. 
+* Read HX from disk instead of computing it at run-time.
+ 
 .. code:: yaml
 
   driver:
-    read HX from disk: false/true
+    read HX from disk: false #default value
 
-Compute posterior observer and output test prints for the oma statistics. One might choose to set this flag to false in order to speed up completion of the localEnsenbleDA solver.
-
-.. code:: yaml
-
-  driver:
-  do posterior observer: true/false
-
-Run LocalEnsembleDA in observer mode to compute HX offline. This works hand-in-hand with 'read HX from disk'. One might choose to separate this into two steps because it is possible to use more efficient round-robin distribution if 'run as observer only: true'. 
+* Compute posterior observer and output test prints for the oma statistics. One might choose to set this flag to false in order to speed up completion of the localEnsenbleDA solver.
 
 .. code:: yaml
 
   driver:
-    run as observer only: false/true
+    do posterior observer: true #default value
+
+* Run LocalEnsembleDA in observer mode to compute HX offline. This works hand-in-hand with 'read HX from disk'. One might choose to separate this into two steps because it is possible to use more efficient round-robin distribution if 'run as observer only: true'. 
+
+.. code:: yaml
+
+  driver:
+    run as observer only: false #default value
 
 
 Supported Local Ensemble Kalman filters
@@ -187,4 +188,9 @@ Parameter of RTPS inflation is controlled by :code:`inflation.rtps` configuratio
      - RTPP, RTPS
    * - GETKF
      - RTPP, RTPS
+
+NOTE aboute obs distributions
+-----------------------------
+Currently Local Ensemble DA requires "InefficientDistribution" obs distribution. I.e. each ob and H(x) is replicated on each PE. 
+This is clearlry Inefficient. We have an option to run Local Ensemble DA in the observer only mode with "RoundRobin" to compute H(X). Then one can read ensemble of H(x) from disk using "driver.read HX from disk"=true and "driver.do posterior observer"=false that will remove all duplicate H(X) operations from the solver.  
 
