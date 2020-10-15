@@ -978,10 +978,6 @@ This example runs the basic checks on the input data:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["Basic"]
-      flagBasicChecksFail: true
-      nErrorsFail: 8
-      BChecks_minValidP: 0.0
-      BChecks_maxValidP: 110.0e3
 
 This example runs the basic and SamePDiffT checks on the input data, using separate instances of the filter to do so:
 
@@ -992,17 +988,12 @@ This example runs the basic and SamePDiffT checks on the input data, using separ
       - name: air_temperature
       - name: geopotential_height
       Checks: ["Basic"]
-      flagBasicChecksFail: true
-      nErrorsFail: 8
-      BChecks_minValidP: 0.0
-      BChecks_maxValidP: 110.0e3
     - filter: ProfileConsistencyChecks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["SamePDiffT"]
-      nErrorsFail: 8
-      SPDTCheck_TThresh: 1.0
+      SPDTCheck_TThresh: 30.0 # This is an example modification of a check parameter
 
 This example runs the basic and SamePDiffT checks on the input data, using the same filter instance:
 
@@ -1013,11 +1004,7 @@ This example runs the basic and SamePDiffT checks on the input data, using the s
       - name: air_temperature
       - name: geopotential_height
       Checks: ["Basic", "SamePDiffT"]
-      flagBasicChecksFail: true
-      nErrorsFail: 8
-      BChecks_minValidP: 0.0
-      BChecks_maxValidP: 110.0e3
-      SPDTCheck_TThresh: 1.0
+      SPDTCheck_TThresh: 30.0 # This is an example modification of a check parameter
 
 .. _filter-actions:
 
