@@ -311,14 +311,14 @@ Example 1 (thinning by the horizontal position only):
 
 .. code:: yaml
 
-    - filter: Gaussian_Thinning
+    - filter: Gaussian Thinning
       horizontal_mesh:   1111.949266 #km = 10 deg at equator
 
 Example 2 (thinning observations from multiple categories and with non-equal priorities by their horizontal position, pressure and time):
 
 .. code:: yaml
 
-    - filter: Gaussian_Thinning
+    - filter: Gaussian Thinning
       distance_norm:     maximum
       horizontal_mesh:   5000
       vertical_mesh:    10000
@@ -330,8 +330,8 @@ Example 2 (thinning observations from multiple categories and with non-equal pri
       priority_variable:
         name: priority@MetaData
 
-TemporalThinning Filter
------------------------
+Temporal Thinning Filter
+------------------------
 
 This filter thins observations so that the retained ones are sufficiently separated in time. It supports
 the following YAML parameters:
@@ -364,7 +364,7 @@ starting from the observation closest to seed time):
 
 .. code:: yaml
 
-    - filter: TemporalThinning
+    - filter: Temporal Thinning
       min_spacing: PT01H30M
       seed_time: 2018-04-15T00:00:00Z
       category_variable:
@@ -376,7 +376,7 @@ taken up to 20 min after the first qualifying observation if its quality score i
 
 .. code:: yaml
 
-    - filter: TemporalThinning
+    - filter: Temporal Thinning
       min_spacing: PT01H
       tolerance: PT20M
       category_variable:
@@ -550,8 +550,8 @@ Example:
      rejection_threshold: 0.5
      station_id_variable: station_id@MetaData
 
-ProfileConsistencyChecks
-------------------------
+Profile Consistency Checks
+--------------------------
 
 .. _profconcheck_overview:
 
@@ -973,7 +973,7 @@ This example runs the basic checks on the input data:
 
 .. code:: yaml
 
-    - filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
@@ -983,12 +983,12 @@ This example runs the basic and SamePDiffT checks on the input data, using separ
 
 .. code:: yaml
 
-    - filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["Basic"]
-    - filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
@@ -999,7 +999,7 @@ This example runs the basic and SamePDiffT checks on the input data, using the s
 
 .. code:: yaml
 
-    - filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
