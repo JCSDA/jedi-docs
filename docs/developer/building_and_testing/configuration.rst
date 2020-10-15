@@ -64,7 +64,7 @@ The beginning of a YAML document can be indicated by three dashes :code:`---`, w
 
 Objects with multiple values (sequences in YAML) are indicated as indented lists with one item per line and each item delineated by a dash.  For example, **observations[0].obs space.simulated variables** is equated to a list of items, namely ["air_temperature", "eastward_wind", "northward_wind"].
 
-Lists or sequences may also be identified with brackets :code:`{}` or :code:`[]`.  This is illustrated in the above file with the examples of **geometry.depths**, which is a is here identified as a list of floats, and **observations[0].obs bias**, an empty list.
+Lists or sequences may also be identified with brackets :code:`{}` or :code:`[]`.  This is illustrated in the above file with the examples of **geometry.depths**, which here is identified as a list of floats, and **observations[0].obs bias**, an empty list.
 
 Comments are preceded by a :code:`#` sign as seen for **geometry.depths**.
 
@@ -81,7 +81,7 @@ As described in our document on :doc:`JEDI Testing <unit_testing>` (see :ref:`Te
 
 To illustrate how this works, let's return to our :code:`test_qg_hofx` example introduced in the previous section.  The configuration file for that test is called :code:`qg/test/testinput/hofx.yaml`.  In this example, our Application happens to be a HofX object and :code:`oops::HofX` is a subclass (child) of :code:`oops:Application`.  So, the configuration file is passed from the command line to the :code:`oops::Run` object and then to the Application as an argument (of type :code:`eckit::Configuration`) to the :code:`oops::HofX::execute()` method.  This general approach is similar to other Applications.
 
-What happens next is more specific to the HofX Application but it serves to illustrate how to manipulate and access the config file as an :code:`eckit::Configuration` object.  Here is a example code segment from the :code:`oops::HofX::execute()` method as defined in the :code:`oops/src/oops/runs/HofX.h` file:
+What happens next is more specific to the HofX Application but it serves to illustrate how to manipulate and access the config file as an :code:`eckit::Configuration` object.  Here is an example code segment from the :code:`oops::HofX::execute()` method as defined in the :code:`oops/src/oops/runs/HofX.h` file:
 
 .. _config-cpp-seg1:
 
@@ -101,7 +101,19 @@ What happens next is more specific to the HofX Application but it serves to illu
 
     [...]
 
-Here the Configuration object can also be accessed directly through the public methods of the :code:`eckit::Configuration` object itself.  This is demonstrated by the :code:`fullConfig.getString()` in Example 1 :ref:`above <config-cpp-seg1>`.  This sets the string variable :code:`args` equal to the value of :code:`window begin` as specified in the first line of the :ref:`YAML file <yaml-file>`.
+Here the :code:`Configuration` object can also be accessed directly through the public methods of the :code:`eckit::Configuration` object itself.  This is demonstrated by the :code:`fullConfig.getString()` in Example 1 :ref:`above <config-cpp-seg1>`.  This sets the duration :code:`winlen` equal to the value of **window length** as specified in the first line of the :ref:`YAML file <yaml-file>`.
+
+The example 2 illustrates an important point, namely that new configuration objects are constructed through the derived (child) class of :code:`eckit::LocalConfiguration` rather than the base class of :code:`eckit::Configuration` (whose constructors are protected).  The constructor shown in Example 2 :ref:`above <config-cpp-seg1>` takes two arguments.  The first is :code:`fullConfig`, the configuration passed to the :code:`oops::HofX::execute()` method.  The second argument is a string that serves to extract a component of that Configuration, in particular, everything contained under the **geometry** section of the :ref:`YAML file <yaml-file>`.  This component is placed in the :code:`LocalConfiguration` object :code:`geometryConfig`.
+
+YAML and JSON objects are hierarchical and self-similar.  So, the **geometry** component of the YAML file can be treated as a self-contained YAML object in its own right, with its own components.  Configuration objects are the same way.  One can define an :code:`eckit::Configuration` object that includes the contents of the entire YAML file, as is the case for :code:`fullConfig`, or one can define an :code:`eckit::Configuration` object that contains only a particular component of the top-level YAML structure, as is the case for :code:`geometryConfig`.  Remember that :code:`LocalConfiguration` objects *are* :code:`Configuration` objects since the former is a child (derived class) of the latter.
+
+It's tempting to think of :code:`LocalConfiguration` objects as components of :code:`Configuration` objects but this is incorrect.  One could in principle have an :code:`eckit::LocalConfiguration` object refer to the YAML file as a whole and a :code:`eckit::Configuration` object refer to a single section, though this is rarely done.  The **Local** in LocalConfiguration refers to a local component of the JEDI code, not a local section of the YAML file.  You can create, access, and even change :code:`eckit::LocalConfiguration` objects in a way that is not possible with :code:`eckit::Configuration` objects.  In short, :code:`LocalConfiguration` objects are local instantiations of :code:`Configuration` objects that you can use to access the configuration file.
+
+Variables, parameters, and other settings in the config file can be read by means of the various :code:`get` methods of the :code:`eckit::Configuration` class.  Paths are relative to the top-level of the YAML/JSON hierarchy that is contained in the Configuration object.  Two examples are shown :ref:`above <config-cpp-seg1>`.  Since the :code:`fullConfig` object contains the entire YAML file, the top level of the hierarchy includes the top-level components of the :ref:`YAML file <yaml-file>`, for example the variables **window begin** and **window length**, as well as the multi-component YAML object **observations**.  The first of these top-level variables is read using the :code:`config.getString()` method and placed into the local variable :code:`winlen`.  One could access other levels of the hierarchy using periods as separators, for example:
+
+.. code:: C++
+
+    std::cout << "The nx component of the geometry is: " << fullConfig.getInt("geometry.nx") << std::endl;
 
 If you trace the flow of the :code:`test_qg_hofx` executable, you'll soon come to the heart of oops.  To understand the full structure of this file we refer you to our page on :doc:`Applications in OOPS`.  For our purposes here, we will pick up the action in the :code:`oops::HofX::execute()` and templated :code:`ObsSpaces<OBS>::ObsSpaces` functions, which are called when executing :code:`test_qg_hofx`:
 
@@ -118,26 +130,13 @@ If you trace the flow of the :code:`test_qg_hofx` executable, you'll soon come t
         std::vector<eckit::LocalConfiguration> typeconfs;
         conf.get("observations", typeconfs);
 
+In the Example 3 shown :ref:`above <config-cpp-seg2>`, the :code:`typeconfs` object only contains the **observations** section of the YAML file.  **observations** is itself a vector of configuration objects.  Our example :ref:`YAML file <yaml-file>` includes 2 items in **observations**, namely **obs space.obs type: Wind** and **obs space.obs type: Stream**, and other Applications may include more.  Since **observations** can include multiple components, each declaration in the YAML file is preceded by a dash: :code:`- obs space:` (recall that this indicates a sequence or list in YAML).  So, in order to read this component of the YAML file, :ref:`Example 3 <config-cpp-seg2>` first defines the variable :code:`typeconfs` as a vector of :code:`LocalConfiguration` objects.  Then it uses the :code:`eckit::Configuration::get()` method to read it from the YAML file.
 
-This illustrates an important point, namely that new configuration objects are constructed through the derived (child) class of :code:`eckit::LocalConfiguration` rather than the base class of :code:`eckit::Configuration` (whose constructors are protected).  The constructor shown in Example 2 :ref:`above <config-cpp-seg1>` takes two arguments.  The first is :code:`fullConfig`, the configuration passed to the :code:`oops::HofX::execute()` method.  The second argument is a string that serves to extract a component of that Configuration, in particular, everything contained under the **geometry** section of the :ref:`YAML file <yaml-file>`.  This component is placed in the **LocalConfiguration** object **geometryConfig**.
+Note another feature of the :code:`Configuration` class highlighted in the examples above.  One uses a specific :code:`getString()` method to retrieve a string, the other uses a generic :code:`get()` interface to retrieve a vector of :code:`LocalConfiguration` objects.  Both options are available.  For further details see the :ref:`Summary of Configuration Methods <config-methods>` below.
 
-YAML and JSON objects are hierarchical and self-similar.  So, the **geometry** component of the YAML file can be treated as a self-contained YAML object in its own right, with its own components.  Configuration objects are the same way.  One can define an :code:`eckit::Configuration` object that includes the contents of the entire YAML file, as is the case for :code:`fullConfig`, or one can define an :code:`eckit::Configuration` object that contains only a particular component of the top-level YAML structure, as is the case for :code:`geometryConfig`.  Remember that **LocalConfiguration** objects *are* **Configuration** objects since the former is a child (derived class) of the latter.
+The :code:`eckit::Configuration` class also has a few more methods that are extremely useful for querying the configuration file.  The first is :code:`eckit::Configuration::has()` which accepts one string argument (:code:`std::string`) and returns a Boolean :code:`true` or :code:`false` depending on whether or not an item of that name exists in the Configuration file (at the level represented by the Configuration object).  The second is :code:`eckit::Configuration::keys()`, which returns the items at a particular level of the YAML/JSON hierarchy.
 
-It's tempting to think of **LocalConfiguration** objects as components of **Configuration** objects but this is incorrect.  One could in principle have an :code:`eckit::LocalConfiguration` object refer to the YAML file as a whole and a :code:`eckit::Configuration` object refer to a single section, though this is rarely done.  The **Local** in **LocalConfiguration** refers to a local component of the JEDI code, not a local section of the YAML file.  You can create, access, and even change :code:`eckit::LocalConfiguration` objects in a way that is not possible with :code:`eckit::Configuration` objects.  In short, **LocalConfiguration** objects are local instantiations of **Configuration** objects that you can use to access the configuration file.
-
-Variables, parameters, and other settings in the config file can be read by means of the various **get()** methods of the :code:`eckit::Configuration` class.  Paths are relative to the top-level of the YAML/JSON hierarchy that is contained in the Configuration object.  Two examples are shown :ref:`above <config-cpp-seg1>`.  Since the :code:`fullConfig` object contains the entire YAML file, the top level of the hierarchy includes the top-level components of the :ref:`YAML file <yaml-file>`, for example the variables **window begin** and **window end**, as well as the multi-component YAML object **observations**.  The first of these top-level variables is read using the :code:`config.getString()` method and placed into the local variable :code:`args`.  One could access other levels of the hierarchy using periods as separators, for example:
-
-.. code:: C++
-
-    std::cout << "The nx component of the geometry is: " << fullConfig.getInt("geometry.nx") << std::endl;
-
-In the Example 3 shown :ref:`above <config-cpp-seg2>`, the :code:`typeconfs` object only contains the **observations** section of the YAML file.  **observations** is itself a vector of configuration objects.  Our example :ref:`YAML file <yaml-file>` includes 2 items in **observations**, namely **obs space.obs type: Wind** and **obs space.obs type: Stream**, and other Applications may include more.  Since **observations** can include multiple components, each declaration in the YAML file is preceded by a dash: :code:`- obs space:` (recall that this indicates a sequence or list in YAML).  So, in order to read this component of the YAML file, :ref:`Example 3 <config-cpp-seg2>` first defines the variable **typeconfs** as a vector of **LocalConfiguration** objects.  Then it uses the :code:`eckit::Configuration::get()` method to read it from the YAML file.
-
-Note another feature of the Configuration class highlighted in the examples above.  One uses a specific **getString()** method to retrieve a string, the other uses a generic **get()** interface to retrieve a vector of **LocalConfiguration** objects.  Both options are available.  For further details see the :ref:`Summary of Configuration Methods <config-methods>` below.
-
-The :code:`eckit::Configuration` class also has a few more methods that are extremely useful for querying the configuration file.  The first is **has()**, which accepts one string argument (:code:`std::string`) and returns a Boolean :code:`true` or :code:`false` depending on whether or not an item of that name exists in the Configuration file (at the level represented by the Configuration object).  The second is **keys()**, which returns the items at a particular level of the YAML/JSON hierarchy.
-
-As an example of how to use these query functions, we could place the following code after the :ref:`code segment above from the ObsSpaces() function <config-cpp-seg2>`:
+As an example of how to use these query functions, we could place the following code after the :ref:`code segment above from the :code:`ObsSpaces()` function <config-cpp-seg2>`:
 
 .. code:: bash
 
@@ -211,7 +210,7 @@ Available methods for reading specific data types include:
 
 Each of these methods also has a version that accepts a second argument (of the same type as the return value) that will be used as a default value in the event that the item in question is not found in the configuration file.
 
-Available generic interfaces for the **get()** method include:
+Available generic interfaces for the :code:`get()` method include:
 
 .. code:: C++
 
@@ -242,7 +241,7 @@ Fortran Usage
 
 ECMWF also offers a Fortran interface to eckit called `fckit <https://github.com/ecmwf/fckit>`_ that provides Fortran interfaces to many of the :code:`eckit::Configuration` methods described in our :ref:`Summary of Configuration Methods <config-methods>` above. The ones used in JEDI are :code:`get_size` and :code:`get_or_die`.
 
-A pointer to the :code:`eckit::Configuration` C++ object is required to provide access to the config file as :ref:`described above <config-cpp>` when using Fortran routines.  These, like other interfaces in JEDI, use the intrinsic :code:`ISO_C_BINDING` Fortran module to pass information between C++ and Fortran.   Within this framework, :code:`c_conf` is declared as a pointer of type :code:`c_ptr`, with an :code:`intent(in)` attribute.
+A reference to the :code:`eckit::Configuration` C++ object is required to provide access to the config file as :ref:`described above <config-cpp>` when using Fortran routines.  These, like other interfaces in JEDI, use the intrinsic :code:`ISO_C_BINDING` Fortran module to pass information between C++ and Fortran.   Within this framework, :code:`c_conf` is declared as a pointer of type :code:`c_ptr`, with :code:`value` and :code:`intent(in)` attribute.
 
 As an example of how this C++ configuration is passed to Fortran, we'll consider a code segment from the :code:`qg_geom_setup_c()` routine in the file :code:`qg/model/qg_geom_interface.F90`.  This routine would be called during the execution of the :code:`test_qg_hofx` test that we have been considering throughout this document.  Its function is to set up the Fortran configuration, then call the routine that sets up the Fortran geometry of the model.
 
@@ -297,7 +296,7 @@ We'll now consider a code segment from the :code:`qg_geom_setup()` routine in th
 
 Since we are now working with the LocalConfiguration :code:`geometryConfig` and not the :code:`fullConfig`, the keys at the top levels are now **nx**, **ny** and **depths**. So, we can directly request **nx** instead of **geometry.nx**. If needed, the period still acts as a separator that can be used to access any level of the YAML/JSON hierarchy.
 
-The geometry setup routine calls both :code:`get_or_die()` and :code:`get_size()`, to read the data in **nx**, **ny** and **depths**. The function :code:`get_or_die()` allows the direct allocation of parameters such as **self%nx** or **self%ny**. These two parameters are members of the geometry and are declared as integers, so the value read from the keys **nx** and **ny** will be interpreted as an integer. If **self%nx** had been declared as a string, the value read from the key **nx** would be interpreted as a string by :code:`get_or_die()`.
+The geometry setup routine calls both :code:`get_or_die()` and :code:`get_size()`, to read the data in **nx**, **ny** and **depths**. The function :code:`get_or_die()` allows the direct allocation of parameters such as :code:`self%nx` or :code:`self%ny`. These two parameters are members of the geometry and are declared as integers, so the value read from the keys **nx** and **ny** will be interpreted as an integer. If :code:`self%nx` had been declared as a string, the value read from the key **nx** would be interpreted as a string by :code:`get_or_die()`.
 
 In the case of **depths**, since it is an array we first need to know its size by calling :code:`get_size()`. In the case of our example this would return 2, and the size is immediately used to allocate an array of the proper shape. We can then call :code:`get_or_die()` to fill this array.
 
