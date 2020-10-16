@@ -18,7 +18,7 @@ In old style Fortran, separating code that was specific to a user from a communi
 code meant that some subroutine calls would be left dangling and possibly some
 global variables would be left in a unknown state.
 This was addressed with dummy routines that would be provided with the common code.
-Unfortunately, this approach doesn’t scale and quickly becomes unmanageable.
+Unfortunately, this approach doesn't scale and quickly becomes unmanageable.
 The solution was then to include everything in the shared code, which quickly became
 bloated, difficult to manage, and unpopular.
 
@@ -64,7 +64,7 @@ Management Oversight Board (MOB)
 
 The `JCSDA MOB <https://www.jcsda.org/team>`_ includes representatives from `JCSDA partner organizations <https://www.jcsda.org/partners>`_ and the broader forecasting community.  The MOB is responsible for the approval of policies, goals and priorities of the JCSDA, including recommendations on the observing systems planned for use in the operational systems.  The MOB works in conjunction with an `JCSDA partners and an external advisory panel <https://www.jcsda.org/organization>`_ to represent the needs and perspective of the forecasting community.
 
-The MOB provides oversight into the overall scope, vision, and direction of the JEDI project, including strategic collaborations with other organizations, policies, and other general management issues.  Is is they who must make high-level decisions when regular community discussion doesn’t produce consensus on an issue in a reasonable time frame.
+The MOB provides oversight into the overall scope, vision, and direction of the JEDI project, including strategic collaborations with other organizations, policies, and other general management issues.  They must make high-level decisions when regular community discussion doesn't produce consensus on an issue in a reasonable time frame.
 
 Executive Team (ET)
 -------------------
@@ -86,7 +86,7 @@ In terms of direct software development, project leads serve as contributors, re
 Contributors
 ------------
 
-A contributor is anyone who writes code, documentation, designs, or other work to the project; a person becomes a developer when their pull request is accepted;.  This includes JCSDA core staff, in-kind staff, and external contributors or contractors.  Contributors participate in the JEDI project by submitting, reviewing and discussing GitHub pull requests and issues and participating in open and public project discussions on GitHub, mailing lists, forums, and other channels. A contributor who contributes code is a developer.  In principle all developers should be involved in reviewing other developer’s code.
+A contributor is anyone who writes code, documentation, designs, or other work to the project; a person becomes a developer when their pull request is accepted;.  This includes JCSDA core staff, in-kind staff, and external contributors or contractors.  Contributors participate in the JEDI project by submitting, reviewing and discussing GitHub pull requests and issues and participating in open and public project discussions on GitHub, mailing lists, forums, and other channels. A contributor who contributes code is a developer.  In principle all developers should be involved in reviewing other developer's code.
 
 Developers have the responsibility to document their developments, to update them to the level of the develop branch and to test them before submitting a pull request.
 

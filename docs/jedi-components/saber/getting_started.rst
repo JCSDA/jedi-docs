@@ -13,7 +13,7 @@ To use **BUMP** as an ensemble, a static or a hybrid covariance matrix model, yo
 
 1. Run the :code:`EstimateParams.h` to generate the various operators data.
 
-2. Run :code:`Variational.h` or :code:`Dirac.h`, reading the pre-computed data
+2. Run :code:`Variational.h` or :code:`Dirac.h`, reading the pre-computed data.
 
 **IMPORTANT:** both steps should be run with the same number of MPI tasks and the same grid distribution among these tasks.
 

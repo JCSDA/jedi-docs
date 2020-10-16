@@ -5,7 +5,7 @@ BUMP
 
 The BUMP (B matrix on an Unstructured Mesh Package) library estimates and applies background error covariance-related operators, defined on an unstructured mesh.
 
-A introductory video produced for the JEDI Academy is available `here <http://academy.jcsda.org/2020-02/slides/2020-02-26-BUMP.mp4>`_ (`PDF slides <http://academy.jcsda.org/2020-02/slides/2020-02-26-BUMP.pdf>`_)
+An introductory video produced for the JEDI Academy is available `here <http://academy.jcsda.org/2020-02/slides/2020-02-26-BUMP.mp4>`_ (`PDF slides <http://academy.jcsda.org/2020-02/slides/2020-02-26-BUMP.pdf>`_)
 
 .. toctree::
    :maxdepth: 2

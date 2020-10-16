@@ -1,4 +1,4 @@
 Auto-documentation
 ------------------
 
-**BUMP** is auto-documented on `the SABER GitHub repo <https://github.com/JCSDA/saber/blob/feature/autodoc/doc/overview.md>`_.
+**BUMP** is auto-documented with Doxygen. Add the :code:`-DENABLE_SABER_DOC=ON` option when running :code:`ecbuild` to genereate the documentation at compile time.
