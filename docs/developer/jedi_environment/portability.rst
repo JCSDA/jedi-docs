@@ -17,7 +17,7 @@ These portability tools are themselves unified in order to further promote commo
 
 .. image:: images/portability.png
 
-The (public) JCSDA `jedi-stack repository <https://github.com/JCSDA/jedi-stack>`_ contains common build scripts that specify the software packages, versions, and configuration options that are required to build and run jedi.  Tagged versions of the jedi-stack will be coordinated with public JEDI releases when they become available.  These build scripts are used to build a :ref:`Docker container <docker_overview>` that is in turn used to build Singularity and Charliecloud containers that can be run on laptops, workstations, cloud platforms, and HPC systems.  Alternatively, we also use the jedi-stack directly to build environment modules on cloud platforms (e.g. AMIs) and HPC systems.  We also leverage the Docker containers for continuous integration testing by means of `Travis-CI <https://travis-ci.org/>`_
+The (public) JCSDA `jedi-stack repository <https://github.com/JCSDA/jedi-stack>`_ contains common build scripts that specify the software packages, versions, and configuration options that are required to build and run jedi.  Tagged versions of the jedi-stack will be coordinated with public JEDI releases when they become available.  These build scripts are used to build a :ref:`Docker container <docker_overview>` that is in turn used to build Singularity and Charliecloud containers that can be run on laptops, workstations, cloud platforms, and HPC systems.  Alternatively, we also use the jedi-stack directly to build environment modules on cloud platforms (e.g. AMIs) and HPC systems.  We also leverage the Docker containers for continuous integration testing by means of `Amazon CodeBuild <https://aws.amazon.com/codebuild/>`_ and `Travis-CI <https://travis-ci.org/>`_
 
 In the remainder of this page, we describe in a bit more detail the rationale behind the use of software containers and how we use Docker.  :doc:`Singularity <singularity>`, :doc:`Charliecloud <charliecloud>`, and :doc:`environment modules <modules>` are then described in separate pages.   Stay tuned for further details on how to run JEDI in the cloud.
 
@@ -70,3 +70,36 @@ If you do decide to run the JEDI Docker containers directly, be sure to log in a
 
 
 If you log in as root (the default) then the mpi tests will likely fail.
+
+Available Containers
+--------------------
+
+The public containers currently offered by jcsda include:
+
+    - :code:`gnu-openmpi-dev`
+    - :code:`clang-mpich-dev`
+
+Containers that include :code:`-dev` in their name are development containers as described :ref:`above <top-Containers>`.  This means that they contain the JEDI dependencies and compilers but not the JEDI code itself.
+
+If you have it available, we recommend the use of Singularity.  To obtain the Singularity versions of these containers enter
+
+.. code:: bash
+
+   singularity pull library://jcsda/public/jedi-<name>
+
+where :code:`<name>` is one of the items from the list above.
+
+To obtain the Charliecloud versions of these containers, enter:
+
+.. code:: bash
+
+   wget http://data.jcsda.org/containers/ch-jedi-<name>.tar.gz
+
+
+The docker versions of these containers are also available on the jcsda organization on `Docker Hub <https://hub.docker.com/>`_ as :code:`docker-<name>`.
+
+For an up to date listing of all available JEDI singularity containers `go to the jcsda organization on the Sylabs cloud library web site <https://cloud.sylabs.io/library/jcsda>`_ and view the :code:`public` collection.
+
+Similarly, for an up to date listing of all available JEDI docker containers, search the :code:`jcsda` organization on Docker Hub.
+
+We also maintain Docker, Singularity, and Charliecloud development containers with Intel Parallel Studio 2020 but these are restricted access for proprietary reasons.  Contact the JEDI core team for further information.

@@ -13,4 +13,4 @@ It is the top level of JEDI that orchestrates the configuration and execution of
 
    introduction
    applications/index.rst
-   toy-models
+   toy-models/index.rst
