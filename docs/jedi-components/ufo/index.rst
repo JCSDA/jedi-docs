@@ -8,4 +8,3 @@ UFO
    obsops
    newobsop
    qcfilters
-   parameters

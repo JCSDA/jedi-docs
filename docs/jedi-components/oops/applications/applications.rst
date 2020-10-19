@@ -21,7 +21,7 @@ Data assimilation applications
 ------------------------------
 * :doc:`Variational<variational>`: variational data assimilation
 * EDA: ensemble of variational data assimilations
-* LocalEnsembleDA: local ensemble data assimilation
+* :doc:`LocalEnsembleDA<localensembleda>`: local ensemble data assimilation
 
 Data assimilation helper applications
 -------------------------------------

@@ -103,34 +103,29 @@ The following is the YAML for the UFO test "test_ufo_radiosonde_opr".
 
 .. code:: YAML
 
-   ---
-   test_framework_runtime_config: "--log_level=test_suite"
-   window_begin: '2018-04-14T21:00:00Z'
-   window_end: '2018-04-15T03:00:00Z'
-   LinearObsOpTest:
-     testiterTL: 12
-     toleranceTL: 1.0e-9
-     toleranceAD: 1.0e-11
-   Observations:
-     ObsTypes:
-     - ObsType: Radiosonde
-       ObsData:
-         ObsDataIn:
-           obsfile: Data/sondes_obs_2018041500_m.nc4
-         ObsDataOut:
-           obsfile: Data/sondes_obs_2018041500_m_out.nc4
-       variables:
-       - air_temperature
-       GeoVaLs:
-         random: 0
-         filename: Data/sondes_geoval_2018041500_m.nc4
-         window_begin: '2018-04-14T21:00:00Z'
-         window_end: '2018-04-15T03:00:00Z'
-       vecequiv: GsiHofX
-       tolerance: 1.0e-04  # in % so that corresponds to 10^-3
-       ObsBias: {}
+   window begin: 2018-04-14T21:00:00Z
+   window end: 2018-04-15T03:00:00Z
+   observations:
+   - obs space:
+       name: Radiosonde
+       obsdatain:
+         obsfile: Data/sondes_obs_2018041500_m.nc4
+       obsdataout:
+         obsfile: Data/sondes_obs_2018041500_m_out.nc4
+       simulated variables: [air_temperature]
+     obs operator:
+       name: VertInterp
+       vertical coordinate: air_pressure
+     geovals:
+       filename: Data/sondes_geoval_2018041500_m.nc4
+     vector ref: GsiHofX
+     tolerance: 1.0e-04  # in % so that corresponds to 10^-3
+     linear obs operator test:
+       iterations TL: 12
+       tolerance TL: 1.0e-9
+       tolerance AD: 1.0e-11
 
-Under the :code:`ObsType: Radiosonde` specification, the output file is requested to be created in the path: :code:`Data/sondes_obs_2018041500_m_out.nc4`.
+Under the :code:`obs space.obsdataout.obsfile` specification, the output file is requested to be created in the path: :code:`Data/sondes_obs_2018041500_m_out.nc4`.
 If there is only one process element, then the output will appear in the file as specified.
 However, if there are 4 process elements, then the output will appear in the following four files:
 
@@ -155,9 +150,9 @@ OOPS Interface
 ^^^^^^^^^^^^^^
 
 OOPS accesses observation data via C++ methods belonging to the ObsVector class.
-The variables being assimilated are selected in the YAML configuration using the :code:`variables` sub-keyword under the :code:`ObsType` keyword.
+The variables being assimilated are selected in the YAML configuration using the :code:`simulated variables` sub-keyword under the :code:`obs space` keyword.
 In the :ref:`radiosonde example <radiosonde_example_yaml>` above, one variable "air_temperature" is being assimilated.
-In this case, the ObsVector will read only the air_temparature row from the ObsData table and load that into a vector.
+In this case, the ObsVector will read only the air_temperature row from the ObsData table and load that into a vector.
 
 The ObsVector class contains the following two methods, :code:`read()` for filling a vector from an ObsData array in memory and :code:`save()` for storing a vector into an ObsData array.
 
@@ -253,4 +248,3 @@ Note that the storage for "flags" has been allocated and "flags" has been filled
 
    ! Save the QC flag values
    call obsspace_put_db(self%obsdb, self%qcname, var, flags)
-

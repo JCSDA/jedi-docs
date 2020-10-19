@@ -18,11 +18,12 @@ The flow of this computation in OOPS is as follows:
     CostJo::initialize
       ObsFilters::ObsFilters
       Observer::Observer
-        ObsOperator::variables
-        ObsFilters::requiredGeoVaLs
+        ObsOperator::requiredVars
+        ObsFilters::requiredVars
     CostFunction::runNL
       Model::forecast
         Observer::initialize
+          ObsFilters::preProcess
           GeoVaLs::GeoVaLs
         loop over time steps
           Observer::process
@@ -36,97 +37,122 @@ The flow of this computation in OOPS is as follows:
       ObsErrors::ObsErrors
       ydep=ysimul-yobs
 
-This needs more explanation here. Just before and just after calling the :code:`simulateObs`
-method, the :code:`Observer` calls the :code:`ObsFilters` :code:`priorFilter` and
-:code:`postFilter` methods. The observation filters are very generic and can perform a
-number of tasks, but mostly they are used for quality control.
+The :code:`Observer` calls the :code:`preProcess` method of :code:`ObsFilters` before the loop over time steps. After the loop, it calls the :code:`priorFilter` and :code:`postFilter` methods just before and just after calling the :code:`simulateObs` method of :code:`ObsOperator`. The observation filters are very generic and can perform a number of tasks, but mostly they are used for quality control.
 
 Observation Filters
 -------------------
 
-Observation filters are generic and have access to:
+Observation filters have access to:
  - Observation values and metadata
  - Model values at observations locations (GeoVaLs)
  - Simulated observation value (for post-filter)
  - Their own private data
 
-Filters are written once and used with many observation types
-Several generic filters already exist
-Entirely controlled from yaml configuration file(s)
-More generic filters will be developed to cover most needs
+Most filters are written once and used with many observation types; several such generic filters already exist and are decribed below. Filters applied to observations from a specific ObsSpace need to be listed in the :code:`observations.obs filters` section of the input YAML configuration file, together with any options controlling their behavior. Example:
 
-Creating a new Filter
----------------------
+.. code:: yaml
+      
+  observations:    
+  - obs space:
+      name: AMSUA-NOAA19
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 1-15
+    obs filters:
+    - filter: Bounds Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 1-15
+      minvalue: 100.0
+      maxvalue: 500.0
+    - filter: Background Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 1-15
+      threshold: 3.0
 
-If your observation operator is different from the above, you may need to create a new
-filter. Typically, all the files for a new filter are in :code:`ufo/src/ufo/filters`.
-
-When writing a new filter, consider using the :code:`Parameter` and :code:`OptionalParameter` 
-class templates to automate extraction of filter parameters from YAML files. See the
-:ref:`Parameter-classes` section for more information.
-
-Filter tests
-------------
-
-All observation filters tests in UFO use the OOPS ObsFilters test from
-:code:`oops/src/test/base/ObsFilters.h`.
-
-Generic QC Filters implemented in UFO
+Generic QC Filters Implemented in UFO
 =====================================
 
-There are a number of exisiting generic filters in the UFO.
-Below is the description of how to configure each of the existing QC filters in UFO. All filters also can use "where" statement, with syntax described in the last section on this page.
+This section describes how to configure each of the existing QC filters in UFO. All filters can also use the :ref:`"where" statement <where-statement>` to act only on observations meeting certain conditions. By default, each filter acts on all the variables marked as *simulated variables* in the ObsSpace. The :code:`filter variables` keyword can be used to limit the action of the filter to a subset of these variables or to specific channels, as shown in the examples from the :ref:`Bounds Check Filter <bounds-check-filter>` section below.
+
+.. _bounds-check-filter:
 
 Bounds Check Filter
-------------------------------
+-------------------
 
-This filter checks if the observation values (@ObsValue in the ioda files) is within specified limits and rejects observations outside of this limit (only for the specified observations):
+This filter rejects observations whose values (:code:`@ObsValue` in the ioda files) lie outside specified limits:
 
 .. code:: yaml
 
-   - Filter: Bounds Check
-     variables: [brightness_temperature]
-     channels: 4-6
+   - filter: Bounds Check
+     filter variables:
+     - name: brightness_temperature
+       channels: 4-6
      minvalue: 240.0
      maxvalue: 300.0
 
-In the above example the filter checks if brightness temperature for channels 4, 5 and 6 is outside of [240, 300] range. Suppose we have the following observation data with 3 locations and 4 channels:
-channel 3: [100, 250, 450]
-channel 4: [250, 260, 270]
-channel 5: [200, 250, 270]
-channel 6: [340, 200, 250]
-In this example, all observations from channel 3 will pass QC because channel 3 isn't configured in this filter. All observations for channel 4 will pass QC because they are within [minvalue, maxvalue]. 1st observation in channel 5, and first and second observations in channel 6 will be rejected.
+In the above example the filter checks if brightness temperature for channels 4, 5 and 6 is outside of the [240, 300] range. Suppose we have the following observation data with 3 locations and 4 channels:
+
+* channel 3: [100, 250, 450]
+* channel 4: [250, 260, 270]
+* channel 5: [200, 250, 270]
+* channel 6: [340, 200, 250]
+
+In this example, all observations from channel 3 will pass QC because the filter isn't configured to act on this channel. All observations for channel 4 will pass QC because they are within [minvalue, maxvalue]. 1st observation in channel 5, and first and second observations in channel 6 will be rejected.
 
 .. code:: yaml
 
-   - Filter: Bounds Check
-     variables: [air_temperature]
+   - filter: Bounds Check
+     filter variables: 
+     - name: air_temperature
      minvalue: 230
-   - Filter: Bounds Check
-     variables: [eastward_wind, northward_wind]
+   - filter: Bounds Check
+     filter variables: 
+     - name: eastward_wind
+     - name: northward_wind
+     minvalue: -40
+     maxvalue:  40
+
+In the above example two filters are configured, one testing temperature, and the other testing wind components. The first filter would reject all temperature observations that are below 230. The second, all wind component observations whose magnitude is above 40.
+
+In practice, one would be more likely to want to filter out wind component observations based on the value of the wind speed :code:`sqrt(eastward_wind**2 + northward_wind**2)`. This can be done using the :code:`test variables` keyword, which rejects observations of a variable if the value of *another* lies outside specified bounds. The "test variable" does not need to be a simulated variable; in particular, it can be an :ref:`ObsFunction <obs-function-and-obs-diagnostic-suffixes>`, i.e. a quantity derived from simulated variables. For example, the following snippet filters out wind component observations if the wind speed is above 40:
+
+.. code:: yaml
+
+   - filter: Bounds Check
+     filter variables:
+     - name: eastward_wind
+     - name: northward_wind
+     test variables:
+     - name: Velocity@ObsFunction
      maxvalue: 40
 
-In the above example two filters are configured, one testing temperature, and the other testing wind components. The first filter would reject all temperature observations that are below 230. The second filter would reject wind component observation when it's above 40.
+If there is only one entry in the :code:`test variables` list, the same criterion is applied to all filter variables. Otherwise the number of test variables needs to match that of filter variables, and each filter variable is filtered according to the values of the corresponding test variable.
 
 Background Check Filter
-------------------------
+-----------------------
 
-This filter checks for bias corrected distance between observation value and model simulated value (y-H(x)) and rejects obs where the absolute difference is larger than abs_threshold or threshold * sigma_o when the filter action is set to "reject". This filter can also adjust observation error through a constant inflation factor when the filter action is set to "inflate error". If no action section is included in the yaml, the filter is set to reject the flagged observations.
+This filter checks for bias corrected distance between observation value and model simulated value (:math:`y-H(x)`) and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * sigma_o when the filter action is set to :code:`reject`. This filter can also adjust observation error through a constant inflation factor when the filter action is set to :code:`inflate error`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
 
 .. code:: yaml
 
-   ObsFilters:
-   - Filter: Background Check
-     variables: [air_temperature]
+   - filter: Background Check
+     filter variables:
+     - name: air_temperature
      threshold: 2.0
      absolute threshold: 1.0
      action:
        name: reject
-   - Filter: Background Check
-     variables: [eastward_wind, northward_wind]
+   - filter: Background Check
+     filter variables:
+     - name: eastward_wind
+     - name: northward_wind
      threshold: 2.0
      where:
-     - variable: latitude@MetaData
+     - variable:
+         name: latitude@MetaData
        minvalue: -60.0
        maxvalue: 60.0
      action:
@@ -138,48 +164,68 @@ then the flagged data are rejected due to filter action is set to reject.
 
 The second filter would flag wind component observations where abs((y+bias)-H(x)) > threshold * sigma_o and latitude of the observation location are within 60 degree. The flagged data will then be inflated with a factor 2.0.
 
-Please see the "Filter Action" for more detail.
+Please see the :ref:`Filter Actions <filter-actions>` section for more detail.
 
 Domain Check Filter
---------------------
+-------------------
 
-The syntax of this ObsFilter is identical to that of "where" statement. For example, if we wanted a filter that kept all observations that satisfy the example on where statement above, and reject everything else, we can have:
-
-.. code:: yaml
-
-   - Domain Check:
-     where:
-     - variable: sea_surface_temperature@GeoVaLs
-       minvalue: 200
-       maxvalue: 300
-    - variable: height@MetaData
-       is_defined
-     - variable: station_id@MetaData
-       is_in: 3, 6, 11-120
-     - variable: something@MetaData
-       is_not_defined
-
-Blacklist filter
------------------
-
-The syntax of this ObsFilter is also identical to that of "where" statement, but this filter behaves the exact opposite of Domain Check: everything that satisfies all where statements will be rejected:
+This filter retains all observations selected by the :ref:`"where" statement <where-statement>` and rejects all others. Below, the filter is configured to retain only observations
+* taken at locations where the sea surface temperature retrieved from the model is between 200 and 300 K (inclusive)
+* with valid :code:`height` metadata (not set to "missing value")
+* taken by stations with IDs 3, 6 or belonging to the range 11-120
+* without valid :code:`air_pressure` metadata.
 
 .. code:: yaml
 
-   - Blacklist:
+   - filter: Domain Check
      where:
-     - variable: sea_surface_temperature@GeoVaLs
+     - variable: 
+         name: sea_surface_temperature@GeoVaLs
        minvalue: 200
        maxvalue: 300
-    - variable: height@MetaData
-       is_defined
-     - variable: station_id@MetaData
+     - variable: 
+         name: height@MetaData
+       is_defined:
+     - variable:
+         name: station_id@MetaData
        is_in: 3, 6, 11-120
-     - variable: something@MetaData
-       is_not_defined
+     - variable: 
+         name: air_pressure@MetaData
+       is_not_defined:
+
+BlackList Filter
+----------------
+
+This filter behaves like the exact opposite of Domain Check: it rejects all observations selected by the :ref:`"where" statement <where-statement>` statement and retains all others. Below, the filter is configured to reject observations taken by stations with IDs 1, 7 or belonging to the range 100-199:
+
+.. code:: yaml
+
+   - filter: BlackList
+     where:
+     - variable: 
+         name: station_id@MetaData
+       is_in: 1, 7, 100-199
+
+Thinning Filter
+---------------
+
+This filter rejects a specified fraction of observations, selected at random. It supports the following YAML parameters:
+
+- :code:`amount`: the fraction of observations to reject (a number between 0 and 1).
+- :code:`random seed` (optional): an integer used to initialize a random number generator if it has not been initialized yet. If not set, the seed is derived from the calendar time.
+
+Note: because of how this filter is implemented, the fraction of rejected observations may not be exactly equal to :code:`amount`, especially if the total number of observations is small.
+
+Example:
+
+.. code:: yaml
+
+  - filter: Thinning
+    amount: 0.75
+    random seed: 125
 
 Gaussian Thinning Filter
--------------------------
+------------------------
 
 This filter thins observations by preserving only one observation in each cell of a grid. Cell assignment can be based on an arbitrary combination of:
 
@@ -265,14 +311,14 @@ Example 1 (thinning by the horizontal position only):
 
 .. code:: yaml
 
-    - Filter: Gaussian_Thinning
+    - filter: Gaussian Thinning
       horizontal_mesh:   1111.949266 #km = 10 deg at equator
 
 Example 2 (thinning observations from multiple categories and with non-equal priorities by their horizontal position, pressure and time):
 
 .. code:: yaml
 
-    - Filter: Gaussian_Thinning
+    - filter: Gaussian Thinning
       distance_norm:     maximum
       horizontal_mesh:   5000
       vertical_mesh:    10000
@@ -284,7 +330,7 @@ Example 2 (thinning observations from multiple categories and with non-equal pri
       priority_variable:
         name: priority@MetaData
 
-TemporalThinning Filter
+Temporal Thinning Filter
 ------------------------
 
 This filter thins observations so that the retained ones are sufficiently separated in time. It supports
@@ -318,7 +364,7 @@ starting from the observation closest to seed time):
 
 .. code:: yaml
 
-    - Filter: TemporalThinning
+    - filter: Temporal Thinning
       min_spacing: PT01H30M
       seed_time: 2018-04-15T00:00:00Z
       category_variable:
@@ -330,7 +376,7 @@ taken up to 20 min after the first qualifying observation if its quality score i
 
 .. code:: yaml
 
-    - Filter: TemporalThinning
+    - filter: Temporal Thinning
       min_spacing: PT01H
       tolerance: PT20M
       category_variable:
@@ -338,8 +384,8 @@ taken up to 20 min after the first qualifying observation if its quality score i
       priority_variable:
         name: score@MetaData
 
-Difference filter
------------------
+Difference Check Filter
+-----------------------
 
 This filter will compare the difference between a reference variable and a second variable and assign a QC flag if the difference is outside of a prescribed range.
 
@@ -347,13 +393,10 @@ For example:
 
 .. code:: yaml
 
-   ObsFilters:
-   - Filter: Difference Check
+   - filter: Difference Check
      reference: brightness_temperature_8@ObsValue
      value: brightness_temperature_9@ObsValue
      minvalue: 0
-   passedBenchmark:  540      # number of passed obs
-
 
 The above YAML is checking the difference between :code:`brightness_temperature_9@ObsValue` and :code:`brightness_temperature_8@ObsValue` and rejecting negative values.
 
@@ -367,8 +410,8 @@ The options for YAML include:
 
 Note that :code:`threshold` supersedes :code:`minvalue` and :code:`maxvalue` in the filter.
 
-Derivative filter
------------------
+Derivative Check Filter
+-----------------------
 
 This filter will compute a local derivative over each observation record and assign a QC flag if the derivative is outside of a prescribed range.
 
@@ -390,15 +433,14 @@ An example:
 
 .. code:: yaml
 
-   ObsFilters:
-   - Filter: Derivative Check
+   - filter: Derivative Check
      independent: datetime
      dependent: air_pressure
      minvalue: -50
      maxvalue: 0
      passedBenchmark:  238      # number of passed obs
 
-The above YAML is checking the derivative of :code:`air_pressure` with respect to :code:`datetime` for a radiosonde profile and rejecting observations where the derivative is positive and less than -50 Pa/sec.
+The above YAML is checking the derivative of :code:`air_pressure` with respect to :code:`datetime` for a radiosonde profile and rejecting observations where the derivative is positive or less than -50 Pa/sec.
 
 The options for YAML include:
  - :code:`independent`: the name of the independent variable (:code:`dx`)
@@ -498,7 +540,7 @@ Example:
 
 .. code:: yaml
 
-   - Filter: Track Check
+   - filter: Track Check
      temporal_resolution: PT30S
      spatial_resolution: 20 # km
      num_distinct_buddies_per_direction: 3
@@ -508,7 +550,7 @@ Example:
      rejection_threshold: 0.5
      station_id_variable: station_id@MetaData
 
-Profile consistency checks
+Profile Consistency Checks
 --------------------------
 
 .. _profconcheck_overview:
@@ -582,16 +624,16 @@ The :code:`obsgrouping` category should be set up in one of two ways. The first 
 .. code:: yaml
 
         obsgrouping:
-          group_variable: "station_id"
-          sort_variable: "air_pressure"
-          sort_order: "descending"
+          group variable: "station_id"
+          sort variable: "air_pressure"
+          sort order: "descending"
 
 The second does not sort the air pressures:
 
 .. code:: yaml
 
         obsgrouping:
-          group_variable: "station_id"
+          group variable: "station_id"
 
 The second formulation could be used if the pressures have been sorted prior to applying this filter.
 An ascending sort order is not valid; if this is selected the checks will throw an error.
@@ -608,7 +650,7 @@ The following yaml parameters can be used to configure the filter itself:
 
 - :code:`Checks`: List of checks to perform. The checks will be performed in the specified order.  Examples: ["Basic"], ["Basic", "Hydrostatic", "UInterp"].
 
-- :code:`nErrorsFail`: Total number of errors at which an entire profile is rejected (default 8).
+- :code:`nErrorsFail`: Total number of errors at which an entire profile is rejected (default 1).
 
 - :code:`flagBasicChecksFail`: Reject a profile if it fails the basic checks (default true). This should only be set to false for testing purposes.
 
@@ -678,7 +720,7 @@ The level with the larger absolute difference between the observed and model bac
 
 **Summary of yaml parameters**
 
-- :code:`SPDTCheck_TThresh`: Absolute temperature difference threshold (default 1.0 K).
+- :code:`SPDTCheck_TThresh`: Absolute temperature difference threshold (default 0.0 K).
 
 :ref:`Back to overview of profile consistency checks <profconcheck_overview>`
 
@@ -699,11 +741,11 @@ The sign check for a particular level is failed in the following case:
 
 **Summary of yaml parameters**
 
-- :code:`SCheck_tObstBkgThresh`: Threshold for absolute temperature difference between observation and background (default 20.0 K).
+- :code:`SCheck_tObstBkgThresh`: Threshold for absolute temperature difference between observation and background (default 5.0 K).
 
-- :code:`SCheck_ProfileSignTol`: Threshold for absolute temperature difference between observation and background after the observation sign has been changed (default 5.0 degrees C).
+- :code:`SCheck_ProfileSignTol`: Threshold for absolute temperature difference between observation and background after the observation sign has been changed (default 100.0 degrees C).
 
-- :code:`SCheck_PstarThresh`: Threshold for difference between observed pressure and model surface pressure (default 5000.0 Pa).
+- :code:`SCheck_PstarThresh`: Threshold for difference between observed pressure and model surface pressure (default 1000.0 Pa).
 
 - :code:`SCheck_PrintLargeTThresh`: Pressure threshold above which large temperature differences are printed (default 1000.0 Pa).
 
@@ -725,9 +767,9 @@ This check is only applied to levels whose pressure is larger than a minimum thr
 
 **Summary of yaml parameters**
 
-- :code:`ULCheck_SuperadiabatTol`: Temperature difference threshold between observed temperature and temperature computed assuming dry adiabatic lapse rate (default -2.0 K). 
+- :code:`ULCheck_SuperadiabatTol`: Temperature difference threshold between observed temperature and temperature computed assuming dry adiabatic lapse rate (default -1.0 K).
 
-- :code:`ULCheck_PBThresh`: Threshold on difference between level pressure and 'bottom' pressure (which can change during the routine) (default 5000.0 Pa).
+- :code:`ULCheck_PBThresh`: Threshold on difference between level pressure and 'bottom' pressure (which can change during the routine) (default 10000.0 Pa).
 
 - :code:`ULCheck_MinP`: Minimum pressure at which the checks are performed (default 0.0 Pa).
 
@@ -752,13 +794,13 @@ according to the list in :code:`ICheck_BigGaps`; the smallest big gap is defined
 
 **Summary of yaml parameters**
 
-- :code:`ICheck_TInterpTol`: Threshold for temperature difference between observed and interpolated value (default 2.0 K).
+- :code:`ICheck_TInterpTol`: Threshold for temperature difference between observed and interpolated value (default 1.0 K).
 
-- :code:`ICheck_TolRelaxPThresh`: Pressure below which temperature difference threshold is relaxed (default 30000.0 Pa).
+- :code:`ICheck_TolRelaxPThresh`: Pressure below which temperature difference threshold is relaxed (default 50000.0 Pa).
 
-- :code:`ICheck_TolRelax`: Multiplicative factor for temperature difference threshold, used if pressure is lower than :code:`ICheck_TolRelaxPThresh` (default 1.5).
+- :code:`ICheck_TolRelax`: Multiplicative factor for temperature difference threshold, used if pressure is lower than :code:`ICheck_TolRelaxPThresh` (default 1.0).
 
-- :code:`ICheck_BigGaps`: 'Big gaps' for use in this check (default [150, 150, 150, 150, 100, 100, 100, 75, 75, 50, 50, 20, 20, 20, 10, 10, 10, 10, 10, 10] hPa).
+- :code:`ICheck_BigGaps`: 'Big gaps' for use in this check (default [500, 500, 500, 500, 100, 100, 100, 100, 50, 50, 50, 50, 10, 10, 10, 10, 10, 10, 10, 10] hPa).
 
 - :code:`ICheck_BigGapInit`: Smallest value of 'big gap' (default 1000.0 Pa).
 
@@ -783,39 +825,39 @@ A decision-making algorithm is used to classify the levels as having height or t
 
 - There are a large number of thresholds used in the decision-making algorithm. Their default values are listed here:
 
-  - :code:`HCheck_SurfacePThresh`: 15100.0 Pa
+  - :code:`HCheck_SurfacePThresh`: 10000.0 Pa
 
-  - :code:`HCheck_ETolMult`: 0.375
+  - :code:`HCheck_ETolMult`: 0.5
 
-  - :code:`HCheck_ETolMax`: 50.0 m
+  - :code:`HCheck_ETolMax`: 1.0 m
 
-  - :code:`HCheck_ETolMaxPThresh`: 40100.0 Pa
+  - :code:`HCheck_ETolMaxPThresh`: 50000.0 Pa
 
-  - :code:`HCheck_ETolMaxLarger`: 80.0 m
+  - :code:`HCheck_ETolMaxLarger`: 1.0 m
 
-  - :code:`HCheck_ETolMin`: 30.0 m
+  - :code:`HCheck_ETolMin`: 1.0 m
 
-  - :code:`HCheck_EThresh`: 15.0 m
+  - :code:`HCheck_EThresh`: 100.0 m
 
-  - :code:`HCheck_EThreshB`: 15.0 m
+  - :code:`HCheck_EThreshB`: 100.0 m
 
-  - :code:`HCheck_ESumThresh`: 30.0 m
+  - :code:`HCheck_ESumThresh`: 50.0 m
 
-  - :code:`HCheck_MinAbsEThresh`: 20.0 m
+  - :code:`HCheck_MinAbsEThresh`: 10.0 m
 
-  - :code:`HCheck_ESumThreshLarger`: 60.0 m
+  - :code:`HCheck_ESumThreshLarger`: 100.0 m
 
-  - :code:`HCheck_MinAbsEThreshLarger`: 200.0 m
+  - :code:`HCheck_MinAbsEThreshLarger`: 100.0 m
 
-  - :code:`HCheck_CorrThresh`: 10.0 m
+  - :code:`HCheck_CorrThresh`: 5.0 m
 
-  - :code:`HCheck_ESumNextThresh`: 30.0 m
+  - :code:`HCheck_ESumNextThresh`: 50.0 m
 
-  - :code:`HCheck_MinAbsEThreshT`: 15.0 m
+  - :code:`HCheck_MinAbsEThreshT`: 10.0 m
 
-  - :code:`HCheck_CorrDiffThresh`: 5.0
+  - :code:`HCheck_CorrDiffThresh`: 10.0
 
-  - :code:`HCheck_CorrMinThresh`: 4.0
+  - :code:`HCheck_CorrMinThresh`: 1.0
 
 :ref:`Back to overview of profile consistency checks <profconcheck_overview>`
 
@@ -843,15 +885,15 @@ down to a minimum value given by the value of :code:`UICheck_BigGapLowP`.
 
 **Summary of yaml parameters**
 
-- :code:`UICheck_TInterpIdenticalPTolSq`: threshold for squared difference between observed wind speeds for levels with identical pressures (default 4.0 m\ :sup:`2` s\ :sup:`-2`).
+- :code:`UICheck_TInterpIdenticalPTolSq`: threshold for squared difference between observed wind speeds for levels with identical pressures (default 0.0 m\ :sup:`2` s\ :sup:`-2`).
 
-- :code:`UICheck_TInterpTolSq`: threshold for squared difference between observed and interpolated wind speeds (default 64.0 m\ :sup:`2` s\ :sup:`-2`).
+- :code:`UICheck_TInterpTolSq`: threshold for squared difference between observed and interpolated wind speeds (default 0.0 m\ :sup:`2` s\ :sup:`-2`).
 
-- :code:`UICheck_BigGapsPThresh`: Maximum pressure thresholds corresponding to the big gaps as defined in :code:`UICheck_BigGaps` (default [65000.0, 27500.0, 17500.0, 8500.0, 2500.0] Pa).
+- :code:`UICheck_BigGapsPThresh`: Maximum pressure thresholds corresponding to the big gaps as defined in :code:`UICheck_BigGaps` (default [50000.0, 10000.0, 5000.0, 1000.0] Pa).
 
-- :code:`UICheck_BigGaps`: Big gaps corresponding to the pressure thresholds defined in :code:`UICheck_BigGapsPThresh` (default [15000.0, 10000.0, 7500.0, 5000.0, 2000.0] Pa).
+- :code:`UICheck_BigGaps`: Big gaps corresponding to the pressure thresholds defined in :code:`UICheck_BigGapsPThresh` (default [100000.0, 50000.0, 10000.0, 5000.0] Pa).
 
-- :code:`UICheck_BigGapLowP`: Minimum 'big gap' in pressure (default 1000.0 Pa).
+- :code:`UICheck_BigGapLowP`: Minimum 'big gap' in pressure (default 500.0 Pa).
 
 :ref:`Back to overview of profile consistency checks <profconcheck_overview>`
 
@@ -896,29 +938,29 @@ The following conditions must be met in order for a level to fail the high-altit
 
 The following parameters are used in the cloud top check:
 
-- :code:`RHCheck_PressThresh`: Pressure threshold for check at top of cloud layers (default 400.0 Pa).
+- :code:`RHCheck_PressThresh`: Pressure threshold for check at top of cloud layers (default 500.0 Pa).
 
-- :code:`RHCheck_PressDiff0Thresh`: Threshold for difference between pressure at the present level and pressure at the lowest level (default 100.0 Pa).
+- :code:`RHCheck_PressDiff0Thresh`: Threshold for difference between pressure at the present level and pressure at the lowest level (default 50.0 Pa).
 
-- :code:`RHCheck_tdDiffThresh`: Threshold for difference in dew point temperature between the present level and the level below (default 2.0 K).
+- :code:`RHCheck_tdDiffThresh`: Threshold for difference in dew point temperature between the present level and the level below (default 5.0 K).
 
-- :code:`RHCheck_RHThresh`: Threshold for relative humidity check to be applied (default 90.0%).
+- :code:`RHCheck_RHThresh`: Threshold for relative humidity check to be applied (default 75.0%).
 
-- :code:`RHCheck_MinRHThresh`: Threshold for minimum relative humidity at top of cloud layers (default 85.0%).
+- :code:`RHCheck_MinRHThresh`: Threshold for minimum relative humidity at top of cloud layers (default 75.0%).
 
-- :code:`RHCheck_PressDiffAdjThresh`: Pressure threshold for determining cloud layer minimum RH (default 20.0 Pa).
+- :code:`RHCheck_PressDiffAdjThresh`: Pressure threshold for determining cloud layer minimum RH (default 50.0 Pa).
 
 The following parameters are used in the high-altitude check:
 
-- :code:`RHCheck_TminThresh`: Threshold value of minimum observed temperature in the profile (default 223.15 K).
+- :code:`RHCheck_TminThresh`: Threshold value of minimum observed temperature in the profile (default 200.0 K).
 
 - :code:`RHCheck_TminInit`: Initial value used in the algorithm that determines the minimum observed temperature (default 400.0 K).
 
-- :code:`RHCheck_SondeRHHiTol`: Threshold for relative humidity O-B difference in sonde ascent check (default 20.0%).
+- :code:`RHCheck_SondeRHHiTol`: Threshold for relative humidity O-B difference in sonde ascent check (default 0.0%).
 
-- :code:`RHCheck_PressInitThresh`: Pressure below which O-B mean is calculated (default 100.0 Pa).
+- :code:`RHCheck_PressInitThresh`: Pressure below which O-B mean is calculated (default 500.0 Pa).
 
-- :code:`RHCheck_TempThresh`: Minimum temperature threshold for accumulating an error counter (default 233.15 K).
+- :code:`RHCheck_TempThresh`: Minimum temperature threshold for accumulating an error counter (default 250.0 K).
 
 :ref:`Back to overview of profile consistency checks <profconcheck_overview>`
 
@@ -931,67 +973,66 @@ This example runs the basic checks on the input data:
 
 .. code:: yaml
 
-    - Filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["Basic"]
-      flagBasicChecksFail: true
-      nErrorsFail: 8
-      BChecks_minValidP: 0.0
-      BChecks_maxValidP: 110.0e3
 
 This example runs the basic and SamePDiffT checks on the input data, using separate instances of the filter to do so:
 
 .. code:: yaml
 
-    - Filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["Basic"]
-      flagBasicChecksFail: true
-      nErrorsFail: 8
-      BChecks_minValidP: 0.0
-      BChecks_maxValidP: 110.0e3
-    - Filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["SamePDiffT"]
-      nErrorsFail: 8
-      SPDTCheck_TThresh: 1.0
+      SPDTCheck_TThresh: 30.0 # This is an example modification of a check parameter
 
 This example runs the basic and SamePDiffT checks on the input data, using the same filter instance:
 
 .. code:: yaml
 
-    - Filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["Basic", "SamePDiffT"]
-      flagBasicChecksFail: true
-      nErrorsFail: 8
-      BChecks_minValidP: 0.0
-      BChecks_maxValidP: 110.0e3
-      SPDTCheck_TThresh: 1.0
+      SPDTCheck_TThresh: 30.0 # This is an example modification of a check parameter
 
+.. _filter-actions:
 
-Filter actions
+Filter Actions
 --------------
-The action taken on filtered observations is configurable in the YAML.  So far this capability is only implemented for the background check through a FilterAction object, but the functionality is generic and can be extended to all other generic filters.  The two action options available now are rejection or inflating the ObsError, which are activated as follows:
+The action taken on observations flagged by the filter can be adjusted using the :code:`action` option recognized by each filter.  So far, three actions have been implemented:
+
+* :code:`reject`: observations flagged by the filter are marked as rejected.
+* :code:`inflate error`: the error estimates of observations flagged by the filter are multiplied by a factor. This can be either a constant (specified using the :code:`inflation factor` option) or a variable (specified using the :code:`inflation variable` option).
+* :code:`assign error`: the error estimates of observations flagged by the filter are set to a specified value. Again. this can be either a constant (specified using the :code:`error parameter` option) or a variable (specified using the :code:`error function` option).
+
+The default action (taken when the :code:`action` keyword is omitted) is to reject the flagged observations.
+
+Examples:
 
 .. code:: yaml
 
-   - Filter: Background Check
-     variables: [air_temperature]
+   - filter: Background Check
+     filter variables: 
+     - name: air_temperature
      threshold: 2.0
      absolute threshold: 1.0
      action:
        name: reject
-   - Filter: Background Check
-     variables: [eastward_wind, northward_wind]
+   - filter: Background Check
+     filter variables:
+     - name: eastward_wind
+     - name: northward_wind
      threshold: 2.0
      where:
      - variable: latitude
@@ -1000,61 +1041,159 @@ The action taken on filtered observations is configurable in the YAML.  So far t
      action:
        name: inflate error
        inflation: 2.0
+  - filter: BlackList
+    filter variables:
+    - name: brightness_temperature
+      channels: *all_channels
+    action:
+      name: assign error
+      error function:
+        name: ObsErrorModelRamp@ObsFunction
+        channels: *all_channels
+        options:
+          channels: *all_channels
+          xvar:
+            name: CLWRetSymmetricMW@ObsFunction
+            options:
+              clwret_ch238: 1
+              clwret_ch314: 2
+              clwret_types: [ObsValue, HofX]
+          x0:    [ 0.050,  0.030,  0.030,  0.020,  0.000,
+                   0.100,  0.000,  0.000,  0.000,  0.000,
+                   0.000,  0.000,  0.000,  0.000,  0.030]
+          x1:    [ 0.600,  0.450,  0.400,  0.450,  1.000,
+                   1.500,  0.000,  0.000,  0.000,  0.000,
+                   0.000,  0.000,  0.000,  0.000,  0.200]
+          err0:  [ 2.500,  2.200,  2.000,  0.550,  0.300,
+                   0.230,  0.230,  0.250,  0.250,  0.350,
+                   0.400,  0.550,  0.800,  3.000,  3.500]
+          err1:  [20.000, 18.000, 12.000,  3.000,  0.500,
+                   0.300,  0.230,  0.250,  0.250,  0.350,
+                   0.400,  0.550,  0.800,  3.000, 18.000]
 
-The default action (when the action section is omitted from the Filter) is to reject the filtered observations.
+.. _obs-function-and-obs-diagnostic-suffixes:
 
-ObsFunction and ObsDiagnostic suffixes
+ObsFunction and ObsDiagnostic Suffixes
 --------------------------------------
 
-In addition to, e.g., @GeoVaLs, @MetaData, @ObsValue, @HofX, there are two new suffixes that can be used.
+In addition to, e.g., :code:`@GeoVaLs`, :code:`@MetaData`, :code:`@ObsValue`, :code:`@HofX`, there are two new suffixes that can be used.
 
-- @ObsFunction requires that a particular variable is defined as an ObsFunction Class under ufo/src/ufo/obsfunctions.  One example of an ObsFunction is Velocity@ObsFunction, which uses the 2 wind components to produce windspeed and can be used as follows:
+- :code:`@ObsFunction` indicates that a particular variable should be a registered :code:`ObsFunction` (:code:`ObsFunction` classes are defined in the :code:`ufo/src/ufo/filters/obsfunctions` folder).  One example of an :code:`ObsFunction` is :code:`Velocity@ObsFunction`, which uses the 2 wind components to produce wind speed and can be used as follows:
+
+  .. code:: yaml
+
+      - filter: Domain Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        where:
+        - variable: Velocity@ObsFunction
+          maxvalue: 20.0
+
+  Warning: ObsFunctions are evaluated for all observations, including those that have been unselected by previous elements of the :code:`where` list or rejected by filters run earlier. This can lead to problems if these ObsFunctions incorrectly assume they will always be given valid inputs.
+
+- :code:`@ObsDiagnostic` will be used to store non-H(x) diagnostic values from the :code:`simulateObs` function in individual :code:`ObsOperator` classes.  The :code:`ObsDiagnostics` interface class in OOPS is used to pass those diagnostics to the :code:`ObsFilters`.  Because the diagnostics are provided by :code:`simulateObs`, they can only be used in filters that implement the :code:`postFilter` function (currently only Background Check and Met Office Buddy Check).  The :code:`simulateObs` interface to :code:`ObsDiagnostics` will be first demonstrated in CRTM.
+
+.. _where-statement:
+
+Where Statement
+---------------
+
+By default, filters are applied to all observations of the variables specified in the :code:`filter variables` list (or if this list is not present, all simulated variables). The :code:`where` keyword can be used to apply a filter only to observations meeting certain conditions.
+
+Consider the following set of observations:
+
+.. list-table:: 
+   :header-rows: 1
+
+   * - Obs. index 
+     - latitude 
+     - longitude 
+     - air_temperature (K)
+   * - 0
+     - 0
+     - 50
+     - 300
+   * - 1
+     - 20
+     - 60
+     - 200
+   * - 2
+     - 40
+     - 70
+     - 290
+   * - 3
+     - 60
+     - 80
+     - 260
+   * - 4
+     - 80
+     - 90
+     - 220
+
+and suppose that we want to reject air temperature observations below 230 K taken in the tropical zone (between 30°S and 30°N). We could do this using the Bounds Check filter with a :code:`where` statement:
 
 .. code:: yaml
 
-    - Filter: Domain Check
-      variables: [eastward_wind, northward_wind]
-      where:
-      - variable: Velocity@ObsFunction
-        maxvalue: 20.0
+  - filter: Bounds Check
+    filter variables: air_temperature
+    minvalue: 230
+    action: reject # this is the default action, specified explicitly for clarity
+    where:
+    - variable:
+        name: latitude@MetaData
+      minvalue: -30
+      maxvalue:  30
 
-So far, @ObsFunction variables can be used in where statements in any of the generic filters.  In the future, they may be used to inflate ObsError as an "action".
+This would cause the filter to be applied only to air temperature observations `selected` by the :code:`where` statement, i.e. meeting the specified condition :code:`-30 <= latitude@MetaData <= 30`. Please note this does not mean all these observations would be rejected; rather, it means the Bounds Check filter would inspect only these observations and apply its usual criteria (in this case, "is the air temperature below the minimum allowed value of 230 K?") to decide whether any of them should be rejected. In our example, only observation 1 would be rejected, since this is the only observation (a) taken in the range of latitudes selected by the :code:`where` statement and (b) with a value lying below the minimum value passed to the Bounds Check filter.
 
-- @ObsDiagnostic will be used to store non-h(x) diagnostic values from the simulateObs function in individual ObsOperator classes.  The ObsDiagnostics interface class to OOPS is used to pass those diagnostics to the ObsFilters.  Because the diagnostics are provided by simulateObs, they can only be used in a PostFilter.  The generic filters will need to have PostFilter functions implemented (currently only Background Check) in order to use ObsDiagnostics.  The simulateObs interface to ObsDiagnostics will be first demonstrated in CRTM.
+The list passed to the :code:`where` keyword can contain more than one item, each representing a separate condition imposed on a particular variable. The filter is applied only to observations meeting all of these conditions. The following kinds of conditions are accepted:
 
-Where statement and processWhere function
-------------------------------------------
+- :code:`minvalue` and/or :code:`maxvalue`: filter applied only to observations for which the condition variable lies in the specified range. The upper and lower bounds can be floating-point numbers or datetimes in the ISO 8601 format. If any date/time components are set to zero, they are disregarded. See :ref:`Example 2 <where-example-2>` below on where this can be useful.
+- :code:`is_defined`: filter applied only to observations for which the condition variable has a valid value (not a missing data indicator).
+- :code:`is_not_defined`: filter applied only to observations for which the condition variable is set to a missing data indicator.
+- :code:`is_in`: filter applied only to observations for which the condition variable is set to a value belonging to the given whitelist.
+- :code:`is_not_in`: filter applied only to observations for which the condition variable is set to a value not belonging to the given blacklist.
 
-The :code:`where` statement can be included in the yaml file in conjunction with observation filters as the condition for filtering. The :code:`processWhere` function takes the condition in the :code:`where` statement from yaml and creates a mask that restricts where the filter will apply. The default is true, so if there is no :code:`where`, the filter applies everywhere. Everywhere the condition is false, the filter will not be applied.
+The elements of both whitelists and blacklists can be strings, non-negative integers or ranges of non-negative integers. It is not necessary to put any value after the colon following :code:`is_defined` and :code:`is_not_defined`.
 
-The following conditions are accepted by the :code:`where` statement:
+The following examples illustrate the use of these conditions.
 
-- :code:`minvalue` and/or :code:`maxvalue` : filter applied if value is within the valid range, supporting float and ISO 8601 format datetimes.  Note that datetimes can also have one or more components set to zero so as to signify ignoring these components.  See example below on where this can be useful.
-- :code:`is_defined`                       : filter applied if data has a valid value (not missing)
-- :code:`is_not_defined`                   : filter applied if data is missing
-- :code:`is_in`                            : filter applied if data is in the given whitelist, supporting integer and string types.
-- :code:`is_not_in`                        : filter applied if data is not in the given blacklist, supporting integer and string types.
+Example 1
+^^^^^^^^^
 
 .. code:: yaml
 
    where:
-   - variable: sea_surface_temperature@GeoVaLs
+   - variable:
+       name: sea_surface_temperature@GeoVaLs
      minvalue: 200
      maxvalue: 300
-   - variable: latitude@MetaData
+   - variable: 
+       name: latitude@MetaData
      maxvalue: 60.
-   - variable: height@MetaData
-     is_defined
-   - variable: station_id@MetaData
+   - variable: 
+       name: height@MetaData
+     is_defined:
+   - variable: 
+       name: station_id@MetaData
      is_in: 3, 6, 11-120
 
-In the example above, four masks are created for radiosonde observation filtering. The filter will be applied in sequence at observation locations where the sea surface temperature is within the range of [200, 300] kelvin, the latitude is <= than 60 degrees, the height of the observation has a valid value (not missing), and the station id is one of the ids in the whitelist. 
+In this example, the filter will be applied only to observations for which all of the following four criteria are met:
 
-The :code:`where` statement and :code:`processWhere` function are used in generic filters such as BackgroundCheck, DifferenceCheck, ObsBoundsCheck, ObsDomainCheck, and BlackList.
+- the sea surface temperature is within the range of [200, 300] K,
+- the latitude is <= than 60°N,
+- the observation location's altitude has a valid value (is not set to a missing data indicator), and 
+- the station id is one of the ids in the whitelist. 
+
+.. _where-example-2:
+
+Example 2
+^^^^^^^^^
 
 .. code:: yaml
 
-    - where: 
+      where: 
       - variable:
           name:  datetime@MetaData
         minvalue: 0000-01-01T00:00:00Z
@@ -1062,6 +1201,57 @@ The :code:`where` statement and :code:`processWhere` function are used in generi
       - variable:
           name:  datetime@MetaData
         minvalue: 0000-00-00T09:00:00Z
-        maxvalue: 0000-00-00T18:00:00Z
+        maxvalue: 0000-00-00T17:59:59Z
 
-In the example above, a mask is created for times between 09:00 and 18:00, between 1st January and 25th May of every year.
+In this example, the filter will be applied only to observations taken between 09:00:00 and 17:59:59, between 1st January and 25th May of every year.
+
+Outer Loop Iterations
+---------------------
+
+By default, filters are applied only before the first iteration of the outer loop of the data assimilation process. Use the :code:`apply at iterations` parameter to customize the set of iterations after which a particular filter is applied. In the example below, the Background Check filter will be run before the outer loop starts ("after the zeroth iteration") and after the first iteration:
+
+.. code:: yaml
+
+   - filter: Background Check
+     apply at iterations: 0,1
+     threshold: 0.25
+
+Creating a New Filter
+---------------------
+
+If none of the filters described above meets your requirements, you may need to write a new one. If possible, make it generic (applicable to arbitrary observation types). The source code of UFO filters is stored in the :code:`ufo/src/ufo/filters` folder. You may find it useful to refer to the JEDI Academy tutorials on `writing <http://academy.jcsda.org/2020-02/pages/activities/day2b.html>`_ and `testing <http://academy.jcsda.org/2020-02/pages/activities/day4a.html>`_ a filter.
+
+When writing a new filter, consider using the :ref:`Parameter-classes`
+to automate extraction of filter parameters from YAML files.
+
+Filter Tests
+------------
+
+All observation filters in UFO are tested with the :code:`ObsFilters` test from :code:`ufo/test/ufo/ObsFilters.h`. Each entry in the :code:`observations` list in a YAML file passed to this test should contain at least one of the following parameters:
+
+- :code:`passedBenchmark`: Number of observations that should pass QC.
+- :code:`passedObservationsBenchmark`: List of indices of observations that should pass QC.
+- :code:`failedBenchmark`: Number of observations that should not pass QC.
+- :code:`failedObservationsBenchmark`: List of indices of observations that should not pass QC.
+- :code:`flaggedBenchmark`: Number of observations whose QC flag should be set to the value specified in the YAML option :code:`benchmarkFlag`. Useful to isolate the impact of a filter executed after other filters that also modify QC flags.
+- :code:`failedObservationsBenchmark`: List of indices of observations whose QC flag should be set to the value specified in the YAML option :code:`benchmarkFlag`.
+- :code:`compareVariables`: A list whose presence instructs the test to compare variables created by the filter with reference variables. Each element of the list should contain the following parameters:
+
+  - :code:`test`: The variable to be tested.
+  - :code:`reference`: The reference variable.
+
+  By default, the comparison will succeed only if all entries in the compared variables are exactly equal. If the compared variables hold floating-point numbers and the :code:`absTol` option is set, the comparison will succeed if all entries differ by at most :code:`absTol`. Example:
+
+  .. code:: yaml
+
+    compareVariables:
+      - test:
+          name: eastward_wind@ObsValue
+        reference:
+          name: eastward_wind@TestReference
+        absTol: 1e-5
+      - test:
+          name: northward_wind@ObsValue
+        reference:
+          name: northward_wind@TestReference
+        absTol: 1e-5
