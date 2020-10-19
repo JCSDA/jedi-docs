@@ -27,8 +27,11 @@ closely when building FV3-BUNDLE.
 
    <a href="https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/developer/building_and_testing/building_jedi.html" target="_blank">instructions for building</a>
 
-Choosing a Model
-----------------
+
+.. _buildwithmodel:
+
+Choosing an FV3-based model to build with
+-----------------------------------------
 
 FV3-JEDI depends on the FV3 dynamical core and cannot be built without some version of it being
 included. Currently there are three models that can be used to provide FV3 as well as the potential

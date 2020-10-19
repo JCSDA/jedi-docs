@@ -206,7 +206,9 @@ value that is used to access the field.
 and written to. This might take different values for different models or different kinds of files.
 
 :code:`Kind` is a string giving the precision of the variable. It can be :code:`double` [default] or
-:code:`integer`.
+:code:`integer`. If the field is integer it is not actually stored as an integer but the flag allows
+for special treatment where necessary. A special interpolation schemes is called for integer fields
+for example.
 
 :code:`Levels` is a string providing the number of levels for the field. Values can be :code:`full`
 [default], meaning the field is stored at the mid point of each level, or :code:`half` meaning it is
@@ -215,10 +217,13 @@ Surface variables would be 1.
 
 :code:`LongName` is a string providing the long name for the variable, typically using the standard
 name. The only effect of this choice is in the long name written to the output. LongName is
-automatically prepended with :code:`increment_of_` when the field being created is part of the increment.
+automatically prepended with :code:`increment_of_` when the field being created is part of the
+increment.
 
 :code:`Space` is a string representing the kind of data the field encompasses. Valid choices are
-:code:`magnitude` [default], :code:`vector` or :code:`direction`.
+:code:`magnitude` [default], :code:`vector` or :code:`direction`. This choice is important when it
+comes to how a field gets interpolated. Fields that are vectors require special attention when doing
+interpolation and fields that are a direction are interpolated using nearest neighbor.
 
 :code:`StaggerLoc` is a string representing the position within the horizontal grid cell that the
 field is stored. The options are :code:`center` [default], :code:`northsouth`, :code:`eastwest` or
@@ -449,25 +454,61 @@ look like, for example, "20200101_00000z.fv_core.res.tile1.nc". This can be turn
 
 .. _getvalues:
 
-GetValues
----------
+GetValues and LinearGetValues
+-----------------------------
 
-
-
-.. _lineargetvalues:
-
-LinearGetValues
----------------
+The GetValues and LinearGetValues methods are responsible for interpolating the cube sphere fields
+to the observation locations set by the observation operators. The fields that come into the methods
+are cube sphere versions of the fields that the observation operator requests. All the routines in
+these methods are generic and the user has little interaction with them. The only choices that can
+affect the behavior is in the :ref:`geometry`, where the user can choose the interpolation method
+to be used throughout the system. Note that it is not expected that this choice will be available in
+the long term and exists now primarily to test different interpolation schemes. The kind of
+interpolation is also impacted by the :ref:`fieldmetadata`. Scaler real fields are interpolated
+using the interpolation method set in the geometry configuration. Other kinds of fields, such as
+integer valued fields are interpolated with custom methods.
 
 .. _model:
 
 Model
 -----
 
+The Model class is where FV3-JEDI interacts with the actual forecast model. FV3-JEDI is capable of
+using the forecast models in-core with the data assimilation applications as well as interacting
+with the models through files. The choice whether to interact with the model in-core depends on the
+application being run. For example there can be much benefit to being in-core for a multiple outer
+loop 4DVar data assimilation system of when running H(x) calculations. However, there is no benefit
+to including the model for a 3DVar application and indeed the model is never instantiated in those
+kinds of applications.
+
+Other than in the IO the code in the other classes is identical regardless of the underlying
+FV3-based model, whether it be GEOS or GFS. In the Model class the code depends heavily on the
+underlying model, although all the models use FV3 they have differing infrastructure around them.
+
+Instantiation of Model objects is controlled through a factory and the only thing limiting which
+can be compiled is the presence of the model isself and making sure that there are not multiple
+versions of FV3 being linked to. Which models can be built with is described in the
+:ref:`buildwithmodel` section. At run time the model that is used is chosen through the
+configuration key :code:`name` as follows:
+
+.. code:: yaml
+
+   model:
+     name: GEOS
+
+.. code:: yaml
+
+  model:
+    name: UFS
+
+The current options are GEOS, UFS, FV3LM and Pseudo
+
 .. _geos:
 
 GEOS
 ~~~~
+
+
 
 .. _ufs:
 
@@ -478,6 +519,31 @@ GFS/UFS
 
 Pseudo model
 ~~~~~~~~~~~~
+
+The pseudo model can be used with GFS or GEOS. All this model does is read states from disk that are
+valid at the end of the time step being 'propagated'. The configuration for pseudo model is very
+similar to that described in :ref:`io` except when refering to a state instead of, for example,
+using :code:`filename_core: 20200101_000000.fv_core.res.nc` the correct syntax would be
+:code:`filename_core: %y%m%d_%h%m%d.fv_core.res.nc`. The system will pick the correct date for the
+file based on the time of the model.
+
+Note that OOPS provides a generic pseudo model, which is demonstrated in the :code:`hofx_nomodel`
+test. The advantage of using the FV3-JEDI pseudo model is that the yaml only required a single entry
+with templated date and time, in the OOPS pseudo model a list of states to read is provided. Another
+advantage is that in data assimilation applications involving the model, such as 4DVar, the
+application propagates the model through the window after the analysis in order to compute 'o minus
+a'. This second propagation of the model is not useful with any pseudo model and can be turned off
+in the FV3-JEDI pseudo model by specifying :code:`run stage check: 1` as shown in this example:
+
+.. code:: yaml
+
+   model:
+     name: PSEUDO
+     pseudo_type: geos
+     datapath: Data/inputs/geos_c12
+     filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+     filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+     run stage check: 1
 
 .. _fv3core:
 
