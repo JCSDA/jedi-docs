@@ -245,22 +245,35 @@ State / Increment / Field
 -------------------------
 
 The State and Increment classes in FV3-JEDI have a fair amount of overlap between them. The
-constructors are largely identical and they share a number methods, such as read and write and
-computing of norms. In order to simplify the code FV3-JEDI implements a Field class at the Fortran
-level and both State and Increment are made up of collection of and array of type Field.
+constructors are largely the same and they share a number methods, such as read and write and
+computing of norms. In order to simplify the code FV3-JEDI implements a Fields class at the Fortran
+level and both State and Increment inherit from the Fields base class.
 
-The user does not interact with the State and Increment classes except to choose which fields will
+The main data structure in the Fields class is and array of type Field (no 's'):
+
+.. code:: fortran
+
+  type :: fv3jedi_fields
+
+    type(fv3jedi_field), allocatable :: fields(:)  ! Array of field
+
+  endtype fv3jedi_fields
+
+The only specialization the State and Increment add to the Fields class are methods specific to
+each.
+
+The user interaction with the State and Increment classes extends to choosing which fields will
 actually be allocated and to provide paths to files that must be read or written to. The
 configuration as it relates to IO is discussed below in the IO section.
 
-The variables are chosen in the configuration as follows:
+As an example for creating a State the variables are chosen in the configuration as:
 
 .. code:: yaml
 
    state variables: [u,v,T,DELP]
 
-The strings in the list of state variables are the names of the Fields as they are in the file that
-is going to be read.
+The strings in the list of variables are the names of the Fields as they are in the file that is
+going to be read. The below example shows how the list of fields are allocated in the Fields class:
 
 .. code:: fortran
 
@@ -295,48 +308,64 @@ variable name string, which is the one of the :code:`FieldIONames`.
 
 **Field accessor functions**
 
-The Field class provides a number of accessor functions in order to obtain fields. Whenever using
-these accessor functions the string used to reference the field is the :code:`FieldName` and not the
-:code:`FieldIONames`. This it to ensure there is a consistent and predictable way of getting the
-field.
+The Fields and Field classes provides a number of accessor functions in order to obtain actual field
+data that can be used or manipulated.
 
-Several common function are descibed below.
+Whenever using these accessor functions the string used to reference the field is the
+:code:`FieldName` and not the :code:`FieldIONames`. This it to ensure there is a consistent and
+predictable way of getting the field regarless of the way a variable is named in whatever file is
+being read. For example the file being read may have temperature stored as 't' while another file
+from a different model may have 'T'. In the yaml configuration file the user would choose either
+'t' or 'T' depending on which is in the file. In the source code this particular variable
+would only ever be accessed using 't', which is the :code:`FieldName` for temperature.
 
-It is possible to check whether the state or increment contains a particular field with
-:code:`has_field`:
+There are three accessor functions, :code:`has_field`, :code:`get_field` and :code:`put_field`.
+Each function has several interfaces.
+
+The function :code:`has_field` is a function that queries whether a field with a particular
+:code:`FieldName` is present. An example of the interface is show below. This code
+snippet shows two possible interfaces to :code:`has_field`, where the array of fields is passed
+explicitly and where it is called from the class. Optionally the index in the array can be returned
+with the boolean result of the query.
 
 .. code:: fortran
 
    ! Check whether state fields contain temperature
    have_t = has_field(state%fields, 't', t_index)
 
+   ! Check whether state fields contain temperature
+   have_t = state%has_field('t')
+
+The subroutine :code:`get_field` can be used to return the field data with a particular
+:code:`FieldName`, aborting if the field is not present. The method can return the field in three
+different formats, as a pointer to the array, a copy of the array or as a pointer to the type. The
+below shows these three ways of using the method.
+
 It is possible to obtain a pointer to the entire field object using :code:`pointer_field`:
 
 .. code:: fortran
 
-   type(fv3jedi_field), pointer :: t(:,:,:)
-
-   ! Get a pointer to the temperature field
-   call pointer_field(state%fields, 't', t)
-
-It is possible to obtain a pointer to the array part of the field :code:`pointer_field_array`:
-
-.. code:: fortran
-
+   ! Get a pointer to the field data
    real(kind=kind_real), pointer :: t(:,:,:)
+   call state%get_field('t', t)
 
-   ! Get pointer to array part of the field
-   call pointer_field_array(state%fields, 't', t)
+   ! Get a copy of the field data
+   real(kind=kind_real), allocatable :: t_array(:,:,:)
+   call state%get_field('t', t)
 
-It is possible to allocate an array and copy the array part of the field into that array using
-:code:`allocate_copy_field_array`:
+   ! Get a pointer to the field
+   type(fv3jedi_field), pointer :: t
+   call state%get_field('t', t)
 
-.. code:: fortran
+Like the :code:`has_field` method, the :code:`get_field` method can be used by passing the array of
+field, :code:`call get_field(state%fields, 't', t)`
 
-   type(fv3jedi_field), allocatable :: t(:,:,:)
+The accessor function is :code:`put_field`, which has the exact same interface as :code:`get_field`
+except it overwrites the internal field data with the input data.
 
-   ! Copy temperature field to local array
-   call allocate_copy_field_array(state%fields, 't', t)
+Note that fv3-jedi only supports rank 3 fields. Fields that are surface quantities simply have
+size 1 in the third dimension. Quantities such as tracers are stores as individual rank 3 arrays and
+not in one large array. Performing processes
 
 
 .. _io:
@@ -508,12 +537,28 @@ The current options are GEOS, UFS, FV3LM and Pseudo
 GEOS
 ~~~~
 
+The configuration for the GEOS model needs to include the time step for the model, a path to a
+directory where GEOS can be run from and the variables, which contains a list of fields within GEOS
+that need to be accessed. The :code:`geos_run_directory` is a directory that contains restarts,
+boundary conditions, configurations and any other files that are needed in order to run GEOS. This
+directory is created ahead of making any forecasts involving GEOS.
+
+.. code:: yaml
+
+  model:
+    name: GEOS
+    tstep: PT30M
+    geos_run_directory: Data/ModelRunDirs/GEOS/
+    model variables: [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN]
 
 
 .. _ufs:
 
 GFS/UFS
 ~~~~~~~
+
+Interfacing FV3-JEDI to the UFS model through the NUOPC driver is an ongoing effort and all the
+features are not fully supported yet.
 
 .. _pseudo:
 
@@ -550,6 +595,25 @@ in the FV3-JEDI pseudo model by specifying :code:`run stage check: 1` as shown i
 FV3 core model
 ~~~~~~~~~~~~~~
 
+FV3-JEDI interfaces to the standalone version of the FV3 dynamical core. This is needed to enable
+applications in FV3-JEDI that do not require the full model without having to build the full model.
+This also allows for fast testing of applications that do involve the model without it being
+necessary to provide all of the infrastructure needed to the full with physics model.
+
+Below shows example configuration
+
+.. code:: yaml
+
+  model:
+    name: FV3LM
+    nml_file: Data/fv3files/input_gfs_c12.nml
+    trc_file: Data/fv3files/field_table
+    tstep: PT15M
+    model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+
+Similar to the Geometry the Model needs an :code:`input.nml` and :code:`field_table` file to be
+present in the directory so these are passed in through the model configuration. Additionally it is
+necessary to provide the time step and list of variables that the model will provide.
 
 .. _linearmodel:
 
@@ -558,28 +622,216 @@ LinearModel
 
 .. _linearnonlinearvarchanges:
 
+FV3-JEDI ships with a linearized version of the FV3 dynamical core named FV3-JEDI-LINEARMODEL. Note
+that the linear model comes in a separate repository though it builds only as part of FV3-JEDI.
+
+An example of the configuration is shown below.
+
+.. code:: yaml
+
+  linear model:
+
+    # Name of the LinearModel in the factory
+    name: FV3JEDITLM
+
+    # FV3 required files
+    nml_file: Data/fv3files/input_geos_c12.nml
+    trc_file: Data/fv3files/field_table
+    nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+
+    # Time step
+    tstep: PT1H
+
+    # Run the dynamical core component
+    lm_do_dyn: 1
+
+    # Run the turbulence core component
+    lm_do_trb: 1
+
+    # Run the convection and microphysics components
+    lm_do_mst: 1
+
+    # Variables in the linear model
+    tlm variables: [u,v,t,delp,q,qi,ql,o3ppmv]
+
+The linear model requires the same :code:`input.nml` and :code:`field_table` files that the
+nonlinear version of FV3 needs. In addition is needs an :code:`inputpert.nml` file, which is
+provided through the :code:`nml_file_pert` keyword. The different components of the linearized model
+can be turned on and off with the :code:`lm_do_` keywords. The three components are the dynamical
+core, the turbulence scheme and the linearized moist physics.
+
+.. _varchanges:
+
 Linear and nonlinear Variable Changes
 -------------------------------------
+
+FV3-JEDI has a number of linear and nonlinear variable changes which are used to transform between
+increments or states with different sets of variables. These variable changes are used to go between
+different components of the system where different variables might be required.
+
+Variables changes are constructed using factories so are chosen through the configuration. Some
+variable changes require additional configuration and some require nothin additional. The details
+of each configuration is outlined below.
+
+Many of the variable changes take on the same general format structure.
+
+1. The first step is to copy all the variables that are present in both input and output states and
+increments.
+
+  .. code:: fortran
+
+      ! Array of variables that cannot be obtained from input
+      character(len=field_clen), allocatable :: fields_to_do(:)
+
+      ! Copy fields that are the same in both
+      call copy_subset(xin%fields, xout%fields, fields_to_do)
+
+The :code:`copy_subset` routine identifies the variables in both and copies the data from one to the
+other. Optionally it returns a list of variables that are in the output that are not in the input.
+
+2. The second step is to prepare all the potential outputs variables that might be needed. This is
+done as follows:
+
+  .. code:: fortran
+
+      logical :: have_t
+      real(kind=kind_real), pointer     :: pt(:,:,:)
+      real(kind=kind_real), pointer     :: pkz(:,:,:)
+      real(kind=kind_real), allocatable :: t(:,:,:)
+
+      have_t = .false.
+      if (xin%has_field('t')) then
+        call xin%get_field('t', t)
+        have_t = .true.
+      else if (xin%has_field('pt') .and. xin%has_field('pkz')) then
+        allocate(t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+        call xin%get_field('pt', pt)
+        call xin%get_field('pkz', pkz)
+        call pt_to_t(geom, pkz, pt, t)
+        have_t = .true.
+      end if
+
+Note that variables that are not necessarily needed to provide another variable are typically
+pointers. Variables that are obtained one of multiple ways are typically allocatable arrays. The
+boolean variable :code:`have_t` determines that a variable, in this case temperature, is now
+available.
+
+3. The third step is to loop through the output variables that could not be copied and attempt to
+get them from the prepared variables.
+
+  .. code:: fortran
+
+       ! Loop over the fields not found in the input state and work through cases
+       do f = 1, size(fields_to_do)
+
+         ! Get output field name
+         select case (trim(fields_to_do(f)))
+
+         ! Temperature case
+         case ("t")
+
+           ! Abort if field not obtainable and otherwise put into data
+           if (.not. have_t) call field_fail(fields_to_do(f))
+           call xout%put_field(trim(fields_to_do(f)),  t)
+
+         end select
+
+       end do
+
+If the variable has not been prepared the variable change will fail, otherwise the :code:`put_field`
+will overwrite the field data it the prepared variable.
 
 .. _a2m:
 
 Analysis2Model
 ~~~~~~~~~~~~~~
 
+The analysis to model variable change is used to transform between the background variables (the
+variables that will be analyzed) and the variables used to drive the model.
+
+In some cases the model variables can be quite extensive and the user may wish to save memory by
+limiting the number of variables included in the background and written to the analysis file. The
+nonlinear analysis to model variable change has the ability to read a variable from file if it is
+not available from the inputs. The configuration is the same as used in the IO routines, with both
+GFS and GEOS IO available in the variable change.
+
+.. code:: yaml
+
+    variable change: Analysis2Model
+
+    filetype: gfs
+    datapath: Data/inputs/gfs_c12/bkg/
+    filename_core: 20180415.000000.fv_core.res.nc
+    filename_trcr: 20180415.000000.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.sfc_data.nc
+    filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+
+The linear analysis to model variable change does not require any configuration.
+
+.. _cstart:
+
 ColdStartWinds
 ~~~~~~~~~~~~~~
+
+The cold start winds variable change is specific to the GFS model. GFS cold starts are obtained when
+re-gridding from different grids or resolutions. In this variable transform the cold start winds are
+converted to the D-Grid winds needed to drive the FV3 model. There is not configuration for this
+variable change, except to choose to use it through the factory. There is only a nonlinear version
+of the variable change.
+
+.. _c2a:
 
 Control2Analysis
 ~~~~~~~~~~~~~~~~
 
+The control to analysis variable change converts from the control variables (here the variables
+used) in the B matrix to the analysis variables. In the variational assimilation algorithm only the
+linear version of this variable change is needed but a nonlinear version is provided to the purpose
+of training the covariance model.
+
+For the NWP applications the control variables are typically stream function and velocity potential
+while the analysis variables are winds. To transform between stream function and wind requires a
+straightforward derivative operator but the inverse transforms require the use of a Poisson solver
+to solve the inverse Laplacian after transforming from winds to vorticity and divergence.
+A Finite Element Mesh Poisson Solver (FEMPS) is provided as part of FV3-BUNDLE and is linked to in
+the variable transform. When converting without using FEMPS no configuration is required. When
+using FEMPS the configuration options are show below:
+
+
+.. code:: yaml
+
+   variable change: Control2Analysis
+
+   # Number of iterations of the Poisson solver
+   femps_iterations: 50
+
+   # Number of grids in the multigrid heirachy
+   femps_ngrids: 6
+
+   # Number of levels per processor (-1 to automatically distribute)
+   femps_levelprocs: -1
+
+   # Path containing geometry files for the multigrid
+   femps_path2fv3gridfiles: Data/femps
+
+
+.. _geosr2b:
+
 GEOSRstToBkg
 ~~~~~~~~~~~~
+
+.. _m2g:
 
 Model2GeoVaLs
 ~~~~~~~~~~~~~
 
+.. _nmcbal:
+
 NMCBalance
 ~~~~~~~~~~
+
+.. _vertremap:
 
 VertRemap
 ~~~~~~~~~
