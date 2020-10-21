@@ -12,7 +12,7 @@ most of the quality control takes place.
 
 The flow of this computation in OOPS is as follows:
 
-.. code:: yaml  
+.. code-block:: yaml  
   
   CostFunction::evaluate
     CostJo::initialize
@@ -50,7 +50,7 @@ Observation filters have access to:
 
 Most filters are written once and used with many observation types; several such generic filters already exist and are decribed below. Filters applied to observations from a specific ObsSpace need to be listed in the :code:`observations.obs filters` section of the input YAML configuration file, together with any options controlling their behavior. Example:
 
-.. code:: yaml
+.. code-block:: yaml
       
   observations:    
   - obs space:
@@ -84,7 +84,7 @@ Bounds Check Filter
 
 This filter rejects observations whose values (:code:`@ObsValue` in the ioda files) lie outside specified limits:
 
-.. code:: yaml
+.. code-block:: yaml
 
    - filter: Bounds Check
      filter variables:
@@ -102,7 +102,7 @@ In the above example the filter checks if brightness temperature for channels 4,
 
 In this example, all observations from channel 3 will pass QC because the filter isn't configured to act on this channel. All observations for channel 4 will pass QC because they are within [minvalue, maxvalue]. 1st observation in channel 5, and first and second observations in channel 6 will be rejected.
 
-.. code:: yaml
+.. code-block:: yaml
 
    - filter: Bounds Check
      filter variables: 
@@ -119,7 +119,7 @@ In the above example two filters are configured, one testing temperature, and th
 
 In practice, one would be more likely to want to filter out wind component observations based on the value of the wind speed :code:`sqrt(eastward_wind**2 + northward_wind**2)`. This can be done using the :code:`test variables` keyword, which rejects observations of a variable if the value of *another* lies outside specified bounds. The "test variable" does not need to be a simulated variable; in particular, it can be an :ref:`ObsFunction <obs-function-and-obs-diagnostic-suffixes>`, i.e. a quantity derived from simulated variables. For example, the following snippet filters out wind component observations if the wind speed is above 40:
 
-.. code:: yaml
+.. code-block:: yaml
 
    - filter: Bounds Check
      filter variables:
@@ -136,7 +136,7 @@ Background Check Filter
 
 This filter checks for bias corrected distance between observation value and model simulated value (:math:`y-H(x)`) and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * sigma_o when the filter action is set to :code:`reject`. This filter can also adjust observation error through a constant inflation factor when the filter action is set to :code:`inflate error`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
 
-.. code:: yaml
+.. code-block:: yaml
 
    - filter: Background Check
      filter variables:
@@ -175,7 +175,7 @@ This filter retains all observations selected by the :ref:`"where" statement <wh
 * taken by stations with IDs 3, 6 or belonging to the range 11-120
 * without valid :code:`air_pressure` metadata.
 
-.. code:: yaml
+.. code-block:: yaml
 
    - filter: Domain Check
      where:
@@ -198,7 +198,7 @@ BlackList Filter
 
 This filter behaves like the exact opposite of Domain Check: it rejects all observations selected by the :ref:`"where" statement <where-statement>` statement and retains all others. Below, the filter is configured to reject observations taken by stations with IDs 1, 7 or belonging to the range 100-199:
 
-.. code:: yaml
+.. code-block:: yaml
 
    - filter: BlackList
      where:
@@ -218,7 +218,7 @@ Note: because of how this filter is implemented, the fraction of rejected observ
 
 Example:
 
-.. code:: yaml
+.. code-block:: yaml
 
   - filter: Thinning
     amount: 0.75
@@ -309,14 +309,14 @@ The following YAML parameters are supported:
 
 Example 1 (thinning by the horizontal position only):
 
-.. code:: yaml
+.. code-block:: yaml
 
     - filter: Gaussian Thinning
       horizontal_mesh:   1111.949266 #km = 10 deg at equator
 
 Example 2 (thinning observations from multiple categories and with non-equal priorities by their horizontal position, pressure and time):
 
-.. code:: yaml
+.. code-block:: yaml
 
     - filter: Gaussian Thinning
       distance_norm:     maximum
@@ -362,7 +362,7 @@ the following YAML parameters:
 Example 1 (selecting at most one observation taken by each station per 1.5 h,
 starting from the observation closest to seed time):
 
-.. code:: yaml
+.. code-block:: yaml
 
     - filter: Temporal Thinning
       min_spacing: PT01H30M
@@ -374,7 +374,7 @@ Example 2 (selecting at most one observation taken by each station per 1 h,
 starting from the earliest observation, and allowing the filter to retain an observation 
 taken up to 20 min after the first qualifying observation if its quality score is higher):
 
-.. code:: yaml
+.. code-block:: yaml
 
     - filter: Temporal Thinning
       min_spacing: PT01H
@@ -391,7 +391,7 @@ This filter will compare the difference between a reference variable and a secon
 
 For example:
 
-.. code:: yaml
+.. code-block:: yaml
 
    - filter: Difference Check
      reference: brightness_temperature_8@ObsValue
@@ -431,7 +431,7 @@ Note that this filter really only works/makes sense for observations that have b
 
 An example:
 
-.. code:: yaml
+.. code-block:: yaml
 
    - filter: Derivative Check
      independent: datetime
@@ -538,7 +538,7 @@ The following YAML parameters are supported:
 
 Example:
 
-.. code:: yaml
+.. code-block:: yaml
 
    - filter: Track Check
      temporal_resolution: PT30S
@@ -621,7 +621,7 @@ The QC checks rely on a variety of physical observables. The value of :code:`fil
 
 The :code:`obsgrouping` category should be set up in one of two ways. The first applies a descending sort to the air pressures:
 
-.. code:: yaml
+.. code-block:: yaml
 
         obsgrouping:
           group variable: "station_id"
@@ -630,7 +630,7 @@ The :code:`obsgrouping` category should be set up in one of two ways. The first 
 
 The second does not sort the air pressures:
 
-.. code:: yaml
+.. code-block:: yaml
 
         obsgrouping:
           group variable: "station_id"
@@ -971,7 +971,7 @@ Examples
 
 This example runs the basic checks on the input data:
 
-.. code:: yaml
+.. code-block:: yaml
 
     - filter: Profile Consistency Checks
       filter variables:
@@ -981,7 +981,7 @@ This example runs the basic checks on the input data:
 
 This example runs the basic and SamePDiffT checks on the input data, using separate instances of the filter to do so:
 
-.. code:: yaml
+.. code-block:: yaml
 
     - filter: Profile Consistency Checks
       filter variables:
@@ -997,7 +997,7 @@ This example runs the basic and SamePDiffT checks on the input data, using separ
 
 This example runs the basic and SamePDiffT checks on the input data, using the same filter instance:
 
-.. code:: yaml
+.. code-block:: yaml
 
     - filter: Profile Consistency Checks
       filter variables:
@@ -1020,7 +1020,7 @@ The default action (taken when the :code:`action` keyword is omitted) is to reje
 
 Examples:
 
-.. code:: yaml
+.. code-block:: yaml
 
    - filter: Background Check
      filter variables: 
@@ -1080,7 +1080,7 @@ In addition to, e.g., :code:`@GeoVaLs`, :code:`@MetaData`, :code:`@ObsValue`, :c
 
 - :code:`@ObsFunction` indicates that a particular variable should be a registered :code:`ObsFunction` (:code:`ObsFunction` classes are defined in the :code:`ufo/src/ufo/filters/obsfunctions` folder).  One example of an :code:`ObsFunction` is :code:`Velocity@ObsFunction`, which uses the 2 wind components to produce wind speed and can be used as follows:
 
-  .. code:: yaml
+  .. code-block:: yaml
 
       - filter: Domain Check
         filter variables:
@@ -1133,7 +1133,7 @@ Consider the following set of observations:
 
 and suppose that we want to reject air temperature observations below 230 K taken in the tropical zone (between 30°S and 30°N). We could do this using the Bounds Check filter with a :code:`where` statement:
 
-.. code:: yaml
+.. code-block:: yaml
 
   - filter: Bounds Check
     filter variables: air_temperature
@@ -1162,7 +1162,7 @@ The following examples illustrate the use of these conditions.
 Example 1
 ^^^^^^^^^
 
-.. code:: yaml
+.. code-block:: yaml
 
    where:
    - variable:
@@ -1191,7 +1191,7 @@ In this example, the filter will be applied only to observations for which all o
 Example 2
 ^^^^^^^^^
 
-.. code:: yaml
+.. code-block:: yaml
 
       where: 
       - variable:
@@ -1210,7 +1210,7 @@ Outer Loop Iterations
 
 By default, filters are applied only before the first iteration of the outer loop of the data assimilation process. Use the :code:`apply at iterations` parameter to customize the set of iterations after which a particular filter is applied. In the example below, the Background Check filter will be run before the outer loop starts ("after the zeroth iteration") and after the first iteration:
 
-.. code:: yaml
+.. code-block:: yaml
 
    - filter: Background Check
      apply at iterations: 0,1
@@ -1242,7 +1242,7 @@ All observation filters in UFO are tested with the :code:`ObsFilters` test from 
 
   By default, the comparison will succeed only if all entries in the compared variables are exactly equal. If the compared variables hold floating-point numbers and the :code:`absTol` option is set, the comparison will succeed if all entries differ by at most :code:`absTol`. Example:
 
-  .. code:: yaml
+  .. code-block:: yaml
 
     compareVariables:
       - test:

@@ -16,7 +16,7 @@ Configuring Parallel Cluster
 
 The first step is to set up a ParallelCluster configuration file that is equipped to run a multi-node jedi application efficiently.  We provide such a configuration file in the jedi-tools repository on GitHub.  The easiest way to proceed is to clone the jedi-tools repository and copy this configuration file over as your default configuration:
 
-.. code:: bash
+.. code-block:: bash
 
     git clone https://github.com/jcsda/jedi-tools.git
     cp jedi-tools/AWS/jedi/config ~/.parallelcluster/config
@@ -52,20 +52,20 @@ Creating a Parallel Cluster
 
 If you installed ParallelCluster in a python virtual environment as recommended, then the next step is to activate your virtual environment with a command like this (this may vary if your install location is different):
 
-.. code:: bash
+.. code-block:: bash
 
      source ~/apc-ve/bin/activate
 
 
 To see the ParallelCluster commands available to you, you can then enter
 
-.. code:: bash
+.. code-block:: bash
 
     pcluster --help
 
 And, for further information on any one of these commands, you can request help for that particular command, e.g.:
 
-.. code:: bash
+.. code-block:: bash
 
     pcluster create --help
 
@@ -73,7 +73,7 @@ Since most of your specifications and customizations are in the config file, the
 
 So, when you are ready, create your cluster with
 
-.. code:: bash
+.. code-block:: bash
 
     pcluster create <name>
 
@@ -85,7 +85,7 @@ It will take up to 5-10 minutes to create your cluster so be patient.  AWS must 
 
 ParallelCluster will print messages detailing its progress.  You can also follow the progress of your cluster creation on the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ and the `CloudFormation Dashboard <https://console.aws.amazon.com/cloudformation>`_.  When you cluster is ready, you should see a message like this from :code:`pcluster`:
 
-.. code:: bash
+.. code-block:: bash
 
     Status: parallelcluster-<name> - CREATE_COMPLETE
     ClusterUser: ubuntu
@@ -99,7 +99,7 @@ Do not worry at this point about the size or the cost of your cluster.  Parallel
 
 Note this line in the config file:
 
-.. code:: bash
+.. code-block:: bash
 
    initial_queue_size = 0
 
@@ -112,7 +112,7 @@ Logging in and Building JEDI
 
 To log in to your cluster from your python virtual environment, enter
 
-.. code:: bash
+.. code-block:: bash
 
     pcluster ssh <name> -i ~/.ssh/<key>.pem
 
@@ -120,7 +120,7 @@ Or, alternatively, you can navigate to the `EC2 Dashboard <https://console.aws.a
 
 After logging in (enter "yes" at the ssh prompt), enter this and follow the instructions:
 
-.. code:: bash
+.. code-block:: bash
 
     jedi-setup.sh
 
@@ -128,7 +128,7 @@ This will set up your git/GitHub configuration in preparation for building JEDI.
 
 Now you can choose which compiler/mpi combination you with to use and load the appropriate module.  Currently two options are available (choose only one):
 
-.. code:: bash
+.. code-block:: bash
 
     module load jedi/gnu-openmpi # choose only one
     module load jedi/intel-impi  # choose only one
@@ -146,7 +146,7 @@ The ParallelCluster AMI used for JEDI employs the `Slurm workload manager <https
 
 So, after compiling your bundle, you will want to create a run directory and create a slurm batch script within it.  A slurm batch script is just a file with contents similar to the following example:
 
-.. code:: bash
+.. code-block:: bash
 
     #!/bin/bash
     #SBATCH --job-name=<job-name>
@@ -193,7 +193,7 @@ This example uses the intel modules and sets some compiler flags to ensure that 
 
 When you are ready, submit your batch script with
 
-.. code:: bash
+.. code-block:: bash
 
     sbatch <batch-script>
 
@@ -216,7 +216,7 @@ For example, let's say you submitted a batch job that requires 24 nodes.  Then, 
 
 The head node is the only one with a public IP address so this is the one you log in to when you connect to your cluster via :code:`pcluster ssh` as described above.  So, this is where you would submit your slurm jobs.  However, each compute node has a private IP address that is accessible from the head node.  You can see the private IP addresses of all the nodes of your cluster through the :code:`NODELIST` field of :code:`sinfo`.  For example:
 
-.. code:: bash
+.. code-block:: bash
 
     ubuntu@ip-10-0-0-127:~$ sinfo
     PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
@@ -224,7 +224,7 @@ The head node is the only one with a public IP address so this is the one you lo
 
 Then, if you wish, you can log into one of them while your job is running and confirm that your job is indeed running on that node:
 
-.. code:: bash
+.. code-block:: bash
 
     ssh ip-10-0-1-215 # from the head node
     ps -e | grep fv3jedi
@@ -240,7 +240,7 @@ You can also run multi-node JEDI applications using an HPC-ready Singularity app
 
 When you have obtained a container file, you can run applications with a batch script like this:
 
-.. code:: bash
+.. code-block:: bash
 
     #!/bin/bash
     #SBATCH --job-name=<job-name>
@@ -288,7 +288,7 @@ If the autoscaling has reduced your cluster to zero compute nodes, you may be te
 
 The proper way to terminate your cluster is the same way you created it: from the command line using the :code:`pcluster` application:
 
-.. code::
+.. code-block::
 
     pcluster delete <name>
 
@@ -311,24 +311,24 @@ Working with slurm
 
 Sometimes your job may hang.  Or, you may change your mind and want to stop your job.  You can cancel a job as follows:
 
-.. code:: bash
+.. code-block:: bash
 
     scancel <job-id>
 
 Then wait a few moments for the job to terminate.  You can check the status of your nodes with:
 
-.. code:: bash
+.. code-block:: bash
 
     sinfo -l
 
 Ideally, all your nodes should be in an :code:`idle` state.  This means they are ready to run a new job.  Sometimes, in the :code:`state` column you may see another value such as :code:`drain` or :code:`down`.  You can usually reset a problem node as follows (you can get the node name from the :code:`NODELIST` output of `sinfo`):
 
-.. code:: bash
+.. code-block:: bash
 
     sudo scontrol update nodename=ip-10-0-1-193 state=idle
 
 Then you should be ready to go.  If not, the `slurm troubleshooting guide <https://slurm.schedmd.com/troubleshoot.html>`_ has some good tips for helping to figure out what is wrong.  For example, if you wish to find more information about a node you can enter
 
-.. code:: bash
+.. code-block:: bash
 
     scontrol show node ip-10-0-1-193

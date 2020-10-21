@@ -17,7 +17,7 @@ Note that the JCSDA/jedi-docs repository has already had this step run.
 
 Assuming that you have Python installed, do the following to install Sphinx:
 
-.. code:: bash
+.. code-block:: bash
 
   pip  install -U sphinx  # for Python 2
   pip3 install -U sphinx  # for Python 3
@@ -28,7 +28,7 @@ Initial Configuration for Using Sphinx
 
 To set up for using sphinx in a repository:
 
-.. code:: bash
+.. code-block:: bash
 
   cd my-repo
   mkdir docs   # using the name "docs" will allow ReadTheDocs to find and process your files
@@ -68,7 +68,7 @@ However, sphinx-quickstart writes the conf.py file with a theme called "alabaste
 To change the theme to default (which looks nice in both Sphinx and ReadTheDocs), do
 the following:
 
-.. code:: bash
+.. code-block:: bash
 
   vi conf.py  # substitute your favorite editor
     # find the line: html_theme = 'alabaster'
@@ -95,7 +95,7 @@ clicking the link below.
 
 Once you are ready to build your documentation, run:
 
-.. code:: bash
+.. code-block:: bash
 
   cd my-repo/docs  # the directory you were in when you ran sphinx-quickstart
   make html        # create web pages

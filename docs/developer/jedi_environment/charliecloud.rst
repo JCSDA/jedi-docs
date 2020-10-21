@@ -38,7 +38,7 @@ Installing on Linux Systems
 
 To install Charliecloud, you'll need a relatively recent version of Linux that is capable of creating mount namespaces.  Most Linux implementations from the last few years should be sufficient.  If you want to check the version of the Linux kernel, you can enter:
 
-.. code:: bash
+.. code-block:: bash
 
   uname -r
 
@@ -46,14 +46,14 @@ Charliecloud recommends a version of 4.4 or later.
 
 You'll also need a C compiler and some basic software tools.  These may already be installed if you are using an HPC system or a linux PC. However, if you are starting from a bare installation, such as a Vagrant virtual machine or a cloud computing instance (e.g. Amazon EC2), you may need to install these yourself.  On Ubuntu or Debian systems you can do this with:
 
-.. code:: bash
+.. code-block:: bash
 
   sudo apt-get update
   sudo apt-get install build-essential python
 
 Or, on CentOS, Fedora, Amazon Linux, and similar systems, you might instead enter:
 
-.. code:: bash
+.. code-block:: bash
 
   sudo yum update
   sudo yum groupinstall "Development Tools"
@@ -62,7 +62,7 @@ These commands require root access.  If you do not have root access, chances are
 
 The next step is to clone the Charliecloud repository on GitHub, build it, and install it into a directory of your choice.  Here we build and install the code into the user's home directory:
 
-.. code:: bash
+.. code-block:: bash
 
   mkdir ~/build
   cd ~/build
@@ -75,7 +75,7 @@ Unless there were problems, Charliecloud should now be installed in the user's h
 
 Now add the Charliecloud executables to your path.  You may wish to do this interactively when you install Charliecloud for the first time but we recommend that you also put it in a startup script such as :code:`.bash_profile`.
 
-.. code:: bash
+.. code-block:: bash
 
   export PATH=$PATH:$HOME/charliecloud/bin
 
@@ -83,7 +83,7 @@ Now add the Charliecloud executables to your path.  You may wish to do this inte
 
    If you do decide to run the Charliecloud test suite you should be aware that some of these tests require root privileges.  If you do not have root privileges, you can disable these tests by setting this environment variable before running :code:`make test`:
 
-   .. code:: bash
+   .. code-block:: bash
 
 	  export CH_TEST_PERMDIRS=skip
 
@@ -94,7 +94,7 @@ Building the JEDI environment
 
 Once Charliecloud is installed on your system, the next step is to make a home for the JEDI Charliecloud container and download it.  For a list of available JEDI Charliecloud containers, see `the JCSDA Public Data Repository <http://data.jcsda.org/pages/containers.html>`_.   Image names follow the format :code:`ch-jedi-<compiler>-<mpi>-<type>.tar.gz`  where :code:`<compiler>-<mpi>` refer to the compiler/mpi combination used to build the dependencies and :code:`<type>` is set to :code:`dev` for development containers that include the compilers and :code:`app` for application containers that include only the compiled jedi code, with its dependencies (:doc:`see the Portability overview for further information <portability>`.  For example, to obtain the JEDI Charliecloud development container that is built with the gnu compiler suite and openmpi you would do this:
 
-.. code:: bash
+.. code-block:: bash
 
    mkdir -p ~/jedi/ch-container
    cd ~/jedi/ch-container
@@ -102,7 +102,7 @@ Once Charliecloud is installed on your system, the next step is to make a home f
    
 This looks like a normal gzipped tar file.  However, **you should not upack it with** :code:`tar`! Instead, unpack it with this command:
 
-.. code:: bash
+.. code-block:: bash
 
    ch-tar2dir ch-jedi-gnu-openmpi-dev.tar.gz .
 
@@ -112,7 +112,7 @@ This is the JEDI Charliecloud container.  It's functionally equivalent to a Sing
 
 To enter the Charliecloud container, type:
 
-.. code:: bash
+.. code-block:: bash
 
    ch-run -c $HOME ~/jedi/ch-container/ch-jedi-gnu-openmpi-dev -- bash
 
@@ -132,7 +132,7 @@ Finally, we have to tell :code:`ch-run` what command we want it to run.  The com
 
 Now, since you are in the container, you have access to all the software libraries that support JEDI.  However, there is one more thing you need to do before you run ecbuild.  Make sure :code:`git-lfs` is initialized with this:
 
-.. code:: bash
+.. code-block:: bash
 
     git lfs install
 
@@ -142,7 +142,7 @@ You can now proceed to build and run JEDI as described :doc:`elsewhere in this d
 
 For example, to run and test ufo-bundle, you can proceed as follows:
 
-.. code:: bash
+.. code-block:: bash
 
     git config --global credential.helper 'cache --timeout=3600'
     mkdir -p ~/jedi/src
@@ -159,7 +159,7 @@ For example, to run and test ufo-bundle, you can proceed as follows:
 
    On some systems (notably Cheyenne) it may be necessary to explicitly add :code:`/usr/local/lib` to your :code:`LD_LIBRARY_PATH` environment variable within the Charliecloud container, as follows:
 
-   .. code::
+   .. code-block::
 
       export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
@@ -178,7 +178,7 @@ In our :doc:`Vagrant documentation <vagrant>` we describe how you can set up a d
 
 However, what if we were to instead mount the shared directory in :code:`/vagrant_data` (as viewed from Vagrant)?  This is the default behavior in the Vagrantfile as created by the :code:`vagrant init` command.  Since this branches off of the root directory, it would not be visible by default from within the Charliecloud container.  However, You can still mount this (or nearly any other directory of your choice) in the Charliecloud container using the :code:`-b` (or :code:`--bind`) option:
 
-.. code:: bash
+.. code-block:: bash
 
   ch-run -b /vagrant_data -c $HOME ch-jedi-gnu-openmpi-dev -- bash
 
@@ -186,7 +186,7 @@ By default, this is mounted in the Charliecloud container as the directory :code
 
 For example, if you create a directory called :code:`/home/vagrant/vagrant_data` before entering the container, then you can identify that directory as the target for the mount:
 
-.. code:: bash
+.. code-block:: bash
 
     ch-run -b /vagrant_data:/home/vagrant/vagrant_data ch-jedi-gnu-openmpi-dev -- bash
 
@@ -199,19 +199,19 @@ Tips for HPC Systems
 
 By default, Charliecloud does not change environment variables (with a few exceptions).  The JEDI Charliecloud container does explicitly set a few variables such as :code:`NETCDF`, :code:`FC`, :code:`PIO`, etc. (for bash shells) but it's still good practice to clean your environment by purging other modules before you enter your :code:`ch-run` command.  Most HPC systems use some form of environment modules to load software packages.  So "cleaning your environment" usually just looks like this:
 
-.. code::
+.. code-block::
 
       module purge
 
 Another common practice on HPC systems is to run applications in designed work or scratch directories instead of one's home directory.  This is often required to have access to sufficient disk space.  The JEDI Charliecloud and Singularity containers includes a :code:`/worktmp` directory that can be used as a mount point for a system work space.  For example, on Cheyenne one may wish to do this:
 
-.. code::
+.. code-block::
 
       ch-run -b/glade/work/`whoami`:/worktmp <path>/ch-jedi-gnu-openmpi-dev -- bash
 
 This is good, but for substantial parallel applications there is an approach that is even better for MPI jobs.  System administrators at HPC centers spend a lot of time and effort configuring their MPI implementations to take full advantage of the system hardware.  If you run the mpi implementation inside the container (currently openmpi), you won't be able to take advantage of these site-specific configurations and optimizations.  Fortunately, there is a way out of this dilemma: you can invoke the parallel process manager, :code:`mpirun` or :code:`mpiexec` outside the container and then have each MPI process enter its own container.  Again using Cheyenne as an example, you can do this in a batch script like this:
 
-.. code::
+.. code-block::
 
       #!/bin/bash
       #PBS -N multicon
@@ -240,7 +240,7 @@ There are a few things to note about this example.  First, mpirun is called from
 
 This is usually more efficient than the alternative of running a single container with multiple mpi jobs:
 
-.. code::
+.. code-block::
 
       export TMPDIR=/worktmp/scratch
       ch-run -b $WORK:/worktmp -c $WORKDIR $CHDIR/ch-jedi-gnu-openmpi-dev -- mpirun -np 144 $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml

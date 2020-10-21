@@ -18,7 +18,7 @@ As an example, consider a configuration file similar to the one used in the :cod
 
 .. _yaml-file:
 
-.. code:: yaml
+.. code-block:: yaml
 
     ---
     geometry:
@@ -85,7 +85,7 @@ What happens next is more specific to the HofX Application but it serves to illu
 
 .. _config-cpp-seg1:
 
-.. code:: C++
+.. code-block:: C++
 
     int execute(const eckit::Configuration & fullConfig) const {
 
@@ -111,15 +111,15 @@ It's tempting to think of :code:`LocalConfiguration` objects as components of :c
 
 Variables, parameters, and other settings in the config file can be read by means of the various :code:`get` methods of the :code:`eckit::Configuration` class.  Paths are relative to the top-level of the YAML/JSON hierarchy that is contained in the Configuration object.  Two examples are shown :ref:`above <config-cpp-seg1>`.  Since the :code:`fullConfig` object contains the entire YAML file, the top level of the hierarchy includes the top-level components of the :ref:`YAML file <yaml-file>`, for example the variables **window begin** and **window length**, as well as the multi-component YAML object **observations**.  The first of these top-level variables is read using the :code:`config.getString()` method and placed into the local variable :code:`winlen`.  One could access other levels of the hierarchy using periods as separators, for example:
 
-.. code:: C++
+.. code-block:: C++
 
     std::cout << "The nx component of the geometry is: " << fullConfig.getInt("geometry.nx") << std::endl;
 
-If you trace the flow of the :code:`test_qg_hofx` executable, you'll soon come to the heart of oops.  To understand the full structure of this file we refer you to our page on :doc:`Applications in OOPS`.  For our purposes here, we will pick up the action in the :code:`oops::HofX::execute()` and templated :code:`ObsSpaces<OBS>::ObsSpaces` functions, which are called when executing :code:`test_qg_hofx`:
+If you trace the flow of the :code:`test_qg_hofx` executable, you'll soon come to the heart of oops.  To understand the full structure of this file we refer you to our page on :doc:`Applications in OOPS<../../jedi-components/oops/applications/applications>`.  For our purposes here, we will pick up the action in the :code:`oops::HofX::execute()` and templated :code:`ObsSpaces<OBS>::ObsSpaces` functions, which are called when executing :code:`test_qg_hofx`:
 
 .. _config-cpp-seg2:
 
-.. code:: C++
+.. code-block:: C++
 
     template <typename OBS>
     ObsSpaces<OBS>::ObsSpaces(const eckit::Configuration & conf, [...]) {
@@ -136,9 +136,9 @@ Note another feature of the :code:`Configuration` class highlighted in the examp
 
 The :code:`eckit::Configuration` class also has a few more methods that are extremely useful for querying the configuration file.  The first is :code:`eckit::Configuration::has()` which accepts one string argument (:code:`std::string`) and returns a Boolean :code:`true` or :code:`false` depending on whether or not an item of that name exists in the Configuration file (at the level represented by the Configuration object).  The second is :code:`eckit::Configuration::keys()`, which returns the items at a particular level of the YAML/JSON hierarchy.
 
-As an example of how to use these query functions, we could place the following code after the :ref:`code segment above from the :code:`ObsSpaces()` function <config-cpp-seg2>`:
+As an example of how to use these query functions, we could place the following code after the :ref:`code segment above from the ObsSpaces() function <config-cpp-seg2>`:
 
-.. code:: bash
+.. code-block:: bash
 
   std::string obstype = typeconfs[0].getString("obs space.obs type");
   std::cout << obstype << " Keys: " << typeconfs[0].keys() << std::endl;
@@ -159,7 +159,7 @@ As an example of how to use these query functions, we could place the following 
 
 Given the :ref:`YAML file above <yaml-file>`, the output of this would be:
 
-.. code:: bash
+.. code-block:: bash
 
     Stream Keys: [obs operator,obs space]
     Stream Warning: Observations variables not specified in config file
@@ -178,14 +178,14 @@ In this section we summarize some of the most useful public methods available in
 
 Available methods for querying the configuration file include:
 
-.. code:: C++
+.. code-block:: C++
 
     virtual bool has(const std::string &name) const;
     std::vector<std::string> keys() const;
 
 Available methods for reading specific data types include:
 
-.. code:: C++
+.. code-block:: C++
 
     bool getBool(const std::string &name) const;
     int getInt(const std::string &name) const;
@@ -212,7 +212,7 @@ Each of these methods also has a version that accepts a second argument (of the 
 
 Available generic interfaces for the :code:`get()` method include:
 
-.. code:: C++
+.. code-block:: C++
 
     virtual bool get(const std::string &name, std::string &value) const;
     virtual bool get(const std::string &name, bool &value) const;
@@ -245,7 +245,7 @@ A reference to the :code:`eckit::Configuration` C++ object is required to provid
 
 As an example of how this C++ configuration is passed to Fortran, we'll consider a code segment from the :code:`qg_geom_setup_c()` routine in the file :code:`qg/model/qg_geom_interface.F90`.  This routine would be called during the execution of the :code:`test_qg_hofx` test that we have been considering throughout this document.  Its function is to set up the Fortran configuration, then call the routine that sets up the Fortran geometry of the model.
 
-.. code:: Fortran
+.. code-block:: Fortran
 
     subroutine qg_geom_setup_c(c_key_self,c_conf) bind(c,name='qg_geom_setup_f90')
 
@@ -272,7 +272,7 @@ One must declare :code:`use iso_c_binding`, which defines :code:`c_ptr` and othe
 
 We'll now consider a code segment from the :code:`qg_geom_setup()` routine in the file :code:`qg/model/qg_geom_mod.F90`.  Its function is to set up the Fortran counterpart of the C++ :code:`oops::GeometryQG` object that contains the geometry of the model.
 
-.. code:: Fortran
+.. code-block:: Fortran
 
     subroutine qg_geom_setup(self,f_conf)
 
@@ -302,7 +302,7 @@ In the case of **depths**, since it is an array we first need to know its size b
 
 We could add the following code segment to the subroutine above to illustrate a few other features of the Fortran configuration interface:
 
-.. code:: Fortran
+.. code-block:: Fortran
 
   integer :: ii
 
@@ -316,6 +316,6 @@ We could add the following code segment to the subroutine above to illustrate a 
 
 Here we see that :code:`eckit::Configuration::has()` returns a Boolean :code:`true` or :code:`false` and that can be used to check if a variable exists in the config file. In our example, the variable doesn't exist and the output is:
 
-.. code:: bash
+.. code-block::
 
     WARNING: The models doesn't use levels

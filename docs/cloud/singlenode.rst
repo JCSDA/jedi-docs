@@ -15,7 +15,7 @@ When you have completed these steps, you are ready to launch a single JEDI EC2 i
 
 to clone the :code:`jedi-tools` GitHub repository from JCSDA:
 
-.. code:: bash
+.. code-block:: bash
 
     git clone https://github.com/jcsda/jedi-tools.git
     cd jedi-tools/AWS/jedi
@@ -28,13 +28,13 @@ There you will find a script called :code:`jedinode.py`.  This is what you'll us
 
 For usage information, enter
 
-.. code:: bash
+.. code-block:: bash
 
     jedinode.py --help
 
 For most options we recommend using the defaults.  However, one required option is to specify your personal ssh key that you will use to log in to your node (see item 2 above).  So, to launch an EC2 instance, enter:
 
-.. code:: bash
+.. code-block:: bash
 
     jedinode.py --key=<your-ssh-key>
 
@@ -50,7 +50,7 @@ Another notable option is :code:`--type`, which allows you to specify the EC2 in
 
 The syntax for all options is as above, with only an :code:`=` separating the option and its value.  For example:
 
-.. code:: bash
+.. code-block:: bash
 
     jedinode.py --key <ssh-key> --spot --type=r5.4xlarge
 
@@ -63,13 +63,13 @@ Logging in
 
 After running the :code:`jedinode.py` command as described above you will likely see multiple messages like this:
 
-.. code:: bash
+.. code-block:: bash
 
     Node is not ready yet, please wait
 
 These are repeated for the several minutes it takes for AWS to create your node by means of the **EC2** service.  When your compute node is ready you may get a message like this:
 
-.. code:: bash
+.. code-block:: bash
 
     Node is ready.  To log in enter
     ssh -i ~/.ssh/<key>.pem ubuntu@<ip-address>
@@ -89,7 +89,7 @@ The JEDI AMI uses (tcl) `environment modules <https://modules.readthedocs.io/en/
 
 To see what modules you can load at any time, enter
 
-.. code:: bash
+.. code-block:: bash
 
     module avail
 
@@ -97,21 +97,21 @@ You'll see many modules but most important are the so-called meta-modules of the
 
 For example, if you want to build JEDI using the gnu compiler suite and openmpi mpi library, you would enter this:
 
-.. code:: bash
+.. code-block:: bash
 
     module purge
     module load jedi/gnu-openmpi
 
 Alternatively, if you want to use the intel compiler suite, then you would enter this:
 
-.. code:: bash
+.. code-block:: bash
 
     module purge
     module load jedi/intel-impi
 
 After you have loaded one of these options for the :code:`jedi/<compiler>-<mpi>` stack, you can see the modules you have loaded by entering
 
-.. code:: bash
+.. code-block:: bash
 
     module list
 
@@ -123,7 +123,7 @@ Note that one or more bundles may already be present in the :code:`~/jedi` direc
 
 The JEDI AMI also comes with **Singularity**, **Docker**, and **Charliecloud** pre-installed.  So, you can also use your node to run inside a container.  For example, if you wish to do some development using the clang C and C++ compilers and the mpich MPI library, then you can pull that container and enter it:
 
-.. code:: bash
+.. code-block:: bash
 
     singularity pull library://jcsda/public/jedi-clang-mpich-dev
     singularity shell -e jedi-clang-mpich-dev_latest.sif

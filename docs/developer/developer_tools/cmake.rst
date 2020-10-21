@@ -46,7 +46,7 @@ containers.
 
 For the Mac, use `homebrew <https://brew.sh/>`_ to install CMake.
 
-.. code:: bash
+.. code-block:: bash
 
     brew install cmake
 
@@ -69,7 +69,7 @@ getting an idea of what goes into a CMakeLists.txt file.
 Once the CMakeLists.txt for a project are created, all one does to build, test and install
 your software is:
 
-.. code:: bash
+.. code-block:: bash
 
     cmake <dir_where_toplevel_CMakeLists.txt_file>   # generate the make files
 
@@ -83,7 +83,7 @@ directory part of the path).
 This path can be relative or absolute.
 Here are some examples for running cmake:
 
-.. code:: bash
+.. code-block:: bash
 
     cmake .      # top level CMakeLists.txt is in the current directory
 
@@ -94,7 +94,7 @@ Here are some examples for running cmake:
 
 Output from the cmake command is captured in the following files:
 
-.. code:: bash
+.. code-block:: bash
 
     ./CMakeFiles/CMakeOutput.log   # messages from cmake
     ./CMakeFiles/CMakeError.log    # errors and warnings from cmake
@@ -103,7 +103,7 @@ The ctest command without arguments will run the entire set of tests.
 In the case that you want to run a specific test or you want more information on tests
 that failed, you can run individual tests using ctest as shown below.
 
-.. code:: bash
+.. code-block:: bash
 
     ctest -R test_ufo_radiosonde  # this runs just the one test
 
@@ -124,7 +124,7 @@ that failed, you can run individual tests using ctest as shown below.
   #. Create the file: $HOME/.openmpi/mca-params.conf
   #. Place the following in the mca-params.conf file
 
-  .. code:: bash
+  .. code-block:: bash
 
     # This Mac has 2 cores. Enable oversubscribe so that more than 2 MPI
     # processes can be run on this system.
@@ -132,7 +132,7 @@ that failed, you can run individual tests using ctest as shown below.
 
 Test output is captured in the files:
 
-.. code:: bash
+.. code-block:: bash
 
     ./Testing/Temporary/LastTest.log          # output from the last invocation of ctest
     ./Testing/Temporary/LastTestsFailed.log   # names of the tests that failed during
@@ -162,7 +162,7 @@ to be able to do the install step.
 Let's say that you want to install in your home directory in the path $HOME/tools.
 Then run cmake as follows:
 
-.. code:: bash
+.. code-block:: bash
 
     cmake -DCMAKE_INSTALL_PREFIX=$HOME/tools $HOME/projects/my-project
 
@@ -174,7 +174,7 @@ It's common for several versions of compilers to exist on a given machine and
 it's not always clear which one CMake will choose.
 These controls can be used to force CMake to use the versions you want.
 
-.. code:: bash
+.. code-block:: bash
 
     cmake -DCMAKE_C_COMPILER=/usr/local/bin/gcc            $HOME/projects/my_project # C code
     cmake -DCMAKE_CXX_COMPILER=/usr/local/bin/g++          $HOME/projects/my_project # C++ code
@@ -212,7 +212,7 @@ As before, the steps shown in this section are only necessary if you are working
 For all systems, you need to have CMake, eigen3 installed before installing ecbuild.
 To install these on the Mac:
 
-.. code:: bash
+.. code-block:: bash
 
     brew install cmake              # as shown above
     brew install eigen              # this will install eigen3
@@ -228,7 +228,7 @@ required, thus no need to run make nor ctest.
 In the following example, the ecbuild clone is going to be placed in $HOME/projects and
 the build directory will be $HOME/projects/ecbuild/build.
 
-.. code:: bash
+.. code-block:: bash
 
     # create the ecbuild clone and make sure you are on the master branch
     cd $HOME/projects
@@ -257,7 +257,7 @@ often make changes to fckit and we generally work from our own fork.
 For the following code example, assume that the clones are placed in $HOME/projects
 and the build directories are subdirectories of the clones called "build".
 
-.. code:: bash
+.. code-block:: bash
 
     # create the eckit clone
     cd $HOME/projects
@@ -298,14 +298,14 @@ Once ecbuild and associated libraries (eigen3, eckit) are installed, all
 subsequent manufacturing is done using the ecbuild command in place of cmake.
 The output from ecbuild is captured in the file:
 
-.. code:: bash
+.. code-block:: bash
 
     ./ecbuild.log
 
 Ecbuild has its own options which can be inspected by running :code:`ecbuild --help`.
 Here is sample output:
 
-.. code:: bash
+.. code-block:: bash
 
     >> ecbuild --help
 
@@ -449,7 +449,7 @@ For examples on how to use ecbuild to compile JEDI bundles, see :doc:`Building a
 
 You can pass cmake command line options to cmake with ecbuild by proceeding them with two dashes :code:`--`.  For example, to use the cmake :code:`--trace` option mentioned :ref:`above <using-cmake>` (useful for debugging), you can enter:
 
-.. code:: bash
+.. code-block:: bash
 
     ecbuild -- --trace <path_to_bundle>  # example that adds the --trace option to the cmake call
 

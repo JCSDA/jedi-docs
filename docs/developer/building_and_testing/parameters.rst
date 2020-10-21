@@ -10,7 +10,7 @@ Introduction
 
 Traditionally, code retrieving the values of options controlling the behavior of JEDI components from a configuration file has been written in an imperative style, making a series of calls to methods of the :code:`eckit::Configuration` class. For example, the geometry of a model defined on a (very coarse) lat-lon grid could be configured with the following section of a YAML file:
 
-.. code:: yaml
+.. code-block:: yaml
 
     geometry:
       num lats: 5
@@ -19,7 +19,7 @@ Traditionally, code retrieving the values of options controlling the behavior of
 
 and the implementation of the OOPS :code:`Geometry` interface for that model could retrieve the values of these options as follows:
 
-.. code:: c++
+.. code-block:: c++
 
     MyGeometry::MyGeometry(const eckit::Configuration &config, 
                            const eckit::mpi::Comm & comm) {
@@ -39,7 +39,7 @@ An alternative, more declarative approach is now possible, in which the supporte
 
 For example, the options recognized by :code:`MyGeometry` could be encapsulated in the following subclass of :code:`Parameters`:
 
-.. code:: c++
+.. code-block:: c++
 
   #include "oops/util/parameters/RequiredParameter.h"
   #include "oops/util/parameters/Parameters.h"
@@ -75,7 +75,7 @@ Note that:
 
 The :code:`validateAndDeserialize()` method loads parameter values from a :code:`Configuration` object into a :code:`Parameters` object:
 
-.. code:: c++
+.. code-block:: c++
 
   MyGeometry::MyGeometry(const eckit::Configuration &config, 
                          const eckit::mpi::Comm & comm) {
@@ -88,7 +88,7 @@ Since all parameters have been declared as *required*, this method will thrown a
 
 The loaded values can be accessed by calling the :code:`value()` method of the :code:`RequiredParameter` object. In most circumstances you can also use a :code:`RequiredParameter` object as if it was the parameter value itself (omitting the call to :code:`value()`), since the :code:`RequiredParameter<T>` class template overloads the conversion operator to :code:`const T&`. So the two following snippets are equivalent:
 
-.. code:: c++
+.. code-block:: c++
 
   for (int i = 0; i < params.numLats.value(); ++i) {
     processZonalBand(i);
@@ -96,7 +96,7 @@ The loaded values can be accessed by calling the :code:`value()` method of the :
 
 and 
 
-.. code:: c++
+.. code-block:: c++
 
   for (int i = 0; i < params.numLats; ++i) {
     processZonalBand(i);
@@ -107,7 +107,7 @@ Parameter Nesting
 
 In the preceding example, we have already seen that parameters can store not only values of "primitive" types (e.g. :code:`int`), but also more complex objects, such as vectors. Other supported types include strings, maps, dates, durations, and instances of :code:`oops::Variables` and :code:`ufo::Variable`. It is also possible to nest parameters, i.e. store a subclass of :code:`Parameters` in a :code:`Parameter` object. For example, to load the following YAML snippet:
 
-.. code:: yaml
+.. code-block:: yaml
 
   latitudes:
     min: 30
@@ -118,7 +118,7 @@ In the preceding example, we have already seen that parameters can store not onl
   
 one could use the following code:
 
-.. code:: c++
+.. code-block:: c++
 
   class RangeParameters : public oops::Parameters {
     OOPS_CONCRETE_PARAMETERS(RangeParameters, Parameters)
@@ -149,7 +149,7 @@ Not all parameters are required; some are optional. There are two distinct scena
 
 As an example, a thinning filter might allow the user to optionally specify a variable storing observation priorities (with observations of higher priority more likely to be retained than those of lower priority). To this end, the name of that variable could be stored in an :code:`OptionalParameter<ufo::Variable>` object. On the other hand, the maximum number of observations to be retained could be stored in an instance of :code:`Parameter<int>` if we wanted to provide a default:
 
-.. code:: c++
+.. code-block:: c++
   
   #include "oops/util/parameters/OptionalParameter.h"
   #include "oops/util/parameters/Parameters.h"
@@ -165,7 +165,7 @@ As an example, a thinning filter might allow the user to optionally specify a va
 
 The :code:`priorityVariable` parameter would be used like this (assuming that :code:`parameters_` is an instance of :code:`MyFilterParameters` and :code:`obsdb_` an instance of :code:`ioda::ObsSpace`):
 
-.. code:: c++
+.. code-block:: c++
   
   // All observations have equal priorities...
   std::vector<int> priorities(obsdb_.nlocs(), 0);
@@ -180,7 +180,7 @@ Constraints
 
 It is possible to restrict the allowed values of :code:`Parameter`, :code:`OptionalParameter` and :code:`RequiredParameter` objects by passing a vector of one or more shared pointers to constant :code:`ParameterConstraint` objects to their constructor. For convenience, functions returning shared pointers to new instances of subclasses of :code:`ParameterConstraint` representing particular constraint types have been defined. For example, the code below constrains the :code:`iterations` parameter to be positive:
 
-.. code:: c++
+.. code-block:: c++
 
   #include "oops/util/parameters/NumericConstraints.h"
   #include "oops/util/parameters/RequiredParameter.h"
@@ -194,7 +194,7 @@ Polymorphic Parameters
 
 Polymorphic parameters represent branches of the configuration tree whose structure depends on the value of a particular keyword. For example, here is a YAML file listing the properties of some computer peripherals:
 
-.. code:: yaml
+.. code-block:: yaml
 
     peripherals:
       - type: mouse
@@ -208,7 +208,7 @@ the value of the :code:`type` keyword. This means that a separate :code:`Paramet
 
 The structure of the above YAML file could be represented with the following subclasses of :code:`Parameters`:
 
-.. code:: c++
+.. code-block:: c++
 
     class PeripheralParameters : public Parameters {
       OOPS_ABSTRACT_PARAMETERS(PeripheralParameters, Parameters)
@@ -281,7 +281,7 @@ OOPS Interfaces Supporting :code:`Parameters`
 
 Implementations of some OOPS interfaces, such as :code:`Model`, :code:`LinearModel`, and :code:`Geometry`, can opt to provide a constructor taking a const reference to a subclass of :code:`Parameters` representing the collection of options recognized by the implementation, instead of a constructor taking a const reference to an :code:`eckit::Configuration` object. Such implementations need to typedef :code:`Parameters_` to the name of the appropriate :code:`Parameters` subclass. For example, in the example discussed in the :ref:`Introduction <parameters-introduction>`, the :code:`MyGeometry` class declaration would have looked like this:
 
-.. code:: c++
+.. code-block:: c++
 
   class MyGeometry {
    public:
@@ -291,7 +291,7 @@ Implementations of some OOPS interfaces, such as :code:`Model`, :code:`LinearMod
 
 But we could also declare it like this:
 
-.. code:: c++
+.. code-block:: c++
  
   class MyGeometry {
    public:

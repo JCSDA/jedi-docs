@@ -26,7 +26,7 @@ Two Local Ensemble Transform Kalman Filter (`Hunt et al 2007 <https://doi.org/10
 
 This implementation is used when :code:`LETKF` keyword is used in :code:`solver` section of configuration file:
 
-.. code:: yaml
+.. code-block:: yaml
 
    letkf:
      solver: LETKF
@@ -35,7 +35,7 @@ This implementation is used when :code:`LETKF` keyword is used in :code:`solver`
 
 This implementation is used when :code:`GSI LETKF` keywords are used in :code:`solver` section of configuration file:
 
-.. code:: yaml
+.. code-block:: yaml
 
    letkf:
      solver: GSI LETKF
@@ -55,7 +55,7 @@ To use LGETKF, specify :code:`GETKF` in :code:`solver` section. Using LGETKF als
 
 An example of using LGETKF solver in FV3:
 
-.. code:: yaml
+.. code-block:: yaml
 
    letkf:
      solver: GETKF
@@ -70,7 +70,7 @@ Localization supported in the ensemble solvers
 
 Observation-space :math:`R`-localization is used in the horizontal in all of the currently available solvers. Localization distance can be specified differently for different observation types in the :code:`obs error.localization` section of configuration, for example:
 
-.. code:: yaml
+.. code-block:: yaml
 
    observations:
    - obs space:
@@ -114,7 +114,7 @@ Several covariance inflation methods are supported:
 
 Parameter of multiplicative inflation is controlled by :code:`inflation.mult` configuration value, for example:
 
-.. code:: yaml
+.. code-block:: yaml
 
    letkf:
      inflation:
@@ -128,7 +128,7 @@ Parameter of multiplicative inflation is controlled by :code:`inflation.mult` co
 
 Parameter of RTPP inflation is controlled by :code:`inflation.rtpp` configuration value, for example:
 
-.. code:: yaml
+.. code-block:: yaml
 
    letkf:
      inflation:
@@ -142,7 +142,7 @@ Parameter of RTPP inflation is controlled by :code:`inflation.rtpp` configuratio
 
 Parameter of RTPS inflation is controlled by :code:`inflation.rtps` configuration value, for example:
 
-.. code:: yaml
+.. code-block:: yaml
 
    letkf:
      inflation:
