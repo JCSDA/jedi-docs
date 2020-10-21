@@ -62,14 +62,14 @@ JEDI Roles and Responsibilities
 Management Oversight Board (MOB)
 --------------------------------
 
-The `JCSDA MOB <https://www.jcsda.org/team>`_ includes representatives from `JCSDA partner organizations <https://www.jcsda.org/partners>`_ and the broader forecasting community.  The MOB is responsible for the approval of policies, goals and priorities of the JCSDA, including recommendations on the observing systems planned for use in the operational systems.  The MOB works in conjunction with an `JCSDA partners and an external advisory panel <https://www.jcsda.org/organization>`_ to represent the needs and perspective of the forecasting community.
+The `JCSDA MOB <https://www.jcsda.org/team>`_ includes representatives from `JCSDA partner organizations <https://www.jcsda.org/partners>`_ and the broader community.  The MOB is responsible for the approval of policies, goals and priorities of the JCSDA, including recommendations on the observing systems planned for use in the operational systems.  The MOB is tasked to ensure cooperation among sponsoring organizations and institutions and in extreme cases – for making project decisions if the normal community-based process breaks down.
 
-The MOB provides oversight into the overall scope, vision, and direction of the JEDI project, including strategic collaborations with other organizations, policies, and other general management issues.  They must make high-level decisions when regular community discussion doesn't produce consensus on an issue in a reasonable time frame.
+The MOB provides oversight into the overall scope, vision, and direction of the project, including strategic collaborations with other organizations, policies, and other general management issues.  They must make high-level decisions when regular community discussion doesn't produce consensus on an issue in a reasonable time frame.
 
 Executive Team (ET)
 -------------------
 
-The JCSDA Executive Team (ET) consists of Associate Directors who work to assist the JCSDA Director.  The overall role of the ET is to ensure, with input from the community, the long-term well-being of the JEDI project, both technically and as a community.
+The JCSDA Executive Team (ET) consists of Associate Directors who work to assist the JCSDA Director.  The overall role of the ET is to ensure, with input from the community, the long-term well-being of the project, both technically and as a community.
 
 It is the responsibility of the ET to assist the JCSDA Director and the MOB in making decisions about the overall scope, vision and direction of the JEDI project, including strategic collaborations, and policies. Because of their expert knowledge of the project software and services, the ET members are also expected to provide guidance, both technical and in terms of project direction, to potentially less experienced contributors.
 
@@ -77,11 +77,11 @@ Project Leads
 -------------
 Management responsibility of The JEDI Project lies primarily with the Project Leads.  The JEDI management hierarchy includes the JEDI Project Leader as well as subordinate project team leaders responsible for Software Infrastructure, Model and Observational Interfaces, Data Assimilation, and Cloud Infrastructure.
 
-The project leads are responsible for managing the JEDI project according to the tenets defined by the MOB and the ET through policy documents, in coordination with the JCSDA Director and Associate Directors, and with those JCSDA Partners that have a direct, vested interest in the success and ultimate application of the project.
+The project leads are responsible for managing the JEDI project according to the tenets identified in the JCSDA Software Governance and Oversight document Rev 1, in coordination with the JCSDA Director and Associate Directors, and with those JCSDA Partners that have a direct, vested interest in the success and ultimate application of the project.
 
-The project leads assume responsibility for delivery of the JEDI software to the various stakeholders and for coordinating the efforts of both core and in-kind contributors.  This includes generating requirements, responding to stakeholders, initiating collaborative efforts, identifying parallel efforts, reducing duplication of effort, bringing new partners on board, and assisting partners with implementation, testing, development, and technical support.  It also includes quarterly reporting to the MOB and the ET and the execution of code sprints and training events.
+The project leads assume responsibility for delivery of the JEDI software to the various stakeholders and for coordinating the efforts of both core and in-kind contributors, as identified in the JCSDA Annual Operating Plan (AOP) and any individually designated work plans.  This includes generating requirements, responding to stakeholders, initiating collaborative efforts, identifying parallel efforts, reducing duplication of effort, bringing new partners on board, and assisting partners with implementation, testing, development, and technical support.  It also includes quarterly reporting to the MOB and the ET and the execution of code sprints and training events.
 
-In terms of direct software development, project leads serve as contributors, reviewers, and administrators to the GitHub repositories that host the JEDI code.  Administrators are responsible for controlling access to the repositories and merging pull requests after they pass code reviews.  No code is merged until other developers attest to its scientific and technical quality and verify that it satisfies coding standards, is well documented, and passes all tests.
+In terms of direct software development, project leads serve as contributors, reviewers, and administrators to the GitHub repositories that host the JEDI code.  Administrators are responsible for controlling access to the repositories and merging pull requests after they pass code reviews, utilizing the do-no-harm approach.  No code is merged until other developers attest to its scientific and technical quality and verify that it satisfies coding standards, is well documented, and passes all tests.
 
 Contributors
 ------------
