@@ -13,7 +13,7 @@ Applications running forecast (and computing H(x))
 Data assimilation applications
 ------------------------------
 * :doc:`Variational<variational>`: variational data assimilation
-* LocalEnsembleDA: local ensemble data assimilation
+* :doc:`LocalEnsembleDA<localensembleda>`: local ensemble data assimilation
 
 Ensemble applications
 ---------------------

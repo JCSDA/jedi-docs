@@ -8,3 +8,4 @@ OOPS Applications
    applications
    ensemble-applications
    variational
+   localensembleda
