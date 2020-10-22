@@ -191,5 +191,5 @@ Parameter of RTPS inflation is controlled by :code:`inflation.rtps` configuratio
 
 NOTE about obs distributions
 -----------------------------
-Currently Local Ensemble DA requires "InefficientDistribution" obs distribution. I.e. each obs and H(x) is replicated on each PE. 
+Currently Local Ensemble DA requires :code:`InefficientDistribution` obs distribution. I.e. each obs and H(x) is replicated on each PE. 
 This is clearly Inefficient. We have an option to run Local Ensemble DA in the observer only mode with :code:`RoundRobin` to compute H(X). Then one can read ensemble of H(x) from disk using :code:`driver.read HX from disk == true` and :code:`driver.do posterior observer == false` that will remove all duplicate H(X) operations from the solver.  
