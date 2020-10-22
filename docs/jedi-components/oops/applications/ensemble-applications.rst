@@ -38,7 +38,7 @@ Like all the other applications in OOPS, the Ensemble Application takes a yaml f
       - "testinput/ens_hofx_5.yaml"
 
 
-The first member of the ensemble will run HofX with the first file in the list, the second one will run HofX the second file, ... In order to run an Ensemble Hofx with five members, you need a total of six yaml files (the one passed to the EnsembleApplication, plus one for each member). In this case, each :code:`ens_hofx_{i}.yaml` file contains the exact HofX yaml file for member{i}.
+The first member of the ensemble will run HofX with the first file in the list, the second one will run HofX with the second file, ... In order to run an Ensemble Hofx with five members, you need a total of six yaml files (the one passed to the EnsembleApplication, plus one for each member). In this case, each :code:`ens_hofx_{i}.yaml` file contains the exact HofX yaml file for member{i}.
 
 More about how to write yaml files for:
 * Forecast
