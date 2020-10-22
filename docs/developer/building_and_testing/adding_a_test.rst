@@ -16,7 +16,7 @@ Step 1: Create a File for your Test Application
 
 The goal of the :ref:`JEDI Testing Framework <test-framework>` is to have the test directory mirror the source directory such that each of the main C++ classes defined in the source directory has a corresponding test.
 
-So let's say that there is a file in some JEDI repository called :code:`src/mydir/MyClass.h` that defines a C++ class called :code:`MyClass`.  And, let's say that we want to define a unit test suite to test the various methods and constructors in :code:`MyClass`.  The first thing we would want to do is to create a file called :code:`test/mydir/MyClass.h` that will contain the test application.
+So let's say that there is a file in some JEDI repository called :code:`src/mydir/MyClass.h` that defines a C++ class called :code:`MyClass`.  And, we want to define a unit test suite to test the various methods and constructors in :code:`MyClass`.  The first thing we would want to do is to create a file called :code:`test/mydir/MyClass.h` that will contain the test application.
 
 If you're working in a well-established JEDI directory then this file may already exist.  If that's the case, then you can probably move on to Step 3.  On the other hand, if you're adding a new model to JEDI, it's possible that the directory won't exist yet, let alone the file.  So, create the directory and the file as needed.
 

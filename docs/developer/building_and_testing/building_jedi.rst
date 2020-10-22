@@ -3,9 +3,9 @@
 Building and compiling JEDI
 =============================
 
-As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in the following steps:
+As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in the following steps, which are described in more detail in the sections that follow:
 
-1. Clone the desired JEDI **bundle**
+1. Clone the desired JEDI :ref:`bundle <bundle>`
 2. Optionally edit the :code:`CMakeLists.txt` file in the bundle to choose the code branches you want to work with
 3. :code:`cd` to the build directory and run :code:`ecbuild` to generate the Makefiles and other infrastructure
 4. Run :code:`make update` to pull the latest, up-to-date code from GitHub (optional) and :code:`make` to compile the code
@@ -76,10 +76,12 @@ If your machine has fewer than six compute cores, and if you are using OpenMPI, 
     echo "localhost slots=6" > ~/.openmpi/hostfile
 
 
+.. _bundle:
+
 Step 1: Clone the Desired JEDI Bundle
 -------------------------------------
 
-JEDI applications are organized into high-level **bundles** that conveniently gather together all the repositories necessary for that application to run.  Often a bundle is associated with a particular model, such as **FV3** or **MPAS**.
+JEDI applications are organized into high-level **bundles** that conveniently gather together all the git repositories necessary for JEDI applications to run.  Often a bundle is associated with a particular model, such as **FV3** or **MPAS**.
 
 So, to start your JEDI adventure, the first step is to create a directory as a home for your bundle (or bundles--plural--if you're ambitious!).  Here we will use :code:`~/jedi/src` but feel free to call it whatever you wish.  Then clone the **GitHub** repository that contains the bundle you want, as demonstrated here:
 
