@@ -6,6 +6,7 @@ JEDI Components
    :maxdepth: 2
 
    oops/index.rst
+   saber/index.rst
    ioda/index.rst
    ufo/index.rst
    fv3-jedi/index.rst

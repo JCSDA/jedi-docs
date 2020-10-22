@@ -10,18 +10,18 @@ Applications running forecast (and computing H(x))
 * Forecast: model forecast
 * HofX: model forecast and computes H(x)
 
-Ensemble forecast applications
-------------------------------
-These applications are similar to the above. Each ensemble member is run on a separate MPI communicator, there is no communication between different ensemble members.
-
-* EnsembleForecast: ensemble of model forecasts
-* EnsembleHofX: ensemble of model forecasts; computes H(x) for each ensemble member.
-
 Data assimilation applications
 ------------------------------
 * :doc:`Variational<variational>`: variational data assimilation
-* EDA: ensemble of variational data assimilations
 * :doc:`LocalEnsembleDA<localensembleda>`: local ensemble data assimilation
+
+Ensemble applications
+---------------------
+These applications are similar to the above but allow users to run several members at once in order to compute a Forecast, HofX or Variational Data Assimilation for an entire ensemble. See the documentation on :doc:`Ensemble Applications<ensemble-applications>`.
+
+* EnsembleForecast: ensemble of model forecasts
+* EnsembleHofX: ensemble of model forecasts; computes H(x) for each ensemble member.
+* EDA: ensemble of variational data assimilations
 
 Data assimilation helper applications
 -------------------------------------
