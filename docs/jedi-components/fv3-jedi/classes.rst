@@ -474,14 +474,20 @@ used in GFS. For example there is :code:`filename_core`, this is file that all f
 configuration refer to other restarts used by GFS that group certain fields. The restarts include
 one text file :code:`filename_cplr: coupler.res` that contains metadata for the restart. Note that
 reading this coupler file can be disabled with :code:`skip coupler file: false` when it is not
-available and FV3-JEDI does not need the date and time information
+available and FV3-JEDI does not need the date and time information. The keys :code:`filename_cold`,
+:code:`filename_orog` and :code:`filename_phys` are included for completeness but are used
+infrequently. The files referenced by these keys files do not contain fields the data
+assimilation system would normally interact with. The fields more typically used are contained in
+the files referenced with :code:`filename_core`, which contains the main dynamics fields;
+:code:`filename_trcr`, which contains the tracers; :code:`filename_sfcd`, which contains the surface
+fields and :code:`filename_sfcw`, which contains the surface winds.
 
 Similarly to GEOS, and described above, GFS offers the ability to convert from pressure thickness to
 surface pressure automatically during the read. The behavior can be turned off and surface pressure
 read directly from the file using the flag :code:`psinfile:true`.
 
 By default when the output for GFS is written the files are prepended with the date so they might
-look like, for example, "20200101_00000z.fv_core.res.tile1.nc". This can be turned off with
+look like, for example, "20200101_00000.fv_core.res.tile1.nc". This can be turned off with
 :code:`prepend files with date: false`.
 
 .. _getvalues:
