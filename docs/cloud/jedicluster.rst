@@ -7,19 +7,19 @@ The first tool you'll need is the `AWS Command Line interface (CLI) <https://doc
 
 The easiest way to install the AWS CLI is through a package installer.  For example, you can use Homebrew on a Mac:
 
-.. code:: bash
+.. code-block:: bash
 
    brew install awscli
 
 or the :code:`apt` installer on a Debian-based linux OS such as Ubuntu:
 
-.. code:: bash
+.. code-block:: bash
 
     sudo apt-get install awscli
 
 Or, since the AWS CLI is a python package, you can also install it with :code:`pip` or :code:`conda`, for example:
 
-.. code:: bash
+.. code-block:: bash
 
     pip3 install -U awscli --user
 
@@ -27,7 +27,7 @@ For further details see the `AWS documentation <https://docs.aws.amazon.com/cli/
 
 The next step is to configure the AWS CLI to use your AWS login credentials.  When you were :doc:`granted access to JCSDA AWS resources <overview>`, a JEDI master should have given you an AWS secret access key and associated ID in addition to your username and password.  Have this secret access key and ID handy before running this command to configure your AWS CLI:
 
-.. code:: bash
+.. code-block:: bash
 
     aws configure
 

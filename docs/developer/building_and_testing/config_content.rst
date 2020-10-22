@@ -56,7 +56,7 @@ Often the largest section of the configuration file, this describes one or more 
 
 Example:
 
-.. code:: yaml
+.. code-block:: yaml
 
    # Example 1: radiosonde
    obs space:
@@ -100,7 +100,7 @@ Specifies parameters, variables, and control flags used to define how the cost f
 minimizer
 ^^^^^^^^^
 
-This tells oops which algorithm to use for minimizing the cost function, specified by the variable **algorithm**.  Valid options include DRGMRESR, DRIPCG, GMRESR, IPCG, SaddlePoint, RPCG, DRPCG, DRPFOM, LBGMRESR, DRPLanczos, PCG, PLanczos, RPLanczos, MINRES, and FGMRES (more on minimizers :doc:`here <../../jedi-components/oops/applications/variational>`).
+This tells oops which algorithm to use for minimizing the cost function, specified by the key **algorithm**.  Valid options include DRGMRESR, DRIPCG, GMRESR, IPCG, SaddlePoint, RPCG, DRPCG, DRPFOM, LBGMRESR, DRPLanczos, PCG, PLanczos, RPLanczos, MINRES, and FGMRES (more on minimizers :doc:`here <../../jedi-components/oops/applications/variational>`).
 
 output
 ^^^^^^
@@ -110,4 +110,4 @@ Used to specify the name, path, format, frequency, and other attributes of any o
 Top-Level Variables
 ^^^^^^^^^^^^^^^^^^^
 
-Most of the content in the JEDI config files is contained in sections of the YAML/JSON hierarchy that :ref:`can themselves be treated as self-contained Configuration objects <config-cpp>`.  Some of the more commonly used sections are described above, throughout this document. 
+Most of the content in the JEDI config files is contained in sections of the YAML/JSON hierarchy that :ref:`can themselves be treated as self-contained Configuration objects <config-cpp>`.  Some of the more commonly used sections are described above, throughout this document.

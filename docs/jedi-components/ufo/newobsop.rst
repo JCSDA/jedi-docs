@@ -27,13 +27,13 @@ To generate the ObsOperator files, you can run the following script: :code:`ufo/
 
 Example of calling :code:`create_obsop_fromexample.sh`:
 
-.. code:: bash
+.. code-block:: bash
 
    $> ./create_obsop_fromexample.sh MyOperator myoperator
 
 After the directory with the new obsoperator is created, add it to :code:`ufo/src/ufo/CMakeLists.txt`:
 
-.. code:: bash
+.. code-block:: cmake
 
    add_subdirectory( identity )
    add_subdirectory( myoperator )
@@ -54,7 +54,7 @@ Observation file should be added to ioda repository in :code:`ioda/test/testinpu
 
 All observation operator tests in UFO use the OOPS ObsOperator test. To create a new one, add an entry to :code:`ufo/test/CMakeLists.txt` similar to:
 
-.. code:: bash
+.. code-block:: cmake
 
    ecbuild_add_test( TARGET  test_ufo_myoperator_opr          # test name
                      SOURCES mains/TestObsOperator.cc         # source file
@@ -65,19 +65,19 @@ Other changes required in :code:`ufo/test/CMakeLists.txt`:
 
 Link the :doc:`config file <../../developer/building_and_testing/config_content>` you will be using for the test:
 
-.. code:: bash
+.. code-block:: cmake
 
    list( APPEND ufo_test_input
            testinput/myoperator.yaml
 
 Link the observations and geovals files you will be using for the test:
 
-.. code:: bash
+.. code-block:: cmake
 
    list( APPEND ufo_test_data
            atmosphere/geoval_file_name.nc4
 
-.. code:: bash
+.. code-block:: cmake
 
    list (APPEND ioda_obs_test_data
            atmosphere/obs_file_name.nc4

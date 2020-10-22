@@ -27,7 +27,7 @@ Installing Doxygen
 
 Doxygen is included in the JEDI :doc:`CharlieCloud <../jedi_environment/charliecloud>` and :doc:`Singularity <../jedi_environment/singularity>` containers and may already be installed on your system.  To check whether it is already installed in your environment, just type this at the command line:
 
-.. code:: bash
+.. code-block:: bash
 
   doxygen --help
 
@@ -37,7 +37,7 @@ If it is not already installed, you can obtain executable binary files for Mac O
 
 Alternatively, if you have a Mac, you can install Doxygen with :doc:`Homebrew <homebrew>`
 
-.. code:: bash
+.. code-block:: bash
 
   brew install doxygen # (Mac only)
 
@@ -47,7 +47,7 @@ Depending on how you install Doxygen, you may be prompted for optional add-ons, 
 
 In particular, Graphviz includes an interpreter for the `DOT <https://graphviz.gitlab.io/_pages/doc/info/lang.html>`_ graphical display language.  A dot interpreter might already be installed on your system.  For example, if you installed doxygen via Homebrew or if you use the JEDI :doc:`Charliecloud <../jedi_environment/charliecloud>` or :doc:`Singularity <../jedi_environment/singularity>` container, you may not need to install anything else.  To check, try running:
 
-.. code:: bash
+.. code-block:: bash
 
   dot --help
 
@@ -55,7 +55,7 @@ If it's not already there you can install Graphviz using the executable binaries
 `download site <https://www.graphviz.org/download/>`_ or you can install it explicitly with
 :doc:`Homebrew <homebrew>`:
 
-.. code:: bash
+.. code-block:: bash
 
   brew install graphviz # (Mac only)
 
@@ -66,7 +66,7 @@ Documenting C++ source code
 
 There are `several ways <https://www.doxygen.nl/manual/docblocks.html#specialblock>`_ to include Doxygen documentation in C++ source files.  We recommend the Qt style, as illustrated in this example:
 
-.. code:: c
+.. code-block:: c
 
    // -----------------------------------------------------------------------------
    /*! \brief Example function
@@ -105,7 +105,7 @@ Note also that Doxygen supports `Markdown <http://www.doxygen.nl/manual/markdown
 
 Doxygen also supports `latex <http://www.doxygen.nl/manual/formulas.html>`_ for including formulae in latex and html output.  Latex math mode is delimited by :code:`\f$` symbols as follows:
 
-.. code:: c
+.. code-block:: c
 
    /*! ...
    * This is an equation: \f$\nu = \sqrt{y_2}\f$
@@ -120,7 +120,7 @@ Documenting Fortran source code
 
 Including Doxygen documentation in Fortran is similar to C++ as described :ref:`above <doxygen-Cpp>`, but with appropriate Fortran comment indicators.  Also, the Doxygen parameter descriptions can follow the argument declarations as demonstrated here:
 
-.. code:: fortran
+.. code-block:: fortran
 
    ! -----------------------------------------------------------------------------
    !> \brief Example function
@@ -157,7 +157,7 @@ But, if you have added Doxygen documentation to a feature branch that you are wo
 
 If you are working with a particular :doc:`JEDI bundle <../building_and_testing/building_jedi>`, then it is likely that this bundle is equipped to build the Doxygen documentation.  Just edit the :code:`CMakeLists.txt` file in the top level of the bundle repository (e.g. **ufo-bundle**) and look for a code snippet that resembles this:
 
-.. code:: bash
+.. code-block:: bash
 
     # Build Doxygen documentation
     option(BUILD_UFO_BUNDLE_DOC "Build documentation" ON)
@@ -170,7 +170,7 @@ You can also run Doxygen manually, as follows
 
 .. _doxy-build:
 
-.. code:: bash
+.. code-block:: bash
 
     mkdir -p <build-dir>/Documentation
     cd <build-dir>/Documentation
@@ -256,13 +256,13 @@ Wait patiently for it to run - it may take a few tens of seconds, particularly i
 
 If you'd rather not use the Doxywizard GUI, you can do all of the above and more by creating the Doxyfile configuration file manually from the command line and then editing it directly to select the options you want.  To manually generate a Doxyfile, go to your directory of choice and type:
 
-.. code:: bash
+.. code-block:: bash
 
   doxygen -g
 
 Then, after editing the file to specify your configuration options (including the source and output directories), just type this thereafter (from the directory that contains the Doxyfile):
 
-.. code:: bash
+.. code-block:: bash
 
   doxygen
 
@@ -272,7 +272,7 @@ If you have any problems, try consulting the `Troubleshooting <https://www.doxyg
 
 To view the output as a man page, first make sure you have enabled the :code:`GENERATE_MAN` option by selecting it in the **Expert-Man** menu of Doxywizard or by editing the Doxyfile.  Then navigate to the :code:`man/man3` subdirectory of the output directory.  There you can type :code:`ls` to see what man pages are available to view.  These include files, namespaces, directories, and classes.  To view one, type e.g.
 
-.. code:: bash
+.. code-block:: bash
 
    man ./qg_fields.3
 

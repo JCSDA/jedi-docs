@@ -3,7 +3,7 @@
 JEDI Portability
 ================
 
-As emphasized :doc:`elsewhere <../../background/index>`, one of our motivating visions behind JEDI is to make it generic, powerful, and efficient enough to be used for a wide range of applications from pedagogical and experimental toy models to coupled NWP systems capable of cutting-edge research and operational forecasting.  This means that JEDI users will use a wide range of computing platforms, from laptops and workstations to cloud platforms to HPC facilities at national centers.
+As emphasized :doc:`elsewhere <../../overview/index>`, one of our motivating visions behind JEDI is to make it generic, powerful, and efficient enough to be used for a wide range of applications from pedagogical and experimental toy models to coupled NWP systems capable of cutting-edge research and operational forecasting.  This means that JEDI users will use a wide range of computing platforms, from laptops and workstations to cloud platforms to HPC facilities at national centers.
 
 But JEDI does not exist in a vacuum.  Like any modern, sophisticated software package, it leverages a number of `third-party libraries and applications <https://github.com/JCSDA/jedi-stack>`_ to enhance functionality and performance.  Examples include libraries to read and write NetCDF data files (NetCDF, HDF5, PNetCDF), to perform linear algebra computations (LAPACK, Eigen3), to communicate among processors through the message passing interface (MPI), and even to build the code itself (C++/C/Fortran compilers, cmake, ecbuild).  Sorting out all these dependencies can be frustrating for a user who just wants to get straight to the science.
 
@@ -54,7 +54,7 @@ By contrast, :doc:`Singularity <singularity>` and :doc:`Charliecloud <charlieclo
 
 However, there is one distinguishing feature of Docker is that is worth mentioning: it does not rely on the linux user namespaces and other features (for example, SetUID) that Singularity and Charliecloud require.  This is what makes it unsuitable for HPC since it achieves containerization instead by means of the root daemon.  However, these linux features are not yet supported by Mac OS and Windows.  So, in short, Docker can run natively on laptops and PCs running Mac OS or Windows whereas Singularity and Charliecloud cannot.  Our recommendation for these systems is to run Singularity or Charliecloud within a :doc:`Virtual Machine <vagrant>`.  Still, some advanced developers may wish to work with the JEDI docker image directly.  Since the image is publically hosted on the `Docker Hub <https://hub.docker.com/>`_, they are free to do so:
 
-.. code:: bash
+.. code-block:: bash
 
     docker pull jcsda/docker-<name>:latest
 
@@ -64,7 +64,7 @@ Again, this is **not** the recommended practice.  The JEDI :doc:`Singularity <si
 
 If you do decide to run the JEDI Docker containers directly, be sure to log in as the user jedi, for example:
 
-.. code:: bash
+.. code-block:: bash
 
     docker run -u jedi --rm -it jcsda/docker-<name>:latest
 
@@ -83,7 +83,7 @@ Containers that include :code:`-dev` in their name are development containers as
 
 If you have it available, we recommend the use of Singularity.  To obtain the Singularity versions of these containers enter
 
-.. code:: bash
+.. code-block:: bash
 
    singularity pull library://jcsda/public/jedi-<name>
 
@@ -91,7 +91,7 @@ where :code:`<name>` is one of the items from the list above.
 
 To obtain the Charliecloud versions of these containers, enter:
 
-.. code:: bash
+.. code-block:: bash
 
    wget http://data.jcsda.org/containers/ch-jedi-<name>.tar.gz
 

@@ -13,14 +13,14 @@ Running ctest
 The standard practice after :doc:`building and compiling a JEDI bundle <building_jedi>` is to run ctest with no arguments in order to see if the bundle is operating correctly.
 First you need to run :code:`ulimit -s unlimited` (on a linux machine; you may not be able to do this on Mac OS) to ensure that you don't encounter memory or stack size issues. Then you can test your build with:
 
-.. code:: bash
+.. code-block:: bash
 
    cd <build-directory>
    ctest
 
 This will run all tests in the test suite for that bundle. This can take a while so be patient.  When the tests are complete, ctest will print out a summary, highlighting which tests, if any, failed.  For example:
 
-.. code:: bash
+.. code-block:: bash
 
     98% tests passed, 2 tests failed out of 130
 
@@ -42,7 +42,7 @@ This will run all tests in the test suite for that bundle. This can take a while
 
 If you want to run a single test or a subset of tests, you can do this with the :code:`-R` option, for example:
 
-.. code:: bash
+.. code-block:: bash
 
    ctest -R test_fv3jedi_linearmodel # run a single test
    ctest -R test_qg* # run a subset of tests
@@ -51,13 +51,13 @@ The output from these tests (stdout) will be printed to the screen but, to allow
 
 If you're not happy with the information in LastTest.log and you want to know more, you can ask ctest to be **verbose**
 
-.. code:: bash
+.. code-block:: bash
 
    ctest -V -R test_fv3jedi_linearmodel
 
 ...or even **extra-verbose** (hypercaffeinated mode):
 
-.. code:: bash
+.. code-block:: bash
 
    ctest -VV -R test_fv3jedi_linearmodel
 
@@ -66,22 +66,29 @@ The :code:`-V` and even :code:`-VV` display the output messages on the screen in
 
 Another way to get more information is to set one or both of these environment variables before you run ctest:
 
-.. code:: bash
+.. code-block:: bash
 
    export OOPS_DEBUG=1
    export OOPS_TRACE=1
 
 The first enables debug messages within the JEDI code that would not otherwise be written.  The second produces messages that follow the progress of the code as it executes.  Both tools are provided by :doc:`eckit <../developer_tools/cmake>`.   Though higher values of these variables could in principle be set, few JEDI routines exploit this functionality.  So, setting these variables to values greater than 1 will make little difference.  Both can be disabled by setting them to zero.
 
-**ctest** also has an option to only re-run the tests that failed last time:
+You can also display the output messages only for the failed tests by using :code:`--output-on-failure`
 
 .. code:: bash
+
+   ctest --output-on-failure
+
+**ctest** also has an option to only re-run the tests that failed last time:
+
+.. code-block:: bash
 
    ctest --rerun-failed
 
+
 To see a list of tests for your bundle without running them, enter
 
-.. code:: bash
+.. code-block:: bash
 
    ctest -N
 
@@ -95,7 +102,7 @@ Manual Execution
 
 You can also run the executable test files directly, without going through ctest.  To do this, first find the executable in the build directory. Unit tests are typically found in one of the :code:`test` directories that branch off each repository name.  For example, :code:`test_qg_state` can be found in :code:`<build-directory>/oops/qg/test` and :code:`test_ufo_geovals` can be found in :code:`<build-directory>/ufo/test`.  Then just :code:`cd` to that directory and run the executable from the command line, specifying the appropriate input (configuration) file, e.g.
 
-.. code:: bash
+.. code-block:: bash
 
     test_qg_state testinput/interfaces.yaml
 
@@ -103,7 +110,7 @@ You can determine which executable and which configuration file each test uses b
 
 If you do run the tests without ctest, keep in in mind a few tips.  First, the test name is not always the same as the executable name.  Second, since the the integration and system tests generally focus on JEDI Applications (other than :code:`oops::Test` objects - see :ref:`below <test-apps>`) they usually have a :code:`.x` extension.  Furthermore, these executables are generally located in the :code:`<build-directory>/bin` directory as opposed to the :code:`test` directories.  For example, to run :code:`test_qg_truth` from the :code:`<build-directory>/oops/qg/test` directory, you would enter the following:
 
-.. code:: bash
+.. code-block:: bash
 
     ../../../bin/qg_forecast.x testinput/truth.yaml
 
@@ -126,15 +133,31 @@ Unit testing generally involves evaluating one or more Boolean expressions durin
 
 By contrast, **Application tests** check the operation of some application as a whole.  Some may make use of eckit Boolean tests but most focus on the output that these applications generate.  For example, one may wish to run a 4-day forecast with a particular model and initial condition and then check to see that the result of the forecast matches a well-established solution.  This is currently done by writing the output of the test to a file (typically a text file) and comparing it to an analogous output file from a previous execution of the test.  Such reference files are included in many JEDI repositories and can generally be found in a :code:`test/testoutput` subdirectory.
 
-Comparisons between output files are currently done by means of the **compare.sh** bash script which can be found in the :code:`test` subdirectory in many JEDI repositories.  This script uses standard unix parsing commands such as :code:`grep` and :code:`diff` to assess whether the two solutions match.  For further details see the section on :ref:`Integration and System testing <app-testing>` below.
+Comparisons between output files are currently done by  **compare.py** (or in some repository **compare.sh**). **compare.py** takes run file (test output), reference file (established solution), float tolerance, and integer difference as input and can be used as:
 
-.. warning::
+.. code:: bash
 
-  **The compare.sh testing procedure is provisional and is likely to be modified in the future.**
+  compare.py run_file ref_file float_tolerance integer_difference
+
+
+Tolerance values are used to allow for small differences between test output and the reference values. Float tolerance is the maximum relative difference between floating numbers in the run file and the reference file. Integer difference is the maxmimum difference between integer numbers in the run file and the reference file.
+Example below shows how **compare.py** can be used with :code:`ecbuild_add_test` to add a test for comparing test output with a reference file. You can find more examples in :code:`test/CMakeLists.txt` in different JEDI repositories
+
+.. code:: bash
+
+  ecbuild_add_test( TARGET       test_fv3jedi_forecast_fv3-gfs_compare
+                    TYPE         SCRIPT
+                    COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                    ARGS         testoutput/forecast_fv3-gfs.run testoutput/forecast_fv3-gfs.ref 1.0e-3 0
+                    TEST_DEPENDS test_fv3jedi_forecast_fv3-gfs )
+
+
+**compare.sh** uses standard unix parsing commands such as :code:`grep` and :code:`diff` to assess whether the two solutions match.  For further details see the section on :ref:`Integration and System testing <app-testing>` below.
+
 
 As mentioned above, each JEDI bundle has its own suite of tests and you can list them (without running them) by entering this from the build directory:
 
-.. code:: bash
+.. code-block:: bash
 
    ctest -N
 
@@ -144,7 +167,7 @@ With few exceptions, all JEDI repositories contain a :code:`test` directory that
 
 Within each :code:`test` directory you will find a file called :code:`CMakeLists.txt`.  This is where each test is added, one by one, to the suite of tests that is executed by **ctest**.  As described in the `CMake documentation <https://cmake.org/documentation/>`_, this is ultimately achieved by repeated calls to the CMake :code:`add_test()` command.
 
-However, the :doc:`ecbuild package <../developer_tools/cmake>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`. Application tests are added by specifying :code:`TYPE SCRIPT` and :code:`COMMAND "compare.sh"` to :code:`ecbuild_add_test()`. For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
+However, the :doc:`ecbuild package <../developer_tools/cmake>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`. Application tests are added by specifying :code:`TYPE SCRIPT` and :code:`COMMAND "compare.py"` to :code:`ecbuild_add_test()`. For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
 
 Since it relies on the net result of an application, each Application test is typically associated with a single **ctest** executable.  However, applications of type :code:`oops::Test` (see :ref:`next section <test-apps>`) will typically execute multiple unit tests for each executable, or in other words each item in the ctest suite.  So, in this sense, the suite of unit tests is nested within each of the individual tests defined by **ctest**.  And, it is this nested suite of unit tests. (see :ref:`below <init-test>`).
 
@@ -166,7 +189,7 @@ Unit tests are implemented through :code:`oops::Test` objects as described in th
 
 To appreciate how a JEDI Application is actually run, consider the following program, which represents the entire (functional) content of the file :code:`oops/qg/test/executables/TestState.cc`:
 
-.. code:: C++
+.. code-block:: C++
 
    int main(int argc,  char ** argv) {
      oops::Run run(argc, argv);
@@ -201,7 +224,7 @@ First, it is important to realize that the :code:`test::State<Model>` class is n
 
 Second, as an application, a :code:`test::State<Model>` object also has an :code:`execute()` method, which is called by the :code:`execute()` method of the :code:`oops::Run` object as shown here (code excerpt from :code:`oops/src/oops/runs/Run.cc`):
 
-.. code:: C++
+.. code-block:: C++
 
    void Run::execute(const Application & app) {
      int status = 1;
@@ -217,7 +240,7 @@ to initialize and run the suite of unit tests.
 
 The :code:`execute()` method in each :code:`oops::Test` object then proceeds to register the tests with :code:`oops::Test::register_tests()` and run them with a call to eckit's :code:`run_tests()` function (:code:`argc` and :code:`argv` are parsed from the :code:`args` variable above):
 
-.. code:: C++
+.. code-block:: C++
 
     // Run the tests
       Log::trace() << "Registering the unit tests" << std::endl;
@@ -231,7 +254,7 @@ So, the real difference between different :code:`oops::Test` objects is encapsul
 
 In the case of :code:`test::State<MODEL>` (which you may recall from the previous section is a sub-class of :code:`oops::Test`), this method is defined as follows (see :code:`oops/src/test/interface/State.h`):
 
-.. code:: C++
+.. code-block:: C++
 
   void register_tests() const {
     std::vector<eckit::testing::Test>& ts = eckit::testing::specification();
@@ -259,7 +282,7 @@ As demonstrated in the previous section, this particular suite of unit tests inc
 
 Here we will focus on the first, :code:`TestStateConstructors<MODEL>()`.  Both are defined in :code:`oops/src/test/interface/State.h`, where you will find this code segment:
 
-.. code:: C++
+.. code-block:: C++
 
   template <typename MODEL> void testStateConstructors() {
     typedef StateFixture<MODEL>   Test_;
@@ -304,7 +327,7 @@ Though each executable in the **ctest** test suite may run a number of unit test
 
 Files containing summary data for these known solutions can be found in the :code:`test/testoutput` directory of many JEDI repositories.  The :code:`test_qg_state` example that we have been using throughout this document is a unit test suite (:ref:`Type 1 <jedi-tests>`) as opposed to an Application test (:ref:`Type 2 <jedi-tests>`) so it does not have a reference output file.  However, as an Application test, :code:`test_qg_truth` does have such a file.  The name of this reference file is :code:`truth.test` and its contents are as follows:
 
-.. code:: bash
+.. code-block:: bash
 
     Test     : Initial state: 13.1
     Test     : Final state: 15.1417
@@ -315,7 +338,7 @@ This and other reference files are included in the GitHub repositories but the o
 
 So, in our example above, the output of :code:`test_qg_truth` will be written to
 
-.. code:: bash
+.. code-block:: bash
 
       <build-directory>/oops/qg/test/testoutput/truth.test.test.out`
 
@@ -325,7 +348,7 @@ When the test is executed, the :code:`compare.sh` script in the :code:`test` dir
 
 .. warning::
 
-   The **compare.sh** script may have problems if you run with multiple processors.
+   The **compare.py** script may have problems if you run with multiple processors.
 
 .. _test-framework:
 

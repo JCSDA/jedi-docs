@@ -3,9 +3,9 @@
 Building and compiling JEDI
 =============================
 
-As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in the following steps:
+As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in the following steps, which are described in more detail in the sections that follow:
 
-1. Clone the desired JEDI **bundle**
+1. Clone the desired JEDI :ref:`bundle <bundle>`
 2. Optionally edit the :code:`CMakeLists.txt` file in the bundle to choose the code branches you want to work with
 3. :code:`cd` to the build directory and run :code:`ecbuild` to generate the Makefiles and other infrastructure
 4. Run :code:`make update` to pull the latest, up-to-date code from GitHub (optional) and :code:`make` to compile the code
@@ -13,7 +13,7 @@ As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedur
 
 In terms of the actual commands you would enter, these steps will look something like this:
 
-.. code:: bash
+.. code-block:: bash
 
     cd <src-directory>
     git clone https://github.com/JCSDA/ufo-bundle.git
@@ -36,14 +36,14 @@ Before jumping into the actual building of JEDI, we highly recommend that you re
 
 All JEDI repositories are stored and distributed by means of `GitHub <https://github.com>`_.   If you have used :code:`git` before, then you probably already have a :code:`.gitconfig` configuration file in your home directory.  If you have not already done so at some point in the past, you can create a git configuration file by specifying your GitHub username and email as follows:
 
-.. code:: bash
+.. code-block:: bash
 
    git config --global user.name <username-for-github>
    git config --global user.email <email-used-for-github>
 
 This is a recommended action for any user of GitHub since it governs how you access GitHub with :code:`git`.  However, there is another action that you may not have set up previously but that will be immensely useful to all JEDI users and developers: tell GitHub to cache your GitHub credentials:
 
-.. code:: bash
+.. code-block:: bash
 
    git config --global credential.helper 'cache --timeout=3600'
 
@@ -51,7 +51,7 @@ This tells GitHub to keep your GitHub login information for an hour, i.e. 3600 s
 
 The statement above should be sufficient on most systems.   However, on some systems (particularly HPC systems with stringent security protocols), it may be necessary to explicitly give git permission to store your GitHub password unencrypted on disk as follows:
 
-.. code:: bash
+.. code-block:: bash
 
     git config --global --add credential.helper 'store'
 
@@ -59,7 +59,7 @@ As for all your files, your password will still be protected by the security pro
 
 Before building the jedi code, you should also make sure that git is configured to interpret files that are stored on :doc:`git-lfs <../developer_tools/gitlfs>`:
 
-.. code:: bash
+.. code-block:: bash
 
     git lfs install
 
@@ -69,21 +69,23 @@ Another thing to keep in mind is that some JEDI tests require six MPI task to ru
 
 If your machine has fewer than six compute cores, and if you are using OpenMPI, you may need to explicitly give openmpi permission to run more than one MPI task on each core.  To do this, run these commands:
 
-.. code:: bash
+.. code-block:: bash
 
     mkdir -p ~/.openmpi
     echo "rmaps_base_oversubscribe = 1" > ~/.openmpi/mca-params.conf
     echo "localhost slots=6" > ~/.openmpi/hostfile
 
 
+.. _bundle:
+
 Step 1: Clone the Desired JEDI Bundle
 -------------------------------------
 
-JEDI applications are organized into high-level **bundles** that conveniently gather together all the repositories necessary for that application to run.  Often a bundle is associated with a particular model, such as **FV3** or **MPAS**.
+JEDI applications are organized into high-level **bundles** that conveniently gather together all the git repositories necessary for JEDI applications to run.  Often a bundle is associated with a particular model, such as **FV3** or **MPAS**.
 
 So, to start your JEDI adventure, the first step is to create a directory as a home for your bundle (or bundles--plural--if you're ambitious!).  Here we will use :code:`~/jedi/src` but feel free to call it whatever you wish.  Then clone the **GitHub** repository that contains the bundle you want, as demonstrated here:
 
-.. code:: bash
+.. code-block:: bash
 
     cd ~/jedi
     mkdir src
@@ -96,7 +98,7 @@ Step 2: Choose your Repos
 
 As executed above, Step 1 will create a directory called :code:`~/jedi/src/ufo-bundle`.  :code:`cd` to this directory and have a look (modify this as needed if you used a different path or a different bundle).  There's not much there.  There is a :code:`README` file that you might want to consult for specific information on how to work with this bundle.  But in this Step we'll focus on the :code:`CMakeLists.txt` file.  This contains a list of repositories that the application needs to run.  In the case of **ufo-bundle** that list looks something like this:
 
-.. code:: bash
+.. code-block:: cmake
 
    ecbuild_bundle( PROJECT fckit    GIT "https://github.com/JCSDA/fckit.git"        BRANCH release-stable UPDATE )
    ecbuild_bundle( PROJECT atlas    GIT "https://github.com/JCSDA/atlas.git"        BRANCH release-stable UPDATE )
@@ -119,13 +121,13 @@ If you are a developer, you will, by definition, be modifying the code.  And, if
 
 For illustration, let's say we created a feature branch of ufo called :code:`feature/newstuff`, which exists on your local system.  Now we want to tell :code:`ecbuild` to use this branch to compile the bundle instead of some other remote branch on GitHub.  To achieve this, we would change the appropriate line in the CMakeLists.txt file to point to the correct branch and we would remove the :code:`UPDATE` argument:
 
-.. code:: bash
+.. code-block:: cmake
 
    ecbuild_bundle( PROJECT ufo GIT "~/jedi/src/ufo-bundle/ufo" BRANCH feature/newstuff )
 
 This may be all you need to know about :code:`ecbuild_bundle()` but other options are available.  For example, if you would like to fetch a particular release of a remote GitHub repository you can do this:
 
-.. code:: bash
+.. code-block:: cmake
 
    ecbuild_bundle( PROJECT eckit GIT "https://github.com/ECMWF/eckit.git" TAG 0.18.5 )
 
@@ -138,14 +140,14 @@ Step 3: Run ecbuild (from the build directory)
 
 After you have chosen which repositories to build, the next step is to create a build directory (if needed):
 
-.. code:: bash
+.. code-block:: bash
 
     cd ~/jedi
     mkdir build
 
 Then, from that build directory, run :code:`ecbuild`, specifying the path to the directory that contains the source code for the bundle you wish to build:
 
-.. code:: bash
+.. code-block:: bash
 
     cd ~/jedi/build
     ecbuild ../src/ufo-bundle
@@ -162,19 +164,19 @@ After you enter the ecbuild command, remember to practice patience, dear `padawa
 
 As described :doc:`here <../developer_tools/cmake>`, ecbuild is really just a sophisticated (and immensely useful!) interface to CMake.  So, if there are any CMake options or arguments you wish to invoke, you can pass them to ecbuild and it will kindly pass them on to CMake.  The general calling syntax is:
 
-.. code:: bash
+.. code-block:: bash
 
    ecbuild [ecbuild-options] [--] [cmake-options] <src-directory>
 
 Where :code:`src-directory` is the path to the source code of the bundle you wish to build.  The most useful ecbuild option is debug:
 
-.. code:: bash
+.. code-block:: bash
 
    ecbuild --build=debug ../src/ufo-bundle
 
 This will invoke the debug flags on the C++ and Fortran compilers and it will also generate other output that may help you track down errors when you run applications and/or tests.  You can also specify which compilers you want and you can even add compiler options.  For example:
 
-.. code:: bash
+.. code-block:: bash
 
    ecbuild -- -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CXX_FLAGS="-Wfloat-equal -Wcast-align" ../src/ufo-bundle
 
@@ -185,7 +187,7 @@ If your system is not one that is supported by the JEDI team, then a second opti
 
 A third option is for you to install eckit on your system manually (not recommended).  If you do this, then you may have to tell ecbuild where to find it with this command line option:
 
-.. code:: bash
+.. code-block:: bash
 
    ecbuild -- -DECKIT_PATH=<path-to-eckit> ../src/ufo-bundle
 
@@ -196,7 +198,7 @@ Step 4: Run make (from the build directory)
 
 After running ecbuild, the next step is to make sure the code is up to date.  You can do this by running :code:`make update` from the build directory as described in Step 2:
 
-.. code:: bash
+.. code-block:: bash
 
     make update
 
@@ -206,7 +208,7 @@ After running ecbuild, the next step is to make sure the code is up to date.  Yo
 
 Now, at long last, you are ready to compile the code.  From the build directory, just type
 
-.. code:: bash
+.. code-block:: bash
 
    make -j4
 
@@ -214,7 +216,7 @@ The :code:`-j4` flag tells make to use four parallel processes.  Since many desk
 
 The most useful option you're likely to want for :code:`make` other than :code:`-j` is the verbose option, which will tell you the actual commands that are being executed in glorious detail:
 
-.. code:: bash
+.. code-block:: bash
 
    make VERBOSE=1 -j4
 
@@ -224,6 +226,6 @@ Again, the compile can take some time (10 minutes or more) so be patient.   Then
 
 If the parallel compile fails, the true error may not be in the last line of the output because all processes are writing output simultaneously and some may still continue while another fails.  So, in that case, it can be useful to re-run :code:`make` with only a single process.  Omitting the :code:`-j` option is the same as including :code:`-j1`:
 
-.. code:: bash
+.. code-block:: bash
 
    make VERBOSE=1
