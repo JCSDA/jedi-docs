@@ -28,7 +28,7 @@ Supported modifications to the driver
   driver:
     read HX from disk: false #default value
 
-* Compute posterior observer and output test prints for the oma statistics. One might choose to set this flag to false in order to speed up completion of the localEnsenbleDA solver.
+* Compute posterior observer and output test prints for the oma statistics. One might choose to set this flag to false in order to speed up completion of the localEnsembleDA solver.
 
 .. code:: yaml
 
@@ -189,8 +189,8 @@ Parameter of RTPS inflation is controlled by :code:`inflation.rtps` configuratio
    * - GETKF
      - RTPP, RTPS
 
-NOTE aboute obs distributions
+NOTE about obs distributions
 -----------------------------
-Currently Local Ensemble DA requires "InefficientDistribution" obs distribution. I.e. each ob and H(x) is replicated on each PE. 
+Currently Local Ensemble DA requires "InefficientDistribution" obs distribution. I.e. each obs and H(x) is replicated on each PE. 
 This is clearlry Inefficient. We have an option to run Local Ensemble DA in the observer only mode with "RoundRobin" to compute H(X). Then one can read ensemble of H(x) from disk using "driver.read HX from disk"=true and "driver.do posterior observer"=false that will remove all duplicate H(X) operations from the solver.  
 
