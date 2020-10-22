@@ -1041,7 +1041,7 @@ The YAML parameters supported by this filter are listed below.
         
   - :code:`rejection_threshold`: Observations will be rejected if the gross error probability lies at or above this threshold. Default: 0.5.
 
-  - :code:`traced_boxes`: A list of quadrangles bounded by two meridians and two parallels. Tracing information will be output for observations lying within any of these quadrangles. Example:
+  - :code:`traced_boxes`: A list of quadrangles bounded by two meridians and two parallels. Tracing information (potentially useful for debugging) will be output for observations lying within any of these quadrangles. Example:
 
     .. code:: yaml
     
@@ -1090,9 +1090,9 @@ The YAML parameters supported by this filter are listed below.
 
 - Control of gross error probability updates:
 
-  - :code:`horizontal_correlation_scale`: Encoding of the function mapping the latitude (in degrees) to the horizontal correlation scale (in km).
+  - :code:`horizontal_correlation_scale`: Encoding of the function that maps the latitude (in degrees) to the horizontal correlation scale (in km).
   
-    The function is taken to be a linear interpolation of a series of (latitude, scale) points. The latitudes and scales at these points should be specified as keys and values of a JSON-style map. Owing to a bug in the eckit YAML parser, the keys must be enclosed in quotes. For example,
+    The function is taken to be a piecewise linear interpolation of a series of (latitude, scale) points. The latitudes and scales at these points should be specified as keys and values of a JSON-style map. Owing to a limitation in the eckit YAML parser (https://github.com/ecmwf/eckit/pull/21), the keys must be enclosed in quotes. For example,
   
     .. code:: yaml
   
