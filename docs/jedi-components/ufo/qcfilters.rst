@@ -1006,6 +1006,131 @@ This example runs the basic and SamePDiffT checks on the input data, using the s
       Checks: ["Basic", "SamePDiffT"]
       SPDTCheck_TThresh: 30.0 # This is an example modification of a check parameter
 
+Met Office Buddy Check Filter
+-----------------------------
+
+This filter cross-checks observations taken at nearby locations against each other, updating their gross error probabilities (PGEs) and rejecting observations whose PGE exceeds a threshold specified in the filter parameters. For example, if an observation has a very different value than several other observations taken at nearby locations and times, it is likely to be grossly in error, so its PGE is increased. PGEs obtained in this way can be taken into account during variational data assimilation to reduce the weight attached to unreliable observations without necessarily rejecting them outright.
+
+The YAML parameters supported by this filter are listed below.
+
+- General parameters:
+
+  - :code:`filter variables` (a standard parameter supported by all filters): List of the variables to be checked. Currently only surface (single-level) variables are supported. Variables can be either scalar or vector (with two Cartesian components, such as the eastward and northward wind components). In the latter case the two components need to be specified one after the other in the :code:`filter variables` list, with the first component having the :code:`first_component_of_two` option set to true. Example:
+
+    .. code:: yaml
+
+      filter variables:
+      - name: air_temperature
+      - name: eastward_wind
+        options:
+          first_component_of_two: true
+      - name: northward_wind
+        
+  - :code:`rejection_threshold`: Observations will be rejected if the gross error probability lies at or above this threshold. Default: 0.5.
+
+  - :code:`traced_boxes`: A list of quadrangles bounded by two meridians and two parallels. Tracing information (potentially useful for debugging) will be output for observations lying within any of these quadrangles. Example:
+
+    .. code:: yaml
+    
+      traced_boxes:
+        - min_latitude: 30
+          max_latitude: 45
+          min_longitude: -180
+          max_longitude: -150
+        - min_latitude: -45
+          max_latitude: -30
+          min_longitude: -180
+          max_longitude: -150
+
+    Default: empty list.
+
+- Buddy pair identification:
+
+  - :code:`search_radius`: Maximum distance between two observations that may be classified as buddies, in km. Default: 100 km.
+
+  - :code:`station_id_variable`: Variable storing string- or integer-valued station IDs.
+  
+    If not set and observations were grouped into records when the observation space was constructed, each record is assumed to consist of observations taken by a separate station. If not set and observations were not grouped into records, all observations are assumed to have been taken by a single station.
+  
+    Note: the variable used to group observations into records can be set with the
+    :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option. An example of its use can be found in the :ref:`Profile consistency checks <profconcheck_filtervars>` section above.
+
+  - :code:`num_zonal_bands`: Number of zonal bands to split the Earth's surface into when building a search data structure. 
+      
+    Note: Apart from the impact on the speed of buddy identification, both this parameter and :code:`sort_by_pressure` affect the order in which observations are processed and thus the final estimates of gross error probabilities, since the probability updates made when checking individual observation pairs are not commutative.
+
+    Default: 24. 
+
+  - :code:`sort_by_pressure`: Whether to include pressure in the sorting criteria used when building a search data structure, in addition to longitude, latitude and time. See the note next to :code:`num_zonal_bands`. Default: false.
+
+  - :code:`max_total_num_buddies`: Maximum total number of buddies of any observation.
+  
+    Note: In the context of this parameter, :code:`max_num_buddies_from_single_band` and :code:`max_num_buddies_with_same_station_id`, the number of buddies of any observation *O* is understood as the number of buddy pairs (*O*, *O*') where *O*' != *O*. This definition facilitates the buddy check implementation (and makes it compatible with the original version from the OPS system), but is an underestimate of the true number of buddies, since it doesn't take into account pairs of the form (*O*', *O*).
+
+    Default: 15.
+
+  - :code:`max_num_buddies_from_single_band`: Maximum number of buddies of any observation belonging to a single zonal band. See the note next to :code:`max_total_num_buddies`. Default: 10.
+
+  - :code:`max_num_buddies_with_same_station_id`: Maximum number of buddies of any observation sharing that observation's station ID. See the note next to :code:`max_total_num_buddies`. Default: 5.
+
+  - :code:`use_legacy_buddy_collector`: Set to true to identify pairs of buddy observations using an algorithm reproducing exactly the algorithm used in Met Office's OPS system, but potentially skipping some valid buddy pairs. Default: false.
+
+- Control of gross error probability updates:
+
+  - :code:`horizontal_correlation_scale`: Encoding of the function that maps the latitude (in degrees) to the horizontal correlation scale (in km).
+  
+    The function is taken to be a piecewise linear interpolation of a series of (latitude, scale) points. The latitudes and scales at these points should be specified as keys and values of a JSON-style map. Owing to a limitation in the eckit YAML parser (https://github.com/ecmwf/eckit/pull/21), the keys must be enclosed in quotes. For example,
+  
+    .. code:: yaml
+  
+      horizontal_correlation_scale: { "-90": 200, "90": 100 }
+  
+    encodes a function varying linearly from 200 km at the south pole to 100 km at the north pole.
+
+    Default: :code:`{ "-90": 100, "90": 100 }`, i.e. a constant function equal to 100 km everywhere.
+
+  - :code:`temporal_correlation_scale`: Temporal correlation scale. Default: PT6H.
+
+  - :code:`damping_factor_1` Parameter used to "damp" gross error probability updates using method 1 described in section 3.8 of the OPS Scientific Documentation Paper 2 to make the buddy check better-behaved in data-dense areas. See the reference above for the full description. Default: 1.0.
+
+  - :code:`damping_factor_2` Parameter used to "damp" gross error probability updates using method 2 described in section 3.8 of the OPS Scientific Documentation Paper 2 to make the buddy check better-behaved in data-dense areas. See the reference above for the full description. Default: 1.0.
+
+Example:
+
+.. code:: yaml
+
+  - filter: Met Office Buddy Check:
+    filter variables:
+    - name: eastward_wind
+      options:
+        first_component_of_two: true
+    - name: northward_wind
+    - name: air_temperature
+    rejection_threshold: 0.5
+    traced_boxes: # trace all observations
+      - min_latitude: -90
+        max_latitude:  90
+        min_longitude: -180
+        max_longitude:  180
+    search_radius: 100 # km
+    station_id_variable:
+      name: station_id@MetaData
+    num_zonal_bands: 24
+    sort_by_pressure: false
+    max_total_num_buddies: 15
+    max_num_buddies_from_single_band: 10
+    max_num_buddies_with_same_station_id: 5
+    use_legacy_buddy_collector: false
+    horizontal_correlation_scale: { "-90": 100, "90": 100 }
+    temporal_correlation_scale: PT6H
+    damping_factor_1: 1.0
+    damping_factor_2: 1.0
+
+Implementation Notes
+^^^^^^^^^^^^^^^^^^^^
+
+The implementation of this filter consists of four steps: sorting, buddy pair identification, PGE update and observation flagging. Observations are grouped into zonal bands and sorted by (a) band index, (b) longitude, (c) latitude, in descending order, (d) pressure (if the :code:`sort_by_pressure` option is on), and (e) datetime. Observations are then iterated over, and for each observation a number of nearby observations (lying no further than :code:`search_radius`) are identified as its buddies. The size and "diversity" of the list of buddy pairs can be controlled with the :code:`max_total_num_buddies`, :code:`max_num_buddies_from_single_band` and :code:`max_num_buddies_with_same_station_id` options. Subsequently, the PGEs of the observations forming each buddy pair are updated. Typically, the PGEs are decreased if the signs of the innovations agree and increased if they disagree. The magnitude of this change depends on the background error correlation between the two observation locations, the error estimates of the observations and background values, and the prior PGEs of the observations: the PGE change is the larger, the stronger the correlation between the background errors and the narrower the error margins. Once all buddy pairs have been processed, observations whose PGEs exceed the specified :code:`rejection_threshold` are flagged.
+
 .. _filter-actions:
 
 Filter Actions
