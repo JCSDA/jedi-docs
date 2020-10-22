@@ -64,7 +64,7 @@ Life Cycle of a Feature Branch
 Under the git flow paradigm, and using the git flow application, the typical life cycle of a feature branch is as described below. :ref:`Other git-flow branches are handled in a similar way <gitflow-branches>`.  If you do not wish to use the git flow application,
 `you can achieve the same steps just with standard git <http://nvie.com/posts/a-successful-git-branching-model>`_.  For example, :code:`git flow feature start newstuff` is equivalent to:
 
-.. code::
+.. code-block:: bash
 
    git checkout develop
    git branch feature/newstuff
@@ -79,13 +79,13 @@ For further tips on working with :code:`git` and :code:`git-flow`, see our accom
 Step 1: Start the feature branch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: bash
+.. code-block:: bash
 
    git flow feature start newstuff
 
 This creates a new branch called feature/newstuff that branches off of develop.  Then you can edit files and commit them as you would with any other :code:`git` repository:
 
-.. code:: bash
+.. code-block:: bash
 
    git add *
    git commit
@@ -95,7 +95,7 @@ Step 2. Push your branch to GitHub for the first time
 
 After making one or more commits, you can push your branch to GitHub as follows:
 
-.. code:: bash
+.. code-block:: bash
 
    git flow feature publish newstuff
 
@@ -106,7 +106,7 @@ Step 3. Additional commits and pushes as needed
 
 Now typically you will make multiple commits as you add a feature and repeatedly :doc:`recompile the code and test your changes <../building_and_testing/building_jedi>`.  Don't forget to :doc:`add a test <../building_and_testing/adding_a_test>` that specifically checks the code you have added.
 
-.. code:: bash
+.. code-block:: bash
 
    git commit -a
    git push
@@ -124,7 +124,7 @@ As you make changes to the code, you don't want your feature branch to diverge t
 
 So, every day or two, you should execute these commands to merge in the latest changes from the develop branch on GitHub:
 
-.. code ::
+.. code-block:: bash
 
    git checkout develop
    git pull
@@ -142,7 +142,7 @@ For tips on properly issuing a GitHub pull request, :doc:`see the next item in o
 
 After your feature branch is triumphantly merged into develop, the remote branch (on GitHub) will be deleted.  But, it will still exist on your computer.  To bring your computer up to date, you can issue the following commands:
 
-.. code:: bash
+.. code-block:: bash
 
   git remote update -p
   git checkout develop

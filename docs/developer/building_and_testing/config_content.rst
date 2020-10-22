@@ -56,7 +56,7 @@ Often the largest section of the configuration file, this describes one or more 
 
 Example:
 
-.. code:: yaml
+.. code-block:: yaml
 
    # Example 1: radiosonde
    obs space:
