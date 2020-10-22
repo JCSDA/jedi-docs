@@ -311,14 +311,14 @@ Example 1 (thinning by the horizontal position only):
 
 .. code:: yaml
 
-    - filter: Gaussian_Thinning
+    - filter: Gaussian Thinning
       horizontal_mesh:   1111.949266 #km = 10 deg at equator
 
 Example 2 (thinning observations from multiple categories and with non-equal priorities by their horizontal position, pressure and time):
 
 .. code:: yaml
 
-    - filter: Gaussian_Thinning
+    - filter: Gaussian Thinning
       distance_norm:     maximum
       horizontal_mesh:   5000
       vertical_mesh:    10000
@@ -330,8 +330,8 @@ Example 2 (thinning observations from multiple categories and with non-equal pri
       priority_variable:
         name: priority@MetaData
 
-TemporalThinning Filter
------------------------
+Temporal Thinning Filter
+------------------------
 
 This filter thins observations so that the retained ones are sufficiently separated in time. It supports
 the following YAML parameters:
@@ -364,7 +364,7 @@ starting from the observation closest to seed time):
 
 .. code:: yaml
 
-    - filter: TemporalThinning
+    - filter: Temporal Thinning
       min_spacing: PT01H30M
       seed_time: 2018-04-15T00:00:00Z
       category_variable:
@@ -376,7 +376,7 @@ taken up to 20 min after the first qualifying observation if its quality score i
 
 .. code:: yaml
 
-    - filter: TemporalThinning
+    - filter: Temporal Thinning
       min_spacing: PT01H
       tolerance: PT20M
       category_variable:
@@ -550,8 +550,8 @@ Example:
      rejection_threshold: 0.5
      station_id_variable: station_id@MetaData
 
-ProfileConsistencyChecks
-------------------------
+Profile Consistency Checks
+--------------------------
 
 .. _profconcheck_overview:
 
@@ -973,51 +973,38 @@ This example runs the basic checks on the input data:
 
 .. code:: yaml
 
-    - filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["Basic"]
-      flagBasicChecksFail: true
-      nErrorsFail: 8
-      BChecks_minValidP: 0.0
-      BChecks_maxValidP: 110.0e3
 
 This example runs the basic and SamePDiffT checks on the input data, using separate instances of the filter to do so:
 
 .. code:: yaml
 
-    - filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["Basic"]
-      flagBasicChecksFail: true
-      nErrorsFail: 8
-      BChecks_minValidP: 0.0
-      BChecks_maxValidP: 110.0e3
-    - filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["SamePDiffT"]
-      nErrorsFail: 8
-      SPDTCheck_TThresh: 1.0
+      SPDTCheck_TThresh: 30.0 # This is an example modification of a check parameter
 
 This example runs the basic and SamePDiffT checks on the input data, using the same filter instance:
 
 .. code:: yaml
 
-    - filter: ProfileConsistencyChecks
+    - filter: Profile Consistency Checks
       filter variables:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["Basic", "SamePDiffT"]
-      flagBasicChecksFail: true
-      nErrorsFail: 8
-      BChecks_minValidP: 0.0
-      BChecks_maxValidP: 110.0e3
-      SPDTCheck_TThresh: 1.0
+      SPDTCheck_TThresh: 30.0 # This is an example modification of a check parameter
 
 Met Office Buddy Check Filter
 -----------------------------
@@ -1234,18 +1221,68 @@ In addition to, e.g., :code:`@GeoVaLs`, :code:`@MetaData`, :code:`@ObsValue`, :c
 
 .. _where-statement:
 
-Where Statement and processWhere Function
-------------------------------------------
+Where Statement
+---------------
 
-The :code:`where` statement can be included in the yaml file in conjunction with observation filters as the condition for filtering. The :code:`processWhere` function takes the condition in the :code:`where` statement from yaml and creates a mask that restricts where the filter will apply. The default is true, so if there is no :code:`where`, the filter applies everywhere. Everywhere the condition is false, the filter will not be applied.
+By default, filters are applied to all observations of the variables specified in the :code:`filter variables` list (or if this list is not present, all simulated variables). The :code:`where` keyword can be used to apply a filter only to observations meeting certain conditions.
 
-The following conditions are accepted by the :code:`where` statement:
+Consider the following set of observations:
 
-- :code:`minvalue` and/or :code:`maxvalue` : filter applied if value is within the valid range, supporting float and ISO 8601 format datetimes.  Note that datetimes can also have one or more components set to zero so as to signify ignoring these components.  See example below on where this can be useful.
-- :code:`is_defined`: filter applied if data has a valid value (not missing)
-- :code:`is_not_defined`: filter applied if data is missing
-- :code:`is_in`: filter applied if data is in the given whitelist, supporting integer and string types.
-- :code:`is_not_in`: filter applied if data is not in the given blacklist, supporting integer and string types.
+.. list-table:: 
+   :header-rows: 1
+
+   * - Obs. index 
+     - latitude 
+     - longitude 
+     - air_temperature (K)
+   * - 0
+     - 0
+     - 50
+     - 300
+   * - 1
+     - 20
+     - 60
+     - 200
+   * - 2
+     - 40
+     - 70
+     - 290
+   * - 3
+     - 60
+     - 80
+     - 260
+   * - 4
+     - 80
+     - 90
+     - 220
+
+and suppose that we want to reject air temperature observations below 230 K taken in the tropical zone (between 30°S and 30°N). We could do this using the Bounds Check filter with a :code:`where` statement:
+
+.. code:: yaml
+
+  - filter: Bounds Check
+    filter variables: air_temperature
+    minvalue: 230
+    action: reject # this is the default action, specified explicitly for clarity
+    where:
+    - variable:
+        name: latitude@MetaData
+      minvalue: -30
+      maxvalue:  30
+
+This would cause the filter to be applied only to air temperature observations `selected` by the :code:`where` statement, i.e. meeting the specified condition :code:`-30 <= latitude@MetaData <= 30`. Please note this does not mean all these observations would be rejected; rather, it means the Bounds Check filter would inspect only these observations and apply its usual criteria (in this case, "is the air temperature below the minimum allowed value of 230 K?") to decide whether any of them should be rejected. In our example, only observation 1 would be rejected, since this is the only observation (a) taken in the range of latitudes selected by the :code:`where` statement and (b) with a value lying below the minimum value passed to the Bounds Check filter.
+
+The list passed to the :code:`where` keyword can contain more than one item, each representing a separate condition imposed on a particular variable. The filter is applied only to observations meeting all of these conditions. The following kinds of conditions are accepted:
+
+- :code:`minvalue` and/or :code:`maxvalue`: filter applied only to observations for which the condition variable lies in the specified range. The upper and lower bounds can be floating-point numbers or datetimes in the ISO 8601 format. If any date/time components are set to zero, they are disregarded. See :ref:`Example 2 <where-example-2>` below on where this can be useful.
+- :code:`is_defined`: filter applied only to observations for which the condition variable has a valid value (not a missing data indicator).
+- :code:`is_not_defined`: filter applied only to observations for which the condition variable is set to a missing data indicator.
+- :code:`is_in`: filter applied only to observations for which the condition variable is set to a value belonging to the given whitelist.
+- :code:`is_not_in`: filter applied only to observations for which the condition variable is set to a value not belonging to the given blacklist.
+
+The elements of both whitelists and blacklists can be strings, non-negative integers or ranges of non-negative integers. It is not necessary to put any value after the colon following :code:`is_defined` and :code:`is_not_defined`.
+
+The following examples illustrate the use of these conditions.
 
 Example 1
 ^^^^^^^^^
@@ -1267,7 +1304,14 @@ Example 1
        name: station_id@MetaData
      is_in: 3, 6, 11-120
 
-In the example above, four masks are created for radiosonde observation filtering. The filter will be applied in sequence at observation locations where the sea surface temperature is within the range of [200, 300] kelvin, the latitude is <= than 60 degrees, the height of the observation has a valid value (not missing), and the station id is one of the ids in the whitelist. 
+In this example, the filter will be applied only to observations for which all of the following four criteria are met:
+
+- the sea surface temperature is within the range of [200, 300] K,
+- the latitude is <= than 60°N,
+- the observation location's altitude has a valid value (is not set to a missing data indicator), and 
+- the station id is one of the ids in the whitelist. 
+
+.. _where-example-2:
 
 Example 2
 ^^^^^^^^^
@@ -1282,9 +1326,9 @@ Example 2
       - variable:
           name:  datetime@MetaData
         minvalue: 0000-00-00T09:00:00Z
-        maxvalue: 0000-00-00T18:00:00Z
+        maxvalue: 0000-00-00T17:59:59Z
 
-In the example above, a mask is created for times between 09:00 and 18:00, between 1st January and 25th May of every year.
+In this example, the filter will be applied only to observations taken between 09:00:00 and 17:59:59, between 1st January and 25th May of every year.
 
 Outer Loop Iterations
 ---------------------
