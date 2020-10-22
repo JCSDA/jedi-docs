@@ -13,14 +13,14 @@ Running ctest
 The standard practice after :doc:`building and compiling a JEDI bundle <building_jedi>` is to run ctest with no arguments in order to see if the bundle is operating correctly.
 First you need to run :code:`ulimit -s unlimited` (on a linux machine; you may not be able to do this on Mac OS) to ensure that you don't encounter memory or stack size issues. Then you can test your build with:
 
-.. code:: bash
+.. code-block:: bash
 
    cd <build-directory>
    ctest
 
 This will run all tests in the test suite for that bundle. This can take a while so be patient.  When the tests are complete, ctest will print out a summary, highlighting which tests, if any, failed.  For example:
 
-.. code:: bash
+.. code-block:: bash
 
     98% tests passed, 2 tests failed out of 130
 
@@ -42,7 +42,7 @@ This will run all tests in the test suite for that bundle. This can take a while
 
 If you want to run a single test or a subset of tests, you can do this with the :code:`-R` option, for example:
 
-.. code:: bash
+.. code-block:: bash
 
    ctest -R test_fv3jedi_linearmodel # run a single test
    ctest -R test_qg* # run a subset of tests
@@ -51,13 +51,13 @@ The output from these tests (stdout) will be printed to the screen but, to allow
 
 If you're not happy with the information in LastTest.log and you want to know more, you can ask ctest to be **verbose**
 
-.. code:: bash
+.. code-block:: bash
 
    ctest -V -R test_fv3jedi_linearmodel
 
 ...or even **extra-verbose** (hypercaffeinated mode):
 
-.. code:: bash
+.. code-block:: bash
 
    ctest -VV -R test_fv3jedi_linearmodel
 
@@ -66,7 +66,7 @@ The :code:`-V` and even :code:`-VV` display the output messages on the screen in
 
 Another way to get more information is to set one or both of these environment variables before you run ctest:
 
-.. code:: bash
+.. code-block:: bash
 
    export OOPS_DEBUG=1
    export OOPS_TRACE=1
@@ -81,14 +81,14 @@ You can also display the output messages only for the failed tests by using :cod
 
 **ctest** also has an option to only re-run the tests that failed last time:
 
-.. code:: bash
+.. code-block:: bash
 
    ctest --rerun-failed
 
 
 To see a list of tests for your bundle without running them, enter
 
-.. code:: bash
+.. code-block:: bash
 
    ctest -N
 
@@ -102,7 +102,7 @@ Manual Execution
 
 You can also run the executable test files directly, without going through ctest.  To do this, first find the executable in the build directory. Unit tests are typically found in one of the :code:`test` directories that branch off each repository name.  For example, :code:`test_qg_state` can be found in :code:`<build-directory>/oops/qg/test` and :code:`test_ufo_geovals` can be found in :code:`<build-directory>/ufo/test`.  Then just :code:`cd` to that directory and run the executable from the command line, specifying the appropriate input (configuration) file, e.g.
 
-.. code:: bash
+.. code-block:: bash
 
     test_qg_state testinput/interfaces.yaml
 
@@ -110,7 +110,7 @@ You can determine which executable and which configuration file each test uses b
 
 If you do run the tests without ctest, keep in in mind a few tips.  First, the test name is not always the same as the executable name.  Second, since the the integration and system tests generally focus on JEDI Applications (other than :code:`oops::Test` objects - see :ref:`below <test-apps>`) they usually have a :code:`.x` extension.  Furthermore, these executables are generally located in the :code:`<build-directory>/bin` directory as opposed to the :code:`test` directories.  For example, to run :code:`test_qg_truth` from the :code:`<build-directory>/oops/qg/test` directory, you would enter the following:
 
-.. code:: bash
+.. code-block:: bash
 
     ../../../bin/qg_forecast.x testinput/truth.yaml
 
@@ -157,7 +157,7 @@ Example below shows how **compare.py** can be used with :code:`ecbuild_add_test`
 
 As mentioned above, each JEDI bundle has its own suite of tests and you can list them (without running them) by entering this from the build directory:
 
-.. code:: bash
+.. code-block:: bash
 
    ctest -N
 
@@ -189,7 +189,7 @@ Unit tests are implemented through :code:`oops::Test` objects as described in th
 
 To appreciate how a JEDI Application is actually run, consider the following program, which represents the entire (functional) content of the file :code:`oops/qg/test/executables/TestState.cc`:
 
-.. code:: C++
+.. code-block:: C++
 
    int main(int argc,  char ** argv) {
      oops::Run run(argc, argv);
@@ -224,7 +224,7 @@ First, it is important to realize that the :code:`test::State<Model>` class is n
 
 Second, as an application, a :code:`test::State<Model>` object also has an :code:`execute()` method, which is called by the :code:`execute()` method of the :code:`oops::Run` object as shown here (code excerpt from :code:`oops/src/oops/runs/Run.cc`):
 
-.. code:: C++
+.. code-block:: C++
 
    void Run::execute(const Application & app) {
      int status = 1;
@@ -240,7 +240,7 @@ to initialize and run the suite of unit tests.
 
 The :code:`execute()` method in each :code:`oops::Test` object then proceeds to register the tests with :code:`oops::Test::register_tests()` and run them with a call to eckit's :code:`run_tests()` function (:code:`argc` and :code:`argv` are parsed from the :code:`args` variable above):
 
-.. code:: C++
+.. code-block:: C++
 
     // Run the tests
       Log::trace() << "Registering the unit tests" << std::endl;
@@ -254,7 +254,7 @@ So, the real difference between different :code:`oops::Test` objects is encapsul
 
 In the case of :code:`test::State<MODEL>` (which you may recall from the previous section is a sub-class of :code:`oops::Test`), this method is defined as follows (see :code:`oops/src/test/interface/State.h`):
 
-.. code:: C++
+.. code-block:: C++
 
   void register_tests() const {
     std::vector<eckit::testing::Test>& ts = eckit::testing::specification();
@@ -282,7 +282,7 @@ As demonstrated in the previous section, this particular suite of unit tests inc
 
 Here we will focus on the first, :code:`TestStateConstructors<MODEL>()`.  Both are defined in :code:`oops/src/test/interface/State.h`, where you will find this code segment:
 
-.. code:: C++
+.. code-block:: C++
 
   template <typename MODEL> void testStateConstructors() {
     typedef StateFixture<MODEL>   Test_;
@@ -327,7 +327,7 @@ Though each executable in the **ctest** test suite may run a number of unit test
 
 Files containing summary data for these known solutions can be found in the :code:`test/testoutput` directory of many JEDI repositories.  The :code:`test_qg_state` example that we have been using throughout this document is a unit test suite (:ref:`Type 1 <jedi-tests>`) as opposed to an Application test (:ref:`Type 2 <jedi-tests>`) so it does not have a reference output file.  However, as an Application test, :code:`test_qg_truth` does have such a file.  The name of this reference file is :code:`truth.test` and its contents are as follows:
 
-.. code:: bash
+.. code-block:: bash
 
     Test     : Initial state: 13.1
     Test     : Final state: 15.1417
@@ -338,7 +338,7 @@ This and other reference files are included in the GitHub repositories but the o
 
 So, in our example above, the output of :code:`test_qg_truth` will be written to
 
-.. code:: bash
+.. code-block:: bash
 
       <build-directory>/oops/qg/test/testoutput/truth.test.test.out`
 
