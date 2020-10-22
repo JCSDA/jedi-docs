@@ -68,7 +68,7 @@ The CRTM operator has some required geovals (see varin_default in ufo/crtm/ufo_r
 * :code:`linear obs operator.Absorbers` [optional] : controls which of the selected Absorbers will be acted upon in K-Matrix multiplication
 * :code:`linear obs operator.Clouds` [optional] : controls which of the selected Clouds will be acted upon in K-Matrix multiplication
 
-:code:`obs options` configures the tabulated coeffecient files that are used by CRTM
+:code:`obs options` configures the tabulated coefficient files that are used by CRTM
 
 * :code:`obs options.Sensor_ID` : {sensor}_{platform} prefix of the sensor-specific coefficient files, e.g., amsua_n19
 * :code:`obs options.EndianType` : Endianness of the coefficient files. Either little_endian or big_endian.
@@ -228,7 +228,7 @@ Examples of yaml:
         vertlayer: full
         super_ref_qc: NBAM
         sr_steps: 2
-    obs filters: 
+    obs filters:
     - filter: Domain Check
       filter variables:
       - name: [bending_angle]
@@ -407,9 +407,9 @@ Configuration options:
 2. configurables in "obs space" section:
 
   a. vert_interp_ops: if true, then use log(pressure) for vertical interpolation, if false then use exner function for vertical interpolation.
-  
+
   b. pseudo_ops: if true then calculate data on intermediate "pseudo" levels between model levels, to minimise interpolation artifacts.
-  
+
 3. configurables in "ObsFilters" section:
 
   a. Background Check: not currently well configured.  More detail to follow.
@@ -574,4 +574,3 @@ Examples of yaml:
       obsdatain:
         obsfile: Data/radar_rw_obs_2019052222.nc4
       simulated variables: [radial_velocity]
-

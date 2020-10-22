@@ -31,22 +31,22 @@ In the git flow model, the code is organized into the following branches that ar
    - where most development work happens
    - Branch off of develop
    - Merge back into develop
-   - Temporary: deleted after they are merged
+   - Temporary: each branch is deleted after it is merged
 - :code:`bugfix/*` branches
    - For correcting errors or omissions
    - Branch off of develop (or a feature branch)
    - Merge back into develop (or a feature branch)
-   - Temporary: deleted after they are merged
+   - Temporary: each branch is deleted after it is merged
 - :code:`hotfix/*` branches
    - For correcting errors or omissions
    - Branch off of master
    - Merge back into master and develop
-   - Temporary: deleted after they are merged
+   - Temporary: each branch is deleted after it is merged
 - :code:`release/*` branches
    - For refinement, bug fixes, and documentation leading up to a release
    - Branch off of develop
    - Merge into master and develop
-   - Temporary: deleted after they are merged
+   - Temporary: each branch is deleted after it is merged
 
 One of the most important principles of agile software development is to:
 
