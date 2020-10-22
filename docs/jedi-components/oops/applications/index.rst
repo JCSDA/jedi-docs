@@ -7,3 +7,4 @@ OOPS Applications
 
    applications
    variational
+   localensembleda
