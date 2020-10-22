@@ -35,7 +35,7 @@ Supported modifications to the driver
   driver:
     do posterior observer: true #default value
 
-* Run LocalEnsembleDA in observer mode to compute HX offline. This works hand-in-hand with 'read HX from disk'. One might choose to separate this into two steps because it is possible to use more efficient round-robin distribution if 'run as observer only: true'. 
+* Run LocalEnsembleDA in observer mode to compute HX offline. This works hand-in-hand with :code:`read HX from disk`. One might choose to separate this into two steps because it is possible to use more efficient round-robin distribution if :code:`run as observer only: true`. 
 
 .. code:: yaml
 
@@ -192,5 +192,4 @@ Parameter of RTPS inflation is controlled by :code:`inflation.rtps` configuratio
 NOTE about obs distributions
 -----------------------------
 Currently Local Ensemble DA requires "InefficientDistribution" obs distribution. I.e. each obs and H(x) is replicated on each PE. 
-This is clearlry Inefficient. We have an option to run Local Ensemble DA in the observer only mode with "RoundRobin" to compute H(X). Then one can read ensemble of H(x) from disk using "driver.read HX from disk"=true and "driver.do posterior observer"=false that will remove all duplicate H(X) operations from the solver.  
-
+This is clearly Inefficient. We have an option to run Local Ensemble DA in the observer only mode with :code:`RoundRobin` to compute H(X). Then one can read ensemble of H(x) from disk using :code:`driver.read HX from disk == true` and :code:`driver.do posterior observer == false` that will remove all duplicate H(X) operations from the solver.  
