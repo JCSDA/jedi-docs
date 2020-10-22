@@ -7,7 +7,7 @@ Ensemble Applications in OOPS
 Description
 -----------
 
-There are three ensemble applications available in OOPS: Ensemble Forecast, Ensemble HofX and Ensemble Data Assimilation. Their purpose is to allow users to run forecast and data assimilation applications on all the members of an ensemble at once.
+There is one ensemble application available in OOPS that allows to run three types of experiments: Ensemble Forecast, Ensemble HofX and Ensemble Data Assimilation. Their purpose is to allow users to run forecast and data assimilation applications on all the members of an ensemble at once.
 
 MPI partition
 -------------
