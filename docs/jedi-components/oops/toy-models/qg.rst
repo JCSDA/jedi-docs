@@ -6,7 +6,7 @@ Quasi-geostrophic model
 Introduction
 ------------
 
-This section describes the multi-layer quasi-gestrophic model, intended for use as a toy system with which to conduct idealised studies of data assimilation methods. In developing the model, the emphasis has been placed on speed and convenience rather than accuracy and conservation.
+This section describes the multi-layer quasi-geostrophic model, intended for use as a toy system with which to conduct idealized studies of data assimilation methods. In developing the model, the emphasis has been placed on speed and convenience rather than accuracy and conservation.
 
 The continuous equations
 ------------------------
@@ -74,15 +74,15 @@ which can be written:
 
 .. math::
   \nabla^2 \boldsymbol{\psi}' + \mathbf{D} \boldsymbol{\psi}' = \mathbf{r}
-  :label: eq:toy-model_qg_2d_helmholz_eqn_vec
+  :label: eq:toy-model_qg_2d_helmholtz_eqn_vec
 
-where the new variable is :math:`\boldsymbol{\psi}' = \mathbf{P}^{-1} \boldsymbol{\psi}` and the right-hand side is given by :math:`\mathbf{r} = \mathbf{P}^{-1} (\mathbf{q} - (\beta y \mathbf{1} + \mathbf{R}))`. Since :math:`\mathbf{D}` is diagonal, equation :eq:`eq:toy-model_qg_2d_helmholz_eqn_vec` can be written for each layer:
+where the new variable is :math:`\boldsymbol{\psi}' = \mathbf{P}^{-1} \boldsymbol{\psi}` and the right-hand side is given by :math:`\mathbf{r} = \mathbf{P}^{-1} (\mathbf{q} - (\beta y \mathbf{1} + \mathbf{R}))`. Since :math:`\mathbf{D}` is diagonal, equation :eq:`eq:toy-model_qg_2d_helmholtz_eqn_vec` can be written for each layer:
 
 .. math::
   \nabla^2 \psi'_i + D_{i,i} \psi'_i = r_i
-  :label: eq:toy-model_qg_2d_helmholz_eqn
+  :label: eq:toy-model_qg_2d_helmholtz_eqn
 
-This is a two-dimensional Helmholz equation, which can be solved for :math:`\psi'_i`. Once :math:`\psi'_i` is known for all layers, it is easy to get back to :math:`\boldsymbol{\psi} = \mathbf{P} \boldsymbol{\psi}'`.
+This is a two-dimensional Helmholtz equation, which can be solved for :math:`\psi'_i`. Once :math:`\psi'_i` is known for all layers, it is easy to get back to :math:`\boldsymbol{\psi} = \mathbf{P} \boldsymbol{\psi}'`.
 
 
 Solution algorithm
@@ -100,9 +100,9 @@ The time-stepping algorithm is designed for speed rather than accuracy, and is a
 
   * If the streamfunction is the prognostic variable, potential vorticity is computed using equation :eq:`eq:toy-model_qg_q`. A standard 5-point finite-difference approximation to the Laplacian operator is used.
 
-  * If the potential vorticity is the prognostic variable, streamfunction is computed using the inversion procedure described in the previous section. Solution of the Helmholz equation is achieved using an FFT-based method. Applying a Fourier transform in the east-west direction to equation :eq:`eq:toy-model_qg_2d_helmholz_eqn` gives a set of independent equations for each wavenumber. In the case of the five-point discrete Laplacian, these are tri-diagonal matrix equations, which can be solved using the standard (Thomas) algorithm.
+  * If the potential vorticity is the prognostic variable, streamfunction is computed using the inversion procedure described in the previous section. Solution of the helmholtz equation is achieved using an FFT-based method. Applying a Fourier transform in the east-west direction to equation :eq:`eq:toy-model_qg_2d_helmholtz_eqn` gives a set of independent equations for each wavenumber. In the case of the five-point discrete Laplacian, these are tri-diagonal matrix equations, which can be solved using the standard (Thomas) algorithm.
 
-  The velocity at each gridpoint is then calculated using centred, finite-difference approximations to:
+  city at each gridpoint is then calculated using centered, finite-difference approximations to:
 
   .. math::
      u = -\frac{\partial \psi}{\partial y} \\
@@ -129,7 +129,7 @@ The time-stepping algorithm is designed for speed rather than accuracy, and is a
 
 3. **Finalization**
 
-  If the streamfunction is the prognostic variable, it is retrivied from :math:`q^{t+\Delta t}` using the potential vorticity inversion procedure described above.
+  If the streamfunction is the prognostic variable, it is retrieved from :math:`q^{t+\Delta t}` using the potential vorticity inversion procedure described above.
 
 Fake projection
 ---------------
@@ -178,4 +178,3 @@ References
 * Fandry, C.B. and L.M. Leslie, 1984: A Two-Layer Quasi-Geostrophic Model of Summer Trough Formation in the Australian Subtropical Easterlies.  J.A.S., 41, pp807-817.
 
 * Pedlosky, J., 1979: Geophysical Fluid Dynamics. Springer-Verlag, pp386-393.
-
