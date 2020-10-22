@@ -67,7 +67,7 @@ The table below describes the role of each entry in the above Yaml
 +--------------------------+-------------------------------------------------------+
 | :code:`npy`              | The number of grid vertices in north-south direction  |
 +--------------------------+-------------------------------------------------------+
-| :code:`npz`              | The number of vertical levels                         |
+| :code:`npz`              | The number of vertical layers                         |
 +--------------------------+-------------------------------------------------------+
 | :code:`niles`            | The number of faces of the cube (6 for global domain) |
 +--------------------------+-------------------------------------------------------+
@@ -118,7 +118,7 @@ first call to the initialize steps, which occurs in the Geometry class rather th
 
 The :code:`akbk` variable provides a path to a file containing the coefficients which define the
 hybrid sigma-pressure vertical coordinate used in FV3. Files are provided with the repository
-containing :code:`ak` and :code:`bk` for some common choices of vertical coordinate for GEOS and
+containing :code:`ak` and :code:`bk` for some common choices of vertical resolution for GEOS and
 GFS.
 
 The optional argument :code:`do_write_geom` tells the code to write the longitude and latitude
@@ -209,9 +209,9 @@ and written to. This might take different values for different models or differe
 for special treatment where necessary. A special interpolation scheme is used for integer fields for
 example.
 
-:code:`Levels` is a string providing the number of levels for the field. Values can be :code:`full`
-[default], meaning the field is stored at the mid point of each level, or :code:`half` meaning it is
-stored at the level edges or it can be an integer representing the dimension in the vertical.
+:code:`Levels` is a string providing the number of layers for the field. Values can be :code:`full`
+[default], meaning the field is stored at the mid point of each layer, or :code:`half` meaning it is
+stored at the model levels. Alternatively it can be an integer representing the vertical dimension.
 Surface variables would be "1".
 
 :code:`LongName` is a string providing the long name for the variable, typically using the standard
@@ -379,8 +379,8 @@ State and Increment objects, only the Fields base class.
 
 There are two IO classes provided, named :code:`io_geos` and :code:`io_gfs`. The former is for
 interacting with cube sphere history files and restarts as output by the GEOS model. The latter is
-for interacting with restarts for the GFS model. The class to use is controlled by the configuration
-as follows:
+for interacting with restarts for the GFS/UFS model. The class to use is controlled by the
+configuration as follows:
 
 .. code:: yaml
 
@@ -435,7 +435,7 @@ existing file is completely overwritten. By setting :code:`clobber:false` this c
 overridden so that and fields in the file that FV3-JEDI is not attempting to write remain in tact.
 
 The FV3 model does not use surface pressure as a prognostic variable, instead using :code:`delp` the
-'thickness' of the model levels, measured in Pascals. Since surface pressure is commonly used in
+'thickness' of the model layers, measured in Pascals. Since surface pressure is commonly used in
 data assimilation applications a convenience has been added to the IO routines where surface
 pressure can be a field even when only pressure thickness is in the file. In some cases surface
 pressure might actually be included in the file and pressure thickness not, in these cases the flag
@@ -628,7 +628,8 @@ LinearModel
 .. _linearnonlinearvarchanges:
 
 FV3-JEDI ships with a linearized version of the FV3 dynamical core named FV3-JEDI-LINEARMODEL. Note
-that the linear model comes in a separate repository though it builds only as part of FV3-JEDI.
+that the linear model comes in a separate repository though it builds only as part of FV3-JEDI. The
+linear model is a global model only and does not currently support regional and nested domains.
 
 An example of the configuration is shown below.
 

@@ -36,7 +36,7 @@ part of :code:`dynamics.yaml` they are included via :code:`ufo.yaml`.
 There are a number of fixed 'fv3files' needed by FV3-JEDI, most of which are used by the
 :ref:`geometry` class and some by the :ref:`model` and :ref:`linearmodel`.
 
-The file :code:`akbkx.nc4`, where :code:`x` is the number of vertical levels, contains the
+The file :code:`akbkx.nc4`, where :code:`x` is the number of vertical layers, contains the
 coefficients for creating the vertical coordinate. The directory also includes
 :code:`generate_akbk.py`, which can be used to generate a :code:`akbk.nc4` file that can be read by
 FV3-JEDI geometry.
@@ -56,7 +56,7 @@ Files like :code:`inputpert_4dvar.nml` are used to initialize the :ref:`linearmo
 
 **femps**
 
-FV3-JEDI requires with the Finite Element Mesh Poisson Solver (FEMPS), which is used to convert wind
+FV3-JEDI requires the Finite Element Mesh Poisson Solver (FEMPS), which is used to convert wind
 fields to stream function and velocity potential. This solver involves a multigrid method and for
 simpliciity the grid heirarchy is initialized by reading longitude and latitude from files. Some
 examples of these files are provided with the repository and can be generated for other resolutions
@@ -72,10 +72,10 @@ Dynamic input files
 When running data assimilation applications it is necessary to provide backgrounds or restarts from
 which to initialize the system. The files that are required of course depends on the model
 but some examples are included with the repository in Data/inputs for global NWP with GEOS and GFS,
-global aerosol with GEOS and GFS, regional NWP with GFS and regional aerosol with GFS. The kinds of
-files that are needed also depends on the application being executed. Data assimilation with 4DEnVar
-requires backgrounds for every sub-window requested while 4DVar only requires one background at the
-beginning of the window and 3DVar only requires one background at the middle of the window.
+global aerosol with GEOS and GFS, regional NWP with GFS and regional chemistry with GFS. The kinds
+of files that are needed also depends on the application being executed. Data assimilation with
+4DEnVar requires backgrounds for every sub-window requested while 4DVar only requires one background
+at the beginning of the window and 3DVar only requires one background at the middle of the window.
 
 **Ensemble**
 

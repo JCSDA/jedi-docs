@@ -19,7 +19,7 @@ Applications currently possible with FV3-JEDI
 ---------------------------------------------
 - Global NWP with GFS
 - Global NWP with GEOS
-- Aerosol data assimilation with GFS and GEOS (species or extinction)
+- Aerosol data assimilation with GFS and GEOS
 - FV3 Limited Area Model (LAM) for NWP
 - FV3 Limited Area Model for Community Multiscale Air Quality (LAM-CMAQ)
 - NOAA land surface model

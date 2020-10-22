@@ -45,7 +45,7 @@ to make forecasts in-core with FV3-JEDI:
 
 Building with GFDL_atmos_cubed_sphere is the default mode and it provides everything necessary to
 run any data assimilation systems that do not involve executing a forecast of the full model with
-pysics in-core with FV3-JEDI. GFDL_atmos_cubed_sphere contains only the FV3 dynamical core and none
+physics in-core with FV3-JEDI. GFDL_atmos_cubed_sphere contains only the FV3 dynamical core and none
 of the model physics or model infrastructure.
 
 Whether to build with the standalone dynamical core, UFS or GEOS is controlled with the build option
