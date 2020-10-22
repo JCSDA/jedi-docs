@@ -64,7 +64,7 @@ Life Cycle of a Feature Branch
 Under the git flow paradigm, and using the git flow application, the typical life cycle of a feature branch is as described below. :ref:`Other git-flow branches are handled in a similar way <gitflow-branches>`.  If you do not wish to use the git flow application,
 `you can achieve the same steps just with standard git <http://nvie.com/posts/a-successful-git-branching-model>`_.  For example, :code:`git flow feature start newstuff` is equivalent to:
 
-.. code-block::
+.. code-block:: bash
 
    git checkout develop
    git branch feature/newstuff
