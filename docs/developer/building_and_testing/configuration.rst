@@ -316,6 +316,6 @@ We could add the following code segment to the subroutine above to illustrate a 
 
 Here we see that :code:`eckit::Configuration::has()` returns a Boolean :code:`true` or :code:`false` and that can be used to check if a variable exists in the config file. In our example, the variable doesn't exist and the output is:
 
-.. code-block::
+.. code-block:: bash
 
     WARNING: The models doesn't use levels
