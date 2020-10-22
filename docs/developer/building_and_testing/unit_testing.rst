@@ -73,11 +73,18 @@ Another way to get more information is to set one or both of these environment v
 
 The first enables debug messages within the JEDI code that would not otherwise be written.  The second produces messages that follow the progress of the code as it executes.  Both tools are provided by :doc:`eckit <../developer_tools/cmake>`.   Though higher values of these variables could in principle be set, few JEDI routines exploit this functionality.  So, setting these variables to values greater than 1 will make little difference.  Both can be disabled by setting them to zero.
 
+You can also display the output messages only for the failed tests by using :code:`--output-on-failure`
+
+.. code:: bash
+
+   ctest --output-on-failure
+
 **ctest** also has an option to only re-run the tests that failed last time:
 
 .. code:: bash
 
    ctest --rerun-failed
+
 
 To see a list of tests for your bundle without running them, enter
 
@@ -126,11 +133,27 @@ Unit testing generally involves evaluating one or more Boolean expressions durin
 
 By contrast, **Application tests** check the operation of some application as a whole.  Some may make use of eckit Boolean tests but most focus on the output that these applications generate.  For example, one may wish to run a 4-day forecast with a particular model and initial condition and then check to see that the result of the forecast matches a well-established solution.  This is currently done by writing the output of the test to a file (typically a text file) and comparing it to an analogous output file from a previous execution of the test.  Such reference files are included in many JEDI repositories and can generally be found in a :code:`test/testoutput` subdirectory.
 
-Comparisons between output files are currently done by means of the **compare.sh** bash script which can be found in the :code:`test` subdirectory in many JEDI repositories.  This script uses standard unix parsing commands such as :code:`grep` and :code:`diff` to assess whether the two solutions match.  For further details see the section on :ref:`Integration and System testing <app-testing>` below.
+Comparisons between output files are currently done by  **compare.py** (or in some repository **compare.sh**). **compare.py** takes run file (test output), reference file (established solution), float tolerance, and integer difference as input and can be used as:
 
-.. warning::
+.. code:: bash
 
-  **The compare.sh testing procedure is provisional and is likely to be modified in the future.**
+  compare.py run_file ref_file float_tolerance integer_difference
+
+
+Tolerance values are used to allow for small differences between test output and the reference values. Float tolerance is the maximum relative difference between floating numbers in the run file and the reference file. Integer difference is the maxmimum difference between integer numbers in the run file and the reference file.
+Example below shows how **compare.py** can be used with :code:`ecbuild_add_test` to add a test for comparing test output with a reference file. You can find more examples in :code:`test/CMakeLists.txt` in different JEDI repositories
+
+.. code:: bash
+
+  ecbuild_add_test( TARGET       test_fv3jedi_forecast_fv3-gfs_compare
+                    TYPE         SCRIPT
+                    COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                    ARGS         testoutput/forecast_fv3-gfs.run testoutput/forecast_fv3-gfs.ref 1.0e-3 0
+                    TEST_DEPENDS test_fv3jedi_forecast_fv3-gfs )
+
+
+**compare.sh** uses standard unix parsing commands such as :code:`grep` and :code:`diff` to assess whether the two solutions match.  For further details see the section on :ref:`Integration and System testing <app-testing>` below.
+
 
 As mentioned above, each JEDI bundle has its own suite of tests and you can list them (without running them) by entering this from the build directory:
 
@@ -144,7 +167,7 @@ With few exceptions, all JEDI repositories contain a :code:`test` directory that
 
 Within each :code:`test` directory you will find a file called :code:`CMakeLists.txt`.  This is where each test is added, one by one, to the suite of tests that is executed by **ctest**.  As described in the `CMake documentation <https://cmake.org/documentation/>`_, this is ultimately achieved by repeated calls to the CMake :code:`add_test()` command.
 
-However, the :doc:`ecbuild package <../developer_tools/cmake>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`. Application tests are added by specifying :code:`TYPE SCRIPT` and :code:`COMMAND "compare.sh"` to :code:`ecbuild_add_test()`. For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
+However, the :doc:`ecbuild package <../developer_tools/cmake>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`. Application tests are added by specifying :code:`TYPE SCRIPT` and :code:`COMMAND "compare.py"` to :code:`ecbuild_add_test()`. For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
 
 Since it relies on the net result of an application, each Application test is typically associated with a single **ctest** executable.  However, applications of type :code:`oops::Test` (see :ref:`next section <test-apps>`) will typically execute multiple unit tests for each executable, or in other words each item in the ctest suite.  So, in this sense, the suite of unit tests is nested within each of the individual tests defined by **ctest**.  And, it is this nested suite of unit tests. (see :ref:`below <init-test>`).
 
@@ -325,7 +348,7 @@ When the test is executed, the :code:`compare.sh` script in the :code:`test` dir
 
 .. warning::
 
-   The **compare.sh** script may have problems if you run with multiple processors.
+   The **compare.py** script may have problems if you run with multiple processors.
 
 .. _test-framework:
 
