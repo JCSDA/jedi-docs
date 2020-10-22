@@ -21,7 +21,7 @@ If you are working from within the JEDI :doc:`Charliecloud <../jedi_environment/
 
 If you have a Mac, you can install the git-lfs application outside the container using :doc:`Homebrew <homebrew>`:
 
-.. code:: bash
+.. code-block:: bash
 
    brew install git-lfs
 
@@ -55,26 +55,26 @@ Once Git LFS is installed, you can manage a LFS-enabled repo as you would any ot
 
 To see if Git LFS is enabled for a given repository and, if so, which files it tracks, go to the repository and enter
 
-.. code:: bash
+.. code-block:: bash
 
    git lfs track
 
 This will show you the tracked patterns.  To see the actual files that are currently being tracked (i.e. stored on the LFS store instead of GitHub proper), enter
 
-.. code:: bash
+.. code-block:: bash
 
    git lfs ls-files
 
 
 For a complete list of git-lfs commands, enter
 
-.. code:: bash
+.. code-block:: bash
 
    git lfs help
 
 Or, to get more detailed information on any particular command, enter
 
-.. code:: bash
+.. code-block:: bash
 
    git lfs help <command>
 
@@ -89,7 +89,7 @@ Adding large files to a JEDI repository
 
 If you'd like to add one or more large files to an existing JEDI repository, it's likely that that repository is already set up to use Git LFS.  To see if this is the case, then go to the repository in question and enter
 
-.. code:: bash
+.. code-block:: bash
 
    git lfs track
 
@@ -97,7 +97,7 @@ If this command does not return anything then Git LFS is not yet implemented for
 
 More likely, the above command *will* return a list of the files in this repository that are currently being tracked by Git LFS.  For example:
 
-.. code:: bash
+.. code-block:: bash
 
    Listing tracked patterns
        test/testinput/*.nc (.gitattributes)
@@ -109,7 +109,7 @@ If the file or files that you wish to add to the repository are already covered 
 
 If the current LFS tracked patterns do not match the new or modified files you wish to add, then you need to define new patterns that do match.  You do this with the :code:`git lfs track` command, for example:
 
-.. code:: bash
+.. code-block:: bash
 
    git lfs track "*.nc"
    git lfs track "Documentation/*.ps"
@@ -142,7 +142,7 @@ Most JEDI users and developers can safely skip this section.  By the time you re
 
 As described :ref:`above <gitlfs-addfiles>`, to see if the repository is already set up to use Git LFS, go to the repository and enter
 
-.. code:: bash
+.. code-block:: bash
 
    git lfs track
 
@@ -150,7 +150,7 @@ If this generates a listing of tracked patterns then you can skip this section; 
 
 If it does not, then you can activate Git LFS by **going to the top directory of that repository** and entering
 
-.. code:: bash
+.. code-block:: bash
 
    git lfs install
 
@@ -158,14 +158,14 @@ This will activate git-lfs for that repository.
 
 Now you have to tell git which files you want to store on the remote LFS Store.  You do this with the git-lfs :code:`track` command as described :ref:`above <gitlfs-addfiles>`, for example:
 
-.. code:: bash
+.. code-block:: bash
 
    git lfs track "*.nc"
    git lfs track "test/testinput/*.nc4"
 
 Entering one or more of these commands will create (or append) a :code:`.gitattributes` file in the top level of your repository where your specifications will be stored.  So, in order to save your LFS specifications for posterity, you should tell git to track this file:
 
-.. code:: bash
+.. code-block:: bash
 
    git add .gitattributes
 

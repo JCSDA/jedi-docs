@@ -24,7 +24,7 @@ Installing git flow
 This only needs to be done once on each machine.
 Following the instructions on the cheat sheet for the Mac:
 
-.. code:: bash
+.. code-block:: bash
 
   brew install git-flow-avh
 
@@ -33,7 +33,7 @@ Initializing your local repository
 
 These steps only need to be done once when you start a local repository.
 
-.. code:: bash
+.. code-block:: bash
 
   git clone <path_to_remote_repository>        # create local repository
 
@@ -58,24 +58,24 @@ Feature branches are intended for exactly that - new features or enhancements of
 
 The difference between bugfix and hotfix has to do with where they fit into the :ref:`git flow workflow <gitflow-top>`.  These branches are created and finalized :ref:`just like feature branches <gitflow-lifecycle>`:
 
-.. code:: bash
+.. code-block:: bash
 
    git flow bugfix start wrongoutput # branches off of develop
 
-.. code:: bash
+.. code-block:: bash
 
    git flow hotfix start wrongoutput # branches off of master
 
 The default base for a bugfix branch is develop but you can also fix a bug in a feature branch as follows.
 
-.. code:: bash
+.. code-block:: bash
 
    git flow bugfix start wrongoutput feature/myfeature # branches off of myfeature
 
 
 Bugfix and hotfix branches can be published and finalized :ref:`as described elsewhere for feature branches <gitflow-lifecycle>`, for example:
 
-.. code:: bash
+.. code-block:: bash
 
    git flow bugfix publish wrongoutput
 
@@ -83,12 +83,12 @@ Once your branch is on GitHub, you can issue a pull request to merge it in to th
 
 Once it is successfully integrated into the desired branch, you may wish to delete your local branch manually using the standard git command:
 
-.. code:: bash
+.. code-block:: bash
 
    git branch -d bugfix/wrongoutput
 
 And/or, you can run this command periodically which will remove (:code:`-p` is for *prune*) any of your local branches that no longer exist on GitHub:
 
-.. code:: bash
+.. code-block:: bash
 
    git remote update -p
