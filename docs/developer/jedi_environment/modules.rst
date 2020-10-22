@@ -9,7 +9,7 @@ If you are running JEDI on an HPC system, :doc:`Charliecloud <charliecloud>` is 
 
 Environment modules are implemented on most HPC systems and are an easy and effective way to manage software libraries.  Most implementations share similar commands, such as:
 
-.. code :: bash
+.. code-block:: bash
 
    module list # list modules you currently have loaded
    module spider <string> # list all modules that contain <string>
@@ -33,13 +33,13 @@ Module Usage
 
 As a first step, it is a good idea to remove pre-existing modules that might conflict with the software libraries contained in the JEDI modules.  Experienced users may wish to do this selectively to avoid disabling commonly used packages that are unrelated to JEDI.  However, a quick and robust way to ensure that there are no conflicts is to unload all modules with
 
-.. code :: bash
+.. code-block:: bash
 
    module purge
 
 The next step is then to access the JEDI modules with:
 
-.. code :: bash
+.. code-block:: bash
 
    module use -a <module-path>
 
@@ -47,32 +47,32 @@ The :code:`<module-path>` where JEDI modules are installed is system-specific as
 
 All implementations will include a default jedi module that you can load with:
 
-.. code :: bash
+.. code-block:: bash
 
    module load jedi
 
 This should be sufficient for most users.  But, some users and developers may wish to use different libraries.  For example, the default module on many systems uses the Intel compiler suite but you can switch to the GNU compiler suite by entering something like this:
 
-.. code :: bash
+.. code-block:: bash
 
    module switch jedi jedi/gnu
 
 This is equivalent to entering
 
-.. code :: bash
+.. code-block:: bash
 
    module unload jedi
    module load jedi/gnu
 
 Of course, this example will only work if a module named :code:`jedi/gnu` exists.  There may be name variations across platforms depending on what software has been installed.  To see what options are available for JEDI, enter
 
-.. code :: bash
+.. code-block:: bash
 
    module spider jedi
 
 This will include alternative versions of the main jedi module (indicated with a slash as in :code:`jedi/gnu` above) and it may also include supplementary modules for specific bundles.    These are usually indicated with a hyphen.  So, in summary, the full procedure for initializing the environment for some arbitrary bundle :code:`<A>` might look like this:
 
-.. code :: bash
+.. code-block:: bash
 
    module purge
    module use -a <module-path>
@@ -81,7 +81,7 @@ This will include alternative versions of the main jedi module (indicated with a
 
 The jedi module is really multiple nested modules.   To list the modules you currently have loaded, enter
 
-.. code :: bash
+.. code-block:: bash
 
    module list
 
@@ -92,7 +92,7 @@ General Tips for HPC Systems
 
 Many HPC systems do not allow you to run MPI jobs from the login nodes.  So, after building JEDI, you'll have to run the tests either in batch mode through a job submission program such as :code:`slurm` via :code:`sbatch` directives, or by accessing a batch compute node interactively through a program such as :code:`salloc`.  Often these batch nodes do not have access to the internet; after you build JEDI, you may need to run the following command from a login node:
 
-.. code :: bash
+.. code-block:: bash
 
     ctest -R get_
 
@@ -104,26 +104,26 @@ Hera
 
 Hera is an HPC system located in NOAA's NESCC facility in Fairmont, WV.  On Hera, users can access the installed jedi modules by first entering
 
-.. code :: bash
+.. code-block:: bash
 
   module use -a /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi/modules/
 
 Currently the intel 18 module is preferred:
 
-.. code :: bash
+.. code-block:: bash
 
   module load jedi-stack/intel-impi-18.0.5
 
 Also, it is recommended that you specify :code:`srun` as your mpi process manager when building, like so:
 
-.. code:: bash
+.. code-block:: bash
 
    ecbuild -DMPIEXEC_EXECUTABLE=`which srun` -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
 
 To run tests with slurm and :code:`srun`, you also need to have the following environment variables defined:
 
-.. code:: bash
+.. code-block:: bash
 
    export SLURM_ACCOUNT=<account you can run slurm jobs under>
    export SALLOC_ACCOUNT=$SLURM_ACCOUNT
@@ -137,7 +137,7 @@ Orion is an HPC system located at Mississippi State University for the purpose o
 
 A few steps are necessary to access the installed jedi modules.  The following bash shell commands are necessary to access the installed jedi modules (substitute equivalent csh shell commands as appropriate):
 
-.. code :: bash
+.. code-block:: bash
 
    export JEDI_OPT=/work/noaa/da/grubin/opt/modules
    module use $JEDI_OPT/modulefiles/core
@@ -146,14 +146,14 @@ Currently there are two sets of compiler / MPI module suites available to load (
 
 Intel compiler suite v20.0.166 and associated Intel MPI:
 
-.. code :: bash
+.. code-block:: bash
 
    module load jedi/intel-impi # Intel compiler suite v20.0.166 with Intel MPI
 
 
 and GNU compilers v8.3.0 and OpenMPI v4.0.2
 
-.. code :: bash
+.. code-block:: bash
 
    module load jedi/gnu-openmpi # GNU compiler suite v8.3.0 with OpenMPI v4.0.2
 
@@ -162,13 +162,13 @@ Orion uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel m
 
 First, clone the :code:`jedi-cmake` repository:
 
-.. code:: bash
+.. code-block:: bash
 
    git clone git@github.com:jcsda/jedi-cmake.git
 
 Then pass the following toolchain to :code:`ecbuild`, and use multiple threads to speed up the compilation:
 
-.. code:: bash
+.. code-block:: bash
 
     git clone https://github.com/jcsda/<jedi-bundle>
     mkdir -p jedi/build; cd jedi/build
@@ -178,7 +178,7 @@ Then pass the following toolchain to :code:`ecbuild`, and use multiple threads t
 
 Alternatively, you can specify the MPI executable directly on the command line:
 
-.. code:: bash
+.. code-block:: bash
 
    ecbuild -DMPIEXEC_EXECUTABLE=/opt/slurm/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
@@ -188,7 +188,7 @@ Note that this specifying :code:`srun` as the MPI executable is really only nece
 
 Here is a sample `slurm <https://slurm.schedmd.com/>`_ batch script for running ctest. Note that you will need to add appropriate :code:`#SBATCH` directives for specifying a computing account, quality of service, job partition, and so on; please consult `the Orion Usage and Guidelines documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/cluster_guide.php#orion-use>`_.
 
-.. code:: bash
+.. code-block:: bash
 
    #!/usr/bin/bash
    #SBATCH --job-name=<name>
@@ -217,7 +217,7 @@ Here is a sample `slurm <https://slurm.schedmd.com/>`_ batch script for running 
 
 Note that the options specified with ``#SBATCH`` include the number of nodes but not the number of tasks needed.  This is most appropriate for running ``ctest`` because some tests require a different number of MPI tasks than others.  However, if you run an application individually, you should specify ``#SBATCH --ntasks <number>`` instead of ``#SBATCH --nodes=<number>``, as shown in the following example.  The slurm job scheduler will properly determine how many nodes your job requires. Specifying ``--ntasks`` instead of ``--nodes`` in the ``#SBATCH`` header commands will mandate that your computing allocation will only be charged for what you use.  This is preferable for more computationally intensive jobs:
 
-.. code:: bash
+.. code-block:: bash
 
    #!/usr/bin/bash
    #SBATCH --job-name=<name>
@@ -245,7 +245,7 @@ Note that the options specified with ``#SBATCH`` include the number of nodes but
 
 Submit and monitor your jobs with these commands
 
-.. code:: bash
+.. code-block:: bash
 
 	  sbatch <batch-script>
 	  squeue -u <your-user-name>
@@ -258,7 +258,7 @@ Cheyenne
 
 `Cheyenne <https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/cheyenne>`_ is a 5.34-petaflops, high-performance computer built for NCAR by SGI. On Cheyenne, users can access the installed jedi modules by first entering
 
-.. code :: bash
+.. code-block:: bash
 
    module purge
    export OPT=/glade/work/miesch/modules
@@ -266,21 +266,21 @@ Cheyenne
 
 Current options for setting up the JEDI environment include (choose only one)
 
-.. code :: bash
+.. code-block:: bash
 
    module load jedi/gnu-openmpi # GNU compiler suite and openmpi
    module load jedi/intel-impi # Intel 19.0.5 compiler suite and Intel mpi
 
 Because of space limitations on your home directory, it's a good idea to locate your build directory on glade:
 
-.. code:: bash
+.. code-block:: bash
 
     cd /glade/work/<username>
     mkdir jedi/build; cd jedi/build
 
 If you choose the :code:`jedi/gnu-openmpi` module, you can proceed run ecbuild as you would on most other systems:
 
-.. code:: bash
+.. code-block:: bash
 
    ecbuild <path-to-bundle>
    make update
@@ -294,19 +294,19 @@ However, if you choose to compile with the `jedi/intel-impi` module you must use
 
 So, first clone the :code:`jedi-cmake` repository:
 
-.. code:: bash
+.. code-block:: bash
 
    git clone git@github.com:jcsda/jedi-cmake.git
 
 Then pass this toolchain to :code:`ecbuild`:
 
-.. code:: bash
+.. code-block:: bash
 
    ecbuild --toolchain=<path-to-jedi-cmake>/jedi-cmake/cmake/Toolchains/jcsda-Cheyenne-Intel.cmake <path-to-bundle>
 
 The system configuration on Cheyenne will not allow you to run mpi jobs from the login node.  So, if you try to run :code:`ctest` from here, the mpi tests will fail.  So, to run the jedi unit tests you will have to either submit a batch job or request an interactive session with :code:`qsub -I`.  The following is a sample batch script to run the unit tests for ufo-bundle.  Note that some ctests require up to 6 MPI tasks so requesting 6 cores should be sufficient.
 
-.. code:: bash
+.. code-block:: bash
 
     #!/bin/bash
     #PBS -N ctest-ufo-gnu
@@ -341,7 +341,7 @@ Discover
 
 To access the jedi modules on Discover, it is recommended that you add this to your ``$HOME/.bashrc`` file (or the equivalent if you use another shell):
 
-.. code :: bash
+.. code-block:: bash
 
    export JEDI_OPT=/discover/swdev/jcsda/modules
    module use $JEDI_OPT/modulefiles/core
@@ -349,7 +349,7 @@ To access the jedi modules on Discover, it is recommended that you add this to y
 
 Currently two stacks are maintained (choose only one)
 
-.. code :: bash
+.. code-block:: bash
 
    module load jedi/intel-impi
    module load jedi/gnu-impi
@@ -359,33 +359,33 @@ The second option may seem a little surprising, pairing the gnu 9.2.0 compiler s
 
 Each of these jedi modules defines the environment variable ``MPIEXEC`` which points to the recommended ``mpirun`` executable and which should then be explicitly specified when you build jedi:
 
-.. code :: bash
+.. code-block:: bash
 
    ecbuild -DMPIEXEC_EXECUTABLE=$MPIEXEC -DMPIEXEC_NUMPROC_FLAG="-np" <path-to-bundle>
 
 There is also another module that is built from the ESMA ``baselibs`` libraries.  To use this, enter:
 
-.. code :: bash
+.. code-block:: bash
 
     module purge
     module load jedi/baselibs/intel-impi
 
 Currently only ``intel-impi/19.1.0.166`` is the only baselibs option available but more may be added in the future.  Specify the MPI executable explicitly when you build as with the previous modules.
 
-.. code:: bash
+.. code-block:: bash
 
     ecbuild -DMPIEXEC_EXECUTABLE=$MPIEXEC -DMPIEXEC_NUMPROC_FLAG="-np" <path-to-bundle>
     make -j4
 
 Whichever module you use, after building you will want to run the ``get`` tests from the login node to get the test data from AWS S3:
 
-.. code:: bash
+.. code-block:: bash
 
     ctest -R get_
 
 To run the remaining tests, particularly those that require MPI, you'll need to acquire a compute node.  You can do this interactively with
 
-.. code:: bash
+.. code-block:: bash
 
     salloc --nodes=1 --time=30
 
@@ -399,7 +399,7 @@ The S4 system currently only supports intel compilers.  Furthermore, S4 uses the
 
 So, to load the JEDI intel module you can use the following commands (as on other systems, you can put the first two lines in your :code:`~/.bashrc` file for convenience):
 
-.. code:: bash
+.. code-block:: bash
 
    export JEDI_OPT=/data/users/mmiesch/modules
    module use $JEDI_OPT/modulefiles/core
@@ -407,19 +407,19 @@ So, to load the JEDI intel module you can use the following commands (as on othe
 
 The recommended way to compile JEDI on S4 is to first clone the :code:`jedi-cmake` repository, which contains an S4 toolchain:
 
-.. code:: bash
+.. code-block:: bash
 
    git clone git@github.com:jcsda/jedi-cmake.git
 
 Then pass this toolchain to :code:`ecbuild`:
 
-.. code:: bash
+.. code-block:: bash
 
    ecbuild --toolchain=<path-to-jedi-cmake>/jedi-cmake/cmake/Toolchains/jcsda-S4-Intel.cmake <path-to-bundle>
 
 Alternatively, you can specify the MPI executable directly on the command line:
 
-.. code:: bash
+.. code-block:: bash
 
    ecbuild -DMPIEXEC_EXECUTABLE=/usr/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
    make -j4
@@ -428,7 +428,7 @@ Note that this specifying :code:`srun` as the MPI executable is only really nece
 
 Here is a sample slurm batch script for running ctest.
 
-.. code:: bash
+.. code-block:: bash
 
    #!/usr/bin/bash
    #SBATCH --job-name=<name>
@@ -455,7 +455,7 @@ Here is a sample slurm batch script for running ctest.
 
 Note that the options specified with ``#SBATCH`` include the number of nodes but not the number of tasks needed.  This is most appropriate for running ``ctest`` because some tests require a different number of MPI tasks than others.  However, if you run an application individually, you should specify ``#SBATCH --ntasks <number>`` instead of ``#SBATCH --nodes=<number>``, as shown in the following example.  The slurm job scheduler will then determine how many nodes you need.  For example, if you are running with the ivy partition as shown here, then each node has 20 cpu cores.  So, if your application takes more than 20 MPI tasks, slurm will allocate more than one node.  Specifying ``--ntasks`` instead of ``--nodes`` in the ``#SBATCH`` header commands will ensure that your computing allocation will only be charged for what you use.  So, this is preferable for more computationally intensive jobs:
 
-.. code:: bash
+.. code-block:: bash
 
    #!/usr/bin/bash
    #SBATCH --job-name=<name>
@@ -483,7 +483,7 @@ Note that the options specified with ``#SBATCH`` include the number of nodes but
 
 Then you can submit and monitor your jobs with these commands
 
-.. code:: bash
+.. code-block:: bash
 
 	  sbatch <batch-script>
 	  squeue -u <your-user-name>

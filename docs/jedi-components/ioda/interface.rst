@@ -101,7 +101,7 @@ Example Radiosonde YAML
 
 The following is the YAML for the UFO test "test_ufo_radiosonde_opr".
 
-.. code:: YAML
+.. code-block:: YAML
 
    window begin: 2018-04-14T21:00:00Z
    window end: 2018-04-15T03:00:00Z
@@ -129,7 +129,7 @@ Under the :code:`obs space.obsdataout.obsfile` specification, the output file is
 If there is only one process element, then the output will appear in the file as specified.
 However, if there are 4 process elements, then the output will appear in the following four files:
 
-.. code:: bash
+.. code-block:: bash
 
     Data/sondes_obs_2018041500_m_out_0000.nc4
     Data/sondes_obs_2018041500_m_out_0001.nc4
@@ -156,7 +156,7 @@ In this case, the ObsVector will read only the air_temperature row from the ObsD
 
 The ObsVector class contains the following two methods, :code:`read()` for filling a vector from an ObsData array in memory and :code:`save()` for storing a vector into an ObsData array.
 
-.. code:: C++
+.. code-block:: C++
 
    // Interface prototypes
    void read(const std::string &);
@@ -167,7 +167,7 @@ The ObsVector class contains the following two methods, :code:`read()` for filli
 Following is an example of reading into an observation vector.
 Note that the ObsVector object yobs\_ has already been constructed which included the allocation of the memory to store the observation data coming from the :code:`read()` method.
 
-.. code:: C++
+.. code-block:: C++
 
    // Read observation values
    Log::trace() << "CostJo::CostJo start" << std::endl;
@@ -177,7 +177,7 @@ Note that the ObsVector object yobs\_ has already been constructed which include
 Here is an example of saving the contents of an observation vector, H(x), into an ObsData array.
 The ObsVector object yobs is constructed in the first line, and the third line creates an ObsData array called "hofx" and stores the vector data into that ObsData array.
 
-.. code:: C++
+.. code-block:: C++
 
    //  Save H(x)
    boost::scoped_ptr<Observations_> yobs(pobs->release());
@@ -193,7 +193,7 @@ The following three routines are used to access observation data, and unlike the
 Reasons to access ObsData arrays from UFO would be for debugging purposes or for storing results, such as H(x), for post analysis.
 Typically, only meta data are used in the actual H(x) calculations.
 
-.. code:: Fortran
+.. code-block:: Fortran
 
    ! Interface prototypes
    integer function obsspace_get_nlocs(obss)
@@ -210,7 +210,7 @@ Typically, only meta data are used in the actual H(x) calculations.
 
 Following is an example from the CRTM radiance simulator, where meta data from the instrument are required for doing the simulation.
 
-.. code:: Fortran
+.. code-block:: Fortran
 
    ! Get nlocs and allocate storage
    nlocs = obsspace_get_nlocs(obss)
@@ -241,7 +241,7 @@ Following is an example from the CRTM radiance simulator, where meta data from t
 An example for storing the results of a QC background check is shown below.
 Note that the storage for "flags" has been allocated and "flags" has been filled with the background check results prior to this code.
 
-.. code:: Fortran
+.. code-block:: Fortran
 
    write(buf,*)'UFO Background Check: ',ireject,trim(var),' rejected out of ',icount,' (',iloc,' total)'
    call fckit_log%info(buf)

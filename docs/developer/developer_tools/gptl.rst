@@ -13,13 +13,13 @@ JEDI-specific modifications for GPTL live in the OOPS repository. Enabling GPTL 
 
 For example, to enable GPTL with autoprofiling you would enter:
 
-.. code:: bash
+.. code-block:: bash
 
     ecbuild -DENABLE_GPTL=ON -DENABLE_AUTOPROFILING=ON <path>/ufo-bundle
 
 Based on these settings code will be enabled inside of OOPS to check at run-time for certain environment variable settings which specify desired behavior of the GPTL library.  To enable GPTL profiling you just set the :code:`OOPS_PROFILE` environment variable to 1 before running your application.  This is the same whether you run your application directly or through ctest.  For example, in :code:`bash`:
 
-.. code:: bash
+.. code-block:: bash
 
     export OOPS_PROFILE=1
     ctest -R test_qq_truth
@@ -40,7 +40,7 @@ It is also possible to utilize GPTL via manual instrumentation. This is done thr
 
 For example, to manually profile a code section in C++, add the following lines:
 
-.. code:: c++
+.. code-block:: c++
 
     #include <gptl.h>
 
@@ -54,7 +54,7 @@ For example, to manually profile a code section in C++, add the following lines:
 
 To manually profile a code section in Fortran, add the following lines:
 
-.. code:: Fortran
+.. code-block:: Fortran
 
     use gptl
 
@@ -72,7 +72,7 @@ You can also create nested timing regions as described in the `GPTL documentatio
 
 Another use case for GPTL within JEDI is when the user wants to know about memory usage as the program runs. Assuming ecbuild was passed :code:`-DENABLE_GPTL=ON`, setting the OOPS environment variable
 
-.. code:: bash
+.. code-block:: bash
 
     export OOPS_MEMUSAGE=1
 
@@ -80,7 +80,7 @@ enables this capability at run-time. Whenever the process resident set size (RSS
 
 For JEDI unit tests, :code:`stderr` is written to the test log file.  You can see the GPTL memory tracking by searching that file for the RSS string:
 
-.. code:: bash
+.. code-block:: bash
 
     $ grep -i rss Testing/Temporary/LastTest.log # from the build directory
     Begin _ZNSt14pointer_traitsIPKcE10pointer_toERS0_ RSS grew to    31.26 MB

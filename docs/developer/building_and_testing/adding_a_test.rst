@@ -33,7 +33,7 @@ As a prelude to the steps that follow, we note that the main purpose of :code:`t
 
 Since we'll be building off of :code:`oops::Test` and the eckit unit test suite, one necessary item in the header of our MyClass.h file is:
 
-.. code:: C++
+.. code-block:: C++
 
    #define ECKIT_TESTING_SELF_REGISTER_CASES 0
 
@@ -50,7 +50,7 @@ Step 2: Define A Test Fixture
 
 In JEDI, test fixtures are generally used to create objects as directed by the relevant sections of the :doc:`configuration file <configuration>`, for use with the unit tests.  As an example, consider this code segment in :code:`oops/src/test/interface/Increment.h`:
 
-.. code:: C++
+.. code-block:: C++
 
     template <typename> class IncrementFixture : private boost::noncopyable {
     typedef oops::Geometry<MODEL>       Geometry_;
@@ -101,7 +101,7 @@ Step 4: Register your Unit Tests with eckit
 
 In order for eckit to run your tests, you have to :ref:`register <init-test>` each individual test. This is achieved by means of the :code:`register_tests()` method of :code:`test::MyClass` and as this :code:`test::Increment` example (from (:code:`oops/src/test/interface/Increment.h`) demonstrates, there is little else needed to define the class:
 
-.. code:: C++
+.. code-block:: C++
 
   template <typename MODEL> class Increment : public oops::Test {
    public:
@@ -147,7 +147,7 @@ As described in :ref:`Tests as Applications <test-apps>`, there is not much for 
 
 So, to proceed with our example, we might go to the :code:`test/executables` directory of our repository (create it if it's not there already) and create a file called :code:`TestMyClass.cc` with the following contents:
 
-.. code:: C++
+.. code-block:: C++
 
    #include "oops/runs/Run.h"
    #include "../mydir/MyClass.h"
@@ -161,7 +161,7 @@ So, to proceed with our example, we might go to the :code:`test/executables` dir
 
 That's it.  Note that the include paths for a given repository are specified in the CMakeLists.txt file in the top level of the repository.  All existing JEDI repositories will already have access to :code:`oops/src` by means of these lines, or something similar:
 
-.. code:: CMake
+.. code-block:: CMake
 
     ecbuild_use_package( PROJECT oops VERSION 0.2.1 REQUIRED )
     include_directories( ${OOPS_INCLUDE_DIRS} )
@@ -173,7 +173,7 @@ It is likely that the :code:`src` directory of the working repository is also in
 
 In some situations it might be beneficial to define a modified Run object that does some additional model-specific set up.  Here is an example from :code:`fv3-jedi/test/executables/TestModel.cc`
 
-.. code:: C++
+.. code-block:: C++
 
    #include "FV3JEDITraits.h"
    #include "RunFV3JEDI.h"
@@ -210,7 +210,7 @@ We achieve this by editing the file :code:`test/CMakeLists.txt`.  This is where 
 
 We'll start with the configuration file because every new test you add is likely to have a new configuration file.  Edit the CMakeLists.txt file and look for a list of input files like this one from :code:`oops/qg/test/CMakeLists.txt`:
 
-.. code:: CMake
+.. code-block:: CMake
 
    list( APPEND qg_test_input
      testinput/3dvar.yaml
@@ -228,7 +228,7 @@ You would add your input file, :code:`test/testinput/myclass.yaml` to this list 
 
 Finally, at long last, you can register your test with CTest.  We can do this with a call to :code:`ecbuild_add_test()` in the :code:`test/CMakeLists.txt` file.  Here is an example from :code:`oops/qg/test/CMakeLists.txt`:
 
-.. code:: CMake
+.. code-block:: CMake
 
    ecbuild_add_test( TARGET  test_qg_state
                   SOURCES executables/TestState.cc
@@ -241,7 +241,7 @@ The configuration file is specified using the ARGS argument to :code:`ecbuild_ad
 
 So, our example would look something like this:
 
-.. code:: CMake
+.. code-block:: CMake
 
    ecbuild_add_test( TARGET  test_myrepo_myclass
                   SOURCES executables/TestMyClass.cc
@@ -264,7 +264,7 @@ You would have to design your application to produce a text output file as descr
 
 You would add your test to the appropriate CMakeLists.txt file with :code:`ecbuild_add_test()` as described in Step 8 but the argument list would be somewhat different as illustrated here:
 
-.. code:: CMake
+.. code-block:: CMake
 
    ecbuild_add_test( TARGET test_qg_truth
                   TYPE SCRIPT
