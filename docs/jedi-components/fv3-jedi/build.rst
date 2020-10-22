@@ -25,7 +25,9 @@ closely when building FV3-BUNDLE.
 
 .. |location_link| raw:: html
 
-   <a href="https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/developer/building_and_testing/building_jedi.html" target="_blank">instructions for building</a>
+   <a href="https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/
+   latest/developer/building_and_testing/building_jedi.html"
+   target="_blank">instructions for building</a>
 
 
 .. _buildwithmodel:
@@ -42,9 +44,9 @@ to make forecasts in-core with FV3-JEDI:
 - GEOSgcm built with CMake (https://github.com/GEOS-ESM/GEOSgcm)
 
 Building with GFDL_atmos_cubed_sphere is the default mode and it provides everything necessary to
-run any data assimilation systems that do not involve executing a forecast of the model in-core.
-GFDL_atmos_cubed_sphere contains only the FV3 dynamical core and none of the model physics or model
-infrastructure.
+run any data assimilation systems that do not involve executing a forecast of the full model with
+pysics in-core with FV3-JEDI. GFDL_atmos_cubed_sphere contains only the FV3 dynamical core and none
+of the model physics or model infrastructure.
 
 Whether to build with the standalone dynamical core, UFS or GEOS is controlled with the build option
 :code:`-DFV3_FORECAST_MODEL_BUILD`. The standalone dynamical core is the default so is chosen by
@@ -60,7 +62,7 @@ Building with GEOS is triggered by instead specifying:
 
    -DFV3_FORECAST_MODEL_BUILD=GEOS
 
-When building with GEOS (and UFS) is is also necessary to pass the path where GEOS is installed.
+When building with GEOS (and UFS) is is also necessary to pass the path where model is installed.
 This is controlled by the flag:
 
 .. code::
@@ -82,7 +84,9 @@ path. GEOS typically only runs on Discover and there the test path to be provide
 
    -DFV3_FORECAST_MODEL_RUNDIR=/discover/nobackup/drholdaw/JediData/ModelRunDirs/geos-c24
 
-Building with ufs-weather-model is triggred with:
+Note that building with UFS is still in relatively early development; please consult FV3-JEDI
+developers for more details about this functionality. Building with ufs-weather-model is triggered
+with:
 
 .. code::
 
@@ -99,9 +103,9 @@ When building with UFS it is also necessary to pass :code:`DFV3_FORECAST_MODEL_R
 These two arguments provide additional include paths in order to build with UFS. It is anticipated
 that these will not be needed in the long term as the CMake version of UFS matures.
 
-The FV3 dynamical core can be built in either single or double precision, double is the default
-behavior. When using GEOS or UFS the choice needs to match the choice that was made when the model
-was installed. When building with FV3CORE the choice can be made at the same time as building
+The FV3 dynamical core can be built in either single or double precision, where double is the
+default behavior. When using GEOS or UFS the choice needs to match the choice that was made when the
+model was installed. When building with FV3CORE the choice can be made at the same time as building
 FV3-BUNDLE. This choice is controlled with:
 
 .. code::
@@ -131,6 +135,7 @@ option to skip them to :code:`OFF`:
    -DBUNDLE_SKIP_GEOS-AERO=OFF
    -DBUNDLE_SKIP_ROPP=OFF
 
+.. _controltesting:
 
 Controlling the testing
 -----------------------
@@ -143,7 +148,7 @@ touch one of the CMakeLists.txt files in FV3-JEDI, which will trigger cmake auto
 
 Most of the tests that run in FV3-JEDI require 6 processors, 1 per face of the cube. Some of the
 ensemble or parallel tests use a larger number, in some cases as many as 24. It is possible to skip
-these tests on systems that may not be able to support them. This is achieved with:
+these tests on systems that may not be able to support them with the following flag:
 
 .. code::
 

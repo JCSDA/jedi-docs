@@ -18,9 +18,9 @@ Static data files
 
 Data/fieldsets contains a number of files for controlling the fields that can be instantiated in
 FV3-JEDI, desribed in :ref:`fieldmetadata`. The fields in these files are designed to serve as an
-example and include all the fields used in the CTest suite executed in FV3-JEDI. As the system
+example and include all the fields used in the ctest suite executed in FV3-JEDI. As the system
 evolves and more models are added and used it is anticipated that these FieldSet files will be more
-tailored to the specific model and maintained as part of the workflow surrounding that model.
+tailored to the specific model rather than with the catch all way they are currently constructed.
 
 The file :code:`dynamics.yaml` contains the main dynamic fields used in the system and is where a
 new field for the global NWP could be added. The file :code:`ufo.yaml` contains all the fields that
@@ -41,10 +41,10 @@ coefficients for creating the vertical coordinate. The directory also includes
 :code:`generate_akbk.py`, which can be used to generate a :code:`akbk.nc4` file that can be read by
 FV3-JEDI geometry.
 
-The file :code:`field_table` contains the tracers that are to be used. The fields contained in this
-file are only important if running forecasts in-core with FV3-JEDI but it has to contain at least
-one field to avoid any failures when making calls into the FV3 model routines that provide the
-geometry.
+The file :code:`field_table` contains and example of the tracers that are to be used. The fields
+contained in this file are only important if running forecasts in-core with FV3-JEDI but it has to
+contain at least one field to avoid any failures when making calls into the FV3 model routines that
+provide the geometry.
 
 The file :code:`fmsmpp.nml` is used only to initialize the FMS library.
 
@@ -56,7 +56,7 @@ Files like :code:`inputpert_4dvar.nml` are used to initialize the :ref:`linearmo
 
 **femps**
 
-FV3-JEDI ships with the Finite Element Mesh Poisson Solver (FEMPS), which is used to convert wind
+FV3-JEDI requires with the Finite Element Mesh Poisson Solver (FEMPS), which is used to convert wind
 fields to stream function and velocity potential. This solver involves a multigrid method and for
 simpliciity the grid heirarchy is initialized by reading longitude and latitude from files. Some
 examples of these files are provided with the repository and can be generated for other resolutions
@@ -80,7 +80,8 @@ beginning of the window and 3DVar only requires one background at the middle of 
 **Ensemble**
 
 If running with ensemble applications an ensemble must also be provided. There are examples of the
-ensemble files included in Data/input/ for several models.
+ensemble files included in Data/input/ for several models. Ensemble fields are provided hourly to
+support 4DEnVar applications.
 
 .. _dynamic_output_files:
 
