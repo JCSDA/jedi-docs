@@ -288,7 +288,7 @@ If the autoscaling has reduced your cluster to zero compute nodes, you may be te
 
 The proper way to terminate your cluster is the same way you created it: from the command line using the :code:`pcluster` application:
 
-.. code-block::
+.. code-block:: bash
 
     pcluster delete <name>
 
