@@ -10,3 +10,4 @@ OOPS Applications
    variational
    localensembleda
    hofx
+   forecast

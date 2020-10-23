@@ -5,8 +5,8 @@ HofX computation in OOPS
 
 The HofX application is a generic application for running the model forecast (or reading forecasts from file) and computing H(x).
 
-HofX
-----
+HofX yaml structure
+-------------------
 
 .. _yaml-hofx:
 
@@ -27,8 +27,8 @@ HofX
     prints: (optional)
       #optional parameters for calling the PostProcessor
 
-HofX no model
--------------
+HofX no model yaml structure
+----------------------------
 
 Users can run the HofX application without running their model forecast by providing a list of forecasts and using the HofXNoModel application.
 The yaml structure to run HofXNoModel is similar to the following:
