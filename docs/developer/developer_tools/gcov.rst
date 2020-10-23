@@ -40,7 +40,7 @@ gcov-specific files which were created by the run so that when *gcov* is
 run, it will find what it is looking for. To get around this problem, you may
 wish to use a script such as this to provide soft link names that *gcov* understands\:
 
-.. code:: bash
+.. code-block:: bash
 
    for i in $(ls *.f90.gcda *.f90.gcno); do
     newname=$(echo $i | sed -e 's/\.f90\././1')

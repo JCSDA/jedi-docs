@@ -16,14 +16,14 @@ Configuration options:
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
-.. code:: yaml
+.. code-block:: yaml
 
   obs operator:
     name: VertInterp
 
 Observation operator in the above example does vertical interpolation in log(air pressure).
 
-.. code:: yaml
+.. code-block:: yaml
 
   obs operator:
     name: VertInterp
@@ -42,7 +42,7 @@ Observational operator for vertical summation of model layers within an observat
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
-.. code:: yaml
+.. code-block:: yaml
 
   obs operator:
     name: AtmVertInterpLay
@@ -68,7 +68,7 @@ The CRTM operator has some required geovals (see varin_default in ufo/crtm/ufo_r
 * :code:`linear obs operator.Absorbers` [optional] : controls which of the selected Absorbers will be acted upon in K-Matrix multiplication
 * :code:`linear obs operator.Clouds` [optional] : controls which of the selected Clouds will be acted upon in K-Matrix multiplication
 
-:code:`obs options` configures the tabulated coeffecient files that are used by CRTM
+:code:`obs options` configures the tabulated coefficient files that are used by CRTM
 
 * :code:`obs options.Sensor_ID` : {sensor}_{platform} prefix of the sensor-specific coefficient files, e.g., amsua_n19
 * :code:`obs options.EndianType` : Endianness of the coefficient files. Either little_endian or big_endian.
@@ -84,7 +84,7 @@ The CRTM operator has some required geovals (see varin_default in ufo/crtm/ufo_r
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
-.. code:: yaml
+.. code-block:: yaml
 
   obs operator:
     name: CRTM
@@ -98,7 +98,7 @@ Examples of yaml:
       EndianType: little_endian
       CoefficientPath: Data/
 
-.. code:: yaml
+.. code-block:: yaml
 
   obs operator:
     name: CRTM
@@ -111,7 +111,7 @@ Examples of yaml:
       CoefficientPath: Data/
       IRVISlandCoeff: USGS
 
-.. code:: yaml
+.. code-block:: yaml
 
   obs operator:
     name: CRTM
@@ -147,7 +147,7 @@ Configuration options:
 
 Example of a yaml:
 ^^^^^^^^^^^^^^^^^^
-.. code:: yaml
+.. code-block:: yaml
 
    obs operator:
      name: Aod
@@ -207,7 +207,7 @@ Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 :code:`ufo/test/testinput/gnssrobndnbam.yaml`
 
-.. code:: yaml
+.. code-block:: yaml
 
  observations:
  - obs space:
@@ -228,7 +228,7 @@ Examples of yaml:
         vertlayer: full
         super_ref_qc: NBAM
         sr_steps: 2
-    obs filters: 
+    obs filters:
     - filter: Domain Check
       filter variables:
       - name: [bending_angle]
@@ -277,7 +277,7 @@ Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 :code:`ufo/test/testinput/gnssrobndropp1d.yaml`
 
-.. code:: yaml
+.. code-block:: yaml
 
  observations:
  - obs space:
@@ -350,7 +350,7 @@ Configuration options:
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
-.. code:: yaml
+.. code-block:: yaml
 
  observations:
  - obs space:
@@ -407,9 +407,9 @@ Configuration options:
 2. configurables in "obs space" section:
 
   a. vert_interp_ops: if true, then use log(pressure) for vertical interpolation, if false then use exner function for vertical interpolation.
-  
+
   b. pseudo_ops: if true then calculate data on intermediate "pseudo" levels between model levels, to minimise interpolation artifacts.
-  
+
 3. configurables in "ObsFilters" section:
 
   a. Background Check: not currently well configured.  More detail to follow.
@@ -418,7 +418,7 @@ Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 :code:`ufo/test/testinput/gnssrobendmetoffice.yaml`
 
-.. code:: yaml
+.. code-block:: yaml
 
   - obs operator:
       name: GnssroBendMetOffice
@@ -484,7 +484,7 @@ Examples of yaml:
 
 :code:`ufo/test/testinput/gnssroref.yaml`
 
-.. code:: yaml
+.. code-block:: yaml
 
  observations:
  - obs space:
@@ -524,7 +524,7 @@ A simple identity observation operator, can be used for all cases where observat
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
-.. code:: yaml
+.. code-block:: yaml
 
    obs operator:
      name: Identity
@@ -540,7 +540,7 @@ UFO radar operator for reflectivity. It is tested with radar observations dumped
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
-.. code:: yaml
+.. code-block:: yaml
 
   observations:
   - obs operator:
@@ -564,7 +564,7 @@ Similar to RadarReflectivity, but for radial velocity. It is tested with radar o
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
-.. code:: yaml
+.. code-block:: yaml
 
   observations:
   - obs operator:
@@ -574,4 +574,3 @@ Examples of yaml:
       obsdatain:
         obsfile: Data/radar_rw_obs_2019052222.nc4
       simulated variables: [radial_velocity]
-
