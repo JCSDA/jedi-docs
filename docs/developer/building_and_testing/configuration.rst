@@ -14,53 +14,59 @@ Configuration files for most JEDI tests are located in the :code:`test/testinput
 
 Configuration (often abbreviated as config) files in JEDI may be written either in `YAML <https://yaml.org>`_ or in `JSON <https://www.json.org>`_;  JEDI uses the parser from ECMWF's `eckit library <https://github.com/ecmwf/eckit>`_ to read these files and this parser can process both formats.  However, we recommend using **YAML** because it is generally more user-friendly; YAML is easier to read and, unlike JSON, it allows the user to include comments.  YAML files can end with the extension :code:`.yaml` or :code:`.yml`.  JSON files typically end with the extension :code:`.json`.
 
-As an example, consider the configuration file for the :code:`test_ufo_radiosonde_opr` unit test (also used for several other tests), which is located in the :code:`ufo` repository as :code:`test/testinput/radiosonde.yaml`:
+As an example, consider a configuration file similar to the one used in the :code:`test_qg_hofx` unit test, which is located in the :code:`oops` repository as :code:`qg/test/testinput/hofx.yaml`:
 
 .. _yaml-file:
 
-.. code:: yaml
+.. code-block:: yaml
 
     ---
-    window_begin: '2018-04-14T21:00:00Z'
-    window_end: '2018-04-15T03:00:00Z'
-    LinearObsOpTest:
-      testiterTL: 12
-      toleranceTL: 1.0e-9
-      toleranceAD: 1.0e-11
-    Observations:
-      ObsTypes:
-      - ObsOperator:
-          name: VertInterp
-        ObsSpace:
-          name: Radiosonde
-          ObsDataIn:
-            obsfile: Data/sondes_obs_2018041500_m.nc4
-          simulate:
-            variables:
-            - air_temperature
-            - eastward_wind
-            - northward_wind
-        GeoVaLs:
-          filename: Data/sondes_geoval_2018041500_m.nc4
-        ObsFilters:
-        - Filter: Background Check
-          variable: air_temperature
-          threshold: 3.0
-        vecequiv: GsiHofX
-        tolerance: 1.0e-06
-        ObsBias: {}
+    geometry:
+      nx: 40
+      ny: 20
+      depths: [4500.0, 5500.0]  # a list of the depths used in model
+    initial condition:
+      date: 2010-01-01T00:00:00Z
+      filename: Data/truth.fc.2009-12-15T00:00:00Z.P17D.nc
+    model:
+      name: QG
+      tstep: PT1H
+    forecast length: PT12H
+    window begin: 2010-01-01T00:00:00Z
+    window length: PT12H
+    observations:
+    - obs space:
+        obs type: Stream
+        obsdatain:
+          obsfile: Data/truth.obs4d_12h.nc
+        obsdataout:
+          obsfile: Data/hofx.obs4d_12h.nc
+      obs operator:
+        obs type: Stream
+      obs bias: {}
+    - obs space:
+        obs type: Wind
+        obsdatain:
+          obsfile: Data/truth.obs4d_12h.nc
+        obsdataout:
+          obsfile: Data/hofx.obs4d_12h.nc
+      obs operator:
+        obs type: Wind
 
-Note that keys representing single variables or vectors are represented as lower case while keys representing more complex objects in the YAML hierarchy are rendered in `CamelCase <https://en.wikipedia.org/wiki/Camel_case>`_.  This is the preferred style but it is not currently followed by all JEDI repositories.
+
+Note that keys representing objects (single variables, vectors or more complex objects) are represented as lower case and entire words.  This is the preferred style but it is not currently followed by all JEDI repositories.
 
 We refer the user to the `YAML Documentation <https://yaml.org/spec/1.2/spec.html>`_ for a comprehensive description of the syntax but we'll give a brief overview here.
 
 The first thing to note is that indentation matters.  Items are organized into a hierarchy, with the top-level objects beginning in the leftmost column and subsidiary components of these objects indented accordingly.  The number of spaces is not important; two is sufficient to define the scope of an item and its contents.
 
-The beginning of a YAML document is indicated by three dashes :code:`---`, which may or may not be preceded by directives. Each line typically contains a key-value pair separated by a colon and a space.  The key is generally a string and the value may be either a string or a number.  This is used to assign values to variables.  For example, the **window_begin** object is set to a value of '2018-04-14T21:00:00Z' and the **LinearObsOpTest.toleranceTL** variable is set to a value of 1.0e-9.  Note that we have used a period to represent the hierarchy of items; **toleranceTL** is a component of **LinearObsOpTest**.  Note also that the values may be interpreted in different ways.  For example, the **window_begin** value is written as a string in the yaml file but it is interpreted as a :code:`util::DateTime` object when it is read into JEDI.
+The beginning of a YAML document can be indicated by three dashes :code:`---`, which may or may not be preceded by directives. Each line typically contains a key-value pair separated by a colon and a space.  The key is generally a string and the value may be either a string or a number.  This is used to assign values to variables.  For example, the **window begin** object is set to a value of '2010-01-01T00:00:00Z' and the **geometry.nx** variable is set to a value of 40.  Note that we have used a period to represent the hierarchy of items; **nx** is a component of **geometry**.  Note also that the values may be interpreted in different ways.  For example, the **window begin** value is written as a string in the yaml file but it is interpreted as a :code:`util::DateTime` object when it is read into JEDI.
 
-Objects with multiple values (sequences in YAML) are indicated as indented lists with one item per line and each item delineated by a dash.  For example, **Observations.ObsTypes[0].ObsSpace.simulate.variables** is equated to a list of items, namely ["air_temperature", "eastward_wind", "northward_wind"].  Comments are preceded by a :code:`#` sign as seen for **Observations.ObsTypes[0].tolerance**.
+Objects with multiple values (sequences in YAML) are indicated as indented lists with one item per line and each item delineated by a dash.  For example, **observations[0].obs space.simulated variables** is equated to a list of items, namely ["air_temperature", "eastward_wind", "northward_wind"].
 
-Lists or sequences may also be identified with brackets :code:`{}`.  This is illustrated in the above file with the example of **Observations.ObsTypes[0].ObsBias**, which is here identified as a list, albeit an empty one.
+Lists or sequences may also be identified with brackets :code:`{}` or :code:`[]`.  This is illustrated in the above file with the examples of **geometry.depths**, which here is identified as a list of floats, and **observations[0].obs bias**, an empty list.
+
+Comments are preceded by a :code:`#` sign as seen for **geometry.depths**.
 
 .. _config-cpp:
 
@@ -73,73 +79,78 @@ Configuration files are read into JEDI as :code:`eckit::Configuration` objects. 
 
 As described in our document on :doc:`JEDI Testing <unit_testing>` (see :ref:`Tests as Applications <test-apps>` in particular), JEDI applications are executed by passing an :code:`oops::Application` object to the :code:`execute()` method of an :code:`oops::Run` object.  The name of the configuration file (including path) is generally specified on the command line when running a JEDI executable and this file name is passed to the constructor of the :code:`oops::Run` object.  There is it used to create an :code:`eckit::Configuration` object which is passed to the Application when it is executed.  The :code:`eckit::Configuration` class contains a number of public methods that can be then used to query the config file and access its contents.
 
-To illustrate how this works, let's return to our :code:`test_ufo_radiosonde_opr` example introduced in the previous section.  The configuration file for that test is called :code:`test/testinput/radiosonde.yaml`.  In this example, our Application happens to be a Test object since :code:`oops::Test` is a subclass (child) of :code:`oops:Application`.  So, the configuration file is passed from the command line to the :code:`oops::Run` object and then to the Application as an argument (of type :code:`eckit::Configuration`) to the :code:`oops::Test::execute()` method.  This general approach is similar to other Applications.
+To illustrate how this works, let's return to our :code:`test_qg_hofx` example introduced in the previous section.  The configuration file for that test is called :code:`qg/test/testinput/hofx.yaml`.  In this example, our Application happens to be a HofX object and :code:`oops::HofX` is a subclass (child) of :code:`oops:Application`.  So, the configuration file is passed from the command line to the :code:`oops::Run` object and then to the Application as an argument (of type :code:`eckit::Configuration`) to the :code:`oops::HofX::execute()` method.  This general approach is similar to other Applications.
 
-What happens next is more specific to the Test Application but it serves to illustrate how to manipulate and access the config file as an :code:`eckit::Configuration` object.  Here is a code segment from the :code:`oops::Test::execute()` method as defined in the :code:`oops/src/oops/runs/Test.h` file:
+What happens next is more specific to the HofX Application but it serves to illustrate how to manipulate and access the config file as an :code:`eckit::Configuration` object.  Here is an example code segment from the :code:`oops::HofX::execute()` method as defined in the :code:`oops/src/oops/runs/HofX.h` file:
 
 .. _config-cpp-seg1:
 
-.. code:: C++
+.. code-block:: C++
 
-    int Test::execute(const eckit::Configuration & config) const {
+    int execute(const eckit::Configuration & fullConfig) const {
 
-    // Setup configuration for tests
-      test::TestEnvironment::getInstance().setup(config);
+      // Example 1
+      const util::Duration winlen(fullConfig.getString("window length"));
+      const util::DateTime winbgn(fullConfig.getString("window begin"));
+      const util::DateTime winend(winbgn + winlen);
+      Log::info() << "Observation window from " << winbgn << " to " << winend << std::endl;
 
-    // Extract the runtime config for the tests from the config file.
-      std::string args = config.getString("test_framework_runtime_config");
+      // Example 2
+      const eckit::LocalConfiguration geometryConfig(fullConfig, "geometry");
+
 
     [...]
 
-Here the Configuration object that is passed as an argument (config) is used to create and initialize a :code:`TestEnvironment` object.  This is used later to facilitate access to the config file for the test suite as we will see below.  However, the config file can also be accessed directly through the public methods of the :code:`eckit::Configuration` object itself.  This is demonstrated by the :code:`config.getString()` example :ref:`above <config-cpp-seg1>`.  This sets the string variable :code:`args` equal to the value of :code:`--log_level=test_suite` as specified in the first line of the :ref:`YAML file <yaml-file>`.
+Here the :code:`Configuration` object can also be accessed directly through the public methods of the :code:`eckit::Configuration` object itself.  This is demonstrated by the :code:`fullConfig.getString()` in Example 1 :ref:`above <config-cpp-seg1>`.  This sets the duration :code:`winlen` equal to the value of **window length** as specified in the first line of the :ref:`YAML file <yaml-file>`.
 
-If you trace the flow of the :code:`test_radiosonde_opr` executable, you'll soon come to the heart of the test suite, which is defined in :code:`oops/src/test/interface/ObsOperator.h`.  To understand the full structure of this file we refer you to our page on :doc:`JEDI Testing <unit_testing>`.  For our purposes here, we will pick up the action in the :code:`test::testSimulateObs()` function template, which is one of the tests called by :code:`test_ufo_radiosonde_opr`:
+The example 2 illustrates an important point, namely that new configuration objects are constructed through the derived (child) class of :code:`eckit::LocalConfiguration` rather than the base class of :code:`eckit::Configuration` (whose constructors are protected).  The constructor shown in Example 2 :ref:`above <config-cpp-seg1>` takes two arguments.  The first is :code:`fullConfig`, the configuration passed to the :code:`oops::HofX::execute()` method.  The second argument is a string that serves to extract a component of that Configuration, in particular, everything contained under the **geometry** section of the :ref:`YAML file <yaml-file>`.  This component is placed in the :code:`LocalConfiguration` object :code:`geometryConfig`.
+
+YAML and JSON objects are hierarchical and self-similar.  So, the **geometry** component of the YAML file can be treated as a self-contained YAML object in its own right, with its own components.  Configuration objects are the same way.  One can define an :code:`eckit::Configuration` object that includes the contents of the entire YAML file, as is the case for :code:`fullConfig`, or one can define an :code:`eckit::Configuration` object that contains only a particular component of the top-level YAML structure, as is the case for :code:`geometryConfig`.  Remember that :code:`LocalConfiguration` objects *are* :code:`Configuration` objects since the former is a child (derived class) of the latter.
+
+It's tempting to think of :code:`LocalConfiguration` objects as components of :code:`Configuration` objects but this is incorrect.  One could in principle have an :code:`eckit::LocalConfiguration` object refer to the YAML file as a whole and a :code:`eckit::Configuration` object refer to a single section, though this is rarely done.  The **Local** in LocalConfiguration refers to a local component of the JEDI code, not a local section of the YAML file.  You can create, access, and even change :code:`eckit::LocalConfiguration` objects in a way that is not possible with :code:`eckit::Configuration` objects.  In short, :code:`LocalConfiguration` objects are local instantiations of :code:`Configuration` objects that you can use to access the configuration file.
+
+Variables, parameters, and other settings in the config file can be read by means of the various :code:`get` methods of the :code:`eckit::Configuration` class.  Paths are relative to the top-level of the YAML/JSON hierarchy that is contained in the Configuration object.  Two examples are shown :ref:`above <config-cpp-seg1>`.  Since the :code:`fullConfig` object contains the entire YAML file, the top level of the hierarchy includes the top-level components of the :ref:`YAML file <yaml-file>`, for example the variables **window begin** and **window length**, as well as the multi-component YAML object **observations**.  The first of these top-level variables is read using the :code:`config.getString()` method and placed into the local variable :code:`winlen`.  One could access other levels of the hierarchy using periods as separators, for example:
+
+.. code-block:: C++
+
+    std::cout << "The nx component of the geometry is: " << fullConfig.getInt("geometry.nx") << std::endl;
+
+If you trace the flow of the :code:`test_qg_hofx` executable, you'll soon come to the heart of oops.  To understand the full structure of this file we refer you to our page on :doc:`Applications in OOPS<../../jedi-components/oops/applications/applications>`.  For our purposes here, we will pick up the action in the :code:`oops::HofX::execute()` and templated :code:`ObsSpaces<OBS>::ObsSpaces` functions, which are called when executing :code:`test_qg_hofx`:
 
 .. _config-cpp-seg2:
 
-.. code:: C++
+.. code-block:: C++
 
-    template <typename MODEL> void testSimulateObs() {
+    template <typename OBS>
+    ObsSpaces<OBS>::ObsSpaces(const eckit::Configuration & conf, [...]) {
 
         [...]
 
-        const eckit::LocalConfiguration obsconf(TestEnvironment::config(), "Observations");
-        std::vector<eckit::LocalConfiguration> conf;
-        obsconf.get("ObsTypes", conf);
+        // Example 3
+        std::vector<eckit::LocalConfiguration> typeconfs;
+        conf.get("observations", typeconfs);
 
-This illustrates an important point, namely that new configuration objects are constructed through the derived (child) class of :code:`eckit::LocalConfiguration` rather than the base class of :code:`eckit::Configuration` (whose constructors are protected).  The constructor shown here takes two arguments.  The first is the output of the :code:`TestEnvironment::config()` method.  This returns a copy of the Configuration object that was used to create and initialize the :code:`test::TestEnvironment` object itself, as shown :ref:`above <config-cpp-seg1>`.  The second argument is a string that serves to extract a component of that Configuration, in particular, everything contained under the **Observations** section of the :ref:`YAML file <yaml-file>`.  This component is placed in the **LocalConfiguration** object **obsconf**.
+In the Example 3 shown :ref:`above <config-cpp-seg2>`, the :code:`typeconfs` object only contains the **observations** section of the YAML file.  **observations** is itself a vector of configuration objects.  Our example :ref:`YAML file <yaml-file>` includes 2 items in **observations**, namely **obs space.obs type: Wind** and **obs space.obs type: Stream**, and other Applications may include more.  Since **observations** can include multiple components, each declaration in the YAML file is preceded by a dash: :code:`- obs space:` (recall that this indicates a sequence or list in YAML).  So, in order to read this component of the YAML file, :ref:`Example 3 <config-cpp-seg2>` first defines the variable :code:`typeconfs` as a vector of :code:`LocalConfiguration` objects.  Then it uses the :code:`eckit::Configuration::get()` method to read it from the YAML file.
 
-YAML and JSON objects are hierarchical and self-similar.  So, the **Observations** component of the YAML file can be treated as a self-contained YAML object in its own right, with its own components.  Configuration objects are the same way.  One can define an :code:`eckit::Configuration` object that includes the contents of the entire YAML file, as is the case for :code:`TestEnvironment::config()`, or one can define an :code:`eckit::Configuration` object that contains only a particular component of the top-level YAML structure, as is the case for :code:`obsconf`.  Remember that **LocalConfiguration** objects *are* **Configuration** objects since the former is a child (derived class) of the latter.
+Note another feature of the :code:`Configuration` class highlighted in the examples above.  One uses a specific :code:`getString()` method to retrieve a string, the other uses a generic :code:`get()` interface to retrieve a vector of :code:`LocalConfiguration` objects.  Both options are available.  For further details see the :ref:`Summary of Configuration Methods <config-methods>` below.
 
-It's tempting to think of **LocalConfiguration** objects as components of **Configuration** objects but this is incorrect.  One could in principle have an :code:`eckit::LocalConfiguration` object refer to the YAML file as a whole and a :code:`eckit::Configuration` object refer to a single section, though this is rarely done.  The **Local** in **LocalConfiguration** refers to a local component of the JEDI code, not a local section of the YAML file.  You can create, access, and even change :code:`eckit::LocalConfiguration` objects in a way that is not possible with :code:`eckit::Configuration` objects.  In short, **LocalConfiguration** objects are local instantiations of **Configuration** objects that you can use to access the configuration file.
+The :code:`eckit::Configuration` class also has a few more methods that are extremely useful for querying the configuration file.  The first is :code:`eckit::Configuration::has()` which accepts one string argument (:code:`std::string`) and returns a Boolean :code:`true` or :code:`false` depending on whether or not an item of that name exists in the Configuration file (at the level represented by the Configuration object).  The second is :code:`eckit::Configuration::keys()`, which returns the items at a particular level of the YAML/JSON hierarchy.
 
-Variables, parameters, and other settings in the config file can be read by means of the various **get()** methods of the :code:`eckit::Configuration` class.  Paths are relative to the top-level of the YAML/JSON hierarchy that is contained in the Configuration object.  Two examples are shown :ref:`above <config-cpp-seg1>`.  Since the :code:`TestEnvironment::config()` object contains the entire YAML file, the top level of the hierarchy includes the top-level components of the :ref:`YAML file <yaml-file>`, namely the variables **test_framework_runtime_config**, **window_begin**, and **window_end**, as well as the multi-component YAML objects **LinearObsOpTest** and **Observations**.  The first of these top-level variables is read using the :code:`config.getString()` method and placed into the local variable :code:`args`.  One could access other levels of the hierarchy using periods as separators, for example:
+As an example of how to use these query functions, we could place the following code after the :ref:`code segment above from the ObsSpaces() function <config-cpp-seg2>`:
 
-.. code:: C++
+.. code-block:: bash
 
-    std::cout << "The TL tolerance is: " << TestEnvironment::config().getDouble("LinearObsOpTest.tolerenceTL") << std::endl;
-
-In the second example shown :ref:`above <config-cpp-seg2>`, the :code:`obsconf` object only contains the **Observations** section of the YAML file.  At the top level of this section is **ObsTypes**, which is itself a vector of configuration objects.  Our example :ref:`YAML file <yaml-file>` only includes one item in **ObsTypes**, namely **Radiosonde**, but other Applications may include more.  Since **ObsTypes** can include multiple components, the **ObsType: Radiosonde** declaration in the YAML file is preceded by a dash: :code:`- ObsType: Radiosonde` (recall that this indicates a sequence or list in YAML).  So, in order to read this component of the YAML file, :ref:`the second code segment above <config-cpp-seg2>` first defines the variable **conf** as a vector of **LocalConfiguration** objects.  Then it uses the :code:`eckit::Configuration::get()` method to read it from the YAML file.
-
-Note another feature of the Configuration class highlighted in the two examples above.  One uses a specific **getString()** method to retrieve a string, the other uses a generic **get()** interface to retrieve a vector of **LocalConfiguration** objects.  Both options are available.  For further details see the :ref:`Summary of Configuration Methods <config-methods>` below.
-
-The :code:`eckit::Configuration` class also has a few more methods that are extremely useful for querying the configuration file.  The first is **has()**, which accepts one string argument (:code:`std::string`) and returns a Boolean :code:`true` or :code:`false` depending on whether or not an item of that name exists in the Configuration file (at the level represented by the Configuration object).  The second is **keys()**, which returns the items at a particular level of the YAML/JSON hierarchy.
-
-As an example of how to use these query functions, we could place the following code after the :ref:`code segment above from the testSimulateObs() function <config-cpp-seg2>`:
-
-.. code:: bash
-
-  std::string obstype = conf[0].getString("ObsType");
-  std::cout << obstype << " Keys: " << conf[0].keys() << std::endl;
-  if(conf[0].has("variables")) {
-    std::vector<std::string> vars = conf[0].getStringVector("variables");
+  std::string obstype = typeconfs[0].getString("obs space.obs type");
+  std::cout << obstype << " Keys: " << typeconfs[0].keys() << std::endl;
+  if(typeconfs[0].has("variables")) {
+    std::vector<std::string> vars = typeconfs[0].getStringVector("variables");
     std::cout << obstype << " Variables " << vars << std::endl;
   } else {
     std::cout << obstype << " Warning: Observations variables not specified in config file " << std::endl;
   }
-  if(conf[0].has("Output")) {
-    const eckit::LocalConfiguration outconf(conf[0], "Output");
-    std::string outfile = outconf.getString("filename");
+  if(typeconfs[0].has("obs space.obsdataout")) {
+    const eckit::LocalConfiguration outconf(typeconfs[0], "obs space.obsdataout");
+    std::string outfile = outconf.getString("obsfile");
     std::cout << obstype << " Output file: " << outfile << std::endl;
   } else {
     std::cout << obstype << " Warning: Observations Output not specified in config file " << std::endl;
@@ -148,13 +159,15 @@ As an example of how to use these query functions, we could place the following 
 
 Given the :ref:`YAML file above <yaml-file>`, the output of this would be:
 
-.. code:: bash
+.. code-block:: bash
 
-    Radiosonde Keys: [GeoVaLs,ObsBias,ObsData,ObsFilters,ObsType,rmsequiv,tolerance,variables]
-    Radiosonde Variables: [air_temperature,eastward_wind,northward_wind]
-    Radiosonde Warning: Observations Output not specified in config file
+    Stream Keys: [obs operator,obs space]
+    Stream Warning: Observations variables not specified in config file
+    Stream Output file: Data/hofx.obs4d_12h.nc
 
-This example illustrates again the stylistic principle noted :ref:`above <yaml-file>`; YAML/JSON keys that represent single variables or vectors are rendered in lower case while those that represent configuration objects in their own right are rendered in `CamelCase <https://en.wikipedia.org/wiki/Camel_case>`_.
+This example illustrates again the stylistic principle noted :ref:`above <yaml-file>`; YAML/JSON keys are rendered in lower case.
+
+Some JEDI components no longer use :code:`Configuration` objects directly, but instead access information read from configuration files through subclasses of the :code:`Parameters` class. Each such subclass defines member variables corresponding to individual YAML/JSON keys relevant to a given component of JEDI. This approach makes it easier to detect and report errors in input configuration files (for example, misspelled key names, out-of-range values), and its use is likely to become more widespread as JEDI evolves. For more information about :code:`Parameters`, see :doc:`Parameter Classes <parameters>`.
 
 .. _config-methods:
 
@@ -165,14 +178,14 @@ In this section we summarize some of the most useful public methods available in
 
 Available methods for querying the configuration file include:
 
-.. code:: C++
+.. code-block:: C++
 
     virtual bool has(const std::string &name) const;
     std::vector<std::string> keys() const;
 
 Available methods for reading specific data types include:
 
-.. code:: C++
+.. code-block:: C++
 
     bool getBool(const std::string &name) const;
     int getInt(const std::string &name) const;
@@ -197,9 +210,9 @@ Available methods for reading specific data types include:
 
 Each of these methods also has a version that accepts a second argument (of the same type as the return value) that will be used as a default value in the event that the item in question is not found in the configuration file.
 
-Available generic interfaces for the **get()** method include:
+Available generic interfaces for the :code:`get()` method include:
 
-.. code:: C++
+.. code-block:: C++
 
     virtual bool get(const std::string &name, std::string &value) const;
     virtual bool get(const std::string &name, bool &value) const;
@@ -226,62 +239,83 @@ The Boolean return value reflects whether or not these items are found in the co
 Fortran Usage
 ---------------
 
-ECMWF also offers a Fortran interface to eckit called `fckit <https://github.com/ecmwf/fckit>`_ that provides Fortran interfaces to many of the :code:`eckit::Configuration` methods described in our :ref:`Summary of Configuration Methods <config-methods>` above.
+ECMWF also offers a Fortran interface to eckit called `fckit <https://github.com/ecmwf/fckit>`_ that provides Fortran interfaces to many of the :code:`eckit::Configuration` methods described in our :ref:`Summary of Configuration Methods <config-methods>` above. The ones used in JEDI are :code:`get_size` and :code:`get_or_die`.
 
-However, JEDI does not currently use these fckit interfaces for accessing config files.  Instead, JEDI defines its own Fortran interfaces to C++ :code:`oops::Configuration` objects.  These are defined in the file :code:`oops/src/oops/util/config_mod.F90` and they currently include the following Fortran subroutines:
+A reference to the :code:`eckit::Configuration` C++ object is required to provide access to the config file as :ref:`described above <config-cpp>` when using Fortran routines.  These, like other interfaces in JEDI, use the intrinsic :code:`ISO_C_BINDING` Fortran module to pass information between C++ and Fortran.   Within this framework, :code:`c_conf` is declared as a pointer of type :code:`c_ptr`, with :code:`value` and :code:`intent(in)` attribute.
 
-.. code:: Fortran
+As an example of how this C++ configuration is passed to Fortran, we'll consider a code segment from the :code:`qg_geom_setup_c()` routine in the file :code:`qg/model/qg_geom_interface.F90`.  This routine would be called during the execution of the :code:`test_qg_hofx` test that we have been considering throughout this document.  Its function is to set up the Fortran configuration, then call the routine that sets up the Fortran geometry of the model.
 
-    logical function config_element_exists(c_dom,query)
-    integer function config_get_int(c_dom,query,idefault)
-    real(kind=kind_real) function config_get_real(c_dom,query,rdefault)
-    function config_get_string(c_dom,length,query,sdefault)
-    function config_get_string_vector(c_dom, length, query)
+.. code-block:: Fortran
 
-The first argument in each of these routines (:code:`c_dom`) is a pointer to the :code:`eckit::Configuration` object in C++ that provides access to the config file as :ref:`described above <config-cpp>`.  These, like other interfaces in JEDI, use the intrinsic :code:`ISO_C_BINDING` Fortran module to pass information between C++ and Fortran.   Within this framework, :code:`c_dom` is declared as a pointer of type :code:`c_ptr`, with an :code:`intent(in)` attribute.
+    subroutine qg_geom_setup_c(c_key_self,c_conf) bind(c,name='qg_geom_setup_f90')
 
-The :code:`query` argument in the subroutines above is the name of the variable one wishes to retrieve from the config file (rendered as type :code:`character(*)`).  The :code:`config_get_real()`, :code:`config_get_int()`, and :code:`config_get_string()` routines also include an optional default value to be used if the variable in question is not found in the config file. The two string functions also require the user to specify the length of the string to retrieve, which is passed as an integer :code:`length` argument.  In the case of the string vector, this refers to the length (number of characters) of each element of the vector; the number of elements is determined automatically by querying the config file.
+      ! Passed variables
+      integer(c_int),intent(inout) :: c_key_self !< Geometry
+      type(c_ptr),value,intent(in) :: c_conf     !< Configuration
 
-As an example of how these Fortran interfaces are used, we'll consider a code segment from the :code:`atmprofile_setup_()` routine in the file :code:`ufo/src/ufo/atmosphere/atmprofile/ufo_atmprofile_mod.F90`.  This routine is called during the execution of the :code:`test_ufo_radiosonde_opr` test that we have been considering throughout this document.  It's function is to set up the Fortran counterpart of the C++ :code:`ufo::ObsAtmProfile` object that contains the Radiosonde observation operator.
+      ! Local variables
+      type(fckit_configuration) :: f_conf
+      type(qg_geom),pointer :: self
 
-.. code:: Fortran
-
-    subroutine atmprofile_setup_(self, c_conf)
-      use config_mod
-      implicit none
-      class(ufo_atmprofile), intent(inout) :: self
-      type(c_ptr), intent(in)    :: c_conf
-
-      integer :: ii
-
-      !> Size of variables
-      self%nvars = size(config_get_string_vector(c_conf, max_string, "variables"))
-      !> Allocate varout: variables in the observation vector
-      allocate(self%varout(self%nvars))
-      !> Read variable list and store in varout
-      self%varout = config_get_string_vector(c_conf, max_string, "variables")
+      ! Interface
+      f_conf = fckit_configuration(c_conf)
 
       [...]
 
+      ! Call Fortran
+      call qg_geom_setup(self,f_conf)
 
-The first thing to note is that this routine uses the :code:`config_mod` module in oops, which contains the configuration interface, as described above.  One must also :code:`use iso_c_binding`, which defines :code:`c_ptr` and other data types (in this example, this declaration is done at the :code:`ufo_atmprofile_mod` module level).
+    end subroutine qg_geom_setup_c
 
-The setup routine then calls :code:`config_get_string_vector()` twice; once to determine the number of variables listed in the config file and a second time to actually read the data.  The first call is used to allocate the Fortran string vector that will contain the data.  The length of each string buffer is set equal to the parameter :code:`max_string`, which is also defined in the :code:`config_mod` module.
+One must declare :code:`use iso_c_binding`, which defines :code:`c_ptr` and other data types (in this example, this declaration is done above the lines of code copied here). This then allows to create a fortran configuration object by calling the constructor :code:`f_conf = fckit_configuration(c_conf)`. It is important to notice that the c_conf passed here is a LocalConfiguration object, namely the one we constructed in :ref:`Example 2 by reading the geometry in geometryConfig <config-cpp-seg1>`
 
-Note that the various :code:`config_get*()` routines retrieve data relative to the the top level of the :code:`eckit::Configuration` object referred to by :code:`c_conf`.  As discussed :ref:`above <config-cpp>`, each section of the YAML or JSON file can be rendered as self-contained :code:`eckit::Configuration` object and the appropriate section of the config file is generally extracted in C++ and passed to the Fortran routines.  In this example, the :code:`c_conf` pointer points to the :code:`ObsType: Radiosonde` section of the :ref:`YAML file <yaml-file>`, as defined by the :code:`conf[0]` object in :ref:`the testSimulateObs() code segment above <config-cpp-seg2>`.
+
+We'll now consider a code segment from the :code:`qg_geom_setup()` routine in the file :code:`qg/model/qg_geom_mod.F90`.  Its function is to set up the Fortran counterpart of the C++ :code:`oops::GeometryQG` object that contains the geometry of the model.
+
+.. code-block:: Fortran
+
+    subroutine qg_geom_setup(self,f_conf)
+
+      ! Passed variables
+      type(qg_geom),intent(inout) :: self            !< Geometry
+      type(fckit_configuration),intent(in) :: f_conf !< FCKIT configuration
+
+      ! Local variables
+      [...]
+      real(kind_real),allocatable :: real_array(:),depths(:)
+
+      ! Get horizontal resolution data
+      call f_conf%get_or_die("nx",self%nx)
+      call f_conf%get_or_die("ny",self%ny)
+      self%nz = f_conf%get_size("depths")
+
+      allocate(depths(self%nz))
+      call f_conf%get_or_die("depths",real_array)
+      depths = real_array
+
+
+Since we are now working with the LocalConfiguration :code:`geometryConfig` and not the :code:`fullConfig`, the keys at the top levels are now **nx**, **ny** and **depths**. So, we can directly request **nx** instead of **geometry.nx**. If needed, the period still acts as a separator that can be used to access any level of the YAML/JSON hierarchy.
+
+The geometry setup routine calls both :code:`get_or_die()` and :code:`get_size()`, to read the data in **nx**, **ny** and **depths**. The function :code:`get_or_die()` allows the direct allocation of parameters such as :code:`self%nx` or :code:`self%ny`. These two parameters are members of the geometry and are declared as integers, so the value read from the keys **nx** and **ny** will be interpreted as an integer. If :code:`self%nx` had been declared as a string, the value read from the key **nx** would be interpreted as a string by :code:`get_or_die()`.
+
+In the case of **depths**, since it is an array we first need to know its size by calling :code:`get_size()`. In the case of our example this would return 2, and the size is immediately used to allocate an array of the proper shape. We can then call :code:`get_or_die()` to fill this array.
 
 We could add the following code segment to the subroutine above to illustrate a few other features of the Fortran configuration interface:
 
-.. code:: Fortran
+.. code-block:: Fortran
 
-  if (config_element_exists(c_conf,"GeoVaLs")) then
-     write(*,*) "Radiosonde GeoVaLs Norm = ",config_get_real(c_conf,"GeoVaLs.norm",1.0_kind_real)
+  integer :: ii
+
+  if f_conf%has("levels") then
+    call get_or_die("levels", ii)
+    write() "The model uses ", ii, " levels"
+  else
+    write(*,*) "WARNING: The models doesn't use levels"
   endif
 
-Here we see that :code:`config_element_exists()` is an interface to the :code:`eckit::Configuration::has()` method discussed :ref:`above <config-cpp>` that returns a Boolean :code:`true` or :code:`false` and that can be used to check if a variable exists in the config file.  Furthermore, the period acts as a separator that can be used to access any level of the YAML/JSON hierarchy that is at or below the level defined by :code:`c_conf`.  Here we use it to access the :code:`norm` element of the :code:`Observations.ObsTypes[0].GeoVaLs.norm` item of the :ref:`original YAML file <yaml-file>`.  We also included a default value of unity to be used if the :code:`config_get_real()` routine failed to find this variable in the config file.  But, in our example, the variable exists and the output is:
 
-.. code:: bash
+Here we see that :code:`eckit::Configuration::has()` returns a Boolean :code:`true` or :code:`false` and that can be used to check if a variable exists in the config file. In our example, the variable doesn't exist and the output is:
 
-    Radiosonde GeoVaLs Norm =    8471.8836878543570
+.. code-block:: bash
 
-
+    WARNING: The models doesn't use levels

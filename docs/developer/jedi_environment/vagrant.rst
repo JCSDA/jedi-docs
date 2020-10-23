@@ -23,7 +23,7 @@ As with Windows, you can install Vagrant on a Mac by downloading a pre-compiled 
 
 Before you begin you should install or update :doc:`Homebrew <../developer_tools/homebrew>`.  You'll need a relatively recent version in order to use the :code:`cask` extension.  Once you have done this, you can proceed as follows:
 
-.. code:: bash
+.. code-block:: bash
 
   brew cask install virtualbox
   brew cask install vagrant
@@ -39,7 +39,7 @@ So, to proceed, you should first create a directory where you will place your Va
 
 You can call the parent directory whatever you wish but if you change the name of the :code:`vagrant_data` directory then you will also have to :ref:`change the Vagrantfile <vagrant-customize>`.
 
-.. code:: bash
+.. code-block:: bash
 
   mkdir $HOME/jedi-vm
   cd $HOME/jedi-vm
@@ -53,7 +53,7 @@ We at JCSDA provide a Vagrantfile that can be used to create a virtual machine t
 
 Or, alternatively, you can retrieve it with
 
-.. code:: bash
+.. code-block:: bash
 
 	  wget http://data.jcsda.org/containers/Vagrantfile
 
@@ -73,7 +73,7 @@ C: Launch your Virtual Machine
 
 Now you are ready to create your virtual machine by running this command:
 
-.. code:: bash
+.. code-block:: bash
 
 	  vagrant up
 
@@ -81,7 +81,7 @@ The first time you run this command, it will take several minutes.  Vagrant is i
 
 So, when this command finishes, you can log into your virtual machine with
 
-.. code:: bash
+.. code-block:: bash
 
 	  vagrant ssh
 
@@ -101,14 +101,14 @@ D: Exit Container and Vagrant
 
 Normally you will be spending your time working in either the Singularity container or the Charliecloud container.  When you're finished working for the day, it's important to remember to enter :code:`exit` twice, once to exit the container and once to log out of the Vagrant virtual machine:
 
-.. code:: bash
+.. code-block:: bash
 
    exit # to exit Singularity or Charliecloud
    exit # to exit Vagrant
 
 Now, to temporarily shut down your virtual machine, enter
 
-.. code:: bash
+.. code-block:: bash
 
    vagrant halt
 
@@ -123,14 +123,14 @@ If you'd like to use graphical tools such as :ref:`kdbg <kdbg>` or :code:`emacs`
 
 After XQuartz is up and running, you can create and enter your VM as described in step C above.   Next you will have to set your :code:`DISPLAY` environment variable to use your local machine.  This is best done from within the container (either Singularity or Charliecloud) because environment variables set outside the container may not be accessible from within.
 
-.. code:: bash
+.. code-block:: bash
 
    # inside the container
    export DISPLAY=10.0.2.2:0.0
 
 You may wish to add the appropriate display definition to an initialization script  that you can run every time you enter the singularity container as described :ref:`here <startup-script>`.  Then, enter this on your host machine (i.e. your Mac or Windows machine), to grant the VM permission to display
 
-.. code:: bash
+.. code-block:: bash
 
    #On your Mac
    xhost + 127.0.0.1
@@ -139,7 +139,7 @@ These are the addresses that Vagrant uses for by default.  You may wish to add t
 
 To test the display, you can start a graphical application.  For example:
 
-.. code:: bash
+.. code-block:: bash
 
    # inside the container
    emacs &
@@ -154,7 +154,7 @@ Next, try running emacs from outside the container to see if the problem is with
 
 If you used a different Vagrant box than the one specified in the JEDI Vagrantfile (for example, if you used one from Singularityware), if might help to set your DISPLAY variable in the container to this instead:
 
-.. code:: bash
+.. code-block:: bash
 
    export DISPLAY=localhost:10.0
 
@@ -162,14 +162,14 @@ If the display still does not work, then you may need to explicitly grant Vagran
 
 Exit the container and exit vagrant.  Then edit your Vagrantfile and add these two lines (at the bottom, just before the :code:`end` in the main :code:`Vagrant.configure("2") do |config|` loop will do)
 
-.. code:: bash
+.. code-block:: bash
 
    config.ssh.forward_agent = true
    config.ssh.forward_x11 = true
 
 Then recreate your vagrant VM, log in, and enter the container (for example, for Singularity):
 
-.. code:: bash
+.. code-block:: bash
 
    vagrant halt # restart vagrant
    vagrant up
@@ -178,26 +178,26 @@ Then recreate your vagrant VM, log in, and enter the container (for example, for
 
 Now create an :code:`.Xauthority` file and generate an authorization key for your display:
 
-.. code:: bash
+.. code-block:: bash
 
    touch ~/.Xauthority
    xauth generate 10.0.2.2:0.0 . trusted
 
 You can list your new authorization key as follows:
 
-.. code:: bash
+.. code-block:: bash
 
    xauth list
 
 There should be at least one entry, corresponding to the display you entered in the :code:`xauth generate` command above (you can ignore other entries, if present).  For example, it should look something like this:
 
-.. code:: bash
+.. code-block:: bash
 
    10.0.2.2:0  MIT-MAGIC-COOKIE-1  <hex-key>
 
 where :code:`<hex-key>` is a hexadecimal key with about 30-40 digits.  Now, copy this information and paste it onto the end of the :code:`xauth add` command as follows:
 
-.. code:: bash
+.. code-block:: bash
 
    xauth add 10.0.2.2:0  MIT-MAGIC-COOKIE-1  <hex-key>
 
@@ -220,7 +220,7 @@ First comes the choice of machine.  The JEDI Vagrantfile uses a CentOS 7 operati
 
 For example, you can create your own Vagrantfile by entering something like this:
 
-.. code:: bash
+.. code-block:: bash
 
    vagrant init bento/ubuntu-18.04
 
@@ -229,7 +229,7 @@ When you then run :code:`vagrant up`, this will create an Ubuntu 18.04 operating
 
 The makers of Singularity also provide their own Vagrant box, with Singularity pre-installed:
 
-.. code:: bash
+.. code-block:: bash
 
    vagrant init singularityware/singularity-2.4
 
@@ -242,7 +242,7 @@ The JEDI Vagrantfile comes pre-configured to allocate 4GB of memory and 6 virtua
 
 You can change these resource allocations by editing the Vagrantfile.  Look for the following section that specifies the provider-specific configuration (variable names may differ).  Change the :code:`vb.memory` (in MB) and :code:`vb.cpus` fields as shown here:
 
-.. code:: bash
+.. code-block:: bash
 
    config.vm.provider "virtualbox" do |vb|
 
@@ -265,7 +265,7 @@ In Step B above we created a directory called :code:`vagrant_data`.  The JEDI Va
 
 To change this, you can edit the Vagrantfile and find the section for a **synced folder**:
 
-.. code:: bash
+.. code-block:: bash
 
     # Share an additional folder to the guest VM. The first argument is
     # the path on the host to the actual folder. The second argument is
@@ -278,7 +278,7 @@ The first argument specifies the directory on the host machine, relative to the 
 
 It might also be necessary to create the mount point from within the vagrant VM:
 
-.. code:: bash
+.. code-block:: bash
 
     mkdir ~/vagrant_data # from within the VM, if necessary
 
@@ -286,7 +286,7 @@ And, here is another tip: **Use an absolute path for your guest directory**.  Va
 
 On a related note: your default user name when you enter Vagrant will be :code:`vagrant` and your home directory will be :code:`/home/vagrant`.  If you want to change this you can do so by adding a line like this to your Vagrantfile:
 
-.. code:: bash
+.. code-block:: bash
 
    config.ssh.username = 'vagabond'
 
@@ -298,7 +298,7 @@ Working with Vagrant and the JEDI Container
 
 Once you have Vagrant and a container provider (either Singularity or Charliecloud) all set up as discussed above, your daily workflow may be as follows.  You might start by going to the directory where you put your Vagrantfile.  Then fire up and log in to your virtual machine.
 
-.. code:: bash
+.. code-block:: bash
 
   cd $HOME/jedi-vm
   vagrant up
@@ -306,21 +306,21 @@ Once you have Vagrant and a container provider (either Singularity or Charlieclo
 
 From there you can enter the container and (optionally) run your startup script.  For example, in the case of Singularity this would look something like this:
 
-.. code:: bash
+.. code-block:: bash
 
   singularity shell -e <singularity-image-file>
   source startup.sh
 
 The equivalent commands for Charliecloud would be:
 
-.. code:: bash
+.. code-block:: bash
 
   ch-run -c /home/vagrant ch-jedi-latest -- bash
   source startup.sh
 
 Now you're in the JEDI container and you can do whatever you wish: edit files, build, compile and run JEDI, etc.  If you want to use X-forwarding you'll have to explicitly tell your Mac to accept graphical input from the Vagrant VM as described in :ref:`Step G <mac-x-forwarding>` above:
 
-.. code:: bash
+.. code-block:: bash
 
    #On your Mac
    xhost + 127.0.0.1
@@ -329,7 +329,7 @@ You may be tempted to automate this so you don't have to enter this command ever
 
 When you're done for the day you can exit and shut down the VM:
 
-.. code:: bash
+.. code-block:: bash
 
    exit # to exit Singularity or Charliecloud
    exit # to exit Vagrant
@@ -346,7 +346,7 @@ This is usually desirable.  However, it does mean that the VM is occupying disk 
 
 To check vagrant's status at any time enter
 
-.. code:: bash
+.. code-block:: bash
 
     vagrant global-status
 
@@ -356,7 +356,7 @@ If you want to delete one or more of these VMs, the first step is to **save any 
 
 Now, the best way to proceed is to go to the directory where the vagrant file is and enter:
 
-.. code:: bash
+.. code-block:: bash
 
     vagrant destroy # enter y at the prompt
     rm -rf .vagrant
@@ -365,19 +365,19 @@ The first command deletes all of the disks used by the virtual machine, with the
 
 This is a start, but you're not done.  As mentioned :doc:`at the top of this document <vagrant>`, Vagrant is really just an interface to VirtualBox, which provides the Linux OS.  The Virtualbox VM that contains the Linux OS still exists and is still using resources on your computer.  To see the VirtualBoxes that are currently installed though Vagrant, run
 
-.. code:: bash
+.. code-block:: bash
 
     vagrant box list
 
 If you used the JEDI Vagrantfile as described in Step B above, then you'll see one or more entries with the name :code:`centos/7`.  The first step here is to prune any that are not being used any more with
 
-.. code:: bash
+.. code-block:: bash
 
     vagrant box prune
 
 However, even this might not delete the VM you want to delete.  Run :code:`vagrant list` to see if it is still there and if it is, you can delete it with
 
-.. code:: bash
+.. code-block:: bash
 
     vagrant box remove centos/7
 
@@ -385,7 +385,7 @@ However, even this might not delete the VM you want to delete.  Run :code:`vagra
 
 In some cases it might also help to delete the hidden :code:`.vagrant` file that is created by vagrant in the same directory as your Vagrantfile.  So, from that directory, enter:
 
-.. code:: bash
+.. code-block:: bash
 
     rm -rf .vagrant
 

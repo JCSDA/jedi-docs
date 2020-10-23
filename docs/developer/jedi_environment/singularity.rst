@@ -19,7 +19,7 @@ If you are using a Vagrant virtual machine that you created with the JEDI Vagran
 
 You can check to see if Singularity is already installed (and if it is, which version is installed) by typing
 
-.. code:: bash
+.. code-block:: bash
 
   singularity --version
 
@@ -46,7 +46,7 @@ Using the JEDI Singularity Container
 
 Once singularity is installed on your system, the rest is easy.  The next step is to download one of the **JEDI Singularity images** from the Sylabs Cloud. You can do this with the following command:  
 
-.. code:: bash
+.. code-block:: bash
 
    singularity pull library://jcsda/public/jedi-<name>
    962.73 MiB / 962.73 MiB [========================================================================================================] 100.00% 11.26 MiB/s 1m25s   
@@ -65,7 +65,7 @@ The pull command above will download a singularity image file onto your computer
 
 Strictly speaking, you only have to execute the pull command once but in practice you will likely want to update your JEDI image occasionally as the software environment continues to evolve.  The pull statement above should grab the most recent development version of the JEDI image file (it may take a few minutes to execute).  Singularity also offers a signature service so you can verify that the container came from JCSDA:
 
-.. code:: bash
+.. code-block:: bash
 
    singularity verify <image-file>   # (optional)
 
@@ -73,7 +73,7 @@ You may see a name you recognize - this will generally be signed by a member of 
 
 Though you can execute individual commands or scripts within the singularity container defined by your image file (see the **exec** and **run** commands in the `Singularity documentation <https://www.sylabs.io/docs/>`_), for many JEDI applications you may wish to invoke a **singularity shell**, as follows:
 
-.. code:: bash
+.. code-block:: bash
 
    singularity shell -e <image-file>
 
@@ -86,7 +86,7 @@ Working with Singularity
 
 If you installed singularity from within a :doc:`Vagrant <vagrant>` virtual machine (Mac or Windows), then you probably set up a a :code:`/home/vagrant/vagrant_data` directory (you may have given it a different name and/or path) that is shared between the host machine and the virtual machine.  Since this is mounted in your home directory, you should be able to access it from within the container.  However, sometimes you may wish to mount another directory in the container that is not accessible from Singularity by default.  For example, let's say that you are working on an HPC system and you have a designated workspace in a directory called :code:`$SCRATCH`.  We have included a mount point in the JEDI singularity container called :code:`/worktmp` that will allow you to access such a directory.  For this example, you would mount your work directory as follows:
 
-.. code:: bash
+.. code-block:: bash
 
    singularity shell --bind $SCRATCH:/worktmp -e <image-file>
 
@@ -94,7 +94,7 @@ After you enter the container you can :code:`cd` to :code:`/worktmp` to access y
 
 There is another "feature" of Singularity that is worth mentioning. Though Singularity starts a bash shell when entering the container, You may notice that it does not call the typical bash startup scripts like :code:`.bashrc`, :code:`.bash_profile` or :code:`.bash_aliases`.  Furthermore, this behavior persists even if you do not use the :code:`-e` option to :code:`singulary shell`.  This is intentional.  The creators of Singularity deliberately arranged it so that the singularity container does not call these startup scripts in order to avoid conflicts between the host environment and the container environment.   It is possible to circumvent this behavior using the :code:`--shell` option as follows:
 
-.. code:: bash
+.. code-block:: bash
 
    # NOT RECOMMENDED!
    singularity shell --shell /bin/bash -e <image-file>
@@ -105,13 +105,13 @@ However, if you do this, you may begin to appreciate why it is not recommended. 
 
 It is safer (and only minimally inconvenient) to put your aliases and environment variables in a shell script and then just get in the habit of sourcing that script after you enter the container, for example:
 
-.. code:: bash
+.. code-block:: bash
 
    source startup.sh
 
 where :code:`startup.sh` contains, for example:
 
-.. code:: bash
+.. code-block:: bash
 
    #!/bin/bash
    alias Rm='rm -rf '
@@ -127,7 +127,7 @@ For a full list of options, type :code:`singularity shell --help` from *outside*
 
 On a related note, you may have to run this in order for the jedi code to build properly:
 
-.. code:: bash
+.. code-block:: bash
 
     git lfs install
 
@@ -135,7 +135,7 @@ This only needs to be done once, and it can be done from either inside or outsid
 
 To exit the Singularity container at any time, simply type
 
-.. code:: bash
+.. code-block:: bash
 
    exit
 
