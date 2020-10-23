@@ -1,3 +1,7 @@
+# .readthedocs.yml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
 # For version 2 (latest version), this spec is required
 version: 2
 
@@ -6,5 +10,5 @@ sphinx:
   configuration: docs/conf.py
 
 # Optionally build your docs in additional formats such as PDF
-formats:
-#  - html
+# No additional formats
+formats: []
