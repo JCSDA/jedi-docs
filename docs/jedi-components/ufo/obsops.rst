@@ -150,7 +150,7 @@ Example of a yaml:
 .. code-block:: yaml
 
    obs operator:
-     name: Aod
+     name: AodCRTM
      Absorbers: [H2O,O3]
      obs options:
        Sensor_ID: v.viirs-m_npp
