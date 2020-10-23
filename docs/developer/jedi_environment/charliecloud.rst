@@ -159,7 +159,7 @@ For example, to run and test ufo-bundle, you can proceed as follows:
 
    On some systems (notably Cheyenne) it may be necessary to explicitly add :code:`/usr/local/lib` to your :code:`LD_LIBRARY_PATH` environment variable within the Charliecloud container, as follows:
 
-   .. code-block::
+   .. code-block:: bash
 
       export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
@@ -199,19 +199,19 @@ Tips for HPC Systems
 
 By default, Charliecloud does not change environment variables (with a few exceptions).  The JEDI Charliecloud container does explicitly set a few variables such as :code:`NETCDF`, :code:`FC`, :code:`PIO`, etc. (for bash shells) but it's still good practice to clean your environment by purging other modules before you enter your :code:`ch-run` command.  Most HPC systems use some form of environment modules to load software packages.  So "cleaning your environment" usually just looks like this:
 
-.. code-block::
+.. code-block:: bash
 
       module purge
 
 Another common practice on HPC systems is to run applications in designed work or scratch directories instead of one's home directory.  This is often required to have access to sufficient disk space.  The JEDI Charliecloud and Singularity containers includes a :code:`/worktmp` directory that can be used as a mount point for a system work space.  For example, on Cheyenne one may wish to do this:
 
-.. code-block::
+.. code-block:: bash
 
       ch-run -b/glade/work/`whoami`:/worktmp <path>/ch-jedi-gnu-openmpi-dev -- bash
 
 This is good, but for substantial parallel applications there is an approach that is even better for MPI jobs.  System administrators at HPC centers spend a lot of time and effort configuring their MPI implementations to take full advantage of the system hardware.  If you run the mpi implementation inside the container (currently openmpi), you won't be able to take advantage of these site-specific configurations and optimizations.  Fortunately, there is a way out of this dilemma: you can invoke the parallel process manager, :code:`mpirun` or :code:`mpiexec` outside the container and then have each MPI process enter its own container.  Again using Cheyenne as an example, you can do this in a batch script like this:
 
-.. code-block::
+.. code-block:: bash
 
       #!/bin/bash
       #PBS -N multicon
@@ -240,7 +240,7 @@ There are a few things to note about this example.  First, mpirun is called from
 
 This is usually more efficient than the alternative of running a single container with multiple mpi jobs:
 
-.. code-block::
+.. code-block:: bash
 
       export TMPDIR=/worktmp/scratch
       ch-run -b $WORK:/worktmp -c $WORKDIR $CHDIR/ch-jedi-gnu-openmpi-dev -- mpirun -np 144 $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml
