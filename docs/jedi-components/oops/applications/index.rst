@@ -9,3 +9,4 @@ OOPS Applications
    ensemble-applications
    variational
    localensembleda
+   hofx
