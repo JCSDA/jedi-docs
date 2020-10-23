@@ -33,9 +33,9 @@ The **Expected Standard** of a code review is to favor approval of a PR when it 
 Benefits of Code Reviews
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* **Sharing knowledge / increase knowledge transfer:**. Teams are better able to swarm around work when more persons are aware of both the "big picture" and smaller details.
+* **Sharing knowledge / increase knowledge transfer:** Teams are better able to swarm around work when more persons are aware of both the "big picture" and smaller details.
 * **Improve development process:** Developer and team velocity increases as code reviewers are exposed to product complexity, known issues, and areas of concern in a code base, creating multiple informed contributors.
-* **Mentoring of all team member:s** Code reviews facilitate conversations about a code base, often leading to hidden knowledge surfacing and ensuring new insights tempered with that knowledge.
+* **Mentoring of all team members:** Code reviews facilitate conversations about a code base, often leading to hidden knowledge surfacing and ensuring new insights tempered with that knowledge.
 
 As code reviews expose developers to new ideas and technologies, they write better and better code.
 
