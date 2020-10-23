@@ -102,7 +102,7 @@ The time-stepping algorithm is designed for speed rather than accuracy, and is a
 
   * If the potential vorticity is the prognostic variable, streamfunction is computed using the inversion procedure described in the previous section. Solution of the Helmholtz equation is achieved using an FFT-based method. Applying a Fourier transform in the east-west direction to equation :eq:`eq:toy-model_qg_2d_helmholtz_eqn` gives a set of independent equations for each wavenumber. In the case of the five-point discrete Laplacian, these are tri-diagonal matrix equations, which can be solved using the standard (Thomas) algorithm.
 
-  city at each gridpoint is then calculated using centered, finite-difference approximations to:
+  * The velocity at each gridpoint is then calculated using centered, finite-difference approximations to:
 
   .. math::
      u = -\frac{\partial \psi}{\partial y} \\
