@@ -52,16 +52,16 @@ What to look for in a Code Review
 * **Style and consistency:** If a Style Guide is applicable, do code changes adhere to it?
 * **Documentation:** If a PR's code changes behavior or instructions, accompanying documentation must be updated to reflect these changes.
 
-**Code Reviews Take Time...**
+How Fast Should Code Reviews Be?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-... but they can be fast! This apparent dichotomy really isn't such -- optimize for the speed at which a product is created, not for the speed at which individuals write code. In other words, a team's *overall development velocity* is paramount, and timely code reviews aid that process. When code reviews are **not timely**:
+**Code Reviews Take Time**...but they can be fast! This apparent dichotomy really isn't such -- optimize for the speed at which a product is created, not for the speed at which individuals write code. In other words, a team's *overall development velocity* is paramount, and timely code reviews aid that process. When code reviews are **not timely**:
 
 * **Team velocity is decreased**. New features and bug fixes are delayed as each PR waits for review.
 * **Developers protest the code review process**. Relatively quick reviwer responses are paramount to continue progress. *Most complaints about code review processes are  resolved by making the process faster*.
 * **Code health can be impacted**. Slow reviews  discourage code cleanups, refactorings, and further improvements to existing PRs.
 
-How Fast Should Code Reviews Be?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+**Timely** code reviews can be a balancing act:
 
 * **Speed vs. Interruption:** If you are not in the middle of a focused task, *you should do a code review shortly after it comes in*. If you are in the middle of a focused task, such as writing code, don’t interrupt yourself to do a code review. 
 * **Fast Responses:** We are concerned with response time, as opposed to how long it takes a PR to get through the whole review and be merged. The whole process should also be fast, but it’s  more important for individual responses to come quickly than it is for the whole process to happen rapidly. If you're too busy to do a full review on a PR, send a quick response that lets the developer know when you will get to it, suggest other reviewers who might be able to respond more quickly, or provide some initial broad comments.
