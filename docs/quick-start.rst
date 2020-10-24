@@ -30,7 +30,7 @@ JEDI packages are organized into *bundles*.  A bundle includes a collection of G
 
 All JEDI bundles include the base JEDI repositories of :doc:`OOPS <jedi-components/oops/index>`, :doc:`SABER <jedi-components/saber/index>`, :doc:`IODA <jedi-components/ioda/index>`, and :doc:`UFO <jedi-components/ufo/index>`, as well as the `Community Radiative Transfer Model (CRTM) <https://github.com/jcsda/crtm>`_.  Most will also include additional repositories that provide the forecast model and the physics packages or software infrastructure that supports it.  Some bundles may also include supplementary repositories that support different observation types, such as an alternative radiative transfer model or tools for working with radio occultation measurements from global navigation satellite systems.
 
-Which JEDI bundle you build depends on which atmospheric or oceanic model you plan to work with.  For new users, a good place to start is :code:`ufo-bundle`.  This has all of the JEDI base repositories and, through OOPS, it also contains several illustrative :doc:`toy models <jedi-components/oops/toy-models>` that can be used to run fundamental data assimilation applications.
+Which JEDI bundle you build depends on which atmospheric or oceanic model you plan to work with.  For new users, a good place to start is :code:`ufo-bundle`.  This has all of the JEDI base repositories and, through OOPS, it also contains several illustrative :doc:`toy models <jedi-components/oops/toy-models/index>` that can be used to run fundamental data assimilation applications.
 
 When you have your JEDI dependencies all set, you can build ufo-bundle with the following commands:
 
