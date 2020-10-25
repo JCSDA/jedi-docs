@@ -71,6 +71,8 @@ If you do decide to run the JEDI Docker containers directly, be sure to log in a
 
 If you log in as root (the default) then the mpi tests will likely fail.
 
+.. _available_containers:
+
 Available Containers
 --------------------
 

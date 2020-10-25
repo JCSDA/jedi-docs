@@ -10,6 +10,9 @@ Learning Goals:
  - How to view an increment using Panoply
  - How to modify a configuration file to alter program execution
 
+Prerequisites:
+ - read the :doc:`tutorial overview <../index>`
+
 
 Step 1: Download and Enter the JEDI Container
 ---------------------------------------------
@@ -38,36 +41,15 @@ Now you *enter the container* with the following command:
 
 .. code-block:: bash
 
-   singularity shell -e --writable jedi-tutorial_latest.sif
+   singularity shell -e jedi-tutorial_latest.sif
 
-.. _writeable-container:
-
-The ``--writable`` option here deserves some discussion.  Software containers are often deliberately designed to be read-only.  This to ensure reproducibility - in order to guarantee that all users of the container will get the same results, we have to ensure that all users are running precisely the same code.  Such reproducibility is :ref:`a major benefit of using containers <Software-Containers>` and most JEDI containers are indeed read-only.
-
-This tutorial container is an exception to that rule.  As part of the tutorial exercises, we wish to allow the user to modify the JEDI source code and explore the consequences.  So, we have designed the JEDI container to be writable.  We will begin to exploit this capability in the next tutorial, :doc:`Working with JEDI <dev-container>`.
-
-This tutorial does not require you to modify the JEDI code.  In that sense, it is intended to mimic how one might use an :ref:`application container <Software-Containers>`.  However, the ``--writeable`` option is still required, **but only the first time you run singularity shell** (or similar commands such as ``singularity run``).  This is needed to set up the file system overlay that permits the container to be writable.
-
-To exit the container at any time, simply enter
+To exit the container at any time (not now), simply enter
 
 .. code-block:: bash
 
    exit
 
-Then, if you re-enter the container you should not need the ``--writable`` option because the overlay is already set up:
-
-.. code-block:: bash
-
-   singularity shell -e jedi-tutorial_latest.sif
-
-
-If you omit the ``--writable`` option, then you will not be able to edit any files in the container; they will all be read-only.
-
-.. note::
-
-   The filesystem overlay lives in a variable system directory, often ``/usr/local/var/singularity``.  Such directories may not be saved when cloud instances are suspended.  For example, if you stop and restart an AWS node, then you may have to include the ``--writable`` flag the first time you re-enter the jedi tutorial container.
-
-
+.. _meet-the-container:
 
 Step 2: Get to know the Container
 ---------------------------------
