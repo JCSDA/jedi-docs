@@ -13,4 +13,3 @@ An introductory video produced for the JEDI Academy is available `here <http://a
    goals_and_code_organization.rst
    getting_started.rst
    theoretical_documentation.rst
-   auto_documentation.rst
