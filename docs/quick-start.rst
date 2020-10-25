@@ -34,10 +34,10 @@ Which JEDI bundle you build depends on which atmospheric or oceanic model you pl
 
 When you have your JEDI dependencies all set, you can build ufo-bundle with the following commands:
 
-.. code:: bash
+.. code-block:: bash
 
    cd <jedi-path>
-   git clone git@github.com/jcsda/ufo-bundle.git
+   git clone https://github.com/jcsda/ufo-bundle.git
    mkdir build
    cd build
    ecbuild --build=Release ../ufo-bundle
