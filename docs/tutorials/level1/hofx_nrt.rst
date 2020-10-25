@@ -68,3 +68,27 @@ Next, we need observations to compare our forecast to.  Observations included in
 * ssmis-f17
 * ssmis-f18
 * atms-n20
+
+The script to get these background and observation files is already in fv3-bundle.  But, before we run it, we should find a good place to run our application.  If you are using an application container, ``fv3-bundle`` is inside the container so that directory is read-only; that will not do.  Or, if you are using a development container, you could write to it but it is good practice to keep the repository clean of output files.
+
+So, whichever container you are running in, it's a good idea to copy the files you need over to your home directory that is dedicated to running the tutorial.  For example:
+
+.. code-block:: bash
+
+   mkdir -p $HOME/jedi/tutorials
+   cp -R <path-to-fv3-bundle>/tutorials/Hofx $HOME/jedi/tutorials
+   cd $HOME/jedi/tutorials/Hofx
+
+Here ``<path-to-fv3-bundle>`` is the path to your copy of ``fv3-bundle``.  If you previously did the :doc:`Run JEDI in a Container <run-jedi>` tutorial this will be ``/opt/jedi/fv3-bundle``.  Or, if you did the :doc:`Building and Testing FV3 Bundle <dev-container>` tutorial, this may be ``$HOME/jedi/fv3-bundle``.
+
+We'll call ``$HOME/jedi/tutorials/Hofx`` the run directory.
+
+Now we are ready to run the script to obtain the input data (from the run directory):
+
+.. code-block:: bash
+
+    ./get_input.bash
+
+You only need to run this once.  It will retrieve the background and observation files from a remote server and place them in a directory called ``input``.
+
+You may have already noticed that there is another directory in your run directory called ``config``.  Take a look.  Here are a different type of input files, including configuration (:doc:`yaml <../../developer/building_and_testing/configuration>`) files that specify the parameters for the JEDI applications we'll run and fortran namelist files that specify configuration details specific to the FV3-GFS model.
