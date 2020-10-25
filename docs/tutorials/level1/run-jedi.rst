@@ -20,7 +20,7 @@ The first step in this and all JEDI tutorials is to download the JEDI tutorial S
 
    singularity pull library://jcsda/public/jedi-tutorial
 
-If you get an error message that singularity is not found then you'll have to install it or otherwise gain access to it.  For further information see the :doc:`tutorials overview <overview>`.
+If you get an error message that singularity is not found then you'll have to install it or otherwise gain access to it.  For further information see the :doc:`tutorials overview <../index>`.
 
 .. note::
 
@@ -53,7 +53,7 @@ To exit the container at any time, simply enter
 .. code-block:: bash
 
    exit
-   
+
 Then, if you re-enter the container you should not need the ``--writable`` option because the overlay is already set up:
 
 .. code-block:: bash
@@ -89,7 +89,7 @@ So, things may look the same, though your command line prompt has likely changed
   cd ~
   ls
 
-  
+
 You are still the same person.  And, more importantly from a system administrator's perspective, you still have the same access permissions that you did outside of the container.  You can still see all the files in your home directory.  And, you can still edit them and create new files (give it a try).  But things have indeed changed.  Enter this:
 
 .. code-block:: bash
@@ -101,7 +101,7 @@ This tells you that you are now running an ubuntu 18.04 operating system, regard
 .. code-block:: bash
 
    ls /usr/local/lib
-  
+
 There you will see a host of JEDI dependencies, such as netcdf, lapack, and eckit, that may not be installed on your host system.  Thus, singularity provides its own version of system directories such as ``/usr`` but shares other directories with the host system, such as ``$HOME``.  If you're familiar with any of these libraries, you can run some commands, for example:
 
 .. code-block:: bash
@@ -115,7 +115,7 @@ You can find the JEDI code in the ``/jedi`` directory:
    cd /jedi
    ls
 
-There are two subdirectories here.  One is ``fv3-bundle``.  :doc:`As described elsewhere in this documentation <../developer/building_and_testing/building_jedi>`, jedi applications are best built as part of **bundles** that include all the different JEDI code repositories needed to compile that particular application.  As its name suggests, ``fv3-bundle`` includes the source code for all the repositories require to run the `FV3 model <https://www.gfdl.noaa.gov/fv3/>`_ within JEDI, with the accompanying data assimilation capabilities of core JEDI repositories including the Object Oriented Prediction System (OOPS), the Interface for Observational Data Assimilation (:doc:`IODA <../jedi-components/ioda/index>`, the Unified Forward Operator (:doc:`UFO <../jedi-components/ufo/index>`) and the System-Agnostic Background Error Representation (SABER).  Go into that directory and look around.
+There are two subdirectories here.  One is ``fv3-bundle``.  :doc:`As described elsewhere in this documentation <../../developer/building_and_testing/building_jedi>`, jedi applications are best built as part of **bundles** that include all the different JEDI code repositories needed to compile that particular application.  As its name suggests, ``fv3-bundle`` includes the source code for all the repositories require to run the `FV3 model <https://www.gfdl.noaa.gov/fv3/>`_ within JEDI, with the accompanying data assimilation capabilities of core JEDI repositories including the Object Oriented Prediction System (:doc:`OOPS <../../jedi-components/oops/index>`), the Interface for Observational Data Assimilation (:doc:`IODA <../../jedi-components/ioda/index>`, the Unified Forward Operator (:doc:`UFO <../../jedi-components/ufo/index>`) and the System-Agnostic Background Error Representation (:doc:`SABER <../../jedi-components/saber/index>`).  The interface between FV3-based models and JEDI is implemented through the :doc:`FV3-JEDI <../../jedi-components/fv3-jedi/index>` code repository.  Go into the ``fv3-bundle`` directory and look around.
 
 Also in the ``/jedi`` directory is a subdirectory called ``build``.  This contains the compiled code, including the executables that are located in ``/jedi/build/bin``.  Again, have a look around.
 
@@ -157,7 +157,7 @@ We have included a sample run script in the container.  It's a good idea to copy
    cp /jedi/tutorials/run-jedi/run.bash .
    cp -r /jedi/tutorials/run-jedi/conf .
 
-Take a look at the files you just copied over.  The run script defines a workflow that is needed to run a variational data assimilation application with fv3-jedi and the B-Matrix Unstructured Mesh Package (BUMP).  First BUMP is used to compute the correlation statistics and localization for the background error covariance matrix (B-Matrix).  Then the variational application is run, and a seperate application computes the increment for visualization and analysis.  Each of these applications runs with 6 MPI tasks (the minimum for fv3) and each takes only two arguments, namely a (yaml) configuration file and a filename for storing the text output messages (i.e. the log). 
+Take a look at the files you just copied over.  The run script defines a workflow that is needed to run a variational data assimilation application with fv3-jedi and the B-Matrix Unstructured Mesh Package (BUMP).  First BUMP is used to compute the correlation statistics and localization for the background error covariance matrix (B-Matrix).  Then the variational application is run, and a seperate application computes the increment for visualization and analysis.  Each of these applications runs with 6 MPI tasks (the minimum for fv3) and each takes only two arguments, namely a (yaml) configuration file and a filename for storing the text output messages (i.e. the log).
 
 The ``conf`` directory contains jedi configuration files in ``yaml`` format that govern the execution of the application, including the specification of input data files, control flags, and parameter values.  If you look inside, you'll see references to where the input data files are.  For example, the ``/jedi/fv3-bundle/fv3-jedi/test/Data/fv3files`` contains namelist and other configuration files for the FV3 model and the ``/jedi/fv3-bundle/fv3-jedi/test/Data/inputs/gfs_c12`` directory contains model backgrounds and ensemble states that are used to define the grid, initialize forecasts, and compute the B-Matrix.  The ``c12`` refers to the horizontal resolution, signifying 12 by 12 grid points on each of the 6 faces of the cubed sphere grid, or 864 horizontal grid points total.  This is, of course, much lower resolution than operational forecasts but it is sufficient to run efficiently for a tutorial!
 
@@ -178,11 +178,11 @@ Now try a hybrid 4D variational application:
    ./run.bash hyb-4dvar
 
 The output of each of these experiments can now be found in the ``run-hyb-3dvar`` and ``run-hyb-4dvar`` directories respectively.  A detailed investigation of this output is beyond the scope of this tutorial but you may wish to take a few moments to survey the types of output files that are produced.
-   
+
 Step 4: View the Increment
 --------------------------
 
-As mentioned above, the last application in the ``run.bash`` script generates an increment that can be used for visualization.  This is rendered as a netcdf file.  Our recommended tool for visualizing netcdf files, particularly those generated by fv3-jedi, is the `Panoply <https://www.giss.nasa.gov/tools/panoply/>`_ data viewer provided by NASA.  
+As mentioned above, the last application in the ``run.bash`` script generates an increment that can be used for visualization.  This is rendered as a netcdf file.  Our recommended tool for visualizing netcdf files, particularly those generated by fv3-jedi, is the `Panoply <https://www.giss.nasa.gov/tools/panoply/>`_ data viewer provided by NASA.
 
 Panoply is available in the container by running the following shell script:
 
@@ -190,7 +190,7 @@ Panoply is available in the container by running the following shell script:
 
    /jedi/PanoplyJ/panoply.sh
 
-However, this will launch a graphical user interface (GUI) which will not work unless you have X forwarding set up properly.  If you are running Singularity from a linux laptop or workstation, no further action may be required.  If instead you are running Singularity on a Mac or Windows laptop from within a vagrant virtual machine, then :ref:`setting up X forwarding may be a bit more compilicated <mac-x-forwarding>`.  
+However, this will launch a graphical user interface (GUI) which will not work unless you have X forwarding set up properly.  If you are running Singularity from a linux laptop or workstation, no further action may be required.  If instead you are running Singularity on a Mac or Windows laptop from within a vagrant virtual machine, then :ref:`setting up X forwarding may be a bit more compilicated <mac-x-forwarding>`.
 
 In general, X forwarding from inside the Singularity container works just like it does outside of the container.  So, if you are able to launch a graphical application outside of the container (``xclock`` is often a convenient test case), then run ``echo $DISPLAY`` to see what the value of your ``DISPLAY`` environment variable is.  Then, from within the container, set the ``DISPLAY`` variable to the same value.  For example, if you're logging into a remote machine with ``ssh -Y`` then you may need to do something like this:
 
