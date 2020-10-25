@@ -13,4 +13,4 @@ Prerequisites:
 Overview
 --------
 
-In the :doc:`Run JEDI in a Container <run-jedi>` tutorial we used a version of an :doc:`application container <../../developer/jedi_environment/portability>`.  This means that the container includes the compiled source code, ready to use.  The ``jedi-tutorial`` container comes pre-packaged with JEDI!
+If you have finished either the :doc:`Run JEDI in a Container <run-jedi>` tutorial or the :doc:`Building and Testing FV3 bundle <dev-container>` tutorial, you now have a version of ``fv3-bundle` compiled and ready to use.
