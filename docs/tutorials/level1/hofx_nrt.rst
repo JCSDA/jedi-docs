@@ -25,8 +25,46 @@ So, in this tutorial, we will be running an application called :math:`H({\bf x})
 
 The goal is to create plots comparable to JCSDA's `Near Real-Time (NRT) Observation Modeling web site <http://nrt.jcsda.org>`_  This site regularly ingests observation data for the complete set of operational instruments at NOAA.  And, it compares these observations to forecasts made through NOAA's operational Global Forecasting System (FV3-GFS) and NASA's Goddard Earth Observing System (FV3-GEOS).
 
-But there is a caveat.  The NRT web site regularly simulates millions of observations using model backgrounds with operational resolution - and it does this every six hours!  That requires substantial high-performance computing (HPC) resources.  We want to mimic this procedure in a way that can be run on a laptop computer.  So, the model background we will use will be at a much lower horizonal resolution (c48, corresponding to about 13,824 points in latitude and longitude) than the NRT website (GFS operational resolution of c768, corresponing to about 3.5 million points).
+But there is a caveat.  The NRT web site regularly simulates millions of observations using model backgrounds with operational resolution - and it does this every six hours!  That requires substantial high-performance computing (HPC) resources.  We want to mimic this procedure in a way that can be run on a laptop computer.  So, the model background we will use will be at a much lower horizonal resolution (c48, corresponding to about 14 thousand points in latitude and longitude) than the NRT website (GFS operational resolution of c768, corresponing to about 3.5 million points).
 
 
 Step 1: Acquire input files
 ---------------------------
+
+The description in the previous section gives us a good idea of what we need to run :math:`H({\bf x})`.  First, we need :math:`{\bf x}` - the model state.  In this tutorial we will use background states from the FV3-GFS model with a resolution of c48, as mentioned above.
+
+Next, we need observations to compare our forecast to.  Observations included in this tutorial include (see our :doc:`UFO document <../../jedi-components/ufo/index>` for an explanation of acronyms; nlocs is the number of observations for each):
+
+* Aircraft; nlocs=93933; T:43192; Q:1676; U,V:43145
+* Sonde; nlocs=3090 T:276; Q:550; U,V:1916; Psfc:19
+* Satwinds; nlocs=1552597; U,V:263192/2641344
+* Scatwinds; nlocs=217582; U,V:212907/435088
+* Vadwind; nlocs=15796; U,V:6513/31592
+* Windprof; nlocs=13; U,V:9/26
+* SST; nlocs=24396; SST:20828/22361
+* Ship; nlocs=40312; T:3260; U,V:7843; Psfc:8888/36417
+* Surface; nlocs=217289; T,Q,U,V:0; Psfc:62188/192169
+* cris-npp
+* cris-n20
+* airs-aqua
+* gome-metopa
+* gome-metopb
+* sbuv2-n19
+* amsua-aqua
+* amsua-n15
+* Amsua-n18
+* amsua-n19
+* amsua-metopa
+* amsua-metopb
+* amsua-metopc
+* iasi-metopa
+* iasi-metopb
+* seviri-m08
+* seviri-m11
+* mhs-metopa
+* mhs-metopb
+* mhs-metopc
+* mhs-n19
+* ssmis-f17
+* ssmis-f18
+* atms-n20
