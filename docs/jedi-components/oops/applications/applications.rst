@@ -7,7 +7,7 @@ OOPS provides the following applications that can be used with different models 
 
 Applications running forecast (and computing H(x))
 --------------------------------------------------
-* Forecast: model forecast
+* :doc:`Forecast<forecast>`: model forecast
 * :doc:`HofX<hofx>`: model forecast and computes H(x)
 
 Data assimilation applications

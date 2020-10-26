@@ -42,6 +42,6 @@ The first member of the ensemble will run HofX with the first file in the list, 
 
 More about how to write yaml files for:
 
-* Forecast.
+* :doc:`Forecast<forecast>`.
 * :doc:`HofX<hofx>`.
 * :doc:`Variational<variational>`.
