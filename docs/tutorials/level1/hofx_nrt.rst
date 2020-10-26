@@ -76,7 +76,7 @@ So, whichever container you are running in, it's a good idea to copy the files y
 .. code-block:: bash
 
    mkdir -p $HOME/jedi/tutorials
-   cp -R <path-to-fv3-bundle>/tutorials/Hofx $HOME/jedi/tutorials
+   cp -r <path-to-fv3-bundle>/tutorials/Hofx $HOME/jedi/tutorials
    cd $HOME/jedi/tutorials/Hofx
 
 Here ``<path-to-fv3-bundle>`` is the path to your copy of ``fv3-bundle``.  If you previously did the :doc:`Run JEDI in a Container <run-jedi>` tutorial this will be ``/opt/jedi/fv3-bundle``.  Or, if you did the :doc:`Building and Testing FV3 Bundle <dev-container>` tutorial, this may be ``$HOME/jedi/fv3-bundle``.
@@ -105,4 +105,3 @@ When you are ready, try it out:
    ./run.bash
 
 If you get a prompt to ``Please enter the JEDI build directory`` then that probably means you built fv3-bundle yourself as part of the :doc:`Building and Testing FV3 Bundle <dev-container>` tutorial.  If that's the case then you should enter ``$HOME/jedi/build``.  This tells the script where to find the fv3-jedi executables.
-
