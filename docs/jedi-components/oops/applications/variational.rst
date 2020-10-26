@@ -77,3 +77,44 @@ Dual minimizers
 
 SaddlePoint minimizer
 ^^^^^^^^^^^^^^^^^^^^^
+
+Variational application yaml structure
+--------------------------------------
+
+The following block of code gives the main components of the yaml file needed to run a 3d-var:
+
+.. _yaml-da:
+
+.. code-block:: yaml
+
+    ---
+    cost function:
+      cost type: #one of the supported cost functions
+      window begin: #beginning of the data assimilation window
+      window length: #length of the data assimilation window
+      analysis variables: #variables used for the analysis
+      geometry:
+        #geometry of the model
+      background:
+        #background file
+      background error:
+        #one of the supported background error covariance matrix
+      observations:
+        #list of observation files
+    variational:
+      minimizer:
+        algorithm: #one of the supported minimizers
+      iterations: #each item of this list defines an outer loop
+      - diagnostics: #(optional)
+          departures: ombg #will save 'observations - H(background)' in the output file
+        gradient norm reduction: #target norm for the minimization of the gradient
+        ninner: #maximum number of iterations in this outer loop
+        geometry:
+          #geometry of the model
+      - #another outer loop
+        [...]
+    final:
+      diagnostics: #(optional)
+        departures: oman #will save 'observations - H(analysis)' in the output file
+    output:
+      #path, file name, ... to save the analysis
