@@ -105,3 +105,4 @@ When you are ready, try it out:
    ./run.bash
 
 If you get a prompt to ``Please enter the JEDI build directory`` then that probably means you built fv3-bundle yourself as part of the :doc:`Building and Testing FV3 Bundle <dev-container>` tutorial.  If that's the case then you should enter ``$HOME/jedi/build``.  This tells the script where to find the fv3-jedi executables.
+

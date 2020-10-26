@@ -7,7 +7,7 @@ Learning Goals:
  - How to download and run/enter a JEDI application container
  - Introduction to the JEDI source code and directory structure
  - How to run a jedi application inside the container
- - How to view an increment using Panoply
+ - How to view an increment
  - How to modify a configuration file to alter program execution
 
 Prerequisites:
@@ -17,17 +17,13 @@ Prerequisites:
 Step 1: Download and Enter the JEDI Container
 ---------------------------------------------
 
-The first step in this and all JEDI tutorials is to download the JEDI tutorial Singularity image file:
-
+The first step in this and all JEDI tutorials is to download the appropriate JEDI tutorial Singularity container.  In this activity we'll use the ``jedi-tutorial`` container:
+<
 .. code-block:: bash
 
    singularity pull library://jcsda/public/jedi-tutorial
 
 If you get an error message that singularity is not found then you'll have to install it or otherwise gain access to it.  For further information see the :doc:`tutorials overview <../index>`.
-
-.. note::
-
-   Currently this singularity pull command is likely to fail because the the JEDI tutorial container is currently private.  We plan to make the tutorial container public as soon as we have our first public release of the JEDI project.  However, until that happens, please `contact the JEDI core team <miesch@ucar.edu>`_ for access to the tutorial container image file.
 
 If the pull was successful, you should see a new file in your current directory with the name ``jedi-tutorial_latest.sif``.  If it has a different name or a different extension you may have an older version of Singularity.  It is recommended that you use Singularity version 3.0 or later.
 
@@ -97,7 +93,7 @@ You can find the JEDI code in the ``/jedi`` directory:
    cd /jedi
    ls
 
-There are two subdirectories here.  One is ``fv3-bundle``.  :doc:`As described elsewhere in this documentation <../../developer/building_and_testing/building_jedi>`, jedi applications are best built as part of **bundles** that include all the different JEDI code repositories needed to compile that particular application.  As its name suggests, ``fv3-bundle`` includes the source code for all the repositories require to run the `FV3 model <https://www.gfdl.noaa.gov/fv3/>`_ within JEDI, with the accompanying data assimilation capabilities of core JEDI repositories including the Object Oriented Prediction System (:doc:`OOPS <../../jedi-components/oops/index>`), the Interface for Observational Data Assimilation (:doc:`IODA <../../jedi-components/ioda/index>`, the Unified Forward Operator (:doc:`UFO <../../jedi-components/ufo/index>`) and the System-Agnostic Background Error Representation (:doc:`SABER <../../jedi-components/saber/index>`).  The interface between FV3-based models and JEDI is implemented through the :doc:`FV3-JEDI <../../jedi-components/fv3-jedi/index>` code repository.  Go into the ``fv3-bundle`` directory and look around.
+There are two subdirectories here.  One is ``fv3-bundle``.  :ref:`As described in the quick start <quick-start-build>`, jedi applications are best built as part of **bundles** that include all the different JEDI code repositories needed to compile that particular application.  As its name suggests, ``fv3-bundle`` includes the source code for all the repositories require to run the `FV3 model <https://www.gfdl.noaa.gov/fv3/>`_ within JEDI, with the accompanying data assimilation capabilities of core JEDI repositories including the Object Oriented Prediction System (:doc:`OOPS <../../jedi-components/oops/index>`), the Interface for Observational Data Assimilation (:doc:`IODA <../../jedi-components/ioda/index>`, the Unified Forward Operator (:doc:`UFO <../../jedi-components/ufo/index>`) and the System-Agnostic Background Error Representation (:doc:`SABER <../../jedi-components/saber/index>`).  The interface between FV3-based models and JEDI is implemented through the :doc:`FV3-JEDI <../../jedi-components/fv3-jedi/index>` code repository.  Go into the ``fv3-bundle`` directory and look around.
 
 Also in the ``/jedi`` directory is a subdirectory called ``build``.  This contains the compiled code, including the executables that are located in ``/jedi/build/bin``.  Again, have a look around.
 
@@ -193,10 +189,10 @@ Now you should be able to see the temperature increment. Note the color table on
 Now play around a bit with Panoply. Explore it’s options. Scroll through the levels to see how the increment chandes with height.  Try plotting out zonal averages instead of a map. Navigate to the Map tab and try a different projection. Go back to the original window and create a new plot with a different field. Try the **Combine plots** option on the menu bar at the top.
 
 
-Step 5: Change the Configuration
---------------------------------
+Step 5: Change the Configuration (Optional)
+-------------------------------------------
 
-As a final exercise in this tutorial we encourage you to edit the configuration files in your local ``jedi-tutorial/conf`` directory and see how that effects the resulting increments.
+This is really a :doc:`Padawan level activity <../level2/index>` so feel free to come back to it after you've done some of the other more advanced tutorials.  But, experienced practitioners of data assimilation might wish to edit the configuration files in your local ``jedi-tutorial/conf`` directory and see how that effects the resulting increments.
 
 Here are a few possible activities - we encourage you to come up with your own:
 
