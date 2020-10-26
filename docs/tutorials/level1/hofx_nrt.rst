@@ -5,7 +5,7 @@ Tutorial: Simulating Observations with UFO
 
 Learning Goals:
  - Create simulated observations similar to those highlighted on JCSDA's `Near Real-Time (NRT)Observation Modeling web site <http://nrt.jcsda.org>`_
- - Introduce yourself to the rich variety of observation operators now available in :doc:`UFO <../../jedi-components/ufo/index>`
+ - Acquaint yourself with the rich variety of observation operators now available in :doc:`UFO <../../jedi-components/ufo/index>`
 
 Prerequisites:
  - Either :doc:`Run JEDI in a Container <run-jedi>` or :doc:`Building and Testing FV3 Bundle <dev-container>`
@@ -71,7 +71,7 @@ Next, we need observations to compare our forecast to.  Observations included in
 
 The script to get these background and observation files is already in fv3-bundle.  But, before we run it, we should find a good place to run our application.  If you are using an application container, ``fv3-bundle`` is inside the container so that directory is read-only; that will not do.  Or, if you are using a development container, you could write to it but it is good practice to keep the repository clean of output files.
 
-So, whichever container you are running in, it's a good idea to copy the files you need over to your home directory that is dedicated to running the tutorial.  For example:
+So, whichever container you are running in, it's a good idea to copy the files you need over to your home directory that is dedicated to running the tutorial:
 
 .. code-block:: bash
 
@@ -92,3 +92,16 @@ Now we are ready to run the script to obtain the input data (from the run direct
 You only need to run this once.  It will retrieve the background and observation files from a remote server and place them in a directory called ``input``.
 
 You may have already noticed that there is another directory in your run directory called ``config``.  Take a look.  Here are a different type of input files, including configuration (:doc:`yaml <../../developer/building_and_testing/configuration>`) files that specify the parameters for the JEDI applications we'll run and fortran namelist files that specify configuration details specific to the FV3-GFS model.
+
+Step 2: Run the Hofx application
+--------------------------------
+
+There is a file in the run directory called ``run.bash``.  Take a look.  This is what we will be using to run our Hofx application.
+
+When you are ready, try it out:
+
+.. code-block:: bash
+
+   ./run.bash
+
+If you get a prompt to ``Please enter the JEDI build directory`` then that probably means you built fv3-bundle yourself as part of the :doc:`Building and Testing FV3 Bundle <dev-container>` tutorial.  If that's the case then you should enter ``$HOME/jedi/build``.  This tells the script where to find the fv3-jedi executables.
