@@ -4,11 +4,13 @@ Tutorial: Simulating Observations with UFO
 ==========================================
 
 Learning Goals:
- - Create simulated observations similar to those highlighted on JCSDA's `Near Real-Time (NRT)Observation Modeling web site <http://nrt.jcsda.org>`_
+ - Create simulated observations similar to those highlighted on JCSDA's `Near Real-Time (NRT) Observation Modeling web site <http://nrt.jcsda.org>`_
  - Acquaint yourself with the rich variety of observation operators now available in :doc:`UFO <../../jedi-components/ufo/index>`
 
 Prerequisites:
  - Either :doc:`Run JEDI in a Container <run-jedi>` or :doc:`Building and Testing FV3 Bundle <dev-container>`
+
+.. _hofxnrt-overview:
 
 Overview
 --------
@@ -104,4 +106,65 @@ When you are ready, try it out:
 
    ./run.bash
 
-If you get a prompt to ``Please enter the JEDI build directory`` then that probably means you built fv3-bundle yourself as part of the :doc:`Building and Testing FV3 Bundle <dev-container>` tutorial.  If that's the case then you should enter ``$HOME/jedi/build``.  This tells the script where to find the fv3-jedi executables.
+If you omit the arguments, the script just gives you a list of instruments that are available in this tutorial.  For Step 2 we will focus on radiance data from the `AMSU-A instrument on NOAA's MIRS spacecraft <https://www.star.nesdis.noaa.gov/mirs/amsua.php>`_:
+
+.. code-block:: bash
+
+   ./run.bash Amsua_n19
+
+If you get a prompt to ``Please enter the JEDI build directory`` then that probably means you built fv3-bundle yourself as part of the :doc:`Building and Testing FV3 Bundle <dev-container>` tutorial.  If that's the case then you should enter ``$HOME/jedi/build``, or whatever directory is appropriate if you built it elsewhere.  This tells the script where to find the fv3-jedi executables.
+
+.. tip::
+
+   To avoid entering your build directory every time you run the ``run.bash`` script, you can set the following environment variable:
+
+   .. code-block:: bash
+
+       export JEDI_BUILD_DIR=$HOME/jedi/build
+
+Step 3: View the Simulated Observations
+---------------------------------------
+
+You'll find the graphical output from Step 2 in the ``output/plots/Amsua_n19`` directory.
+
+You can use the linux utility ``feh`` to view the png files:
+
+.. code-block:: bash
+
+   cd output/plots/Amsua_n19
+   feh brightness_temperature_12_latlon_obs_count.png
+
+
+If you get an error message it may be because you are accessing singularity from a remote machine.  As with other remote graphical applications, you need to make sure you use the `-Y` option to ``ssh`` to enable X forwarding, e.g. ``ssh -Y ...``.  Another tip is to open another window on that same machine and see what your ``DISPLAY`` environment variable is set to:
+
+.. code-block:: bash
+
+    echo $DISPLAY    # run this from outside the container
+
+Then, set the ``DISPLAY`` variable to be the same *inside* the container, for example:
+
+.. code-block:: bash
+
+   export DISPLAY=localhost:11.0
+
+If this still does not work, it might be worthwhile to copy the png files to your laptop or workstation for easier viewing.  Similar arguments apply if you are running singularity in a Vagrant virtual machine: see our :doc:`Vagrant documentation <../../developer/jedi_environment/vagrant>` for tips on setting up X forwarding in that case or on viewing the files from the host.
+
+When are able to view the plot, it should look something like what is shown on the JCSDA `NRT web site <http://nrt.jcsda.org/gfs/gfs/amsu-a-noaa19.html>`_.  This shows the spatial coverage of the observational measurements over a 6-hour period.  Each band of points corresponds to an orbit of the spacecraft.
+
+Now look at some of the other fields.   We have already seen that ``count`` reflects the number of observations, organized into regular bins in latitude and longitued.  Also plotted are the ``mean`` and the standard deviation ``stddev`` of the observations in each bin.  The files marked with ``obs`` correspond to the observations and the files marked with ``hofx`` represent the simulated observations computed by means of the :math:`H({\bf x})` operation described :ref:`above <hofxnrt-overview>`.  This forward operator relies on JCSDA's Community Radiative Transfer Model (`CRTM <https://github.com/JCSDA/crtm>`_) to predict what this instrument would see for that model background state.
+
+The files marked ``ombg`` represent the difference between the two: observations minus background.  In the data assimilation literature, this is often referred to as the *innovation* and it plays critical role in the forecasting process; this is how we know how accurate the forecast is and how we can improve it.  To see the innovation for this instrument over this time period, view this file:
+
+.. code-block:: bash
+
+   feh brightness_temperature_12_latlon_ombg_mean.png
+
+If you are curious, you can find the output of the actual application output in the directory called ``output/hofx``. There you'll see 12 files generated, one for each of the 12 MPI tasks. This is the data from which the plots are created. The output filenames include information about the application (``hofx3d``), the model and resolution of the background (``gfs_c48``), the file format (``ncdiag``), the instrument (e.g. ``aircraft``), and the time stamp.
+
+
+Step 4: Explore
+---------------
+
+The main objective here is to return to Steps 2 and 3 and repeat for different observation types.  Try running another observation type and look at the results in the ``output/plots`` directory.  A few suggestions: look at how the aircraft observations trace popular flight routes; look at the mean vertical temperature and wind profiles as determined from radiosondes; discover what observational quantities are derived from Global Navigation Satellite System radio occultation measurements (GNSSRO), revel in the 22 wavelength channels of the Advanced Technology Microwave Sounder (`ATMS <http://nrt.jcsda.org/gfs/gfs/atms-n20.htmlATMS>`_).  For more information on any of these instruments, consult JCSDA's `NRT Observation Modeling web site <http://nrt.jcsda.org>`_.
+
+The most attentive users may notice an unused configuration file in the ``config`` directory called ``Medley_gfs.hofx3d.jedi.yaml``.  Advanced users may seek to run this themselves, guided by the ``run.bash`` script.  This runs a large number of different observation types so it takes much longer to run.  We have not included plot configurations for all of them so the plots are not automatically generated.  Thus, we don't recommend trying to do Step 3 with Medley.   This is included in the tutorial merely to give you the flavor of what is involved in creating the NRT site.  This generates plots for over 40 instruments every six hours, using higher-resolution model backgrounds that have more than :ref:`250 times more horizontal points <hofxnrt-overview>` than what we are running here.  The `GEOS-NRT <http://nrt.jcsda.org/geos/>`_ site goes a step further in terms of computational resources - displaying continuous *4D* :math:`H({\bf x})` calculations.
