@@ -29,11 +29,15 @@ closely when building FV3-BUNDLE.
    latest/developer/building_and_running/building_jedi.html"
    target="_blank">instructions for building</a>
 
-
 .. _buildwithmodel:
 
 Choosing an FV3-based model to build with
 -----------------------------------------
+
+**The below instructions are for advanced uses of FV3-JEDI where it is necessary to build with the
+full forecast model of UFS or GEOS. Following the general JEDI build instructions for FV3-BUNDLE is
+sufficient for most applications. The below requires some previous model installation to have been
+completed and knowledge of the install location.**
 
 FV3-JEDI depends on the FV3 dynamical core and cannot be built without some version of it being
 included. Currently there are three models that can be used to provide FV3 as well as the potential
