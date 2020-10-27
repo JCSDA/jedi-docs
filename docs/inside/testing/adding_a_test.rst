@@ -48,7 +48,7 @@ As described :ref:`elsewhere <init-test>`, the unit tests are initialized and ex
 Step 2: Define A Test Fixture
 -----------------------------
 
-In JEDI, test fixtures are generally used to create objects as directed by the relevant sections of the :doc:`configuration file <configuration>`, for use with the unit tests.  As an example, consider this code segment in :code:`oops/src/test/interface/Increment.h`:
+In JEDI, test fixtures are generally used to create objects as directed by the relevant sections of the :doc:`configuration file </using/building_and_running/config_content>`, for use with the unit tests.  As an example, consider this code segment in :code:`oops/src/test/interface/Increment.h`:
 
 .. code-block:: C++
 
@@ -193,7 +193,7 @@ Also, it is worth noting that the application used here is the :code:`fv3jedi::F
 Step 7: Create a Configuration File
 -----------------------------------
 
-Along with the executable, the :doc:`configuration file <configuration>` is the way to tell JEDI what you want it to do.  We reserve a detailed description of how to work with JEDI configuration files for :doc:`another document <configuration>`.
+Along with the executable, the :doc:`configuration file </using/building_and_running/config_content>` is the way to tell JEDI what you want it to do.  We reserve a detailed description of how to work with JEDI configuration files for :doc:`another document </inside/jedi-components/configuration/index>`.
 
 Here we'll just say that the proper place to put it is in the :code:`test/testinput` directory of the JEDI repository that you are working with.  Or, if your tests are located in :code:`test/mydir`, another option would be to put the associated input files in :code:`test/mydir/testinput`.  If there are already some files there, you can use them as a template for creating your own.  Or, you can look for :code:`testinput` files from other repositories that test similar functionality.
 

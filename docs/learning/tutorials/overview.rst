@@ -5,7 +5,7 @@ Overview
 
 This chapter of the JEDI Documentation contains a series of tutorials that new users and developers can work through at their own pace.
 
-In these tutorials, the JEDI code and its dependencies are made available by means of a :doc:`Singularity <../developer/jedi_environment/singularity>` :ref:`software container <Software-Containers>`.  For more information about software containers and why we use them, see our :doc:`portability discussion <../developer/jedi_environment/portability>`.
+In these tutorials, the JEDI code and its dependencies are made available by means of a :doc:`Singularity </using/jedi_environment/singularity>` :ref:`software container <Software-Containers>`.  For more information about software containers and why we use them, see our :doc:`portability discussion </using/jedi_environment/index>`.
 
 So, to do any of these tutorials, you will need access to Singularity.  If you are working on a laptop or workstation and if you have administrative (root) privileges, then you can :ref:`install Singularity yourself <Singularity-install>`.  If you are working on an HPC cluster then you may have to ask your system administrators to install Singularity.
 

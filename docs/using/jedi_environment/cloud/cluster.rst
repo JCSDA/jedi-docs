@@ -135,7 +135,7 @@ Now you can choose which compiler/mpi combination you with to use and load the a
 
 If you switch from one to the other you should first run :code:`module purge`.  You can disregard any error messages you see about being unable to locate modulefiles.
 
-Now you are ready to :doc:`build your preferred JEDI bundle <../developer/building_and_testing/building_jedi>`.  You can run :code:`ctest` as usual but it will only run on one node.  To run across multiple nodes, read on.
+Now you are ready to :doc:`build your preferred JEDI bundle </using/building_and_running/building_jedi>`.  You can run :code:`ctest` as usual but it will only run on one node.  To run across multiple nodes, read on.
 
 .. _awspc-run:
 

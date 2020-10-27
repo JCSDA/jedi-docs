@@ -63,7 +63,7 @@ All observation operator tests in UFO use the OOPS ObsOperator test. To create a
 
 Other changes required in :code:`ufo/test/CMakeLists.txt`:
 
-Link the :doc:`config file <../../developer/building_and_testing/config_content>` you will be using for the test:
+Link the :doc:`config file </using/building_and_running/config_content>` you will be using for the test:
 
 .. code-block:: cmake
 

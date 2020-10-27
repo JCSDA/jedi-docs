@@ -21,7 +21,7 @@ A: Install Vagrant and VirtualBox
 
 As with Windows, you can install Vagrant on a Mac by downloading a pre-compiled binary package from the `Vagrant Dowload Page <https://www.vagrantup.com/downloads.html>`_.  However, we recommend that you install with Homebrew as described below to give you more flexibility in managing both vagrant and virtualbox.
 
-Before you begin you should install or update :doc:`Homebrew <../developer_tools/homebrew>`.  You'll need a relatively recent version in order to use the :code:`cask` extension.  Once you have done this, you can proceed as follows:
+Before you begin you should install or update :doc:`Homebrew </inside/developer_tools/homebrew>`.  You'll need a relatively recent version in order to use the :code:`cask` extension.  Once you have done this, you can proceed as follows:
 
 .. code-block:: bash
 

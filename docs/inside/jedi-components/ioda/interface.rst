@@ -136,7 +136,7 @@ However, if there are 4 process elements, then the output will appear in the fol
     Data/sondes_obs_2018041500_m_out_0002.nc4
     Data/sondes_obs_2018041500_m_out_0003.nc4
 
-More details about constructing and processing YAML configuration files can be found in :doc:`/developer/building_and_testing/config_content` and :doc:`/developer/building_and_testing/configuration`.
+More details about constructing and processing YAML configuration files can be found in :doc:`/using/building_and_running/config_content` and :doc:`/inside/jedi-components/configuration/index`.
 
 Interfaces to other JEDI Components
 -----------------------------------

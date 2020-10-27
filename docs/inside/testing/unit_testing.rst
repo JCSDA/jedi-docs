@@ -1,7 +1,7 @@
 JEDI Testing
 ============
 
-Each JEDI bundle has it's own suite of tests.  To run them, first build and compile the bundle as described in our :doc:`bundle build page <building_jedi>`.  Step 5 in that building and compiling procedure is to test the code with **ctest**.  This step is described in the :ref:`following section <running-ctest>`.
+Each JEDI bundle has it's own suite of tests.  To run them, first build and compile the bundle as described in our :doc:`bundle build page </using/building_and_running/building_jedi>`.  Step 5 in that building and compiling procedure is to test the code with **ctest**.  This step is described in the :ref:`following section <running-ctest>`.
 
 After describing the basic functionality of ctest, we proceed to give a more detailed overview of how tests are organized and implemented in JEDI.  This is a prelude to the :doc:`next document <adding_a_test>`, which describes how you -- yes *you!*  -- can implement your own JEDI unit tests.
 
@@ -10,7 +10,7 @@ After describing the basic functionality of ctest, we proceed to give a more det
 Running ctest
 -------------
 
-The standard practice after :doc:`building and compiling a JEDI bundle <building_jedi>` is to run ctest with no arguments in order to see if the bundle is operating correctly.
+The standard practice after :doc:`building and compiling a JEDI bundle </using/building_and_running/building_jedi>` is to run ctest with no arguments in order to see if the bundle is operating correctly.
 First you need to run :code:`ulimit -s unlimited` (on a linux machine; you may not be able to do this on Mac OS) to ensure that you don't encounter memory or stack size issues. Then you can test your build with:
 
 .. code-block:: bash
@@ -198,7 +198,7 @@ To appreciate how a JEDI Application is actually run, consider the following pro
      return 0;
    };
 
-This program begins by defining an object of type :code:`oops::Run`, passing the constructor the arguments from the command line.  These command-line arguments generally include a :doc:`configuration file <configuration>` that specifies the parameters, input files, and other information that is necessary to run the application (in this case, a test).
+This program begins by defining an object of type :code:`oops::Run`, passing the constructor the arguments from the command line.  These command-line arguments generally include a :doc:`configuration file </inside/jedi-components/configuration/index>` that specifies the parameters, input files, and other information that is necessary to run the application (in this case, a test).
 
 Then the program proceeds to define an object of type :code:`test::State<qg::QgTraits>` called :code:`tests`, which is a sub-class of :code:`oops::Test` as illustrated here:
 

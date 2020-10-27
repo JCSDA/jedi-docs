@@ -1,7 +1,7 @@
 JEDI Configuration Files: Implementation
 ========================================
 
-This document describes the practical implementation of JEDI configuration files, including how users can create and read them.  For an overview what these files contain see :doc:`JEDI Configuration Files: Content <../../../using/building_and_running/config_content>`.
+This document describes the practical implementation of JEDI configuration files, including how users can create and read them.  For an overview what these files contain see :doc:`JEDI Configuration Files: Content </using/building_and_running/config_content>`.
 
 .. _config-format:
 

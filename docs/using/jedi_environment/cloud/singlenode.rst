@@ -117,7 +117,7 @@ After you have loaded one of these options for the :code:`jedi/<compiler>-<mpi>`
 
 You should see the full jedi stack, including :code:`boost-headers`, :code:`netcdf`, :code:`eckit`, :code:`ecbuild`, etc.
 
-Now you are ready to :doc:`build and run JEDI <../developer/building_and_testing/building_jedi>`.
+Now you are ready to :doc:`build and run JEDI </using/building_and_running/building_jedi>`.
 
 Note that one or more bundles may already be present in the :code:`~/jedi` directory.  These are intended to make it easier on the user because a fresh clone of some of the repositories can take some time.  If most of the data files are already there, a :code:`git pull` will only download those files that have been added or modified, making the build much more efficient.  Still, make sure you do a :code:`make update` when you build these bundles to ensure that you have the latest versions of the repositories; they have likely changed since the AMI was created.
 

@@ -5,7 +5,7 @@ This document describes some of the items included in JEDI configuration (config
 
 Users and developers are welcome to add their own items and the accompanying code to process them.  We recommend using the JEDI repositories **saber**, **ioda**, **ufo**, and **fv3-jedi** as prototypes for the structure, content, and naming conventions in the config files.
 
-This document is intended only as a guide to help users interpret and customize JEDI configuration files in order to run applications.   Developers may also use this information to write new tests.  For practical information on how to modify the JEDI code to read and process the information contained in the configuration files see: :doc:`JEDI Configuration Files: Implementation <configuration>`.
+This document is intended only as a guide to help users interpret and customize JEDI configuration files in order to run applications.   Developers may also use this information to write new tests.  For practical information on how to modify the JEDI code to read and process the information contained in the configuration files see: :doc:`JEDI Configuration Files: Implementation </inside/jedi-components/configuration/index>`.
 
 The sections of this document refer to the top-level items in the :ref:`YAML/JSON configuration files <config-format>` and how each of these top-level items are used.
 
@@ -14,7 +14,7 @@ geometry
 
 JEDI config files use **geometry** to define the model grid (both horizontal and vertical) and its parallelization across compute nodes.
 
-Sometimes, as is the case with FV3, grid information is read from data files that are provided with the model repository via :doc:`git LFS <../developer_tools/gitlfs>`.  This entry may also include one or more Fortran namelist files that are read by the model to set up the grid and its parallel partitioning.
+Sometimes, as is the case with FV3, grid information is read from data files that are provided with the model repository via :doc:`git LFS </inside/developer_tools/gitlfs>`.  This entry may also include one or more Fortran namelist files that are read by the model to set up the grid and its parallel partitioning.
 
 state
 ^^^^^
@@ -45,7 +45,7 @@ This is used to define the initial condition of a forecast or DA cycle.  It ofte
 observations
 ^^^^^^^^^^^^
 
-Often the largest section of the configuration file, this describes one or more observation types, each of which is a multi-level YAML/JSON object in its own right.  As described our :doc:`Configuration file implementation example <configuration>`, each of these observation types are read into JEDI as an :code:`eckit::Configuration` object.  Commonly used components within each observation type include
+Often the largest section of the configuration file, this describes one or more observation types, each of which is a multi-level YAML/JSON object in its own right.  As described our :doc:`Configuration file implementation example </using/building_and_running/config_content>`, each of these observation types are read into JEDI as an :code:`eckit::Configuration` object.  Commonly used components within each observation type include
 
 * **obs space**: describes observation space-related configuration (required)
 
@@ -78,10 +78,10 @@ Example:
 * **obs operator**: describes observation operator and its options (required)
 
   * **name**: name in the ObsOperator and LinearObsOperator factory, defined in the C++ code (required)
-  * other options depend on observation operators (see :doc:`description of existing obs operators<../../jedi-components/ufo/obsops>`).
+  * other options depend on observation operators (see :doc:`description of existing obs operators</inside/jedi-components/ufo/obsops>`).
 
 * **obs error**: Provides information and specifications for computing the observation error covariance matrix (required for DA applications). The first item in this section is often the key **covariance model**, which identifies the method by which observation error covariances are constructed. The only option supported currently is **diagonal** for diagonal observation error covariances.
-* **obs filters**: Used to define QC filters (optional, see :doc:`description of existing QC filters<../../jedi-components/ufo/qcfilters>`)
+* **obs filters**: Used to define QC filters (optional, see :doc:`description of existing QC filters</inside/jedi-components/ufo/qcfilters>`)
 * **obs bias**: Used to specify the bias correction (optional)
 * **geovals**: Identifies simulated ufo output files and other parameters that are used for testing (optional, only used for UFO tests)
 
@@ -95,12 +95,12 @@ Used to define the assimilation window for many applications, such as Variationa
 cost function
 ^^^^^^^^^^^^^
 
-Specifies parameters, variables, and control flags used to define how the cost function should be calculated (read more on existing cost functions :doc:`here <../../jedi-components/oops/applications/variational>`).
+Specifies parameters, variables, and control flags used to define how the cost function should be calculated (read more on existing cost functions :doc:`here </inside/jedi-components/oops/applications/variational>`).
 
 minimizer
 ^^^^^^^^^
 
-This tells oops which algorithm to use for minimizing the cost function, specified by the key **algorithm**.  Valid options include DRGMRESR, DRIPCG, GMRESR, IPCG, SaddlePoint, RPCG, DRPCG, DRPFOM, LBGMRESR, DRPLanczos, PCG, PLanczos, RPLanczos, MINRES, and FGMRES (more on minimizers :doc:`here <../../jedi-components/oops/applications/variational>`).
+This tells oops which algorithm to use for minimizing the cost function, specified by the key **algorithm**.  Valid options include DRGMRESR, DRIPCG, GMRESR, IPCG, SaddlePoint, RPCG, DRPCG, DRPFOM, LBGMRESR, DRPLanczos, PCG, PLanczos, RPLanczos, MINRES, and FGMRES (more on minimizers :doc:`here </inside/jedi-components/oops/applications/variational>`).
 
 output
 ^^^^^^

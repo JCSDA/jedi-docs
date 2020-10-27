@@ -92,7 +92,7 @@ Now add the Charliecloud executables to your path.  You may wish to do this inte
 Building the JEDI environment
 -----------------------------
 
-Once Charliecloud is installed on your system, the next step is to make a home for the JEDI Charliecloud container and download it.  For a list of available JEDI Charliecloud containers, see `the JCSDA Public Data Repository <http://data.jcsda.org/pages/containers.html>`_.   Image names follow the format :code:`ch-jedi-<compiler>-<mpi>-<type>.tar.gz`  where :code:`<compiler>-<mpi>` refer to the compiler/mpi combination used to build the dependencies and :code:`<type>` is set to :code:`dev` for development containers that include the compilers and :code:`app` for application containers that include only the compiled jedi code, with its dependencies (:doc:`see the Portability overview for further information <portability>`.  For example, to obtain the JEDI Charliecloud development container that is built with the gnu compiler suite and openmpi you would do this:
+Once Charliecloud is installed on your system, the next step is to make a home for the JEDI Charliecloud container and download it.  For a list of available JEDI Charliecloud containers, see `the JCSDA Public Data Repository <http://data.jcsda.org/pages/containers.html>`_.   Image names follow the format :code:`ch-jedi-<compiler>-<mpi>-<type>.tar.gz`  where :code:`<compiler>-<mpi>` refer to the compiler/mpi combination used to build the dependencies and :code:`<type>` is set to :code:`dev` for development containers that include the compilers and :code:`app` for application containers that include only the compiled jedi code, with its dependencies (:doc:`see the Portability overview for further information <index>`.  For example, to obtain the JEDI Charliecloud development container that is built with the gnu compiler suite and openmpi you would do this:
 
 .. code-block:: bash
 
@@ -136,9 +136,9 @@ Now, since you are in the container, you have access to all the software librari
 
     git lfs install
 
-This modifies your git configuration to properly interpret data files stored with :doc:`git-lfs <../developer_tools/gitlfs>`.  The reason that this is not automatically done by Charliecloud is because these configuration settings are stored in your home directory, in a file called :code:`~/.gitconfig`.  Charliecloud does not change your user name, your user privileges, or your home directory.  In short, you have the same home directory inside and outside the container.  So, the contents of your home directory cannot be stored in the container image that you downloaded as a compressed tar file.  This also means that it makes no difference if you run :code:`git lfs install` inside or outside the container.  You only have to run this once, even if you use mulditple containers.
+This modifies your git configuration to properly interpret data files stored with :doc:`git-lfs </inside/developer_tools/gitlfs>`.  The reason that this is not automatically done by Charliecloud is because these configuration settings are stored in your home directory, in a file called :code:`~/.gitconfig`.  Charliecloud does not change your user name, your user privileges, or your home directory.  In short, you have the same home directory inside and outside the container.  So, the contents of your home directory cannot be stored in the container image that you downloaded as a compressed tar file.  This also means that it makes no difference if you run :code:`git lfs install` inside or outside the container.  You only have to run this once, even if you use mulditple containers.
 
-You can now proceed to build and run JEDI as described :doc:`elsewhere in this documentation <../building_and_testing/building_jedi>`.
+You can now proceed to build and run JEDI as described :doc:`elsewhere in this documentation </using/building_and_running/building_jedi>`.
 
 For example, to run and test ufo-bundle, you can proceed as follows:
 

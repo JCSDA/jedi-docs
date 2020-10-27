@@ -3,7 +3,7 @@
 Building and compiling JEDI
 =============================
 
-As described in detail :doc:`elsewhere <../developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in the following steps, which are described in more detail in the sections that follow:
+As described in detail :doc:`elsewhere </inside/developer_tools/cmake>`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in the following steps, which are described in more detail in the sections that follow:
 
 1. Clone the desired JEDI :ref:`bundle <bundle>`
 2. Optionally edit the :code:`CMakeLists.txt` file in the bundle to choose the code branches you want to work with
@@ -23,7 +23,7 @@ In terms of the actual commands you would enter, these steps will look something
     make -j4
     ctest
 
-In this document we describe Steps 1 through 4, including the various options you have available to you at each step.  For a description of Step 5, see our page on :doc:`JEDI unit testing <unit_testing>`.
+In this document we describe Steps 1 through 4, including the various options you have available to you at each step.  For a description of Step 5, see our page on :doc:`JEDI unit testing </inside/testing/unit_testing>`.
 
 You will probably only need to do Step 1 once.  However, if you are a developer who is making changes to one or more JEDI repositories, you will likely find it useful to execute Steps 2 through 5 multiple times, with progressively increasing frequency.  For example, if you are working with a single repository, you may only need to do Step 2 once in order to tell ecbuild to compile your local branch.  And, you'll only need to run :code:`ecbuild` (Step 3) occasionally, when you make changes that affect the directory tree or compilation (for example, adding a file that was not there previously or substantially altering the dependencies).  By comparison, you will likely execute Steps 4 and 5 frequently as you proceed to make changes and test them.
 
@@ -57,7 +57,7 @@ The statement above should be sufficient on most systems.   However, on some sys
 
 As for all your files, your password will still be protected by the security protocols necessary to simply access the system as a whole and your own filesystem in particular.  So, this should still be pretty secure on HPC systems but you might want to use it with caution in less secure environments such as laptops or desktops.  For other alternatives, see the documentation on `git credentials <https://git-scm.com/docs/gitcredentials>`_.
 
-Before building the jedi code, you should also make sure that git is configured to interpret files that are stored on :doc:`git-lfs <../developer_tools/gitlfs>`:
+Before building the jedi code, you should also make sure that git is configured to interpret files that are stored on :doc:`git-lfs </inside/developer_tools/gitlfs>`:
 
 .. code-block:: bash
 
@@ -117,7 +117,7 @@ First, you need to include the (optional) :code:`UPDATE` argument in the :code:`
 
 This will tell ecbuild to do a fresh pull of each of the branches that include the :code:`UPDATE` argument.  Note that :code:`make update` will not work if there is no Makefile in the build directory.  So, this command will only work *after* you have already run :code:`ecbuild` at least once.
 
-If you are a developer, you will, by definition, be modifying the code.  And, if you are a legitimate *JEDI Master*, you will be following the :doc:`git flow <../developer_tools/getting-started-with-gitflow>` workflow.  So, you will have created a feature (or bugfix) branch on your local computer where you are implementing your changes.
+If you are a developer, you will, by definition, be modifying the code.  And, if you are a legitimate *JEDI Master*, you will be following the :doc:`git flow </inside/developer_tools/getting-started-with-gitflow>` workflow.  So, you will have created a feature (or bugfix) branch on your local computer where you are implementing your changes.
 
 For illustration, let's say we created a feature branch of ufo called :code:`feature/newstuff`, which exists on your local system.  Now we want to tell :code:`ecbuild` to use this branch to compile the bundle instead of some other remote branch on GitHub.  To achieve this, we would change the appropriate line in the CMakeLists.txt file to point to the correct branch and we would remove the :code:`UPDATE` argument:
 
@@ -160,9 +160,9 @@ This should work for most bundles but if it doesn't then check in the bundle sou
 
     **Some bundles may require you to run a build script prior to or in lieu of running ecbuild, particularly if you are running outside of the CharlieCloud and Singularity containers.  Check the README file in the top directory of the bundle repository to see if this is necessary, particularly if you encounter problems running ecbuild, cmake, or ctest.**
 
-After you enter the ecbuild command, remember to practice patience, dear `padawan <http://starwars.wikia.com/wiki/Padawan>`_.  The build process may take less than a minute for ufo-bundle but for some other bundles it can take twenty minutes or more, particularly if ecbuild has to retrieve a number of large restart files from a remote :doc:`Git LFS store <../developer_tools/gitlfs>` over a wireless network.
+After you enter the ecbuild command, remember to practice patience, dear `padawan <http://starwars.wikia.com/wiki/Padawan>`_.  The build process may take less than a minute for ufo-bundle but for some other bundles it can take twenty minutes or more, particularly if ecbuild has to retrieve a number of large restart files from a remote :doc:`Git LFS store </inside/developer_tools/gitlfs>` over a wireless network.
 
-As described :doc:`here <../developer_tools/cmake>`, ecbuild is really just a sophisticated (and immensely useful!) interface to CMake.  So, if there are any CMake options or arguments you wish to invoke, you can pass them to ecbuild and it will kindly pass them on to CMake.  The general calling syntax is:
+As described :doc:`here </inside/developer_tools/cmake>`, ecbuild is really just a sophisticated (and immensely useful!) interface to CMake.  So, if there are any CMake options or arguments you wish to invoke, you can pass them to ecbuild and it will kindly pass them on to CMake.  The general calling syntax is:
 
 .. code-block:: bash
 
@@ -191,7 +191,7 @@ A third option is for you to install eckit on your system manually (not recommen
 
    ecbuild -- -DECKIT_PATH=<path-to-eckit> ../src/ufo-bundle
 
-For more information, enter :code:`ecbuild --help` and see our JEDI page on :doc:`ecbuild and cmake <../developer_tools/cmake>`.
+For more information, enter :code:`ecbuild --help` and see our JEDI page on :doc:`ecbuild and cmake </inside/developer_tools/cmake>`.
 
 Step 4: Run make (from the build directory)
 -------------------------------------------
@@ -222,7 +222,7 @@ The most useful option you're likely to want for :code:`make` other than :code:`
 
 As usual, to see a list of other options, enter :code:`make --help`.
 
-Again, the compile can take some time (10 minutes or more) so be patient.   Then, when it finishes, the next step is to :doc:`run ctest <unit_testing>`.
+Again, the compile can take some time (10 minutes or more) so be patient.   Then, when it finishes, the next step is to :doc:`run ctest </inside/testing/unit_testing>`.
 
 If the parallel compile fails, the true error may not be in the last line of the output because all processes are writing output simultaneously and some may still continue while another fails.  So, in that case, it can be useful to re-run :code:`make` with only a single process.  Omitting the :code:`-j` option is the same as including :code:`-j1`:
 

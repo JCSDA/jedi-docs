@@ -104,7 +104,7 @@ Now there is a copy of your branch on the web, within GitHub, in addition to the
 Step 3. Additional commits and pushes as needed
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Now typically you will make multiple commits as you add a feature and repeatedly :doc:`recompile the code and test your changes <../building_and_testing/building_jedi>`.  Don't forget to :doc:`add a test <../building_and_testing/adding_a_test>` that specifically checks the code you have added.
+Now typically you will make multiple commits as you add a feature and repeatedly :doc:`recompile the code and test your changes </using/building_and_running/building_jedi>`.  Don't forget to :doc:`add a test <../testing/adding_a_test>` that specifically checks the code you have added.
 
 .. code-block:: bash
 

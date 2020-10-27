@@ -25,7 +25,7 @@ Also, as the project proceeds, the JEDI team will provide web pages where you ca
 Installing Doxygen
 ------------------
 
-Doxygen is included in the JEDI :doc:`CharlieCloud <../jedi_environment/charliecloud>` and :doc:`Singularity <../jedi_environment/singularity>` containers and may already be installed on your system.  To check whether it is already installed in your environment, just type this at the command line:
+Doxygen is included in the JEDI :doc:`CharlieCloud <../../using/jedi_environment/charliecloud>` and :doc:`Singularity <../../using/jedi_environment/singularity>` containers and may already be installed on your system.  To check whether it is already installed in your environment, just type this at the command line:
 
 .. code-block:: bash
 
@@ -45,7 +45,7 @@ Alternatively, if you have a Mac, you can install Doxygen with :doc:`Homebrew <h
 
 Depending on how you install Doxygen, you may be prompted for optional add-ons, including **Doxywizard** and **Graphviz**.  We recommend that you **say yes to both**.  `Doxywizard <http://www.doxygen.nl/manual/doxywizard_usage.html>`_ is a convenient Graphical User Interface (GUI) for configuring and running Doxygen and `Graphviz <https://www.graphviz.org/>`_ is a plotting package that will enable you to generate inheritance diagrams and call trees.
 
-In particular, Graphviz includes an interpreter for the `DOT <https://graphviz.gitlab.io/_pages/doc/info/lang.html>`_ graphical display language.  A dot interpreter might already be installed on your system.  For example, if you installed doxygen via Homebrew or if you use the JEDI :doc:`Charliecloud <../jedi_environment/charliecloud>` or :doc:`Singularity <../jedi_environment/singularity>` container, you may not need to install anything else.  To check, try running:
+In particular, Graphviz includes an interpreter for the `DOT <https://graphviz.gitlab.io/_pages/doc/info/lang.html>`_ graphical display language.  A dot interpreter might already be installed on your system.  For example, if you installed doxygen via Homebrew or if you use the JEDI :doc:`Charliecloud <../../using/jedi_environment/charliecloud>` or :doc:`Singularity <../../using/jedi_environment/singularity>` container, you may not need to install anything else.  To check, try running:
 
 .. code-block:: bash
 
@@ -155,7 +155,7 @@ You may never need to run Doxygen yourself.  As noted :doc:`above <doxygen>`, th
 
 But, if you have added Doxygen documentation to a feature branch that you are working on, you may want to see how it looks before doing a pull request.  This is straightforward to do.
 
-If you are working with a particular :doc:`JEDI bundle <../building_and_testing/building_jedi>`, then it is likely that this bundle is equipped to build the Doxygen documentation.  Just edit the :code:`CMakeLists.txt` file in the top level of the bundle repository (e.g. **ufo-bundle**) and look for a code snippet that resembles this:
+If you are working with a particular :doc:`JEDI bundle </using/building_and_running/building_jedi>`, then it is likely that this bundle is equipped to build the Doxygen documentation.  Just edit the :code:`CMakeLists.txt` file in the top level of the bundle repository (e.g. **ufo-bundle**) and look for a code snippet that resembles this:
 
 .. code-block:: bash
 
@@ -164,7 +164,7 @@ If you are working with a particular :doc:`JEDI bundle <../building_and_testing/
 
 Just make sure this is set to :code:`ON`.
 
-Then, proceed to :doc:`build jedi as normal, running ecbuild and make <../building_and_testing/building_jedi>` from a build directory :code:`<build-dir>` (this should be different than the location of the source code).  The Doxygen html output will then be located in a directory called :code:`<build-dir>/Documentation/html`.  Just load any of the html files in this directory into your browser and navigate the the Main Page using the menu at the top.
+Then, proceed to :doc:`build jedi as normal, running ecbuild and make </using/building_and_running/building_jedi>` from a build directory :code:`<build-dir>` (this should be different than the location of the source code).  The Doxygen html output will then be located in a directory called :code:`<build-dir>/Documentation/html`.  Just load any of the html files in this directory into your browser and navigate the the Main Page using the menu at the top.
 
 You can also run Doxygen manually, as follows
 

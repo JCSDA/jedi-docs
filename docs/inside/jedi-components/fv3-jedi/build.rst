@@ -26,7 +26,7 @@ closely when building FV3-BUNDLE.
 .. |location_link| raw:: html
 
    <a href="https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/
-   latest/developer/building_and_testing/building_jedi.html"
+   latest/developer/building_and_running/building_jedi.html"
    target="_blank">instructions for building</a>
 
 

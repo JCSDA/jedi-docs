@@ -5,7 +5,7 @@ AWS stands for `Amazon Web Services <https://aws.amazon.com>`_, a major provider
 
 Currently, AWS is the primary cloud provider for JCSDA.  So, if you want to run JEDI in the cloud, you will likely want to use AWS.
 
-This is not to say that you cannot use other cloud providers.  If you have an allocation on any cloud provider, you can establish a JEDI-ready environment by means of our software containers or by building the `jedi-stack <https://github.com/JCSDA/jedi-stack>`_ yourself as described in our :doc:`Portability document <../developer/jedi_environment/portability>`.
+This is not to say that you cannot use other cloud providers.  If you have an allocation on any cloud provider, you can establish a JEDI-ready environment by means of our software containers or by building the `jedi-stack <https://github.com/JCSDA/jedi-stack>`_ yourself as described in our :doc:`Portability document <../index>`.
 
 However, if you plan to use JCSDA cloud computing resources, the documents in :doc:`this chapter <index>` are for you.
 

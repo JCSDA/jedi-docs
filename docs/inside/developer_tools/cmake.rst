@@ -40,8 +40,8 @@ Installing CMake and CTest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This step is only necessary if you are working outside the
-JEDI :doc:`Charliecloud <../jedi_environment/charliecloud>`
-or :doc:`Singularity <../jedi_environment/singularity>`
+JEDI :doc:`Charliecloud <../../using/jedi_environment/charliecloud>`
+or :doc:`Singularity <../../using/jedi_environment/singularity>`
 containers.
 
 For the Mac, use `homebrew <https://brew.sh/>`_ to install CMake.
@@ -196,7 +196,7 @@ ecbuild
 The JEDI software stack links directly to the public ecbuild, eckit, and fckit GitHub repositories
 provided by `ECMWF <https://github.com/ecmwf>`_.  In particular, public releases from these repositories
 have been cloned from GitHub, compiled, and included in the JEDI
-:doc:`Singularity <../jedi_environment/singularity>` and :doc:`Charliecloud <../jedi_environment/charliecloud>`
+:doc:`Singularity <../../using/jedi_environment/singularity>` and :doc:`Charliecloud <../../using/jedi_environment/charliecloud>`
 containers.
 
 Ecbuild does enforce the restriction recommended above on building your project outside of the
@@ -206,8 +206,8 @@ Installing ecbuild
 ^^^^^^^^^^^^^^^^^^
 
 As before, the steps shown in this section are only necessary if you are working outside the
-:doc:`Singularity <../jedi_environment/singularity>` and
-:doc:`Charliecloud <../jedi_environment/charliecloud>` containers.
+:doc:`Singularity <../../using/jedi_environment/singularity>` and
+:doc:`Charliecloud <../../using/jedi_environment/charliecloud>` containers.
 
 For all systems, you need to have CMake, eigen3 installed before installing ecbuild.
 To install these on the Mac:
@@ -445,7 +445,7 @@ Here is sample output:
     >>
 
 
-For examples on how to use ecbuild to compile JEDI bundles, see :doc:`Building and Compiling JEDI <../building_and_testing/building_jedi>` (Step 3).
+For examples on how to use ecbuild to compile JEDI bundles, see :doc:`Building and Compiling JEDI </using/building_and_running/building_jedi>` (Step 3).
 
 You can pass cmake command line options to cmake with ecbuild by proceeding them with two dashes :code:`--`.  For example, to use the cmake :code:`--trace` option mentioned :ref:`above <using-cmake>` (useful for debugging), you can enter:
 
