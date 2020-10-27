@@ -189,7 +189,11 @@ If X-forwarding is set up properly, that should work.  If you are still having p
 
 If you prefer, NASA's interactive `Panoply <https://www.giss.nasa.gov/tools/panoply/>`_ data viewer is also available in the container by running the command ``panoply.sh``.  If you have X forwarding set up, this can be used instead of ``fv3jedi_plot_field.x``.  However, an interactive GUI like this is often frustrating to run over the internet unless you have a fast connection.
 
-However you decide to view it, you should now be able to see the temperature increment.  This is the change to the model temperature that will bring the forecast in closer agreement with observations, as determined by the 3denvar algorithm.
+However you decide to view it, you should now be able to see the temperature increment and it should look something like this:
+
+.. image:: images/3denvar.latlon.20180415_000000z_T_layer-50.png
+
+This is the change to the model temperature that will bring the forecast in closer agreement with observations, as determined by the 3denvar algorithm.
 
 Now we invite you to explore.  Try viewing the surface pressure increment as follows (note this is a 2D field so there is no need to specify a layer).
 
