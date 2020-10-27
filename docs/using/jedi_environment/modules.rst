@@ -1,7 +1,7 @@
 .. _top-modules:
 
-JEDI Modules
-============
+JEDI Modules on selected HPC systems
+=====================================
 
 If you are running JEDI on a personal computer (Mac, Windows, or Linux) we recommend that you use either the :doc:`JEDI Singularity container <singularity>` or the :doc:`JEDI Charliecloud container <charliecloud>`.  These provide all of the necessary software libraries for you to build and run JEDI.
 

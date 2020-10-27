@@ -1,6 +1,6 @@
-###################
-Running JEDI on AWS
-###################
+###########
+JEDI on AWS
+###########
 
 .. toctree::
    :maxdepth: 2
