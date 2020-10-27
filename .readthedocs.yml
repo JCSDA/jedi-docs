@@ -12,3 +12,9 @@ sphinx:
 # Optionally build your docs in additional formats such as PDF
 # No additional formats
 formats: []
+
+# Need the sphinxcontrib-bibtex package to be installed
+python:
+  version: 3
+  install:
+    - requirements: requirements.txt

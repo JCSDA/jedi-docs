@@ -1,0 +1,2 @@
+### Required python packages for our documentation ###
+sphinxcontrib-bibtex
