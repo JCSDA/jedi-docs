@@ -1,4 +1,4 @@
-.. _top-tut-dev-container:
+.. _top-tut-hofx-nrt:
 
 Tutorial: Simulating Observations with UFO
 ==========================================

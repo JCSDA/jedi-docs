@@ -14,7 +14,7 @@ Prerequisites:
 Overview
 --------
 
-In the :doc:`Run JEDI in a Container <run-jedi>` tutorial we used a version of an :doc:`application container <../../../using/jedi_environment/portability>`.  This means that the container includes the compiled source code, ready to use.  The ``jedi-tutorial`` container comes pre-packaged with JEDI!
+In the :doc:`Run JEDI in a Container <run-jedi>` tutorial we used a version of an :doc:`application container <../../../using/jedi_environment/index>`.  This means that the container includes the compiled source code, ready to use.  The ``jedi-tutorial`` container comes pre-packaged with JEDI!
 
 But that's not the way most JEDI developers, and many users, use JEDI.  Instead, JEDI is set up so that users and developers have easy access to a version of the source code that they can download, build, and even modify themselves.  This encourages community members to make changes and potentially contribute to the project through :doc:`pull requests to the main JEDI repositories <../../../inside/practices/pullrequest>`.
 
@@ -78,7 +78,7 @@ To see what code repositories will be built, ``cd`` to the ``fv3-bundle`` direct
 
 :doc:`ecbuild <../../../inside/developer_tools/cmake>` is a collection of `CMake <https://cmake.org>`_ utilities that forms the basis of the JEDI build system.  The ``ecbuild-bundle()`` function calls specify different GitHub repositories and integrate them into the building of the bundle, in order of dependency.
 
-You will see references there to core JEDI repositories like :doc:`OOPS <../../../inside/jedi-components/oops/index>`, :doc:`SABER <../../../inside/jedi-components/saber/index>`, :doc:`IODA <../../jedi-components/ioda/index>`, and :doc:`UFO <../../../inside/jedi-components/ufo/index>`.  You will also see references to repositories used to construct observation operators, such as JCSDA's `Community Radiative Transfer Model (CRTM) <https://github.com/jcsda/crtm>`_.  And, finally, you will see references to GitHub repositories that contain code needed to build the FV3-GFS and FV3-GEOS models and integrate them with JEDI.  These include the `linearized FV3 model <https://github.com/jcsda/fv3-jedi-linearmodel>`_ used for 4D Variational DA, and the :doc:`FV3-JEDI repository <../../../inside/jedi-components/fv3-jedi/index>` that provides the interface between JEDI and models based on the FV3 dynamical core.
+You will see references there to core JEDI repositories like :doc:`OOPS <../../../inside/jedi-components/oops/index>`, :doc:`SABER <../../../inside/jedi-components/saber/index>`, :doc:`IODA <../../../inside/jedi-components/ioda/index>`, and :doc:`UFO <../../../inside/jedi-components/ufo/index>`.  You will also see references to repositories used to construct observation operators, such as JCSDA's `Community Radiative Transfer Model (CRTM) <https://github.com/jcsda/crtm>`_.  And, finally, you will see references to GitHub repositories that contain code needed to build the FV3-GFS and FV3-GEOS models and integrate them with JEDI.  These include the `linearized FV3 model <https://github.com/jcsda/fv3-jedi-linearmodel>`_ used for 4D Variational DA, and the :doc:`FV3-JEDI repository <../../../inside/jedi-components/fv3-jedi/index>` that provides the interface between JEDI and models based on the FV3 dynamical core.
 
 Now, an important tip is: **never build a bundle from the main bundle directory**.  In our example this means the top-level ``$HOME/jedi/fv3-bundle`` directory.  Building from this directory would cause cmake to create new files that conflict with the original source code.
 
@@ -158,4 +158,4 @@ Now we're ready.  To run the full suite of JEDI unit tests, enter this command f
 
 Running this gives you an appreciation for how thoroughly the JEDI code is :doc:`tested <../../../working-practices/testing>`.  The fv3-bundle has nearly 1000 tests but most of them take a fraction of a minute.  And this is only the Tier 1 tests - more computationally extensive higher-tier tests are run regularly with varying frequency.  These thoroughly test all the applications, functions, methods, class constructors, and other JEDI components.  As emphasized :doc:`elsewhere <../../../working-practices/reviewing-code>`, no code is added to JEDI unless there is a test to make sure that it is working and that it continues to work as the code evolves.
 
-If you still get test failures you may wish to consult the :doc:`FAQ <../../FAQ/FAQ>`.
+If you still get test failures you may wish to consult the :doc:`FAQ <../../../FAQ/FAQ>`.
