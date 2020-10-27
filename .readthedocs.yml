@@ -13,7 +13,8 @@ sphinx:
 # No additional formats
 formats: []
 
-# Need the sphinxcontrib-bibtex package to be installed
+# Install python packages needed for our documentation
+#   Put all required packages in the requirements.txt file
 python:
   version: 3
   install:
