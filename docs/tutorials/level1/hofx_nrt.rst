@@ -122,6 +122,8 @@ If you get a prompt to ``Please enter the JEDI build directory`` then that proba
 
        export JEDI_BUILD_DIR=$HOME/jedi/build
 
+Skim the text output as it is flowing by.  Can you spot where the quality control (QC) on the observations is being applied?
+
 Step 3: View the Simulated Observations
 ---------------------------------------
 
