@@ -8,7 +8,7 @@ GEOS output, as outlined in :ref:`io`. Visualization of cubed-sphere data is non
 software for scientific visualization expects the field to be arranged on a latitude-longitude grid.
 
 Data that is output in the GEOS format, and specifically by the file output under the configuration
-key :code:`filename_bkgd` is readable by Panpoly, available from |panoply_link|. Panoply can
+key :code:`filename_bkgd` is readable by Panoply, available from |panoply_link|. Panoply can
 interpret and create plots of cubed-sphere fields directly. It has a simple GUI and a number of
 useful features.
 
@@ -25,10 +25,15 @@ convert state application in the bin directory. An example configuration
 output to longitude-latitude is provided in the testinput directory of the repository. In this
 example the file :code:`gfs.bkg.lonlat.20180415_000000z.nc4` is output with all the fields on the
 lon-lat grid. The executable :code:`fv3jedi_plot_field.x`, provided in the bin directory can be used
-to to plot the field at a certain level. The following example plots the temperature field T at
+to plot the field at a certain level. The following example plots the temperature field T at
 layer 64.
 
 .. code::
 
   fv3jedi_plot_field.x --inputfile gfs.bkg.lonlat.20180415_000000z.nc4 \
-                       --fieldname T --layer 64 --showfig=true
+                       --fieldname T --layer 64
+
+If working with a system that has X-forwarding or on a local system, the optional argument
+:code:`--showfig` can be applied. This will display the figure after saving it.
+
+Note that the above program requires Cartopy, Matplotlib, Click, and netCDF4 Python packages.
