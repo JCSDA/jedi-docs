@@ -104,7 +104,7 @@ The tests for each code repository are defined within that repository.  So, they
 Step 3: Run a JEDI Application
 ------------------------------
 
-The container contains everything you need to run a simple application.  In addition to the executables and test data files in ``/opt/jedi/build``, there are also various configuration files in the ``/opt/jedi/fv3-bundle/tutorials`` directory.  To proceed, let's create a new directory suitable for running the application and then copy the files over for this tutorial:
+The container contains everything you need to run a Data Assimilation (DA) application.  In addition to the executables and test data files in ``/opt/jedi/build``, there are also various configuration files in the ``/opt/jedi/fv3-bundle/tutorials`` directory.  To proceed, let's create a new directory suitable for running the application and then copy the files over for this tutorial:
 
 .. code-block:: bash
 
@@ -121,7 +121,7 @@ The container contains everything you need to run a simple application.  In addi
       singularity shell --bind <scratch-directory>:/worktmp -e jedi-tutorial_latest.sif
 
 
-   where ``<scratch-directory`` is the path to your work directory outside the container.  This will then be mounted within the container as ``/worktmp``.  Alternatively, you could ``cd`` to your directory of choice and enter the container by specifying your current directory as your home directory inside the container:
+   where ``<scratch-directory`` is the path to your work directory outside the container.  This will then be accessible within the container as ``/worktmp``.  Alternatively, you could ``cd`` to your directory of choice and enter the container by specifying your current directory as your home directory inside the container:
 
    .. code-block:: bash
 
@@ -129,27 +129,29 @@ The container contains everything you need to run a simple application.  In addi
 
    For further details see :ref:`Working with Singularity <working-with-singularity>`.
 
-Take a look at the files you just copied over.  The run script defines a workflow that is needed to run a variational data assimilation application with fv3-jedi and the B-Matrix Unstructured Mesh Package (:doc:`BUMP <../../jedi-components/saber/BUMP>`).  First BUMP is used to compute the correlation statistics and localization for the background error covariance matrix (B-Matrix).  Then the variational application is run, and a seperate application computes the increment for visualization and analysis.  Each of these applications runs with 6 MPI tasks (the minimum for fv3) and each takes only two arguments, namely a (yaml) :doc:`configuration file <../../developer/building_and_testing/configuration>`) and a filename for storing the text output messages (i.e. the log).
+Take a look at the files you just copied over.  The run script defines a workflow that is needed to run a variational data assimilation application with :doc:`FV3-JEDI <../../jedi-components/fv3-jedi/index>` and the B-Matrix Unstructured Mesh Package (:doc:`BUMP <../../jedi-components/saber/BUMP>`).  First BUMP is used to compute the correlation statistics and localization for the background error covariance matrix (B-Matrix).  Then the variational application is run, and a separate application computes the increment.  Each application runs with at least 6 MPI tasks (the minimum for fv3) and requires only one argument, namely a (yaml) :doc:`configuration file <../../developer/building_and_testing/configuration>`).  A log file is also specified for saving the text output.
 
-The ``conf`` directory contains jedi configuration files in ``yaml`` format that govern the execution of the application, including the specification of input data files, control flags, and parameter values.  If you look inside, you'll see references to where the input data files are.  For example, the ``/jedi/fv3-bundle/fv3-jedi/test/Data/fv3files`` contains namelist and other configuration files for the FV3 model and the ``/jedi/fv3-bundle/fv3-jedi/test/Data/inputs/gfs_c12`` directory contains model backgrounds and ensemble states that are used to define the grid, initialize forecasts, and compute the B-Matrix.  The ``c12`` refers to the horizontal resolution, signifying 12 by 12 grid points on each of the 6 faces of the cubed sphere grid, or 864 horizontal grid points total.  This is, of course, much lower resolution than operational forecasts but it is sufficient to run efficiently for a tutorial!
+The ``conf`` directory contains jedi configuration files in ``yaml`` format that govern the execution of the application, including the specification of input data files, control flags, and parameter values.  If you look inside, you'll see references to where the input data files are.  For example, the ``/jedi/build/fv3-jedi/test/Data/fv3files`` directory contains namelist and other configuration files for the FV3 model and the ``/jedi/build/fv3-jedi/test/Data/inputs/gfs_c12`` directory contains model backgrounds and ensemble states that are used to define the grid, initialize forecasts, and compute the B-Matrix.  The ``c12`` refers to the horizontal resolution, signifying 12 by 12 grid points on each of the 6 faces of the cubed sphere grid, or 864 horizontal grid points total.  This is, of course, much lower resolution than operational forecasts but it is sufficient to run efficiently for a tutorial!
 
-If you peruse the config files further, you may see references to the ``/jedi/build/fv3-jedi/test/Data/obs`` directory, which contains links to the observation files that are being assimilated.  Another source of input data is the ``/jedi/build/fv3-jedi/test/Data/crtm`` directory, which contains coefficients for the Community Radiative Transfer Model (CRTM) that are used to compute simulated satellite radiance observations from model states (i..e. the forward operator).
+If you peruse the config files further, you may see references to the ``/jedi/build/fv3-jedi/test/Data/obs`` directory, which contains links to the observation files that are being assimilated.  Another source of input data is the ``/jedi/build/fv3-jedi/test/Data/crtm`` directory, which contains coefficients for JCSDA's Community Radiative Transfer Model (`CRTM <https://github.com/JCSDA/crtm>`_) that are used to compute simulated satellite radiance observations from model states (i..e. observation operators).
 
 We again encourage you to explore these various directories to get a feel for how the input to jedi applications is provided.
 
-To run a hybrid 3D variational data assimilation application, just execute the run script, specifying ``hyb-3dvar`` as the application you wish to run:
+Now let's run a 3D variational data assimilation application that uses an ensemble-based background error covariance matrix:
 
 .. code-block:: bash
 
-   ./run.bash hyb-3dvar
+   ./run.bash 3denvar
 
-Now try a hybrid 4D variational application:
+Before we view the results, let's also run the 4D equivalent:
 
 .. code-block:: bash
 
-   ./run.bash hyb-4dvar
+   ./run.bash 4denvar
 
-The output of each of these experiments can now be found in the ``run-hyb-3dvar`` and ``run-hyb-4dvar`` directories respectively.  A detailed investigation of this output is beyond the scope of this tutorial but you may wish to take a few moments to survey the types of output files that are produced.
+The objective of the ``run.bash`` script is to produce an *increment*.  In DA terminology, this represents a change to the background state that will bring it in closer agreement with the observations.  This can be done either by minimizing a cost function at a fixed model time (3denvar) or by taking into account the dynamical evolution of the model state over the assimilation time interval (4denvar).  The latter is expected to be more accurate, but also more computationally intensive.
+
+The output of each of these experiments can now be found in the ``run-3denvar`` and ``run-4denvar`` directories respectively.  A detailed investigation of this output is beyond the scope of this tutorial but you may wish to take a few moments to survey the types of output files that are produced.
 
 Step 4: View the Increment
 --------------------------
