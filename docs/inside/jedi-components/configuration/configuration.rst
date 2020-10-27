@@ -318,5 +318,5 @@ Here we see that :code:`eckit::Configuration::has()` returns a Boolean :code:`tr
 
 .. code-block:: text
 
-    WARNING: The models don't use levels
+    WARNING: The model doesn't use levels
 

@@ -16,7 +16,7 @@ JEDI is a community effort and external contributions are welcome.  This documen
 
 If you have questions about the JEDI project, JEDI usage, JEDI components, or this document, please `visit our forums <https://forums.jcsda.org>`_.
 
-**If your are impatient to get going**, you can go straight to the :doc:`JEDI quick start <learning/quick-start>`.
+**If you are impatient to get going**, you can go straight to the :doc:`JEDI quick start <learning/quick-start>`.
 
 Table of Contents
 -----------------
