@@ -34,6 +34,6 @@ layer 64.
                        --fieldname T --layer 64
 
 If working with a system that has X-forwarding or on a local system, the optional argument
-:code:`--showfig` can be applied. This will display the figure after saving it.
+:code:`--showfig=true` can be applied. This will display the figure after saving it.
 
 Note that the above program requires Cartopy, Matplotlib, Click, and netCDF4 Python packages.
