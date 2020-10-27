@@ -35,7 +35,7 @@ Step 1: Acquire input files
 
 The description in the previous section gives us a good idea of what we need to run :math:`H({\bf x})`.  First, we need :math:`{\bf x}` - the model state.  In this tutorial we will use background states from the FV3-GFS model with a resolution of c48, as mentioned above.
 
-Next, we need observations to compare our forecast to.  Observations included in this tutorial include (see our :doc:`UFO document <../../../inside/jedi-components/ufo/index>` for an explanation of acronyms; nlocs is the number of observations for each):
+Next, we need observations to compare our forecast to.  Observations included in this tutorial include (see the :doc:`NRT website <http://nrt.jcsda.org>` for an explanation of acronyms):
 
 * Aircraft
 * Sonde
