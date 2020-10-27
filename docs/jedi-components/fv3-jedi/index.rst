@@ -16,3 +16,4 @@ These documents give a high-level overview of the FV3-JEDI code repository.  `A 
    classes
    data
    testing
+   visualization
