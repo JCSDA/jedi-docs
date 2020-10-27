@@ -37,15 +37,15 @@ The description in the previous section gives us a good idea of what we need to 
 
 Next, we need observations to compare our forecast to.  Observations included in this tutorial include (see our :doc:`UFO document <../../../inside/jedi-components/ufo/index>` for an explanation of acronyms; nlocs is the number of observations for each):
 
-* Aircraft; nlocs=93933; T:43192; Q:1676; U,V:43145
-* Sonde; nlocs=3090 T:276; Q:550; U,V:1916; Psfc:19
-* Satwinds; nlocs=1552597; U,V:263192/2641344
-* Scatwinds; nlocs=217582; U,V:212907/435088
-* Vadwind; nlocs=15796; U,V:6513/31592
-* Windprof; nlocs=13; U,V:9/26
-* SST; nlocs=24396; SST:20828/22361
-* Ship; nlocs=40312; T:3260; U,V:7843; Psfc:8888/36417
-* Surface; nlocs=217289; T,Q,U,V:0; Psfc:62188/192169
+* Aircraft
+* Sonde
+* Satwinds
+* Scatwinds
+* Vadwind
+* Windprof
+* SST
+* Ship
+* Surface
 * cris-npp
 * cris-n20
 * airs-aqua
@@ -106,7 +106,7 @@ When you are ready, try it out:
 
    ./run.bash
 
-If you omit the arguments, the script just gives you a list of instruments that are available in this tutorial.  For Step 2 we will focus on radiance data from the `AMSU-A instrument on NOAA's MIRS spacecraft <https://www.star.nesdis.noaa.gov/mirs/amsua.php>`_:
+If you omit the arguments, the script just gives you a list of instruments that are available in this tutorial.  For Step 2 we will focus on radiance data from the `AMSU-A instrument on the NOAA-19 satellite`_:
 
 .. code-block:: bash
 
@@ -159,7 +159,7 @@ This shows the spatial coverage of the observational measurements over a 6-hour 
 
 Now look at some of the other fields.   We have already seen that ``count`` reflects the number of observations, organized into regular bins in latitude and longitued.  Also plotted are the ``mean`` and the standard deviation ``stddev`` of the observations in each bin.  The files marked with ``obs`` correspond to the observations and the files marked with ``hofx`` represent the simulated observations computed by means of the :math:`H({\bf x})` operation described :ref:`above <hofxnrt-overview>`.  This forward operator relies on JCSDA's Community Radiative Transfer Model (`CRTM <https://github.com/JCSDA/crtm>`_) to predict what this instrument would see for that model background state.
 
-The files marked ``ombg`` represent the difference between the two: observations minus background.  In the data assimilation literature, this is often referred to as the *innovation* and it plays critical role in the forecasting process; this is how we know how accurate the forecast is and how we can improve it.  To see the innovation for this instrument over this time period, view this file:
+The files marked ``ombg`` represent the difference between the two: observations minus background.  In data assimilation this is often referred to as the *innovation* and it plays a critical role in the forecasting process; it contains newly available information from the latest observations that can be used to improve the next forecast.  To see the innovation for this instrument over this time period, view this file:
 
 .. code-block:: bash
 
