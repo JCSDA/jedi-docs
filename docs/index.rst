@@ -33,6 +33,7 @@ Table of Contents
    tutorials/index.rst
    cloud/index.rst
    FAQ/index.rst
+   ref/references
 
 Indices and tables
 ==================
