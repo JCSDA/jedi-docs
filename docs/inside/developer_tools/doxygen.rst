@@ -155,7 +155,7 @@ You may never need to run Doxygen yourself.  As noted :doc:`above <doxygen>`, th
 
 But, if you have added Doxygen documentation to a feature branch that you are working on, you may want to see how it looks before doing a pull request.  This is straightforward to do.
 
-If you are working with a particular :doc:`JEDI bundle </using/building_and_running/building_jedi>`, then it is likely that this bundle is equipped to build the Doxygen documentation.  Just edit the :code:`CMakeLists.txt` file in the top level of the bundle repository (e.g. **ufo-bundle**) and look for a code snippet that resembles this:
+If you are working with a particular :doc:`JEDI bundle </using/building_and_running/building_jedi>`, then it is likely that this bundle is equipped to build the Doxygen documentation.  Just edit the :code:`CMakeLists.txt` file in the top level of the bundle repository (e.g. **fv3-bundle**) and look for a code snippet that resembles this:
 
 .. code-block:: bash
 
@@ -179,7 +179,7 @@ You can also run Doxygen manually, as follows
 
 Then, as with the automated bundle build, the Doxygen-generated html output will be located in the directory :code:`<build-dir>/Documentation/html` and you can view it with a web browser by loading any of the html documents that you see there.
 
-Note that these manual instructions are specifically for JEDI repositories.  In this case, the :code:`<path-to-config-file>` should point to a directory that includes a file called :code:`Doxyfile.in`.  Examples include the :code:`Documentation` subdirectories in the **ufo-bundle**, **fv3-bundle**, or **oops** repositories.  The ecbuild step :ref:`above <doxy-build>` converts this into a :code:`Doxyfile` with the proper path information.
+Note that these manual instructions are specifically for JEDI repositories.  In this case, the :code:`<path-to-config-file>` should point to a directory that includes a file called :code:`Doxyfile.in`.  Examples include the :code:`Documentation` subdirectories in the **fv3-bundle**, **fv3-bundle**, or **oops** repositories.  The ecbuild step :ref:`above <doxy-build>` converts this into a :code:`Doxyfile` with the proper path information.
 
 Alternatively, If you create your own Doxyfile with :ref:`Doxywizard <wizard>` or with :code:`doxygen -g`, then you can skip the ecbuild step and just run the :code:`doxygen` command from the same directory as the Doxyfile (you could also specify the configuration file explicitly with the :code:`-g` option to doxygen).
 
