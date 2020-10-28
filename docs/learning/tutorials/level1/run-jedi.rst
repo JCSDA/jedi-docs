@@ -50,7 +50,7 @@ To exit the container at any time (not now), simply enter
    exit
 
 
-Before running any applications or test in a JEDI, it's a good idea to make sure that our system is ready for it.  If you are running on a laptop or virtual machine, it is likely that some of the tests will require more MPI tasks than the number of compute cores you have available on your machine.  So, we have to tell OpenMPI that it is ok if some cores run more than one MPI task.
+Before running any JEDI applications or tests inside or outside a container, it's a good idea to make sure that our system is ready for it.  If you are running on a laptop or virtual machine, it is likely that some of the tests will require more MPI tasks than the number of compute cores you have available on your machine.  So, we have to tell OpenMPI that it is ok if some cores run more than one MPI task.
 
 To do this, first see if the following directory exists on your system:
 
