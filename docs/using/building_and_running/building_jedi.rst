@@ -65,15 +65,14 @@ Before building the jedi code, you should also make sure that git is configured 
 
 This only needs to be done once, and it is required even if you are running in a container.
 
-Another thing to keep in mind is that some JEDI tests require six MPI task to run.  This is just for fv3-bundle; other bundles may require even more.  Chances are good that your machine (whether it be a laptop, a workstation, a cloud computing instance, or whatever), may have fewer than six compute cores.
+Another thing to keep in mind is that some JEDI tests require 18 or more MPI tasks to run.  Chances are good that your machine (whether it be a laptop, a workstation, a cloud computing instance, or whatever), may have fewer than 18 compute cores.
 
-If your machine has fewer than six compute cores, and if you are using OpenMPI, you may need to explicitly give openmpi permission to run more than one MPI task on each core.  To do this, run these commands:
+If your machine has fewer than 18 compute cores, and if you are using OpenMPI, you may need to explicitly give openmpi permission to run more than one MPI task on each core.  To do this, run these commands:
 
 .. code-block:: bash
 
     mkdir -p ~/.openmpi
     echo "rmaps_base_oversubscribe = 1" > ~/.openmpi/mca-params.conf
-    echo "localhost slots=6" > ~/.openmpi/hostfile
 
 
 .. _bundle:
