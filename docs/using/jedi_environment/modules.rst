@@ -137,6 +137,7 @@ Hera, particularly for installations of HDF5 and NetCDF. The Hera sysadmins have
 HDF5 and NetCDF (in /apps/modules/modulefamilies/intel) and netcdf-hdf5parallel
 (in /apps/modules/modulefamilies/intel_impi). Unfortunately, these libraries have incompatible versions and compile-time
 options that conflict with the JEDI components. For a JEDI-related project, use our modules.
+If modules have been mixed, you can unload all modules and start over with *module purge*.
 
 Also, it is recommended that you specify :code:`srun` as your mpi process manager when building, like so:
 
