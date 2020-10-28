@@ -159,7 +159,7 @@ This should work for most bundles but if it doesn't then check in the bundle sou
 
     **Some bundles may require you to run a build script prior to or in lieu of running ecbuild, particularly if you are running outside of the CharlieCloud and Singularity containers.  Check the README file in the top directory of the bundle repository to see if this is necessary, particularly if you encounter problems running ecbuild, cmake, or ctest.**
 
-After you enter the ecbuild command, remember to practice patience, dear `padawan <http://starwars.wikia.com/wiki/Padawan>`_.  The build process may take less than a minute for fv3-bundle but for some other bundles it can take twenty minutes or more, particularly if ecbuild has to retrieve a number of large restart files from a remote :doc:`Git LFS store </inside/developer_tools/gitlfs>` over a wireless network.
+After you enter the ecbuild command, remember to practice patience, dear `padawan <http://starwars.wikia.com/wiki/Padawan>`_.  The build process may take several minutes.
 
 As described :doc:`here </inside/developer_tools/cmake>`, ecbuild is really just a sophisticated (and immensely useful!) interface to CMake.  So, if there are any CMake options or arguments you wish to invoke, you can pass them to ecbuild and it will kindly pass them on to CMake.  The general calling syntax is:
 
