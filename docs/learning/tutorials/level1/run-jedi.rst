@@ -49,6 +49,33 @@ To exit the container at any time (not now), simply enter
 
    exit
 
+
+Before running any applications or test in a JEDI, it's a good idea to make sure that our system is ready for it.  If you are running on a laptop or virtual machine, it is likely that some of the tests will require more MPI tasks than the number of compute cores you have available on your machine.  So, we have to tell OpenMPI that it is ok if some cores run more than one MPI task.
+
+To do this, first see if the following directory exists on your system:
+
+.. code-block:: bash
+
+    ls $HOME/.openmpi
+
+If it does not exist, run the following commands to create and initialize it:
+
+.. code-block:: bash
+
+    mkdir -p $HOME/.openmpi
+    echo 'rmaps_base_oversubscribe = 1' > $HOME/.openmpi/mca-params.conf
+
+If the ``$HOME/.openmpi`` directory already exists, edit it to make sure it contains an ``mca-params.conf`` file with the line ``rmaps_base_oversubscribe = 1``.  This turns on OpenMPI's "oversubscribe" mode.
+
+It is interesting to note that this is something that we cannot include in the container.  When you are inside the singularity container, you have the same home directory (and user name) as you do outside of the container.  This is a Good Thing; it provides a convenient work environment that is familiar to most scientists and software engineers, where you can see the files in your home directory without having to explicitly mount it in the container (as you would with Docker).  But, it also means that some things, like this ``$HOME/.openmpi`` directory are shared by your container enviroment and your host environment.Also, to run JEDI
+
+Another common source of spurious test failure is memory faults due to an insufficient stack size.  To avoid this, run the following commands:
+
+.. code-block:: bash
+
+    ulimit -s unlimited
+    ulimit -v unlimited
+
 .. _meet-the-container:
 
 Step 2: Get to know the Container
@@ -115,6 +142,7 @@ The container contains everything you need to run a Data Assimilation (DA) appli
    mkdir -p $HOME/jedi/tutorials
    cp -r /opt/jedi/fv3-bundle/tutorials/runjedi $HOME/jedi/tutorials
    cd $HOME/jedi/tutorials/runjedi
+   chmod a+x run.bash
 
 .. note::
 

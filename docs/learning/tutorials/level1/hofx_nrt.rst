@@ -82,6 +82,7 @@ So, you'll need to copy the files you need over to your home directory that is d
    mkdir -p $HOME/jedi/tutorials
    cp -r /opt/jedi/fv3-bundle/tutorials/Hofx $HOME/jedi/tutorials
    cd $HOME/jedi/tutorials/Hofx
+   chmod a+x run.bash
 
 We'll call ``$HOME/jedi/tutorials/Hofx`` the run directory.
 
