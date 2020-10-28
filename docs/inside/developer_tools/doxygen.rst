@@ -179,7 +179,7 @@ You can also run Doxygen manually, as follows
 
 Then, as with the automated bundle build, the Doxygen-generated html output will be located in the directory :code:`<build-dir>/Documentation/html` and you can view it with a web browser by loading any of the html documents that you see there.
 
-Note that these manual instructions are specifically for JEDI repositories.  In this case, the :code:`<path-to-config-file>` should point to a directory that includes a file called :code:`Doxyfile.in`.  Examples include the :code:`Documentation` subdirectories in the **fv3-bundle**, **fv3-bundle**, or **oops** repositories.  The ecbuild step :ref:`above <doxy-build>` converts this into a :code:`Doxyfile` with the proper path information.
+Note that these manual instructions are specifically for JEDI repositories.  In this case, the :code:`<path-to-config-file>` should point to a directory that includes a file called :code:`Doxyfile.in`.  Examples include the :code:`Documentation` subdirectories in the **fv3-bundle**, or **oops** repositories.  The ecbuild step :ref:`above <doxy-build>` converts this into a :code:`Doxyfile` with the proper path information.
 
 Alternatively, If you create your own Doxyfile with :ref:`Doxywizard <wizard>` or with :code:`doxygen -g`, then you can skip the ecbuild step and just run the :code:`doxygen` command from the same directory as the Doxyfile (you could also specify the configuration file explicitly with the :code:`-g` option to doxygen).
 
