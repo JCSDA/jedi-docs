@@ -238,7 +238,7 @@ However, as of Dec, 2018, the most recent version of Singularity available is 2.
 Allocating Resources for your Virtual Machine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The JEDI Vagrantfile comes pre-configured to allocate 4GB of memory and 6 virtual CPUS to the VM.  This is the minimum resource allocation to run ufo-bundle.  Other bundles such as fv3 may require more memory (as much as 12-16 GB) and/or more vCPUs.  Furthermore, if you create your own Vagrantfile, the default resource allocation will likely be insufficient to run JEDI.
+The JEDI Vagrantfile comes pre-configured to allocate 16GB of memory and 18 virtual CPUS to the VM.  This is the minimum resource allocation to run many tests and applications.  Furthermore, if you create your own Vagrantfile, the default resource allocation will likely be insufficient to run JEDI.
 
 You can change these resource allocations by editing the Vagrantfile.  Look for the following section that specifies the provider-specific configuration (variable names may differ).  Change the :code:`vb.memory` (in MB) and :code:`vb.cpus` fields as shown here:
 
@@ -249,10 +249,10 @@ You can change these resource allocations by editing the Vagrantfile.  Look for 
      # [...]
 
      # Customize the amount of memory on the VM:
-     vb.memory = "4096"
+     vb.memory = "16384"
 
      # Customize the number of cores in the VM:
-     vb.cpus = "6"
+     vb.cpus = "18"
 
      # [...]
 
