@@ -18,6 +18,14 @@ Overview
 
 In this tutorial we will be running a low-resolution version of the FV3 model as implemented in NOAA's Global Forecast System, :doc:`FV3-GFS <../../../inside/jedi-components/fv3-jedi/index>`.  We'll run both 3D and 4D ensemble variational applications (3DEnVar, 4DEnVar) and compare the increments that each produces.  Along the way, we will get to know the JEDI singularity container; we will run these applications without compiling any code - JEDI is already in the container and ready to go.
 
+JEDI packages are organized into bundles. A bundle includes a collection of GitHub repositories needed to build and run JEDI with a particular model.  In this tutorial, we will be building ``fv3-bundle``.
+
+All JEDI bundles include the base JEDI component of the Object Oriented Prediction System (:doc:`OOPS <../../../inside/jedi-components/oops/index>`), the Interface for Observational Data Assimilation (:doc:`IODA <../../../inside/jedi-components/ioda/index>`, the Unified Forward Operator (:doc:`UFO <../../../inside/jedi-components/ufo/index>`) and the System-Agnostic Background Error Representation (:doc:`SABER <../../../inside/jedi-components/saber/index>`).  The interface between FV3-based models and JEDI is implemented through the :doc:`FV3-JEDI <../../../inside/jedi-components/fv3-jedi/index>` code repository.
+
+Most will also include additional repositories that provide the forecast model and the physics packages or software infrastructure that supports it. Some bundles may also include supplementary repositories that support different observation types, such as an alternative radiative transfer model or tools for working with radio occultation measurements from global navigation satellite systems.
+
+Which JEDI bundle you build depends on which atmospheric or oceanic model you plan to work with.
+
 Step 1: Download and Enter the JEDI Container
 ---------------------------------------------
 
@@ -124,7 +132,7 @@ You can find the JEDI code in the ``/opt/jedi`` directory:
    cd /opt/jedi
    ls
 
-There are two subdirectories here.  One is ``fv3-bundle``.  :ref:`As described in the quick start <quick-start-build>`, jedi applications are best built as part of **bundles** that include all the different JEDI code repositories needed to compile that particular application.  As its name suggests, ``fv3-bundle`` includes the source code for all the repositories require to run the `FV3 model <https://www.gfdl.noaa.gov/fv3/>`_ within JEDI, with the accompanying data assimilation capabilities of core JEDI repositories including the Object Oriented Prediction System (:doc:`OOPS <../../../inside/jedi-components/oops/index>`), the Interface for Observational Data Assimilation (:doc:`IODA <../../../inside/jedi-components/ioda/index>`, the Unified Forward Operator (:doc:`UFO <../../../inside/jedi-components/ufo/index>`) and the System-Agnostic Background Error Representation (:doc:`SABER <../../../inside/jedi-components/saber/index>`).  The interface between FV3-based models and JEDI is implemented through the :doc:`FV3-JEDI <../../../inside/jedi-components/fv3-jedi/index>` code repository.  Go into the ``fv3-bundle`` directory and look around.
+There are two subdirectories here.  One is ``fv3-bundle``.  Go inside and look around.  :ref:`As described above <top-tut-run-jedi>`, jedi applications are best built as part of **bundles** that include all the different JEDI code repositories needed to compile that particular application.  So, you will see the fv3-bundle components of OOP, IODA, UFO, SABER, and FV3-JEDI, along with a few other supporting code repositories.
 
 Also in the ``/opt/jedi`` directory is a subdirectory called ``build``.  This contains the compiled code, including the executables that are located in ``/opt/jedi/build/bin``.  Again, have a look around.
 

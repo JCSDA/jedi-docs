@@ -22,8 +22,6 @@ So, to do this, you need a *development container*.  In contrast to an applicati
 
 In this approach (which you would also follow when using :doc:`environment modules <../../../using/jedi_environment/modules>`), we will download the code from `GitHub <https://github.com>`_ and compile it.  Then we will run the JEDI test suite.
 
-This tutorial parallels very closely the :doc:`JEDI Quick Start <../../quick-start>`.  However, here we will be building the more extensive ``fv3-bundle`` as opposed to the ``ufo-bundle``.
-
 Step 1: Download and Enter the Development Container
 ----------------------------------------------------
 
@@ -60,7 +58,7 @@ Before proceeding, you may wish to take a few moments to :ref:`get to know the c
 Step 2: Build fv3-bundle
 ------------------------
 
-As described :ref:`elsewhere <quick-start-build>`, the JEDI code is organized into *bundles*.  Each bundle identifies the different GitHub repositories that are needed to run the applications and orchestrates how all of these repositories are built and linked together.
+JEDI packages are organized into bundles. Each bundle identifies the different GitHub repositories that are needed to run the applications and orchestrates how all of these repositories are built and linked together.
 
 In this tutorial we will build ``fv3-bundle``.
 
