@@ -16,9 +16,9 @@ In terms of the actual commands you would enter, these steps will look something
 .. code-block:: bash
 
     cd <src-directory>
-    git clone https://github.com/JCSDA/ufo-bundle.git
+    git clone https://github.com/JCSDA/fv3-bundle.git
     cd <build-directory>
-    ecbuild <src-directory>/ufo-bundle
+    ecbuild <src-directory>/fv3-bundle
     make update
     make -j4
     ctest
@@ -65,15 +65,12 @@ Before building the jedi code, you should also make sure that git is configured 
 
 This only needs to be done once, and it is required even if you are running in a container.
 
-Another thing to keep in mind is that some JEDI tests require six MPI task to run.  This is just for ufo-bundle; other bundles may require even more.  Chances are good that your machine (whether it be a laptop, a workstation, a cloud computing instance, or whatever), may have fewer than six compute cores.
-
-If your machine has fewer than six compute cores, and if you are using OpenMPI, you may need to explicitly give openmpi permission to run more than one MPI task on each core.  To do this, run these commands:
+Another thing to keep in mind is that many JEDI tests likely require more MPI tasks to run than the number of processor cores on your system.  For example, may laptops have two or four processor cores but the minimum number of MPI tasks needed to run fv3-bundle is 6.  That's no problem - you just have to tell Openmpi that it is ok to run more than one MPI task on each core.  To do this, run these commands:
 
 .. code-block:: bash
 
     mkdir -p ~/.openmpi
     echo "rmaps_base_oversubscribe = 1" > ~/.openmpi/mca-params.conf
-    echo "localhost slots=6" > ~/.openmpi/hostfile
 
 
 .. _bundle:
@@ -90,13 +87,13 @@ So, to start your JEDI adventure, the first step is to create a directory as a h
     cd ~/jedi
     mkdir src
     cd src
-    git clone https://github.com/JCSDA/ufo-bundle.git
+    git clone https://github.com/JCSDA/fv3-bundle.git
 
 
 Step 2: Choose your Repos
 -------------------------
 
-As executed above, Step 1 will create a directory called :code:`~/jedi/src/ufo-bundle`.  :code:`cd` to this directory and have a look (modify this as needed if you used a different path or a different bundle).  There's not much there.  There is a :code:`README` file that you might want to consult for specific information on how to work with this bundle.  But in this Step we'll focus on the :code:`CMakeLists.txt` file.  This contains a list of repositories that the application needs to run.  In the case of **ufo-bundle** that list looks something like this:
+As executed above, Step 1 will create a directory called :code:`~/jedi/src/fv3-bundle`.  :code:`cd` to this directory and have a look (modify this as needed if you used a different path or a different bundle).  There's not much there.  There is a :code:`README` file that you might want to consult for specific information on how to work with this bundle.  But in this Step we'll focus on the :code:`CMakeLists.txt` file.  This contains a list of repositories that the application needs to run.  In the case of **fv3-bundle** that list looks something like this:
 
 .. code-block:: cmake
 
@@ -123,7 +120,7 @@ For illustration, let's say we created a feature branch of ufo called :code:`fea
 
 .. code-block:: cmake
 
-   ecbuild_bundle( PROJECT ufo GIT "~/jedi/src/ufo-bundle/ufo" BRANCH feature/newstuff )
+   ecbuild_bundle( PROJECT ufo GIT "~/jedi/src/fv3-bundle/ufo" BRANCH feature/newstuff )
 
 This may be all you need to know about :code:`ecbuild_bundle()` but other options are available.  For example, if you would like to fetch a particular release of a remote GitHub repository you can do this:
 
@@ -150,7 +147,7 @@ Then, from that build directory, run :code:`ecbuild`, specifying the path to the
 .. code-block:: bash
 
     cd ~/jedi/build
-    ecbuild ../src/ufo-bundle
+    ecbuild ../src/fv3-bundle
 
 Here we have used :code:`~/jedi/src` as our source directory and :code:`~jedi/build` as our build directory.  Feel free to change this as you wish, but just **make sure that your source and build directories are different**.
 
@@ -160,7 +157,7 @@ This should work for most bundles but if it doesn't then check in the bundle sou
 
     **Some bundles may require you to run a build script prior to or in lieu of running ecbuild, particularly if you are running outside of the CharlieCloud and Singularity containers.  Check the README file in the top directory of the bundle repository to see if this is necessary, particularly if you encounter problems running ecbuild, cmake, or ctest.**
 
-After you enter the ecbuild command, remember to practice patience, dear `padawan <http://starwars.wikia.com/wiki/Padawan>`_.  The build process may take less than a minute for ufo-bundle but for some other bundles it can take twenty minutes or more, particularly if ecbuild has to retrieve a number of large restart files from a remote :doc:`Git LFS store </inside/developer_tools/gitlfs>` over a wireless network.
+After you enter the ecbuild command, remember to practice patience, dear `padawan <http://starwars.wikia.com/wiki/Padawan>`_.  The build process may take several minutes.
 
 As described :doc:`here </inside/developer_tools/cmake>`, ecbuild is really just a sophisticated (and immensely useful!) interface to CMake.  So, if there are any CMake options or arguments you wish to invoke, you can pass them to ecbuild and it will kindly pass them on to CMake.  The general calling syntax is:
 
@@ -172,13 +169,13 @@ Where :code:`src-directory` is the path to the source code of the bundle you wis
 
 .. code-block:: bash
 
-   ecbuild --build=debug ../src/ufo-bundle
+   ecbuild --build=debug ../src/fv3-bundle
 
 This will invoke the debug flags on the C++ and Fortran compilers and it will also generate other output that may help you track down errors when you run applications and/or tests.  You can also specify which compilers you want and you can even add compiler options.  For example:
 
 .. code-block:: bash
 
-   ecbuild -- -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CXX_FLAGS="-Wfloat-equal -Wcast-align" ../src/ufo-bundle
+   ecbuild -- -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CXX_FLAGS="-Wfloat-equal -Wcast-align" ../src/fv3-bundle
 
 
 Let's say that you're working on an HPC system where you do not have the privileges to install Singularity.  If this is the case then we recommend that your first check to see if there are :doc:`JEDI modules <../jedi_environment/modules>` installed on your system.   If your system is listed on this modules documentation page then you can simply load the JEDI module as described there and you will have access to ecbuild, eckit, and other JEDI infrastructure.
@@ -189,7 +186,7 @@ A third option is for you to install eckit on your system manually (not recommen
 
 .. code-block:: bash
 
-   ecbuild -- -DECKIT_PATH=<path-to-eckit> ../src/ufo-bundle
+   ecbuild -- -DECKIT_PATH=<path-to-eckit> ../src/fv3-bundle
 
 For more information, enter :code:`ecbuild --help` and see our JEDI page on :doc:`ecbuild and cmake </inside/developer_tools/cmake>`.
 
