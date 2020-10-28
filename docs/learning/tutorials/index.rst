@@ -17,6 +17,12 @@ Another option is to use the Amazon cloud.  If you have an account on AWS (Amazo
 
 This is a work in progress - we will continue to add new tutorials and revise existing tutorials as time goes on.  Most tutorials need not be done in sequential order, though some require pre-requisites.  You can choose what you wish to learn - some topics may be of interest to some users and developers and others may not. However, we do suggest that you start with :doc:`run JEDI in a Container <level1/run-jedi>` in order to familiarize yourself with how to download and "enter" the brave new world of the JEDI container.
 
+**System Requirements:**
+
+- At least 16 GB memory; more is better
+- At least 4 compute processor cores.  If you are running Singularity in a Vagrant virtual machine, we recommend setting the number of virtual cores to 18; see our :doc:`Vagrant documentation <../../using/jedi_environment/vagrant>` for details.
+- At least 8 GB of free disk space
+- A reasonably fast internet connection (at least 5 Mbps)
 
 .. toctree::
    :maxdepth: 2

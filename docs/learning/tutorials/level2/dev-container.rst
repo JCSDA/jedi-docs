@@ -101,7 +101,7 @@ So, we will create a new build directory and run ecbuild from there:
     cd $HOME/jedi/build
     ecbuild --build=Release ../fv3-bundle
 
-The ``--build=Release`` builds an optimized version of the code so our applications will run a bit faster than if we were to omit it.  The only required argument of ``ecbuild`` is the directory where the bundle is.
+The ``--build=Release`` option builds an optimized version of the code so our applications will run a bit faster than if we were to omit it.  The only required argument of ``ecbuild`` is the directory where the bundle is.
 
 We have not yet compiled the code; we have merely set the stage.  To appreciate part of what these commands have done, take a quick look at the bundle directory:
 
@@ -167,7 +167,7 @@ Now we're ready.  To run the full suite of JEDI unit tests, enter this command f
     cd $HOME/jedi/build
     ctest
 
-Running this gives you an appreciation for how thoroughly the JEDI code is :doc:`tested <../../../working-practices/testing>`.  The fv3-bundle has nearly 1000 tests but most of them take a fraction of a minute.  And this is only the Tier 1 tests - more computationally extensive higher-tier tests are run regularly with varying frequency.  These thoroughly test all the applications, functions, methods, class constructors, and other JEDI components.  As emphasized :doc:`elsewhere <../../../working-practices/reviewing-code>`, no code is added to JEDI unless there is a test to make sure that it is working and that it continues to work as the code evolves.
+Running this gives you an appreciation for how thoroughly the JEDI code is :doc:`tested <../../../working-practices/testing>`.  The fv3-bundle has over 800 tests but many of them take less than a second.  And this is only the Tier 1 tests - more computationally extensive higher-tier tests are run regularly with varying frequency.  These thoroughly test all the applications, functions, methods, class constructors, and other JEDI components.  As emphasized :doc:`elsewhere <../../../working-practices/reviewing-code>`, no code is added to JEDI unless there is a test to make sure that it is working and that it continues to work as the code evolves.
 
 If you still get test failures you may wish to consult the :doc:`FAQ <../../../FAQ/FAQ>`.
 
