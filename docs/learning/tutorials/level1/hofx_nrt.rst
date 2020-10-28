@@ -33,7 +33,7 @@ Now that you have finished the :doc:`Run JEDI in a Container <run-jedi>` tutoria
 
 .. code-block::
 
-   singularity shell -e singularity shell -e jedi-tutorial_latest.sif
+   singularity shell -e jedi-tutorial_latest.sif
 
 Now, the description in the previous section gives us a good idea of what we need to run :math:`H({\bf x})`.  First, we need :math:`{\bf x}` - the model state.  In this tutorial we will use background states from the FV3-GFS model with a resolution of c48, as mentioned above.
 
