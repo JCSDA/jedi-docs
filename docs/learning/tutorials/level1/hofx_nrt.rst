@@ -1,7 +1,7 @@
 .. _top-tut-hofx-nrt:
 
-Tutorial: Simulating Observations with UFO
-==========================================
+Tutorial: Simulating Observations like JCSDA Near-Real-Time Application
+=======================================================================
 
 Learning Goals:
  - Create simulated observations similar to those highlighted on JCSDA's `Near Real-Time (NRT) Observation Modeling web site <http://nrt.jcsda.org>`_

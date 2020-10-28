@@ -1,7 +1,7 @@
 .. _top-tut-run-jedi:
 
-Tutorial: Run JEDI in a Container
-=================================
+Tutorial: Run JEDI-FV3 in a Container
+=====================================
 
 Learning Goals:
  - How to download and run/enter a JEDI application container

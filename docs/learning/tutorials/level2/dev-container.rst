@@ -1,7 +1,7 @@
 .. _top-tut-dev-container:
 
-Tutorial: Building and Testing FV3 bundle
-=========================================
+Tutorial: Build and Test JEDI-FV3
+=================================
 
 Learning Goals:
  - How to download and run/enter a JEDI development container
