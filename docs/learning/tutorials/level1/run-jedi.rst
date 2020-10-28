@@ -81,7 +81,7 @@ Another common source of spurious test failure is memory faults due to an insuff
 Step 2: Get to know the Container
 ---------------------------------
 
-When you ran the ``singularity shell`` command at the end of Step 1, you entered a new world, or at least a new computing environment.  Take a moment to explore it.
+When you ran the ``singularity shell`` command in Step 1, you entered a new world, or at least a new computing environment.  Take a moment to explore it.
 
 First, notice that you are in the same directory as before:
 
@@ -117,20 +117,20 @@ There you will see a host of JEDI dependencies, such as netcdf, lapack, and ecki
 
    nc-config --all
 
-You can find the JEDI code in the ``/jedi`` directory:
+You can find the JEDI code in the ``/opt/jedi`` directory:
 
 .. code-block:: bash
 
-   cd /jedi
+   cd /opt/jedi
    ls
 
 There are two subdirectories here.  One is ``fv3-bundle``.  :ref:`As described in the quick start <quick-start-build>`, jedi applications are best built as part of **bundles** that include all the different JEDI code repositories needed to compile that particular application.  As its name suggests, ``fv3-bundle`` includes the source code for all the repositories require to run the `FV3 model <https://www.gfdl.noaa.gov/fv3/>`_ within JEDI, with the accompanying data assimilation capabilities of core JEDI repositories including the Object Oriented Prediction System (:doc:`OOPS <../../../inside/jedi-components/oops/index>`), the Interface for Observational Data Assimilation (:doc:`IODA <../../../inside/jedi-components/ioda/index>`, the Unified Forward Operator (:doc:`UFO <../../../inside/jedi-components/ufo/index>`) and the System-Agnostic Background Error Representation (:doc:`SABER <../../../inside/jedi-components/saber/index>`).  The interface between FV3-based models and JEDI is implemented through the :doc:`FV3-JEDI <../../../inside/jedi-components/fv3-jedi/index>` code repository.  Go into the ``fv3-bundle`` directory and look around.
 
-Also in the ``/jedi`` directory is a subdirectory called ``build``.  This contains the compiled code, including the executables that are located in ``/jedi/build/bin``.  Again, have a look around.
+Also in the ``/opt/jedi`` directory is a subdirectory called ``build``.  This contains the compiled code, including the executables that are located in ``/opt/jedi/build/bin``.  Again, have a look around.
 
-The files in the ``/jedi`` directory are part of the container and cannot be readily accessed after you exit singularity.  Furthermore, the files in the container read-only.  And, since the unit tests in general produce output files, you will not be able to run the tests in the ``/jedi/build`` directory.  But, you can still look at them.
+The files in the ``/opt/jedi`` directory are part of the container and cannot be readily accessed after you exit singularity.  Furthermore, the files in the container read-only.  And, since the unit tests in general produce output files, you will not be able to run the tests in the ``/opt/jedi/build`` directory.  But, you can still look at them.
 
-The tests for each code repository are defined within that repository.  So, they can be found within each corresponding directory, usually in a subdirectory called ``test``.  See, for example, the ``ufo/test`` and ``saber/test`` subdirectories in ``/jedi/build``.  As the top-level code component, OOPS is structured a bit differently.  Here the QG and Lorentz 95 toy models have their own test directories (``oops/qg/test`` and ``oops/l95/test`` respectively), with a few other test configurations in ``oops/src/test``.
+The tests for each code repository are defined within that repository.  So, they can be found within each corresponding directory, usually in a subdirectory called ``test``.  See, for example, the ``ufo/test`` and ``saber/test`` subdirectories in ``/opt/jedi/build``.  As the top-level code component, OOPS is structured a bit differently.  Here the QG and Lorentz 95 toy models have their own test directories (``oops/qg/test`` and ``oops/l95/test`` respectively), with a few other test configurations in ``oops/src/test``.
 
 Step 3: Run a JEDI Application
 ------------------------------
