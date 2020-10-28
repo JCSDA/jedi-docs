@@ -26,8 +26,6 @@ We currently offer JEDI modules on several HPC systems, as described below.   Co
 
 These modules are functionally equivalent to the JEDI Singularity and Charliecloud containers in the sense that they provide all of the software libraries necessary to build and run JEDI.  But there is no need to install a container provider or to enter a different mount namespace.  After loading the appropriate JEDI module or modules (some bundles may require loading more than one), users can proceed to :ref:`compile and run the JEDI bundle of their choice <build-jedi>`.
 
-We begin with some general instructions on how to use modules that apply across all systems.  We then give more detailed usage tips for specific systems.
-
 General Tips for HPC Systems
 ----------------------------
 
