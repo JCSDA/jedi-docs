@@ -8,16 +8,12 @@ Learning Goals:
  - Acquaint yourself with the rich variety of observation operators now available in :doc:`UFO <../../../inside/jedi-components/ufo/index>`
 
 Prerequisites:
- - Either :doc:`Run JEDI in a Container <run-jedi>` or :doc:`Building and Testing FV3 Bundle <dev-container>`
+ - :doc:`Run JEDI in a Container <run-jedi>`
 
 .. _hofxnrt-overview:
 
 Overview
 --------
-
-If you have finished either the :doc:`Run JEDI in a Container <run-jedi>` tutorial or the :doc:`Building and Testing FV3 bundle <dev-container>` tutorial, you now have a version of ``fv3-bundle`` compiled and ready to use.  In the former case, it came pre-packaged inside an application container.  In the latter case, you build it yourself inside a development container.
-
-A small clarification on the case of the development container; You built fv3-bundle while inside the container but since the container and host environment share the same home directory, you should still be able to access it outside of the container.  But, if you try to run any tests or applications from outside the container you'll find that they fail.  This is because, at run time as well as at compile time, the tests and applications need to link to the libraries and executables inside the container.
 
 The comparison between observations and forecasts is an essential component of any data assimilation (DA) system and is critical for accurate Earth System Prediction.  It is common practice to do this comparison in observation space.  In JEDI, this is done by the Unified Forward Operator (:doc:`UFO <../../../inside/jedi-components/ufo/index>`).  Thus, the principle job of UFO is to start from a model background state and to then simulate what that state would look like from the perspective of different observational instruments and measurements.
 
@@ -27,15 +23,21 @@ So, in this tutorial, we will be running an application called :math:`H({\bf x})
 
 The goal is to create plots comparable to JCSDA's `Near Real-Time (NRT) Observation Modeling web site <http://nrt.jcsda.org>`_  This site regularly ingests observation data for the complete set of operational instruments at NOAA.  And, it compares these observations to forecasts made through NOAA's operational Global Forecasting System (FV3-GFS) and NASA's Goddard Earth Observing System (FV3-GEOS).
 
-But there is a caveat.  The NRT web site regularly simulates millions of observations using model backgrounds with operational resolution - and it does this every six hours!  That requires substantial high-performance computing (HPC) resources.  We want to mimic this procedure in a way that can be run on a laptop computer.  So, the model background we will use will be at a much lower horizonal resolution (c48, corresponding to about 14 thousand points in latitude and longitude) than the NRT website (GFS operational resolution of c768, corresponing to about 3.5 million points).
+But there is a caveat.  The NRT web site regularly simulates millions of observations using model backgrounds with operational resolution - and it does this every six hours!  That requires substantial high-performance computing (HPC) resources.  We want to mimic this procedure in a way that can be run on a laptop computer.  So, the model background you will use will be at a much lower horizonal resolution (c48, corresponding to about 14 thousand points in latitude and longitude) than the NRT website (GFS operational resolution of c768, corresponing to about 3.5 million points).
 
 
-Step 1: Acquire input files
----------------------------
+Step 1: Setup
+-------------
 
-The description in the previous section gives us a good idea of what we need to run :math:`H({\bf x})`.  First, we need :math:`{\bf x}` - the model state.  In this tutorial we will use background states from the FV3-GFS model with a resolution of c48, as mentioned above.
+Now that you have finished the :doc:`Run JEDI in a Container <run-jedi>` tutorial, you have a containerized version of ``fv3-bundle`` ready to go.  So, if you are not there already, re-enter the container:
 
-Next, we need observations to compare our forecast to.  Observations included in this tutorial include (see the :doc:`NRT website <http://nrt.jcsda.org>` for an explanation of acronyms):
+.. code-block::
+
+   singularity shell -e singularity shell -e jedi-tutorial_latest.sif
+
+Now, the description in the previous section gives us a good idea of what we need to run :math:`H({\bf x})`.  First, we need :math:`{\bf x}` - the model state.  In this tutorial we will use background states from the FV3-GFS model with a resolution of c48, as mentioned above.
+
+Next, we need observations to compare our forecast to.  Example observations available in this tutorial include (see the `NRT website <http://nrt.jcsda.org>`_ for an explanation of acronyms):
 
 * Aircraft
 * Sonde
@@ -71,17 +73,15 @@ Next, we need observations to compare our forecast to.  Observations included in
 * ssmis-f18
 * atms-n20
 
-The script to get these background and observation files is already in fv3-bundle.  But, before we run it, we should find a good place to run our application.  If you are using an application container, ``fv3-bundle`` is inside the container so that directory is read-only; that will not do.  Or, if you are using a development container, you could write to it but it is good practice to keep the repository clean of output files.
+The script to get these background and observation files is in the container.  But, before we run it, we should find a good place to run our application.  The ``fv3-bundle`` directory is inside the container and thus read-only, so that will not do.
 
-So, whichever container you are running in, it's a good idea to copy the files you need over to your home directory that is dedicated to running the tutorial:
+So, you'll need to copy the files you need over to your home directory that is dedicated to running the tutorial:
 
 .. code-block:: bash
 
    mkdir -p $HOME/jedi/tutorials
-   cp -r <path-to-fv3-bundle>/tutorials/Hofx $HOME/jedi/tutorials
+   cp -r /opt/jedi/fv3-bundle/tutorials/Hofx $HOME/jedi/tutorials
    cd $HOME/jedi/tutorials/Hofx
-
-Here ``<path-to-fv3-bundle>`` is the path to your copy of ``fv3-bundle``.  If you previously did the :doc:`Run JEDI in a Container <run-jedi>` tutorial this will be ``/opt/jedi/fv3-bundle``.  Or, if you did the :doc:`Building and Testing FV3 Bundle <dev-container>` tutorial, this may be ``$HOME/jedi/fv3-bundle``.
 
 We'll call ``$HOME/jedi/tutorials/Hofx`` the run directory.
 
@@ -106,21 +106,11 @@ When you are ready, try it out:
 
    ./run.bash
 
-If you omit the arguments, the script just gives you a list of instruments that are available in this tutorial.  For Step 2 we will focus on radiance data from the `AMSU-A instrument on the NOAA-19 satellite`_:
+If you omit the arguments, the script just gives you a list of instruments that are available in this tutorial.  For Step 2 we will focus on radiance data from the AMSU-A instrument on the NOAA-19 satellite:
 
 .. code-block:: bash
 
    ./run.bash Amsua_n19
-
-If you get a prompt to ``Please enter the JEDI build directory`` then that probably means you built fv3-bundle yourself as part of the :doc:`Building and Testing FV3 Bundle <dev-container>` tutorial.  If that's the case then you should enter ``$HOME/jedi/build``, or whatever directory is appropriate if you built it elsewhere.  This tells the script where to find the fv3-jedi executables.
-
-.. tip::
-
-   To avoid entering your build directory every time you run the ``run.bash`` script, you can set the following environment variable:
-
-   .. code-block:: bash
-
-       export JEDI_BUILD_DIR=$HOME/jedi/build
 
 Skim the text output as it is flowing by.  Can you spot where the quality control (QC) on the observations is being applied?
 

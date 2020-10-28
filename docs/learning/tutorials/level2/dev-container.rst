@@ -14,7 +14,7 @@ Prerequisites:
 Overview
 --------
 
-In the :doc:`Run JEDI in a Container <run-jedi>` tutorial we used a version of an :doc:`application container <../../../using/jedi_environment/index>`.  This means that the container includes the compiled source code, ready to use.  The ``jedi-tutorial`` container comes pre-packaged with JEDI!
+In the :doc:`Run JEDI in a Container <../level1/run-jedi>` tutorial we used a version of an :doc:`application container <../../../using/jedi_environment/index>`.  This means that the container includes the compiled source code, ready to use.  The ``jedi-tutorial`` container comes pre-packaged with JEDI!
 
 But that's not the way most JEDI developers, and many users, use JEDI.  Instead, JEDI is set up so that users and developers have easy access to a version of the source code that they can download, build, and even modify themselves.  This encourages community members to make changes and potentially contribute to the project through :doc:`pull requests to the main JEDI repositories <../../../inside/practices/pullrequest>`.
 
@@ -35,7 +35,7 @@ You can obtain the JEDI development container with the following command:
 
 This is the version of the development container that uses gnu compilers and the openmpi MPI library.  :ref:`Other development containers are also available <available_containers>` but the ``gnu-openmpi`` container is the only one that is currently equipped with plotting tools such as ``cartopy`` that are used in some of the tutorials (not this one).  Still, you may wish to repeat this tutorial with the ``clang-mpich-dev`` container.
 
-If the pull was successful, you should see a new file in your current directory with the name ``jedi-gnu-openmpi-dev_latest.sif``.  If it has a different name or a different extension you may have an older version of Singularity.  It is recommended that you use Singularity version 3.0 or later.
+You should now see a new file in your current directory with the name ``jedi-gnu-openmpi-dev_latest.sif``.  If it has a different name or a different extension you may have an older version of Singularity.  It is recommended that you use Singularity version 3.0 or later.
 
 If you wish, you can verify that the container came from JCSDA by entering:
 
@@ -62,7 +62,18 @@ Step 2: Build fv3-bundle
 
 As described :ref:`elsewhere <quick-start-build>`, the JEDI code is organized into *bundles*.  Each bundle identifies the different GitHub repositories that are needed to run the applications and orchestrates how all of these repositories are built and linked together.
 
-In this tutorial we will build ``fv3-bundle``.  In this tutorial we will put the code in a directory coming off your home directory called ``jedi``.   Feel free to change the location if you wish.
+In this tutorial we will build ``fv3-bundle``.
+
+But, before we do so, it's a good idea to configure ``git`` so that it will not ask you for your login credentials for every repository it downloads.   So, if you haven't done so already on your computer, run the following commands:
+
+.. code-block:: bash
+
+   git config --global credential.helper 'cache --timeout=3600'
+   git config --global --add credential.helper 'store'
+
+This stores your git credentials in your home directory for one hour (3600 seconds).  And, since the container and the host environment share the same home directory, it does not matter if you run these commands inside or outside the container.
+
+Now we will put the code in a directory coming off your home directory called ``jedi``.   Feel free to change the location if you wish.
 
 That said, you can get it from GitHub with the following commands:
 
@@ -159,3 +170,5 @@ Now we're ready.  To run the full suite of JEDI unit tests, enter this command f
 Running this gives you an appreciation for how thoroughly the JEDI code is :doc:`tested <../../../working-practices/testing>`.  The fv3-bundle has nearly 1000 tests but most of them take a fraction of a minute.  And this is only the Tier 1 tests - more computationally extensive higher-tier tests are run regularly with varying frequency.  These thoroughly test all the applications, functions, methods, class constructors, and other JEDI components.  As emphasized :doc:`elsewhere <../../../working-practices/reviewing-code>`, no code is added to JEDI unless there is a test to make sure that it is working and that it continues to work as the code evolves.
 
 If you still get test failures you may wish to consult the :doc:`FAQ <../../../FAQ/FAQ>`.
+
+A small clarification on the case of the development container; You built fv3-bundle while inside the container but since the container and host environment share the same home directory, you should still be able to access it outside of the container.  But, if you try to run any tests or applications from outside the container you'll find that they fail.  This is because, at run time as well as at compile time, the tests and applications need to link to the libraries and executables inside the container.
