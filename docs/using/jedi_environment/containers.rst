@@ -58,10 +58,13 @@ Available Containers
 
 The public containers currently offered by jcsda include:
 
+    - :code:`gnu-openmpi-tut`
     - :code:`gnu-openmpi-dev`
     - :code:`clang-mpich-dev`
 
 Containers that include :code:`-dev` in their name are development containers as described :ref:`above <top-Containers>`.  This means that they contain the JEDI dependencies and compilers but not the JEDI code itself.
+
+The ``gnu-openmpi-tut`` container is designed for use with the :doc:`JEDI Tutorials <../../learning/tutorials/index>`.
 
 If you have it available, we recommend the use of Singularity.  To obtain the Singularity versions of these containers enter
 
