@@ -102,17 +102,41 @@ This runs several tests. The purpose of these tests is to download data files fr
 Hera
 -----
 
-Hera is an HPC system located in NOAA's NESCC facility in Fairmont, WV.  On Hera, users can access the installed jedi modules by first entering
+Hera is an HPC system located in NOAA's NESCC facility in Fairmont, WV. The following bash shell commands are necessary to access the installed JEDI modules:
 
 .. code-block:: bash
 
-  module use -a /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi/modules/
+   export JEDI_OPT=/scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt
+   module use --append /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt/modulefiles/core
+   module use --append /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt/modulefiles/apps
 
-Currently the intel 18 module is preferred:
+If you use tcsh, use these commands:
 
 .. code-block:: bash
 
-  module load jedi-stack/intel-impi-18.0.5
+   setenv JEDI_OPT /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt
+   module use --append /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt/modulefiles/core
+   module use --append /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt/modulefiles/apps
+
+The modules in "core" are the individual components. The modules in "apps" represent meta-modules that load
+in all of the necessary core components to build and run JEDI.
+
+There are five modules in apps/jedi which represent different compinations of Intel compilers and MPI stacks.
+The supported compilers are Intel 2018, 2019, and 2020.2. We link aginst three MPI stacks,
+Intel MPI 18, 19, and 20.2. You do not, however, have to match the compiler and MPI stack version, and
+Intel MPI 18 is preferred on Hera.
+
+The default JEDI module is jedi/intel-20.2-impi-18. To load this, simply run:
+
+.. code-block:: bash
+
+   module load jedi/intel-20.2-impi-18
+
+It is important to note that the JEDI modules may conflict with other modules provided by other developers on
+Hera, particularly for installations of HDF5 and NetCDF. The Hera sysadmins have provided their own builds of
+HDF5 and NetCDF (in /apps/modules/modulefamilies/intel) and netcdf-hdf5parallel
+(in /apps/modules/modulefamilies/intel_impi). Unfortunately, these libraries have incompatible versions and compile-time
+options that conflict with the JEDI components. For a JEDI-related project, use our modules.
 
 Also, it is recommended that you specify :code:`srun` as your mpi process manager when building, like so:
 
