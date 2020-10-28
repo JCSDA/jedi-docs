@@ -15,7 +15,7 @@ For example, to enable GPTL with autoprofiling you would enter:
 
 .. code-block:: bash
 
-    ecbuild -DENABLE_GPTL=ON -DENABLE_AUTOPROFILING=ON <path>/ufo-bundle
+    ecbuild -DENABLE_GPTL=ON -DENABLE_AUTOPROFILING=ON <path>/fv3-bundle
 
 Based on these settings code will be enabled inside of OOPS to check at run-time for certain environment variable settings which specify desired behavior of the GPTL library.  To enable GPTL profiling you just set the :code:`OOPS_PROFILE` environment variable to 1 before running your application.  This is the same whether you run your application directly or through ctest.  For example, in :code:`bash`:
 

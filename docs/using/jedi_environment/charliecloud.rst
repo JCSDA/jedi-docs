@@ -99,7 +99,7 @@ Once Charliecloud is installed on your system, the next step is to make a home f
    mkdir -p ~/jedi/ch-container
    cd ~/jedi/ch-container
    wget http://data.jcsda.org/containers/ch-jedi-gnu-openmpi-dev.tar.gz
-   
+
 This looks like a normal gzipped tar file.  However, **you should not upack it with** :code:`tar`! Instead, unpack it with this command:
 
 .. code-block:: bash
@@ -140,18 +140,18 @@ This modifies your git configuration to properly interpret data files stored wit
 
 You can now proceed to build and run JEDI as described :doc:`elsewhere in this documentation </using/building_and_running/building_jedi>`.
 
-For example, to run and test ufo-bundle, you can proceed as follows:
+For example, to run and test fv3-bundle, you can proceed as follows:
 
 .. code-block:: bash
 
     git config --global credential.helper 'cache --timeout=3600'
     mkdir -p ~/jedi/src
     cd ~/jedi/src
-    git clone https://github.com/JCSDA/ufo-bundle.git
+    git clone https://github.com/JCSDA/fv3-bundle.git
     mkdir -p ~/jedi/build
     cd ~/jedi/build
     export FC=mpifort
-    ecbuild ../src/ufo-bundle
+    ecbuild ../src/fv3-bundle
     make -j4
     ctest
 
@@ -246,4 +246,3 @@ This is usually more efficient than the alternative of running a single containe
       ch-run -b $WORK:/worktmp -c $WORKDIR $CHDIR/ch-jedi-gnu-openmpi-dev -- mpirun -np 144 $BINDIR/fv3jedi_var.x -- testinput/3dvar_c48.yaml
 
 This example illustrates **another important tip** to keep in mind.  Openmpi uses the directory :code:`$TMPDIR` to store temporary files during runtime.  On Cheyenne, this is set to :code:`/glade/scratch/$(whoami)` by default.  But this directory is not accessible from the container so, unless we do something about this, our executable will fail.  Redefining it as :code:`/worktmp/scratch` as shown here does the trick, provided that associated external directory :code:`$WORK/scratch` exists.  Recall that Charliecloud does not change environment variables so we can set it outside the container as shown.  A similar workaround may also be required on other HPC systems.
-
