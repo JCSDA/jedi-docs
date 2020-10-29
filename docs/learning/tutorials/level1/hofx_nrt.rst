@@ -156,7 +156,7 @@ The files marked ``omb`` represent the difference between the two: observations 
 
    feh brightness_temperature_12_latlon_ombg_mean.png
 
-If you are curious, you can find the application output in the directory called ``output/hofx``. There you'll see 12 files generated, one for each of the 12 MPI tasks. This is the data from which the plots are created. The output filenames include information about the application (``hofx3d``), the model and resolution of the background (``gfs_c48``), the file format (``ncdiag``), the instrument (e.g. ``aircraft``), and the time stamp.
+If you are curious, you can find the application output in the directory called ``output/hofx``. There you'll see 12 files generated, one for each of the 12 MPI tasks. This is the data from which the plots are created. The output filenames include information about the application (``hofx3d``), the model and resolution of the background (``gfs_c48``), the file format (``ncdiag``), the instrument (``amsua``), and the time stamp.
 
 Step 4: Explore
 ---------------
