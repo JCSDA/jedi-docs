@@ -23,7 +23,7 @@ So, in this tutorial, we will be running an application called :math:`H({\bf x})
 
 The goal is to create plots comparable to JCSDA's `Near Real-Time (NRT) Observation Modeling web site <http://nrt.jcsda.org>`_.  This site regularly ingests observation data for the complete set of operational instruments at NOAA.  And, it compares these observations to forecasts made through NOAA's operational Global Forecasting System (FV3-GFS) and NASA's Goddard Earth Observing System (FV3-GEOS).
 
-But there is a caveat.  The NRT web site regularly simulates millions of observations using model backgrounds with operational resolution - and it does this every six hours!  That requires substantial high-performance computing (HPC) resources.  We want to mimic this procedure in a way that can be run on a laptop computer.  So, the model background you will use will be at a much lower horizonal resolution (c48, corresponding to about 14 thousand points in latitude and longitude) than the NRT website (GFS operational resolution of c768, corresponing to about 3.5 million points).
+But there is a caveat.  The NRT web site regularly simulates millions of observations using model backgrounds with operational resolution - and it does this every six hours!  That requires substantial high-performance computing (HPC) resources.  We want to mimic this procedure in a way that can be run on a laptop computer.  So, the model background you will use will be at a much lower horizontal resolution (c48, corresponding to about 14 thousand points in latitude and longitude) than the NRT website (GFS operational resolution of c768, corresponding to about 3.5 million points).
 
 
 Step 1: Setup
@@ -125,7 +125,7 @@ You can use the linux utility ``feh`` to view the png files:
 .. code-block:: bash
 
    cd output/plots/Amsua_n19
-   feh brightness_temperature_12_latlon_obs_count.png
+   feh brightness_temperature_12_ObsValue.png
 
 
 If you get an error message it may be because you are accessing singularity from a remote machine.  As with other remote graphical applications, you need to make sure you use the `-Y` option to ``ssh`` to enable X forwarding, e.g. ``ssh -Y ...``.  Another tip is to open another window on that same machine and see what your ``DISPLAY`` environment variable is set to:
@@ -144,24 +144,23 @@ If this still does not work, it might be worthwhile to copy the png files to you
 
 When are able to view the plot, it should look something like what is shown on the JCSDA `NRT web site <http://nrt.jcsda.org/gfs/gfs/amsu-a-noaa19.html>`_:
 
-.. image:: images/brightness_temperature_12_latlon_obs_count.png
+.. image:: images/brightness_temperature_12_ObsValue.png
 
-This shows the spatial coverage of the observational measurements over a 6-hour period.  Each band of points corresponds to an orbit of the spacecraft.
+This shows temperature measurements over a 6-hour period.  Each band of points corresponds to an orbit of the spacecraft.
 
-Now look at some of the other fields.   We have already seen that ``count`` reflects the number of observations, organized into regular bins in latitude and longitude.  Also plotted are the ``mean`` and the standard deviation ``stddev`` of the observations in each bin.  The files marked with ``obs`` correspond to the observations and the files marked with ``hofx`` represent the simulated observations computed by means of the :math:`H({\bf x})` operation described :ref:`above <hofxnrt-overview>`.  This forward operator relies on JCSDA's Community Radiative Transfer Model (`CRTM <https://github.com/JCSDA/crtm>`_) to predict what this instrument would see for that model background state.
+Now look at some of the other fields.   The files marked with ``ObsValue`` correspond to the observations and the files marked with ``hofx`` represent the simulated observations computed by means of the :math:`H({\bf x})` operation described :ref:`above <hofxnrt-overview>`.  This forward operator relies on JCSDA's Community Radiative Transfer Model (`CRTM <https://github.com/JCSDA/crtm>`_) to predict what this instrument would see for that model background state.
 
-The files marked ``ombg`` represent the difference between the two: observations minus background.  In data assimilation this is often referred to as the *innovation* and it plays a critical role in the forecasting process; it contains newly available information from the latest observations that can be used to improve the next forecast.  To see the innovation for this instrument over this time period, view this file:
+The files marked ``omb`` represent the difference between the two: observations minus background.  In data assimilation this is often referred to as the *innovation* and it plays a critical role in the forecasting process; it contains newly available information from the latest observations that can be used to improve the next forecast.  To see the innovation for this instrument over this time period, view this file:
 
 .. code-block:: bash
 
    feh brightness_temperature_12_latlon_ombg_mean.png
 
-If you are curious, you can find the output of the actual application output in the directory called ``output/hofx``. There you'll see 12 files generated, one for each of the 12 MPI tasks. This is the data from which the plots are created. The output filenames include information about the application (``hofx3d``), the model and resolution of the background (``gfs_c48``), the file format (``ncdiag``), the instrument (e.g. ``aircraft``), and the time stamp.
-
+If you are curious, you can find the application output in the directory called ``output/hofx``. There you'll see 12 files generated, one for each of the 12 MPI tasks. This is the data from which the plots are created. The output filenames include information about the application (``hofx3d``), the model and resolution of the background (``gfs_c48``), the file format (``ncdiag``), the instrument (``amsua``), and the time stamp.
 
 Step 4: Explore
 ---------------
 
-The main objective here is to return to Steps 2 and 3 and repeat for different observation types.  Try running another observation type and look at the results in the ``output/plots`` directory.  A few suggestions: look at how the aircraft observations trace popular flight routes; look at the mean vertical temperature and wind profiles as determined from radiosondes; discover what observational quantities are derived from Global Navigation Satellite System radio occultation measurements (GNSSRO), revel in the 22 wavelength channels of the Advanced Technology Microwave Sounder (`ATMS <http://nrt.jcsda.org/gfs/gfs/atms-n20.html>`_).  For more information on any of these instruments, consult JCSDA's `NRT Observation Modeling web site <http://nrt.jcsda.org>`_.
+The main objective here is to return to Steps 2 and 3 and repeat for different observation types.  Try running another observation type and look at the results in the ``output/plots`` directory.  A few suggestions: look at how the aircraft observations trace popular flight routes; look at the mean vertical temperature and wind profiles as determined from radiosondes; discover what observational quantities are derived from Global Navigation Satellite System radio occultation measurements (GNSSRO); revel in the 22 wavelength channels of the Advanced Technology Microwave Sounder (`ATMS <http://nrt.jcsda.org/gfs/gfs/atms-n20.html>`_).  For more information on any of these instruments, consult JCSDA's `NRT Observation Modeling web site <http://nrt.jcsda.org>`_.
 
-The most attentive users may notice an unused configuration file in the ``config`` directory called ``Medley_gfs.hofx3d.jedi.yaml``.  Advanced users may seek to run this themselves, guided by the ``run.bash`` script.  This runs a large number of different observation types so it takes much longer to run.  We have not included plot configurations for all of them so the plots are not automatically generated.  Thus, we don't recommend trying to do Step 3 with Medley.   This is included in the tutorial merely to give you the flavor of what is involved in creating the NRT site.  This generates plots for over 40 instruments every six hours, using higher-resolution model backgrounds that have more than :ref:`250 times more horizontal points <hofxnrt-overview>` than what we are running here.  The `GEOS-NRT <http://nrt.jcsda.org/geos/>`_ site goes a step further in terms of computational resources - displaying continuous *4D* :math:`H({\bf x})` calculations.
+The most attentive users may notice an unused configuration file in the ``config`` directory called ``Medley_gfs.hofx3d.jedi.yaml``.  Advanced users may seek to run this themselves, guided by the ``run.bash`` script.  This runs a large number of different observation types so it takes much longer to run.  This is included in the tutorial merely to give you the flavor of what is involved in creating the NRT site.  This generates plots for over 40 instruments every six hours, using higher-resolution model backgrounds that have more than :ref:`250 times more horizontal points <hofxnrt-overview>` than what we are running here.  The `GEOS-NRT <http://nrt.jcsda.org/geos/>`_ site goes a step further in terms of computational resources - displaying continuous *4D* :math:`H({\bf x})` calculations.
