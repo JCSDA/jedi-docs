@@ -6,11 +6,11 @@ Tutorial: Run JEDI-FV3 in a Container
 Learning Goals:
  - How to download and run/enter a JEDI application container
  - Introduction to the JEDI source code and directory structure
- - How to run a jedi DA application inside the container
+ - How to run a JEDI DA application inside the container
  - How to view an increment
 
 Prerequisites:
- - read the :doc:`tutorial overview <../index>`
+ - Read the :doc:`tutorial overview <../index>`
 
 
 Overview
@@ -20,9 +20,9 @@ In this tutorial we will be running a low-resolution version of the FV3 model as
 
 JEDI packages are organized into bundles. A bundle includes a collection of GitHub repositories needed to build and run JEDI with a particular model.  In this tutorial, we will be building ``fv3-bundle``.
 
-All JEDI bundles include the base JEDI component of the Object Oriented Prediction System (:doc:`OOPS <../../../inside/jedi-components/oops/index>`), the Interface for Observational Data Assimilation (:doc:`IODA <../../../inside/jedi-components/ioda/index>`, the Unified Forward Operator (:doc:`UFO <../../../inside/jedi-components/ufo/index>`) and the System-Agnostic Background Error Representation (:doc:`SABER <../../../inside/jedi-components/saber/index>`).  The interface between FV3-based models and JEDI is implemented through the :doc:`FV3-JEDI <../../../inside/jedi-components/fv3-jedi/index>` code repository.
+All JEDI bundles include the base JEDI component of the Object Oriented Prediction System (:doc:`OOPS <../../../inside/jedi-components/oops/index>`), the Interface for Observational Data Access (:doc:`IODA <../../../inside/jedi-components/ioda/index>`), the Unified Forward Operator (:doc:`UFO <../../../inside/jedi-components/ufo/index>`) and the System-Agnostic Background Error Representation (:doc:`SABER <../../../inside/jedi-components/saber/index>`).  The interface between FV3-based models and JEDI is implemented through the :doc:`FV3-JEDI <../../../inside/jedi-components/fv3-jedi/index>` code repository.
 
-Most will also include additional repositories that provide the forecast model and the physics packages or software infrastructure that supports it. Some bundles may also include supplementary repositories that support different observation types, such as an alternative radiative transfer model or tools for working with radio occultation measurements from global navigation satellite systems.
+Most bundles will also include additional repositories that provide the forecast model and the physics packages or software infrastructure that supports it. Some bundles may also include supplementary repositories that support different observation types, such as an alternative radiative transfer model or tools for working with radio occultation measurements from global navigation satellite systems.
 
 Which JEDI bundle you build depends on which atmospheric or oceanic model you plan to work with.
 
@@ -219,7 +219,7 @@ Then, copy and paste that value and set it to the same value *inside* the contai
 
 .. code-block:: bash
 
-   export DISPLAY localhost:10.0 # enter this inside the container - replace with the result of the above echo command
+   export DISPLAY=localhost:10.0 # enter this inside the container - replace with the result of the above echo command
 
 If X-forwarding is set up properly, that should work.  If you are still having problems, you can always copy the image files to your laptop or workstation for easier viewing.  Alternative, if you are running Singularity in a Vagrant virtual machine, see our :doc:`Vagrant documentation <../../../using/jedi_environment/vagrant>` for tips on setting up X forwarding and/or viewing files on the host machine.
 
