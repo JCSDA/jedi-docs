@@ -219,7 +219,7 @@ Then, copy and paste that value and set it to the same value *inside* the contai
 
 .. code-block:: bash
 
-   export DISPLAY localhost:10.0 # enter this inside the container - replace with the result of the above echo command
+   export DISPLAY=localhost:10.0 # enter this inside the container - replace with the result of the above echo command
 
 If X-forwarding is set up properly, that should work.  If you are still having problems, you can always copy the image files to your laptop or workstation for easier viewing.  Alternative, if you are running Singularity in a Vagrant virtual machine, see our :doc:`Vagrant documentation <../../../using/jedi_environment/vagrant>` for tips on setting up X forwarding and/or viewing files on the host machine.
 
