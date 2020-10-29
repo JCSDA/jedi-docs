@@ -125,7 +125,7 @@ You can use the linux utility ``feh`` to view the png files:
 .. code-block:: bash
 
    cd output/plots/Amsua_n19
-   feh brightness_temperature_12_latlon_obs_count.png
+   feh brightness_temperature_12_ObsValue.png
 
 
 If you get an error message it may be because you are accessing singularity from a remote machine.  As with other remote graphical applications, you need to make sure you use the `-Y` option to ``ssh`` to enable X forwarding, e.g. ``ssh -Y ...``.  Another tip is to open another window on that same machine and see what your ``DISPLAY`` environment variable is set to:
@@ -144,11 +144,11 @@ If this still does not work, it might be worthwhile to copy the png files to you
 
 When are able to view the plot, it should look something like what is shown on the JCSDA `NRT web site <http://nrt.jcsda.org/gfs/gfs/amsu-a-noaa19.html>`_:
 
-.. image:: images/brightness_temperature_12_latlon_obs_count.png
+.. image:: images/brightness_temperature_12_ObsValue.png
 
-This shows the spatial coverage of the observational measurements over a 6-hour period.  Each band of points corresponds to an orbit of the spacecraft.
+This shows temperature measurements over a 6-hour period.  Each band of points corresponds to an orbit of the spacecraft.
 
-Now look at some of the other fields.   We have already seen that ``count`` reflects the number of observations, organized into regular one square degree bins in latitude and longitude.   The files marked with ``ObsValue`` correspond to the observations and the files marked with ``hofx`` represent the simulated observations computed by means of the :math:`H({\bf x})` operation described :ref:`above <hofxnrt-overview>`.  This forward operator relies on JCSDA's Community Radiative Transfer Model (`CRTM <https://github.com/JCSDA/crtm>`_) to predict what this instrument would see for that model background state.
+Now look at some of the other fields.   The files marked with ``ObsValue`` correspond to the observations and the files marked with ``hofx`` represent the simulated observations computed by means of the :math:`H({\bf x})` operation described :ref:`above <hofxnrt-overview>`.  This forward operator relies on JCSDA's Community Radiative Transfer Model (`CRTM <https://github.com/JCSDA/crtm>`_) to predict what this instrument would see for that model background state.
 
 The files marked ``omb`` represent the difference between the two: observations minus background.  In data assimilation this is often referred to as the *innovation* and it plays a critical role in the forecasting process; it contains newly available information from the latest observations that can be used to improve the next forecast.  To see the innovation for this instrument over this time period, view this file:
 
