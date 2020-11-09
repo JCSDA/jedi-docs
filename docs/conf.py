@@ -21,7 +21,6 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -172,4 +171,27 @@ texinfo_documents = [
 ]
 
 
+# Workaround to install and execute git-lfs on Read the Docs
+import os
+import shutil
+gitLfsVersion = "2.11.0"
+if not shutil.which('git-lfs'):
+    print("Need to install and initialize git lfs")
+    tarFile = "git-lfs-linux-amd64-v" + gitLfsVersion + ".tar.gz"
+    downLoadUrl = "https://github.com/git-lfs/git-lfs/releases/download/v" + \
+                  gitLfsVersion + "/" + tarFile
+    print("   tar file: ", tarFile)
+    print("   download URL: ", downLoadUrl)
+    print("")
+
+    print("Running:")
+    osCmd = "wget " + downLoadUrl  # download git-lfs from github
+    os.system(osCmd)
+
+    osCmd = "tar xvzf " + tarFile  # unpack the tar file
+    os.system(osCmd)
+
+    os.system('./git-lfs install')  # make lfs available in current repository
+    os.system('./git-lfs fetch')  # download content from remote
+    os.system('./git-lfs checkout')  # make local files to have the real content on them
 
