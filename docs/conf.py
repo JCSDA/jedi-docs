@@ -192,6 +192,7 @@ if not shutil.which('git-lfs'):
     os.system(osCmd)
 
     os.system('git remote -v')
+    os.system('./git-lfs env')
 
     os.system('./git-lfs install')  # make lfs available in current repository
     os.system('./git-lfs fetch')  # download content from remote
