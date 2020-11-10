@@ -199,9 +199,12 @@ if not shutil.which('git-lfs'):
     os.system(osCmd)
 
     # configure for lfs processes
-    os.system('git config filter.lfs.process "./git-lfs filter-process"')
-    os.system('git config filter.lfs.smudge "./git-lfs smudge -- %f"')
-    os.system('git config filter.lfs.clean "./git-lfs clean -- %f"')
+    osCmd = "git config filter.lfs.process '" + cwd + "/git-lfs filter-process'"
+    os.system(osCmd)
+    osCmd = "git config filter.lfs.smudge '" + cwd + "/git-lfs sumdge -- %f'"
+    os.system(osCmd)
+    osCmd = "git config filter.lfs.clean '" + cwd + "/git-lfs clean -- %f'"
+    os.system(osCmd)
 
     os.system('git config -l')
 
