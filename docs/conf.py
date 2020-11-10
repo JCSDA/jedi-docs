@@ -182,16 +182,28 @@ if not shutil.which('git-lfs'):
                   gitLfsVersion + "/" + tarFile
     print("   tar file: ", tarFile)
     print("   download URL: ", downLoadUrl)
-    print("")
 
-    print("Running:")
-    osCmd = "wget " + downLoadUrl  # download git-lfs from github
+    # download git-lfs from github
+    osCmd = "wget " + downLoadUrl
     os.system(osCmd)
 
-    osCmd = "tar xvzf " + tarFile  # unpack the tar file
+    # unpack the tar file
+    osCmd = "tar xvzf " + tarFile
     os.system(osCmd)
 
-    os.system('./git-lfs install')  # make lfs available in current repository
-    os.system('./git-lfs fetch')  # download content from remote
-    os.system('./git-lfs checkout')  # make local files to have the real content on them
+    # make lfs available in current repository
+    os.system('./git-lfs install')
+
+    # configure for lfs processes
+    os.system('git config filter.lfs.process = "./git-lfs filter-process"')
+    os.system('git config filter.lfs.smudge = "./git-lfs smudge -- %f"')
+    os.system('git config filter.lfs.clean = "./git-lfs clean -- %f"')
+
+    os.system('git config -l')
+
+    # download content from remote
+    os.system('./git-lfs fetch')
+
+    # replace local files (links) with their real content
+    os.system('./git-lfs checkout')
 
