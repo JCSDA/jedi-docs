@@ -191,8 +191,12 @@ if not shutil.which('git-lfs'):
     osCmd = "tar xvzf " + tarFile
     os.system(osCmd)
 
+    # record the current working directory
+    cwd = os.getcwd()
+
     # make lfs available in current repository
-    os.system('./git-lfs install')
+    osCmd = cwd + "/git-lfs install"
+    os.system(osCmd)
 
     # configure for lfs processes
     os.system('git config filter.lfs.process "./git-lfs filter-process"')
