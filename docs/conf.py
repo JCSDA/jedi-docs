@@ -206,11 +206,14 @@ if not shutil.which('git-lfs'):
     osCmd = "git config filter.lfs.clean '" + cwd + "/git-lfs clean -- %f'"
     os.system(osCmd)
 
+    # dump out configuration, including git lsf configuration
     os.system('git config -l')
 
     # download content from remote
-    os.system('./git-lfs fetch')
+    osCmd = cwd + "/git-lfs fetch"
+    os.system(osCmd)
 
     # replace local files (links) with their real content
-    os.system('./git-lfs checkout')
+    osCmd = cwd + "/git-lfs checkout"
+    os.system(osCmd)
 
