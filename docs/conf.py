@@ -191,9 +191,6 @@ if not shutil.which('git-lfs'):
     osCmd = "tar xvzf " + tarFile  # unpack the tar file
     os.system(osCmd)
 
-    os.system('git remote -v')
-    os.system('./git-lfs env')
-
     os.system('./git-lfs install')  # make lfs available in current repository
     os.system('./git-lfs fetch')  # download content from remote
     os.system('./git-lfs checkout')  # make local files to have the real content on them
