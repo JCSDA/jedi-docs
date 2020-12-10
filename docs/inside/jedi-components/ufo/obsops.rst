@@ -8,11 +8,11 @@ Vertical Interpolation
 
 Description:
 ^^^^^^^^^^^^
-Vertical interpolation observation operator implements linear interpolation in vertical coordinate. If vertical coordinate is air_pressure, interpolation is done in logarithm of air pressure. For all other vertical coordinates interpolation is done in specified coordinate (no logarithm applied)
+Vertical interpolation observation operator implements linear interpolation in vertical coordinate. If vertical coordinate is air_pressure or air_pressure_levels, interpolation is done in logarithm of air pressure. For all other vertical coordinates interpolation is done in specified coordinate (no logarithm applied)
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
-* :code:`vertical coordinate` [optional] : specifies which vertical coordinate to use in interpolation. If air_pressure is used, the interpolation is done in log(air pressure). Default value is air pressure.
+* :code:`vertical coordinate` [optional] : specifies which vertical coordinate to use in interpolation. If air_pressure or air_pressure_levels is used, the interpolation is done in log(air pressure). Default value is air pressure.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
