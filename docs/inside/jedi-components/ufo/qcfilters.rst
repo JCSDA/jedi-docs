@@ -1279,8 +1279,10 @@ The list passed to the :code:`where` keyword can contain more than one item, eac
 - :code:`is_not_defined`: filter applied only to observations for which the condition variable is set to a missing data indicator.
 - :code:`is_in`: filter applied only to observations for which the condition variable is set to a value belonging to the given whitelist.
 - :code:`is_not_in`: filter applied only to observations for which the condition variable is set to a value not belonging to the given blacklist.
+- :code:`any_bit_set_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices set.
+- :code:`any_bit_unset_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices unset (i.e. zero).
 
-The elements of both whitelists and blacklists can be strings, non-negative integers or ranges of non-negative integers. It is not necessary to put any value after the colon following :code:`is_defined` and :code:`is_not_defined`.
+The elements of both whitelists and blacklists can be strings, non-negative integers or ranges of non-negative integers. It is not necessary to put any value after the colon following :code:`is_defined` and :code:`is_not_defined`. Bits are numbered from zero starting from the least significant bit.
 
 The following examples illustrate the use of these conditions.
 
@@ -1329,6 +1331,33 @@ Example 2
         maxvalue: 0000-00-00T17:59:59Z
 
 In this example, the filter will be applied only to observations taken between 09:00:00 and 17:59:59, between 1st January and 25th May of every year.
+
+Example 3
+^^^^^^^^^
+
+.. code-block:: yaml
+
+   where:
+   - variable:
+       name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
+     any_bit_set_of: 0, 1
+
+In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 0 and/or position 1. (Position 0 denotes the least significant bit -- in other words, bits are numbered "from right to left".)
+
+Example 4
+^^^^^^^^^
+
+.. code-block:: yaml
+
+   where:
+   - variable:
+       name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
+     any_bit_set_of: 4
+   - variable:
+       name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
+     any_bit_unset_of: 10-12
+
+In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 4 and a 0 at any of positions 10 to 12.
 
 Outer Loop Iterations
 ---------------------
