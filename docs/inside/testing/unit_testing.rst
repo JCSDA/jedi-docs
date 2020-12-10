@@ -64,14 +64,15 @@ If you're not happy with the information in LastTest.log and you want to know mo
 
 The :code:`-V` and even :code:`-VV` display the output messages on the screen in addition to writing them to the LastTest.log file.  However, sometimes the amount of information written to LastTest.log isn't much different than if you were to run ctest without these options, particularly if all the tests pass.
 
-Another way to get more information is to set one or both of these environment variables before you run ctest:
+Another way to get more information is to set one or more of these environment variables before you run ctest:
 
 .. code-block:: bash
 
    export OOPS_DEBUG=1
+   export MAIN_DEBUG=1
    export OOPS_TRACE=1
 
-The first enables debug messages within the JEDI code that would not otherwise be written.  The second produces messages that follow the progress of the code as it executes.  Both tools are provided by :doc:`eckit <../developer_tools/cmake>`.   Though higher values of these variables could in principle be set, few JEDI routines exploit this functionality.  So, setting these variables to values greater than 1 will make little difference.  Both can be disabled by setting them to zero.
+The first two enable debug messages within the JEDI code that would not otherwise be written.  The second produces messages that follow the progress of the code as it executes.  These tools are provided by :doc:`eckit <../developer_tools/cmake>`.   Though higher values of these variables could in principle be set, few JEDI routines exploit this functionality.  So, setting these variables to values greater than 1 will make little difference.  Both can be disabled by setting them to zero.
 
 You can also display the output messages only for the failed tests by using :code:`--output-on-failure`
 
