@@ -139,6 +139,9 @@ Then pass the following toolchain to :code:`ecbuild`, and use multiple threads t
     ecbuild --toolchain=<path-to-jedi-cmake>/jedi-cmake/cmake/Toolchains/jcsda-Orion-Intel.cmake <path-to-bundle>
     make -j4
 
+.. note::
+
+   If you cloned the ``jedi-cmake`` repository as part of building a jedi bundle, then the name of the repository may be ``jedicmake`` instead of ``jedi-cmake``.
 
 Alternatively, you can specify the MPI executable directly on the command line:
 
@@ -268,6 +271,10 @@ Then pass this toolchain to :code:`ecbuild`:
 
    ecbuild --toolchain=<path-to-jedi-cmake>/jedi-cmake/cmake/Toolchains/jcsda-Cheyenne-Intel.cmake <path-to-bundle>
 
+.. note::
+
+   If you cloned the ``jedi-cmake`` repository as part of building a jedi bundle, then the name of the repository may be ``jedicmake`` instead of ``jedi-cmake``.
+
 The system configuration on Cheyenne will not allow you to run mpi jobs from the login node.  So, if you try to run :code:`ctest` from here, the mpi tests will fail.  So, to run the jedi unit tests you will have to either submit a batch job or request an interactive session with :code:`qsub -I`.  The following is a sample batch script to run the unit tests for ufo-bundle.  Note that some ctests require up to 6 MPI tasks so requesting 6 cores should be sufficient.
 
 .. code-block:: bash
@@ -380,6 +387,10 @@ Then pass this toolchain to :code:`ecbuild`:
 .. code-block:: bash
 
    ecbuild --toolchain=<path-to-jedi-cmake>/jedi-cmake/cmake/Toolchains/jcsda-S4-Intel.cmake <path-to-bundle>
+
+.. note::
+
+   If you cloned the ``jedi-cmake`` repository as part of building a jedi bundle, then the name of the repository may be ``jedicmake`` instead of ``jedi-cmake``.
 
 Alternatively, you can specify the MPI executable directly on the command line:
 
