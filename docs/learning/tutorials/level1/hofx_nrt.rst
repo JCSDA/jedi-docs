@@ -35,6 +35,14 @@ Now that you have finished the :doc:`Run JEDI in a Container <run-jedi>` tutoria
 
    singularity shell -e jedi-tutorial_latest.sif
 
+And, though this may be already set if you just did the previous tutorial, it's good practice to make sure that stack size limits won't cause JEDI applications to fail:
+
+.. code-block:: bash
+
+    ulimit -s unlimited
+    ulimit -v unlimited
+
+
 Now, the description in the previous section gives us a good idea of what we need to run :math:`H({\bf x})`.  First, we need :math:`{\bf x}` - the model state.  In this tutorial we will use background states from the FV3-GFS model with a resolution of c48, as mentioned above.
 
 Next, we need observations to compare our forecast to.  Example observations available in this tutorial include (see the `NRT website <http://nrt.jcsda.org>`_ for an explanation of acronyms):
