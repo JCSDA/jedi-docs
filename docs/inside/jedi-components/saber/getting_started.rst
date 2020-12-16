@@ -191,16 +191,16 @@ This section provides some examples of the :code:`bump` section of the yaml inpu
       covariance model: hybrid               # Covariance model
       static:
         # Static covariance model (BUMP or other)
-      static weight: float                   # Static weights
+      static weight: float                   # Static weight
       ensemble:
         localization:
           # Localization method (BUMP or other)
           localization method: string        # Localization method
           localization variables: [array]    # Localization_variables
         members: [array]                     # Ensemble members
-      ensemble weight: float                 # Ensemble weights
+      ensemble weight: float                 # Ensemble weight
 
-  **IMPORTANT:** the :code:`static weight` and :code:`ensemble weight` values are those of :math:`\beta_s` and :math:`\beta_e`, used in the linear combination of the increment components. They are **not** equal to their squared counterparts :math:`\beta_s^2` and :math:`\beta_e^2` used in the linear combination of the covariance matrices (see :ref:`BUMP-goals_and_code_organization`).
+  Here, :code:`static weight` and :code:`ensemble weight` correspond respectively to the :math:`\beta_s^2` and :math:`\beta_e^2` coefficients used in the linear combination of the covariance matrices (see :ref:`BUMP-goals_and_code_organization`).
 
 Alias system
 ^^^^^^^^^^^^
