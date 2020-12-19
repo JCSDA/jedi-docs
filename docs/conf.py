@@ -21,7 +21,6 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -172,4 +171,46 @@ texinfo_documents = [
 ]
 
 
+# Workaround to install and execute git-lfs on Read the Docs
+import os
+import shutil
+gitLfsVersion = "2.11.0"
+if not shutil.which('git-lfs'):
+    print("Need to install and initialize git lfs")
+    tarFile = "git-lfs-linux-amd64-v" + gitLfsVersion + ".tar.gz"
+    downLoadUrl = "https://github.com/git-lfs/git-lfs/releases/download/v" + \
+                  gitLfsVersion + "/" + tarFile
+    print("   tar file: ", tarFile)
+    print("   download URL: ", downLoadUrl)
+
+    # download git-lfs from github
+    osCmd = "wget " + downLoadUrl
+    os.system(osCmd)
+
+    # unpack the tar file
+    osCmd = "tar xvzf " + tarFile
+    os.system(osCmd)
+
+    # record the current working directory
+    cwd = os.getcwd()
+
+    # make lfs available in current repository
+    osCmd = cwd + "/git-lfs install"
+    os.system(osCmd)
+
+    # configure for lfs processes
+    osCmd = "git config filter.lfs.process '" + cwd + "/git-lfs filter-process'"
+    os.system(osCmd)
+    osCmd = "git config filter.lfs.smudge '" + cwd + "/git-lfs sumdge -- %f'"
+    os.system(osCmd)
+    osCmd = "git config filter.lfs.clean '" + cwd + "/git-lfs clean -- %f'"
+    os.system(osCmd)
+
+    # download content from remote
+    osCmd = cwd + "/git-lfs fetch"
+    os.system(osCmd)
+
+    # replace local files (links) with their real content
+    osCmd = cwd + "/git-lfs checkout"
+    os.system(osCmd)
 
