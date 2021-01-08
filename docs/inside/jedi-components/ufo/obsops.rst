@@ -574,3 +574,45 @@ Examples of yaml:
       obsdatain:
         obsfile: Data/radar_rw_obs_2019052222.nc4
       simulated variables: [radial_velocity]
+
+Scatterometer neutral wind (Met Office)
+---------------------------------------
+
+Description:
+^^^^^^^^^^^^
+Met Office observation operator for treating scatterometer wind data 
+as a "neutral" 10m wind, i.e. where the effects of atmospheric stability are neglected. 
+For each observation we calculate the momentum roughness length using the Charnock relation. 
+We then calculate the Monin-Obukhov stability function for momentum, integrated to the model's lowest wind level.
+The calculations are dependant upon on whether we have stable or unstable conditions
+according to the Obukhov Length. The neutral 10m wind components are then calculated
+from the lowest model level winds.
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+* none
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+.. code-block:: yaml
+
+  observations:
+  - obs operator:
+      name: ScatwindNeutralMetOffice
+    obs space:
+      name: Scatwind
+      obsdatain:
+        obsfile: Data/ioda/testinput_tier_1/scatwind_obs_1d_2020100106.nc4
+      obsdataout:
+        obsfile: Data/scatwind_obs_1d_2020100106_opr_test_out.nc4
+      simulated variables: [eastward_wind, northward_wind]
+    geovals:
+      filename: Data/ufo/testinput_tier_1/scatwind_geoval_20201001T0600Z.nc4
+    vector ref: MetOfficeHofX
+    tolerance: 1.0e-05
+
+References:
+^^^^^^^^^^^^^^^^^^^^^^
+Cotton, J., 2018. Update on surface wind activities at the Met Office.
+Proceedings for the 14 th International Winds Workshop, 23-27 April 2018, Jeju City, South Korea. 
+Available from http://cimss.ssec.wisc.edu/iwwg/iww14/program/index.html.
