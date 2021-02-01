@@ -594,6 +594,24 @@ The following checks are available:
 - **RH**: This check detects relative humidity errors at the top of cloud layers and at high altitudes.
   :ref:`Click here for more details <profconcheck_rh>`.
 
+- **Time**: This check flags any observations whose time of measurement lies outside the assimilation window. It also optionally rejects wind values for a certain period after launch.
+  :ref:`Click here for more details <profconcheck_time>`.
+
+- **BackgroundX**: These checks use a Bayesian approach to modify the probability of gross error for several variables (**X** can be **GeopotentialHeight**, **RelativeHumidity**, **Temperature** or **WindSpeed**). The use of such an approach distinguishes these checks from the Background Check filter introduced above.
+  :ref:`Click here for more details <profconcheck_background>`.
+
+- **PermanentReject**: This check permanently rejects observations that have previously been flagged as failing by another check.
+  :ref:`Click here for more details <profconcheck_permrej>`.
+
+- **SondeFlags**: This check accounts for any QC flags that were assigned to the sonde data prior to UFO being run.
+  :ref:`Click here for more details <profconcheck_sondeflags>`.
+
+- **WindProfilerFlags**: This check accounts for any QC flags that were assigned to the wind profiler data prior to UFO being run.
+  :ref:`Click here for more details <profconcheck_winproflags>`.
+
+- **Pressure**: This routine calculates profile pressures if they have not been measured (or were measured but are potentially inaccurate). This is achieved by vertical interpolation and extrapolation using the observed height and model values of height and pressure.
+  :ref:`Click here for more details <profconcheck_pressure>`.
+
 This filter can apply more than one check in turn. Please note the following:
 
 - The total number of errors that have occurred is recorded as the filter proceeds through each check.
@@ -601,7 +619,9 @@ This filter can apply more than one check in turn. Please note the following:
 
 - The basic checks are always performed unless they are specifically disabled (by setting the parameter :code:`flagBasicChecksFail` to true).
 
-- The checks must be performed in a particular order if it is desired to exactly reproduce the operation of the OPS code.
+..
+  (Commented out for now - will be revisited once all of the filters are in place)
+  The checks must be performed in a particular order if it is desired to exactly reproduce the operation of the OPS code.
   This is because the QC flags (and values of temperature or height) that are modified in one routine may then be read by a subsequent routine.
   To achieve the same outcome as in the OPS code the following order must be used:
   Basic, SamePDiffT, Sign, UnstableLayer, Interpolation, Hydrostatic, UInterp, RH.
@@ -618,6 +638,12 @@ The QC checks rely on a variety of physical observables. The value of :code:`fil
 - UInterp: :code:`eastward_wind`, :code:`northward_wind`.
 
 - RH: :code:`air_temperature`, :code:`relative_humidity`.
+
+- BackgroundX: :code:`air_temperature`, :code:`relative_humidity`, :code:`eastward_wind`, :code:`northward_wind`, :code:`geopotential_height` depending on the value of X.
+
+- Pressure: :code:`geopotential_height`.
+
+- Time, PermanentReject, SondeFlags, WindProfilerFlags: these routines act on QC flags so must be supplied with a dummy filter variable. Any variable that exists in the data set is acceptable; :code:`eastward_wind` would be a good choice.
 
 The :code:`obsgrouping` category should be set up in one of two ways. The first applies a descending sort to the air pressures:
 
@@ -814,6 +840,7 @@ Hydrostatic check
 **Operation**
 
 The hydrostatic check is used to check the consistency of the standard levels. The thickness between two standard levels is computed according to the hydrostatic equation.
+
 If this thickness differs from the measured value by more than a particular amount then the associated levels may be flagged.
 A decision-making algorithm is used to classify the levels as having height or temperature errors.
 
@@ -961,6 +988,153 @@ The following parameters are used in the high-altitude check:
 - :code:`RHCheck_PressInitThresh`: Pressure below which O-B mean is calculated (default 500.0 Pa).
 
 - :code:`RHCheck_TempThresh`: Minimum temperature threshold for accumulating an error counter (default 250.0 K).
+
+:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+
+.. _profconcheck_time:
+
+Time check
+^^^^^^^^^^
+
+**Operation**
+
+This check flags any observations whose time of measurement lies outside the assimilation window. The time check also optionally rejects wind values whose observation pressure is within :code:`TimeCheck_SondeLaunchWindRej` of the surface pressure.
+
+**Summary of yaml parameters**
+
+- :code:`ModelLevels`: Governs whether the observations have been averaged onto model levels.
+
+- :code:`TimeCheck_SondeLaunchWindRej`: Observations are rejected if they differ from the surface pressure by less than this value. Assuming an ascent rate of 5 m/s, 10 hPa corresponds to around 20 s of flight time. Using a pressure difference enables all sonde reports to be dealt with. (Default: 0.0 hPa, i.e. no rejection is performed).
+
+:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+
+.. _profconcheck_background:
+
+BackgroundX checks
+^^^^^^^^^^^^^^^^^^
+
+**Operation**
+
+The BackgroundX checks, where X is GeopotentialHeight, RelativeHumidity, Temperature or WindSpeed, use a Bayesian method to update the probability of gross error (PGE) for the relevant set of observations. Each observation must have previously been assigned a value of PGE in order for these checks to be used; this value could, for example, be taken from a stationlist. This PGE is updated with the method detailed below and is used in further filters such as the Buddy check. In addition to updating the PGE, various QC flags are set by each check.
+
+The Bayesian background checks all operate in a similar manner. Firstly, the probability density of 'bad' observations is set. Such observations are in gross error, and are assumed to have a uniform probability of taking any climatologically reasonable value. Secondly, for some variables, the observation and background errors are increased to reflect additional sources of error which may be present. Finally the PGE calculation routine is called. Some of the modifications to the errors, and to the PGE within the Bayesian calculation, are only performed if the values in a profile have been averaged onto model levels. This is signified by the filter parameter :code:`ModelLevels` being equal to true.
+
+The errors and PGEs are modified as follows for each variable:
+
+- Geopotential height: the background errors and probability density of bad observations are initialised from the arrays :code:`BkCheck_zBkgErrs` and :code:`BkCheck_zBadPGEs` respectively. The value taken from each array depends on where the observed pressure lies in the array :code:`BkCheck_PlevelThresholds`.
+- Relative humidity: the probability density of bad observations is set to :code:`BkCheck_PdBad_rh`. The background and observation error values are multiplied by the square root of two in order to account for long-tailed error distributions. The maximum combined observation and background error variance passed to the Bayesian PGE update is set to the value :code:`BkCheck_ErrVarMax_rh`.
+- Temperature: the probability density of bad observations is set to :code:`BkCheck_PdBad_t`. The observation errors above a certain pressure threshold ('Psplit') are scaled in order to account for extra representivity error. The value of Psplit depends on whether the observation is in the tropics, defined as the region with absolute latitude less than :code:`options_.BkCheck_Psplit_latitude_tropics` degrees. If the observation is in the tropics, Psplit is set to :code:`BkCheck_Psplit_tropics`; otherwise it is :code:`BkCheck_Psplit_extratropics`. The error inflation for pressures less than or equal to Psplit is set to :code:`BkCheck_ErrorInflationBelowPsplit` and :code:`BkCheck_ErrorInflationAbovePsplit` otherwise. The observation PGE is modified if the observation was previously flagged in the UnstableLayer, Interpolation or Hydrostatic checks.
+- Wind speed: the probability density of bad observations is set to :code:`BkCheck_PdBad_uv`. The observation PGE is modified if observation was previously flagged in the Interpolation check.
+
+The PGE update then proceeds as follows. Firstly the probability of the difference between the observed and background values is calculated, assuming the difference follows a normal distribution with variance equal to the combined observation and background error variance. The wind speed components (u and v) are treated together, so a two-dimensional probability density is formed in that case. The PGE is then weighted by this calculated probability and also by the probability that the observation is bad. The updated PGE can be passed to the Buddy check if desired.
+
+The PGE update code is located in a UFO utility function, enabling it to be used by multiple UFO filters. All of the configurable parameters used in the utility function are prefixed with :code:`PGE_` and are defined in the section below. Further details of the Bayesian update method can be found in Ingleby, N.B. and Lorenc, A.C. (1993), Bayesian quality control using multivariate normal distributions. Q.J.R. Meteorol. Soc., 119: 1195-1225. https://doi.org/10.1002/qj.49711951316
+
+**Summary of yaml parameters**
+
+- :code:`ModelLevels`: Governs whether the observations have been averaged onto model levels.
+
+- :code:`BkCheck_PdBad_t`: Probability density of bad observations for T (default: 0.05).
+
+- :code:`BkCheck_PdBad_rh`: Probability density of bad observations for RH (default: 0.05).
+
+- :code:`BkCheck_PdBad_uv`: Probability density of bad observations for u and v (default: 0.001).
+
+- :code:`BkCheck_Psplit_latitude_tropics`: Observations with a latitude smaller than this value (both N and S) are taken to be in the tropics (default: 30 degrees).
+
+- :code:`BkCheck_Psplit_extratropics`: Pressure threshold above which extra representivity error occurs in extratropics (default: 50000 Pa).
+
+- :code:`BkCheck_Psplit_tropics`: Pressure threshold above which extra representivity error occurs in tropics (default: 10000 Pa).
+
+- :code:`BkCheck_ErrorInflationBelowPsplit`: Error inflation factor below Psplit (default value: 1.0).
+
+- :code:`BkCheck_ErrorInflationAbovePsplit`: Error inflation factor above Psplit (default value: 1.0).
+
+- :code:`BkCheck_ErrVarMax_rh`: Maximum combined observation and background error variance for RH (default: 500.0 per 10000).
+
+- :code:`BkCheck_PlevelThresholds`: Pressure thresholds for setting geopotential height background errors and bad observation PGE. This vector must be the same length as :code:`BkCheck_zBkgErrs` and :code:`BkCheck_zBadPGEs` (default: [1000.0, 500.0, 100.0, 50.0, 10.0, 5.0, 1.0, 0.0] hPa).
+
+- :code:`BkCheck_zBkgErrs`: List of geopotential height background errors that are assigned based on pressure. This vector must be the same length as :code:`BkCheck_PlevelThresholds` and :code:`BkCheck_zBadPGEs` (default: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0] m).
+
+- :code:`BkCheck_zBadPGEs`: List of geopotential height PGEs for bad observations that are assigned based on pressure. This vector must be the same length as :code:`BkCheck_PlevelThresholds` and :code:`BkCheck_zBkgErrs` (default: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]).
+
+- :code:`PGE_ExpArgMax`: Maximum value of exponent in background QC (default 80.0). This could be changed depending upon the machine precision.
+
+- :code:`PGE_PGECrit`: PGE rejection limit (default 0.1). Observations with values of PGE above this threshold are flagged.
+
+- :code:`PGE_ObErrMult`: Multiplication factor for observation errors (default 1.0).
+
+- :code:`PGE_BkgErrMult`: Multiplication factor for background errors (default 1.0).
+
+- :code:`PGE_SDiffCrit`: Threshold for (squared observation minus background difference) / (error variance) (default 100.0). Observations with values larger than this threshold are flagged. This is only performed if the observations have been averaged onto model levels.
+
+:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+
+.. _profconcheck_permrej:
+
+PermanentReject check
+^^^^^^^^^^^^^^^^^^^^^
+
+**Operation**
+
+This check permanently rejects observations that have previously been flagged as failing by another check.
+
+**Summary of yaml parameters**
+
+- :code:`ModelLevels`: Governs whether the observations have been averaged onto model levels.
+
+:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+
+.. _profconcheck_sondeflags:
+
+SondeFlags check
+^^^^^^^^^^^^^^^^
+
+**Operation**
+
+This check accounts for any QC flags that were assigned to the sonde data prior to UFO being run. These QC flags may be (e.g.) standard WMO designations.
+
+**Summary of yaml parameters**
+
+There are no configurable parameters for this check.
+
+:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+
+.. _profconcheck_winproflags:
+
+WindProfilerFlags check
+^^^^^^^^^^^^^^^^^^^^^^^
+
+**Operation**
+
+This check accounts for any QC flags that were assigned to the wind profiler data prior to UFO being run.
+
+**Summary of yaml parameters**
+
+There are no configurable parameters for this check.
+
+:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+
+.. _profconcheck_pressure:
+
+Pressure calculation
+^^^^^^^^^^^^^^^^^^^^
+
+**Operation**
+
+This routine calculates profile pressures if they are have not been measured (or were measured but are potentially inaccurate). Firstly the model heights are computed from the orography and the terrain-following height coordinate. The model heights are used together with the observation heights and model pressures to interpolate (or extrapolate) values of the observed pressures.
+
+**Summary of yaml parameters**
+
+The default values of these parameters are suitable for the UM.
+
+- :code:`zModelTop`: Height of the upper boundary of the highest model layer.
+
+- :code:`firstConstantRhoLevel`: First model rho level at which there is no geographical variation in the height.
+
+- :code:`etaTheta`: Values of terrain-following height coordinate (eta) on theta levels.
+
+- :code:`etaRho`: Value of terrain-following height coordinate (eta) on rho levels.
 
 :ref:`Back to overview of profile consistency checks <profconcheck_overview>`
 
