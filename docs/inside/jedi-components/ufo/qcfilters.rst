@@ -1607,6 +1607,9 @@ The list passed to the :code:`where` keyword can contain more than one item, eac
 - :code:`is_not_in`: filter applied only to observations for which the condition variable is set to a value not belonging to the given blacklist.
 - :code:`any_bit_set_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices set.
 - :code:`any_bit_unset_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices unset (i.e. zero).
+- :code:`matches_regex`: filter applied only to observations for which the condition variable is a string that matches the specified regular expression or an integer whose decimal representation matches that expression. The regular expression should conform to the ECMAScript syntax described at http://www.cplusplus.com/reference/regex/ECMAScript.
+- :code:`matches_wildcard`: filter applied only to observations for which the condition variable is a string that matches the specified wildcard pattern or an integer whose decimal representation matches that pattern. The following wildcards are recognized: :code:`*` (matching any number of characters, including zero) and :code:`?` (matching any single character).
+- :code:`matches_any_wildcard`: filter applied only to observations for which the condition variable is a string that matches at least one of the specified wildcard patterns, or an integer whose decimal representation matches at least one of these patterns. The same wildcards are recognized as for :code:`matches_wildcard`.
 
 The elements of both whitelists and blacklists can be strings, non-negative integers or ranges of non-negative integers. It is not necessary to put any value after the colon following :code:`is_defined` and :code:`is_not_defined`. Bits are numbered from zero starting from the least significant bit.
 
@@ -1684,6 +1687,42 @@ Example 4
      any_bit_unset_of: 10-12
 
 In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 4 and a 0 at any of positions 10 to 12.
+
+Example 5
+^^^^^^^^^
+
+.. code-block:: yaml
+
+   where:
+   - variable:
+       name: station_id@MetaData
+     matches_regex: 'EUR[A-Z]*'
+
+In this example, the filter will be applied only to observations taken by stations whose IDs match the regular expression :code:`EUR[A-Z]*`, i.e. consist of the string :code:`EUR` followed by any number of capital letters.
+
+Example 6
+^^^^^^^^^
+
+.. code-block:: yaml
+
+   where:
+   - variable:
+       name: station_id@MetaData
+     matches_wildcard: 'EUR??TEST*'
+
+In this example, the filter will be applied only to observations taken by stations whose IDs match the wildcard pattern :code:`EUR??TEST*`, i.e. consist of the string :code:`EUR` followed by two arbitrary characters, the string :code:`TEST` and any number of arbitrary characters.
+
+Example 7
+^^^^^^^^^
+
+.. code-block:: yaml
+
+   where:
+   - variable:
+       name: observation_type@MetaData
+     matches_any_wildcard: ['102*', '103*']
+
+In this example, assuming that :code:`observation_type@MetaData` is an integer variable, the filter will be applied only to observations whose types have decimal representations starting with :code:`102` or :code:`103`.
 
 Outer Loop Iterations
 ---------------------
