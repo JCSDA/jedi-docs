@@ -1305,6 +1305,72 @@ Implementation Notes
 
 The implementation of this filter consists of four steps: sorting, buddy pair identification, PGE update and observation flagging. Observations are grouped into zonal bands and sorted by (a) band index, (b) longitude, (c) latitude, in descending order, (d) pressure (if the :code:`sort_by_pressure` option is on), and (e) datetime. Observations are then iterated over, and for each observation a number of nearby observations (lying no further than :code:`search_radius`) are identified as its buddies. The size and "diversity" of the list of buddy pairs can be controlled with the :code:`max_total_num_buddies`, :code:`max_num_buddies_from_single_band` and :code:`max_num_buddies_with_same_station_id` options. Subsequently, the PGEs of the observations forming each buddy pair are updated. Typically, the PGEs are decreased if the signs of the innovations agree and increased if they disagree. The magnitude of this change depends on the background error correlation between the two observation locations, the error estimates of the observations and background values, and the prior PGEs of the observations: the PGE change is the larger, the stronger the correlation between the background errors and the narrower the error margins. Once all buddy pairs have been processed, observations whose PGEs exceed the specified :code:`rejection_threshold` are flagged.
 
+RTTOV 1D-Var Check (RTTOVOneDVar) Filter
+----------------------------------------
+
+This filter performs a 1-dimensional variational assimilation (1D-Var) that produces optimal retrievals of physical parameters that describe the atmosphere and surface and on which there is information in the measurement. It takes as input a set of observations (brightness temperatures) and model background fields which are used to initialise the retrieval profile.  A retrieval (or analysis) is performed using an iterative procedure that attempts to find the minimum of a cost function that represents the most likely profile vector given the error characteristics of the two data sources.
+
+The elements contained in the retrieval profile depend on the sensitivity of the measuring instruments to atmospheric and surface properties and also what can be modelled with a relatively high degree of accuracy. Most retrieval profiles will consist of atmospheric temperature and humidity, and surface skin temperature, with other possible constituents being liquid and ice water or some other cloud parameter measure, and emissivity parameters.
+
+The filter provides some retrieval parameters to the assimilation which may be missing in the background or insufficiently accurate, such as surface skin temperature, and to filter out observations for which a retrieval could not be performed and thus may be difficult to assimilate in the full variational assimilation.
+
+The filter is a port of the Met Office OPS 1D-Var and makes use of the Fortran RTTOV interface within JEDI.  The code is written predominantly in Fortran.  Files containing the observation error covariance (R) and the background error covariance (B) are expected as inputs.
+
+This filter requires the following YAML parameters:
+
+* :code:`BMatrix`:  path to the b-matrix file.
+* :code:`RMatrix`:  path to the r-matrix file.
+* :code:`nlevels`:  the number of levels used in the retrieval profile.
+* :code:`retrieval variables`:  list of retrieval variables (e.g. temperature etc) which form the 1D-Var retrieval vector (x).  This needs to match the b-matrix file.
+* :code:`ModOptions`: options needed for the observation operator (RTTOV only at the moment).
+* :code:`filter variables`:  list of variables (brightness_temperature) and channels which form the 1D-Var observation vector (y).
+
+The following are optional YAML parameters with appropriate defaults:
+
+* :code:`ModName`:  forward model name (only RTTOV at the moment). Default: :code:`RTTOV`.
+* :code:`qtotal`:  flag for total humidity (qt = q + qclw + qi). If this is true the b-matrix must include qt or the code will abort. If this is false then the b-matrix must not contain qt or the code will abort. Default: :code:`false`.
+* :code:`UseMLMinimization`:  flag to turn on Marquardt-Levenberg minimizer otherwise a Newton minimizer is used Default: :code:`false`.
+* :code:`UseJforConvergence`:  flag to use J for the measure of convergence. Default is comparison of the profile absolute differences to background error multiplied by :code:`ConvergenceFactor`. Default: :code:`false`.
+* :code:`UseRHwaterForQC`:  flag to use liquid water in the q saturation calculations. Default: :code:`true`.
+* :code:`FullDiagnostics`:  flag to turn on full diagnostics. Default: :code:`false`.
+* :code:`Max1DVarIterations`:  maximum number of iterations. Default: :code:`7`.
+* :code:`JConvergenceOption`:  integer to select convergence option.  1 equals percentage change in cost tested between iterations.  Otherwise the absolute change in cost is tested between iterations. Default: :code:`1`.
+* :code:`IterNumForLWPCheck`:  choose which iteration to start checking the liquid water path. Default: :code:`2`.
+* :code:`MaxMLIterations`:  the maximum number of iterations for the internal Marquardt-Levenberg loop. Default: :code:`7`.
+* :code:`ConvergenceFactor`:  cost factor used when the absolute difference in the profile is used to determine convergence. Default: :code:`0.4`.
+* :code:`CostConvergenceFactor`:  the cost threshold used for convergence check when cost function value is used for convergence. Default: :code:`0.01`.
+* :code:`EmissLandDefault`:  the default emissivity value to use over land. Default: :code:`0.95`.
+* :code:`EmissSeaIceDefault`:  the default emissivity value to use over seaice. Default: :code:`0.92`.
+
+Example:
+
+.. code:: yaml
+
+  - filter: RTTOV OneDVar Check
+    BMatrix: ../resources/bmatrix/rttov/atms_bmatrix_70_test.dat
+    RMatrix: ../resources/rmatrix/rttov/atms_noaa_20_rmatrix_test.nc4
+    nlevels: 70
+    retrieval variables:
+    - air_temperature
+    - specific_humidity
+    - mass_content_of_cloud_liquid_water_in_atmosphere_layer
+    - mass_content_of_cloud_ice_in_atmosphere_layer
+    - surface_temperature
+    - specific_humidity_at_two_meters_above_surface
+    - skin_temperature
+    - air_pressure_at_two_meters_above_surface
+    ModOptions:
+      Absorbers: [Water_vapour, CLW, CIW]
+      obs options:
+        RTTOV_default_opts: OPS
+        SatRad_compatibility: false # done in filter
+        Sensor_ID: noaa_20_atms
+        CoefficientPath: Data/
+    filter variables:
+    - name: brightness_temperature
+      channels: 1-22
+    qtotal: true
+
 .. _filter-actions:
 
 Filter Actions
