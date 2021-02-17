@@ -12,8 +12,8 @@ most of the quality control takes place.
 
 The flow of this computation in OOPS is as follows:
 
-.. code-block:: yaml  
-  
+.. code-block:: yaml
+
   CostFunction::evaluate
     CostJo::initialize
       ObsFilters::ObsFilters
@@ -51,8 +51,8 @@ Observation filters have access to:
 Most filters are written once and used with many observation types; several such generic filters already exist and are decribed below. Filters applied to observations from a specific ObsSpace need to be listed in the :code:`observations.obs filters` section of the input YAML configuration file, together with any options controlling their behavior. Example:
 
 .. code-block:: yaml
-      
-  observations:    
+
+  observations:
   - obs space:
       name: AMSUA-NOAA19
       obsdatain:
@@ -105,11 +105,11 @@ In this example, all observations from channel 3 will pass QC because the filter
 .. code-block:: yaml
 
    - filter: Bounds Check
-     filter variables: 
+     filter variables:
      - name: air_temperature
      minvalue: 230
    - filter: Bounds Check
-     filter variables: 
+     filter variables:
      - name: eastward_wind
      - name: northward_wind
      minvalue: -40
@@ -179,17 +179,17 @@ This filter retains all observations selected by the :ref:`"where" statement <wh
 
    - filter: Domain Check
      where:
-     - variable: 
+     - variable:
          name: sea_surface_temperature@GeoVaLs
        minvalue: 200
        maxvalue: 300
-     - variable: 
+     - variable:
          name: height@MetaData
        is_defined:
      - variable:
          name: station_id@MetaData
        is_in: 3, 6, 11-120
-     - variable: 
+     - variable:
          name: air_pressure@MetaData
        is_not_defined:
 
@@ -202,7 +202,7 @@ This filter behaves like the exact opposite of Domain Check: it rejects all obse
 
    - filter: BlackList
      where:
-     - variable: 
+     - variable:
          name: station_id@MetaData
        is_in: 1, 7, 100-199
 
@@ -243,17 +243,17 @@ The following YAML parameters are supported:
 
 - Horizontal grid:
 
-  * :code:`horizontal_mesh`: Approximate width (in km) of zonal bands into which the 
+  * :code:`horizontal_mesh`: Approximate width (in km) of zonal bands into which the
     Earth's surface is split. Thinning in the horizontal direction is disabled if
     this parameter is negative. Default: approx. 111 km (= 1 deg of latitude).
 
-  * :code:`use_reduced_horizontal_grid`: True to use a reduced grid, with high-latitude 
+  * :code:`use_reduced_horizontal_grid`: True to use a reduced grid, with high-latitude
     zonal bands split into fewer cells than low-latitude bands to keep cell size nearly uniform.
     False to use a regular grid, with the same number of cells at all latitudes. Default: :code:`true`.
 
-  * :code:`round_horizontal_bin_count_to_nearest`: 
+  * :code:`round_horizontal_bin_count_to_nearest`:
     True to set the number of zonal bands so that the band width is as close as possible to
-    :code:`horizontal_mesh`, and the number of cells ("bins") in each zonal band so that the 
+    :code:`horizontal_mesh`, and the number of cells ("bins") in each zonal band so that the
     cell width in the zonal direction is as close as possible to that in the meridional direction.
     False to set the number of zonal bands so that the band width is as small as possible, but
     no smaller than :code:`horizontal_mesh`, and the cell width in the zonal direction is as small as
@@ -261,23 +261,23 @@ The following YAML parameters are supported:
 
 - Vertical grid:
 
-  * :code:`vertical_mesh`: Cell size (in Pa) in the vertical direction. 
+  * :code:`vertical_mesh`: Cell size (in Pa) in the vertical direction.
     Thinning in the vertical direction is disabled
     if this parameter is not specified or negative.
 
   * :code:`vertical_min`: Lower bound of the pressure interval split into cells of size
     :code:`vertical_mesh`. Default: 100 Pa.
 
-  * :code:`vertical_max`: Upper bound of the pressure interval split into cells of size 
-    :code:`vertical_mesh`. This parameter is rounded upwards to the nearest multiple of 
+  * :code:`vertical_max`: Upper bound of the pressure interval split into cells of size
+    :code:`vertical_mesh`. This parameter is rounded upwards to the nearest multiple of
     :code:`vertical_mesh` starting from :code:`vertical_min`. Default: 110,000 Pa.
 
 - Temporal grid:
 
-  * :code:`time_mesh`: Cell size in the temporal direction. 
+  * :code:`time_mesh`: Cell size in the temporal direction.
     Temporal thinning is disabled if this this parameter is not specified or set to 0.
 
-  * :code:`time_min`: Lower bound of the time interval split into cells of size :code:`time_mesh`. 
+  * :code:`time_min`: Lower bound of the time interval split into cells of size :code:`time_mesh`.
     Temporal thinning is disabled if this parameter is not specified.
 
   * :code:`time_max`: Upper bound of the time interval split into cells of size :code:`time_mesh`.
@@ -286,13 +286,13 @@ The following YAML parameters are supported:
 
 - Observation categories:
 
-  * :code:`category_variable`: Variable storing integer-valued IDs associated with observations. 
+  * :code:`category_variable`: Variable storing integer-valued IDs associated with observations.
     Observations belonging to different categories are thinned separately.
 
 - Selection of observations to retain:
 
-  * :code:`priority_variable`: Variable storing observation priorities. 
-    Among all observations in a cell, only those with the highest priority are considered 
+  * :code:`priority_variable`: Variable storing observation priorities.
+    Among all observations in a cell, only those with the highest priority are considered
     as candidates for retaining. If not specified, all observations are assumed to have equal priority.
 
   * :code:`distance_norm`: Determines which of the highest-priority observations lying in a cell
@@ -340,20 +340,20 @@ the following YAML parameters:
 
 * :code:`seed_time`: If not set, the thinning filter will consider observations as candidates for retaining
   in chronological order.
-  
+
   If set, the filter will start from the observation taken as close as possible to :code:`seed_time`,
   then consider all successive observations in chronological order, and finally all preceding
   observations in reverse chronological order.
 
 * :code:`category_variable`: Variable storing integer-valued IDs associated with observations.
-  Observations belonging to different categories are thinned separately. If not specified, all 
+  Observations belonging to different categories are thinned separately. If not specified, all
   observations are thinned together.
 
-* :code:`priority_variable`: Variable storing integer-valued observation priorities. 
+* :code:`priority_variable`: Variable storing integer-valued observation priorities.
   If not specified, all observations are assumed to have equal priority.
 
 * :code:`tolerance`: Only relevant if :code:`priority_variable` is set.
- 
+
   If set to a nonzero duration, then whenever an observation *O* lying at least :code:`min_spacing`
   from the previous retained observation *O'* is found, the filter will inspect all observations
   lying no more than :code:`tolerance` further from *O'* and retain the one with the highest priority.
@@ -370,8 +370,8 @@ starting from the observation closest to seed time):
       category_variable:
         name: call_sign@MetaData
 
-Example 2 (selecting at most one observation taken by each station per 1 h, 
-starting from the earliest observation, and allowing the filter to retain an observation 
+Example 2 (selecting at most one observation taken by each station per 1 h,
+starting from the earliest observation, and allowing the filter to retain an observation
 taken up to 20 min after the first qualifying observation if its quality score is higher):
 
 .. code-block:: yaml
@@ -472,11 +472,11 @@ potentially be useful also for other observation types.
 
 The following YAML parameters are supported:
 
-- :code:`temporal_resolution`: Assumed temporal resolution of the observations, 
+- :code:`temporal_resolution`: Assumed temporal resolution of the observations,
   i.e. absolute accuracy of the reported observation times. Default: PT1M.
 
-- :code:`spatial_resolution`: Assumed spatial resolution of the observations (in km), 
-  i.e. absolute accuracy of the reported positions. 
+- :code:`spatial_resolution`: Assumed spatial resolution of the observations (in km),
+  i.e. absolute accuracy of the reported positions.
 
   Instantaneous speeds are estimated conservatively with the formula
 
@@ -486,29 +486,29 @@ The following YAML parameters are supported:
 
 - :code:`num_distinct_buddies_per_direction`, :code:`distinct_buddy_resolution_multiplier`:
   Control the size of the set of observations against which each observation is compared.
-  
-  Let O_i (i = 1, ..., N) be the observations from a particular track ordered chronologically. 
-  Each observation O_i is compared against *m* observations immediately preceding it and 
-  *n* observations immediately following it. The number *m* is chosen so that 
-  {O_{i-m}, ..., O_{i-1}} is the shortest sequence of observations preceding O_i that contains 
+
+  Let O_i (i = 1, ..., N) be the observations from a particular track ordered chronologically.
+  Each observation O_i is compared against *m* observations immediately preceding it and
+  *n* observations immediately following it. The number *m* is chosen so that
+  {O_{i-m}, ..., O_{i-1}} is the shortest sequence of observations preceding O_i that contains
   :code:`num_distinct_buddies_per_direction` observations *distinct* from O_i that have not yet
   been rejected. Two observations taken at times *t* and *t*' and locations *x* and *x*'
   are deemed to be distinct if the following conditions are met:
-  
+
   - \|t' - t| > :code:`distinct_buddy_resolution_multiplier` * :code:`temporal_resolution`
-  
+
   - \|x' - x| > :code:`distinct_buddy_resolution_multiplier` * :code:`spatial_resolution`
-  
-  Similarly, the number *n* is chosen so that {O_{i+1}, ..., O_{i+n)} is the shortest sequence 
-  of observations following O_i that contains :code:`num_distinct_buddies_per_direction` 
-  observations distinct from O_i that have not yet been rejected. 
+
+  Similarly, the number *n* is chosen so that {O_{i+1}, ..., O_{i+n)} is the shortest sequence
+  of observations following O_i that contains :code:`num_distinct_buddies_per_direction`
+  observations distinct from O_i that have not yet been rejected.
 
   Both parameters default to 3.
 
-- :code:`max_climb_rate`: Maximum allowed rate of ascent and descent (in Pa/s). 
+- :code:`max_climb_rate`: Maximum allowed rate of ascent and descent (in Pa/s).
   If not specified, climb rate checks are disabled.
 
-- :code:`max_speed_interpolation_points`: Encoding of the function mapping air pressure 
+- :code:`max_speed_interpolation_points`: Encoding of the function mapping air pressure
   (in Pa) to the maximum speed (in m/s) considered to be realistic.
 
   The function is taken to be a linear interpolation of a series of (pressure, speed) points.
@@ -516,23 +516,23 @@ The following YAML parameters are supported:
   JSON-style map. Owing to a bug in the eckit YAML parser, the keys must be enclosed in quotes.
   For example,
   ::
-  
+
     max_speed_interpolation_points: { "0": 900, "100000": 100 }
-  
+
   encodes a linear function equal to 900 m/s at 0 Pa and 100 m/s at 100000 Pa.
 
 - :code:`rejection_threshold`: Maximum fraction of climb rate or speed estimates obtained by
   comparison with other observations that are allowed to fall outside the allowed ranges before
   an observation is rejected. Default: 0.5.
 
-- :code:`station_id_variable`: Variable storing string- or integer-valued station IDs. 
+- :code:`station_id_variable`: Variable storing string- or integer-valued station IDs.
   Observations taken by each station are checked separately.
-  
+
   If not set and observations were grouped into records when the observation space was
   constructed, each record is assumed to consist of observations taken by a separate
   station. If not set and observations were not grouped into records, all observations are
   assumed to have been taken by a single station.
-  
+
   Note: the variable used to group observations into records can be set with the
   :code:`ObsSpace.ObsDataIn.obsgrouping.group_variable` YAML option.
 
@@ -1199,13 +1199,13 @@ The YAML parameters supported by this filter are listed below.
         options:
           first_component_of_two: true
       - name: northward_wind
-        
+
   - :code:`rejection_threshold`: Observations will be rejected if the gross error probability lies at or above this threshold. Default: 0.5.
 
   - :code:`traced_boxes`: A list of quadrangles bounded by two meridians and two parallels. Tracing information (potentially useful for debugging) will be output for observations lying within any of these quadrangles. Example:
 
     .. code:: yaml
-    
+
       traced_boxes:
         - min_latitude: 30
           max_latitude: 45
@@ -1223,22 +1223,22 @@ The YAML parameters supported by this filter are listed below.
   - :code:`search_radius`: Maximum distance between two observations that may be classified as buddies, in km. Default: 100 km.
 
   - :code:`station_id_variable`: Variable storing string- or integer-valued station IDs.
-  
+
     If not set and observations were grouped into records when the observation space was constructed, each record is assumed to consist of observations taken by a separate station. If not set and observations were not grouped into records, all observations are assumed to have been taken by a single station.
-  
+
     Note: the variable used to group observations into records can be set with the
     :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option. An example of its use can be found in the :ref:`Profile consistency checks <profconcheck_filtervars>` section above.
 
-  - :code:`num_zonal_bands`: Number of zonal bands to split the Earth's surface into when building a search data structure. 
-      
+  - :code:`num_zonal_bands`: Number of zonal bands to split the Earth's surface into when building a search data structure.
+
     Note: Apart from the impact on the speed of buddy identification, both this parameter and :code:`sort_by_pressure` affect the order in which observations are processed and thus the final estimates of gross error probabilities, since the probability updates made when checking individual observation pairs are not commutative.
 
-    Default: 24. 
+    Default: 24.
 
   - :code:`sort_by_pressure`: Whether to include pressure in the sorting criteria used when building a search data structure, in addition to longitude, latitude and time. See the note next to :code:`num_zonal_bands`. Default: false.
 
   - :code:`max_total_num_buddies`: Maximum total number of buddies of any observation.
-  
+
     Note: In the context of this parameter, :code:`max_num_buddies_from_single_band` and :code:`max_num_buddies_with_same_station_id`, the number of buddies of any observation *O* is understood as the number of buddy pairs (*O*, *O*') where *O*' != *O*. This definition facilitates the buddy check implementation (and makes it compatible with the original version from the OPS system), but is an underestimate of the true number of buddies, since it doesn't take into account pairs of the form (*O*', *O*).
 
     Default: 15.
@@ -1252,13 +1252,13 @@ The YAML parameters supported by this filter are listed below.
 - Control of gross error probability updates:
 
   - :code:`horizontal_correlation_scale`: Encoding of the function that maps the latitude (in degrees) to the horizontal correlation scale (in km).
-  
+
     The function is taken to be a piecewise linear interpolation of a series of (latitude, scale) points. The latitudes and scales at these points should be specified as keys and values of a JSON-style map. Owing to a limitation in the eckit YAML parser (https://github.com/ecmwf/eckit/pull/21), the keys must be enclosed in quotes. For example,
-  
+
     .. code:: yaml
-  
+
       horizontal_correlation_scale: { "-90": 200, "90": 100 }
-  
+
     encodes a function varying linearly from 200 km at the south pole to 100 km at the north pole.
 
     Default: :code:`{ "-90": 100, "90": 100 }`, i.e. a constant function equal to 100 km everywhere.
@@ -1304,6 +1304,92 @@ Implementation Notes
 ^^^^^^^^^^^^^^^^^^^^
 
 The implementation of this filter consists of four steps: sorting, buddy pair identification, PGE update and observation flagging. Observations are grouped into zonal bands and sorted by (a) band index, (b) longitude, (c) latitude, in descending order, (d) pressure (if the :code:`sort_by_pressure` option is on), and (e) datetime. Observations are then iterated over, and for each observation a number of nearby observations (lying no further than :code:`search_radius`) are identified as its buddies. The size and "diversity" of the list of buddy pairs can be controlled with the :code:`max_total_num_buddies`, :code:`max_num_buddies_from_single_band` and :code:`max_num_buddies_with_same_station_id` options. Subsequently, the PGEs of the observations forming each buddy pair are updated. Typically, the PGEs are decreased if the signs of the innovations agree and increased if they disagree. The magnitude of this change depends on the background error correlation between the two observation locations, the error estimates of the observations and background values, and the prior PGEs of the observations: the PGE change is the larger, the stronger the correlation between the background errors and the narrower the error margins. Once all buddy pairs have been processed, observations whose PGEs exceed the specified :code:`rejection_threshold` are flagged.
+
+
+Variable Assignment Filter
+--------------------------
+
+This "filter" (it is not a true filter; rather, a "processing step") assigns specified values to
+specified variables at locations selected by the :code:`where` statement, or at all locations if
+the :code:`where` keyword is not present.
+
+The values can be constants or vectors generated by ObsFunctions. If the variables don't exist
+yet, they are created; in this case locations not selected by the :code:`where` statement are
+initialized with missing-value markers.
+
+The values assigned to individual variables are specified in the :code:`assignments` list in the
+YAML file. Each element of this list can contain the following options:
+
+- :code:`name`: Name of the variable to which new values should be assigned.
+
+- :code:`channels`: (Optional) Set of channels to which new values should be assigned.
+
+- :code:`value`: Value to be assigned to the specified variable. Either this option or
+  :code:`function` (but not both) must be present.
+
+- :code:`function`: Variable (typically an ObsFunction) that should be evaluated and assigned to
+  the specified variable. Either this option or :code:`value` (but not both) must be present.
+
+- :code:`type`: Type (:code:`int`, :code:`float`, :code:`string` or :code:`datetime`) of the
+  variable to which new values should be assigned. This option only needs to be provided if the
+  variable doesn't exist yet. If this option is provided and the variable already exists, its type
+  must match the value of this option, otherwise an exception is thrown.
+
+Example 1
+^^^^^^^^^
+
+Create new variables :code:`air_temperature@GrossErrorProbability` and
+:code:`relative_humidity@GrossErrorProbability` and set them to 0.1 at all locations.
+
+.. code:: yaml
+
+   - filter: Variable Assignment
+     assignments:
+     - name: air_temperature@GrossErrorProbability
+       type: float  # type must be specified if the variable doesn't already exist
+       value: 0.1
+     - name: relative_humidity@GrossErrorProbability
+       type: float
+       value: 0.1
+
+Example 2
+^^^^^^^^^
+
+Set :code:`air_temperature@GrossErrorProbability` to 0.05 at all locations in the tropics.
+
+.. code:: yaml
+
+   - filter: Variable Assignment
+     where:
+     - variable:
+         name: latitude@MetaData
+       minvalue: -30
+       maxvalue:  30
+     assignments:
+     - name: air_temperature@GrossErrorProbability
+       value: 0.05
+
+Example 3
+^^^^^^^^^
+
+Set :code:`relative_humidity@GrossErrorProbability` to values computed by an ObsFunction
+(0.1 in the southern extratropics and 0.05 in the northern extratropics, with a linear
+transition in between).
+
+.. code:: yaml
+
+   - filter: Variable Assignment
+     assignments:
+     - name: relative_humidity@GrossErrorProbability
+       function:
+         name: ObsErrorModelRamp@ObsFunction
+         options:
+           xvar:
+             name: latitude@MetaData
+           x0: [-30]
+           x1: [30]
+           err0: [0.1]
+           err1: [0.05]
 
 RTTOV 1D-Var Check (RTTOVOneDVar) Filter
 ----------------------------------------
@@ -1388,7 +1474,7 @@ Examples:
 .. code-block:: yaml
 
    - filter: Background Check
-     filter variables: 
+     filter variables:
      - name: air_temperature
      threshold: 2.0
      absolute threshold: 1.0
@@ -1468,12 +1554,12 @@ By default, filters are applied to all observations of the variables specified i
 
 Consider the following set of observations:
 
-.. list-table:: 
+.. list-table::
    :header-rows: 1
 
-   * - Obs. index 
-     - latitude 
-     - longitude 
+   * - Obs. index
+     - latitude
+     - longitude
      - air_temperature (K)
    * - 0
      - 0
@@ -1536,13 +1622,13 @@ Example 1
        name: sea_surface_temperature@GeoVaLs
      minvalue: 200
      maxvalue: 300
-   - variable: 
+   - variable:
        name: latitude@MetaData
      maxvalue: 60.
-   - variable: 
+   - variable:
        name: height@MetaData
      is_defined:
-   - variable: 
+   - variable:
        name: station_id@MetaData
      is_in: 3, 6, 11-120
 
@@ -1550,8 +1636,8 @@ In this example, the filter will be applied only to observations for which all o
 
 - the sea surface temperature is within the range of [200, 300] K,
 - the latitude is <= than 60°N,
-- the observation location's altitude has a valid value (is not set to a missing data indicator), and 
-- the station id is one of the ids in the whitelist. 
+- the observation location's altitude has a valid value (is not set to a missing data indicator), and
+- the station id is one of the ids in the whitelist.
 
 .. _where-example-2:
 
@@ -1560,11 +1646,11 @@ Example 2
 
 .. code-block:: yaml
 
-      where: 
+      where:
       - variable:
           name:  datetime@MetaData
         minvalue: 0000-01-01T00:00:00Z
-        maxvalue: 0000-25-05T00:00:00Z 
+        maxvalue: 0000-25-05T00:00:00Z
       - variable:
           name:  datetime@MetaData
         minvalue: 0000-00-00T09:00:00Z
