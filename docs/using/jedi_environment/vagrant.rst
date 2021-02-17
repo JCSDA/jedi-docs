@@ -396,3 +396,92 @@ However, it is possible that there might still be VirtualBox VMs on your machine
 If this is the case, you can run VirtualBox directly to manage your VMs.  This can be done through the command line with the :code:`vboxmanage` command (run :code:`vboxmanage --help` for information) but we recommend the **VirtualBox GUI**, which is more user-friendly.
 
 To access the GUI on a Mac or Windows machine, just go to your Applications folder and double click on the VirtualBox icon.  There you will see a complete list of all the VirtualBox VMs installed on your system and you can delete any that you don't want by selecting the **machine** menu item and then **remove**.
+
+
+.. _tunneling-to-host-from-singularity:
+Tunneling to Host from Singularity: jupyter-lab Example
+--------------------------------------
+
+Tunneling from singularity to the host can enable several useful ways of interacting between the host and the container. The benefits are multiple but the syntax for doing it could be described obscure. A motivating and primary example case is using `jupyter-notebook`s and `jupyter-lab`. The general outlines of establishing the tunnel are followed by a recipe for installing python virtual environments in the container, including `jupyter-lab`.
+
+Tunneling starts in the Vagrantfile, search "forwarded_port" and set the following line as follows (with your choice of port, we use 8111 throughout):
+
+.. code-block:: bash
+
+   config.vm.network "forwarded_port", guest: 8111, host: 8111
+
+On the host machine, restart vagrant (if necessary) and enter vagrant using the special syntax: 
+
+.. code-block:: bash
+
+   vagrant halt  # if running
+   vagrant up
+   vagrant ssh -- -L 8111:localhost:8111
+
+Now inside vagrant, start singularity thusly:
+
+.. code-block:: bash
+
+   singularity shell -e vagrant_data/jedi-clang-mpich-dev_latest.sif portmap=8111:8111/tcp
+
+The above should establish the tunnel from the host through vagrant to singularity. Next we install a python virtual environment with jupyter-lab and test the tunnel. The following script is to be run inside singularity (or vagrant) in a directory in a directory mounted/synced into vagrant, e.g. the following directory as specified in the Vagrantfile:
+
+.. code-block:: bash
+
+   config.vm.synced_folder "/Users/me/jedi", "/home/vagrant/jedi",
+      mount_options: ["dmode=775,fmode=777"]
+
+Installing the virtual environment in a synced directory allows the virtual environment to persist between Vagrant/Singularity sessions. The example script for installing a virtual environment with `jupyter-lab`:
+
+.. code-block:: bash
+
+   #!/bin/bash
+
+   # Configure where to install:
+   venv_dir=~/jedi/venvs/my_venv
+
+   # ----------------------------------------------------
+   (return 0 2>/dev/null) && sourced=1 || sourced=0
+   if [[ sourced -eq 0 ]]; then
+       echo "This script must be sourced."
+       return 1
+   else
+       echo "Setting up virtual env: $venv_dir"
+   fi
+
+   if [ -d $venv_dir ]; then
+       echo "The environment ($venv_dir) already exists, returnting."
+       return 2
+   fi
+
+   export PATH=$PATH:/home/vagrant/.local/bin/
+   python -m pip install --user virtualenv
+   virtualenv --upgrade-embed-wheels True $venv_dir
+   virtualenv $venv_dir
+   source $venv_dir/bin/activate
+   pip install jupyter jupyterlab
+
+   return 0
+
+If the script has completes successfully, the virtual environment will be activated. In future singularity sessions, it can be activated as normal with virtual environments, using the `$venv_dir` specified in the script:
+
+.. code-block:: bash
+
+   source ~/jedi/venvs/my_venv
+
+Then we can starte `jupyter-lab`:
+.. code-block:: bash
+
+   jupyter-lab --no-browser --port 8111
+
+Jupyter will print much output to the terminal, including a url to use to connect from a browser. Copy and paste the URL from jupyter into your host's browser and go! Testing the the tunnel on any machine (singularity, vagrant, or the host) can be done via
+
+.. code-block:: bash
+
+   curl localhost:8111
+
+If working the `jupyter-lab` in the terminal will register GETs resembling 
+
+.. code-block:: bash
+
+   [I 2021-01-05 22:25:35.249 ServerApp] 302 GET / (::1) 0.62ms
