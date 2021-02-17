@@ -402,7 +402,7 @@ To access the GUI on a Mac or Windows machine, just go to your Applications fold
 Tunneling to Host from Singularity: jupyter-lab Example
 --------------------------------------
 
-Tunneling from singularity to the host can enable several useful ways of interacting between the host and the container. The benefits are multiple but the syntax for doing it could be described obscure. A motivating and primary example case is using `jupyter-notebook`s and `jupyter-lab`. The general outlines of establishing the tunnel are followed by a recipe for installing python virtual environments in the container, including `jupyter-lab`.
+Tunneling from Singularity to the host can enable several useful ways of interacting between the host and the container. The benefits are multiple but some of the syntax for doing it could be described obscure. A motivating example use case is running `jupyter-lab` in Singularity and accessing it from the host machine. The general outlines of establishing the tunnel below are followed by a recipe for installing python virtual environments in the container, including `jupyter-lab`.
 
 Tunneling starts in the Vagrantfile, search "forwarded_port" and set the following line as follows (with your choice of port, we use 8111 throughout):
 
@@ -410,7 +410,7 @@ Tunneling starts in the Vagrantfile, search "forwarded_port" and set the followi
 
    config.vm.network "forwarded_port", guest: 8111, host: 8111
 
-On the host machine, restart vagrant (if necessary) and enter vagrant using the special syntax: 
+On the host machine, restart Vagrant (if necessary) and enter Vagrant using the special syntax:
 
 .. code-block:: bash
 
@@ -418,13 +418,13 @@ On the host machine, restart vagrant (if necessary) and enter vagrant using the 
    vagrant up
    vagrant ssh -- -L 8111:localhost:8111
 
-Now inside vagrant, start singularity thusly:
+Now inside Vagrant, start Singularity thusly:
 
 .. code-block:: bash
 
    singularity shell -e vagrant_data/jedi-clang-mpich-dev_latest.sif portmap=8111:8111/tcp
 
-The above should establish the tunnel from the host through vagrant to singularity. Next we install a python virtual environment with jupyter-lab and test the tunnel. The following script is to be run inside singularity (or vagrant) in a directory in a directory mounted/synced into vagrant, e.g. the following directory as specified in the Vagrantfile:
+The above should establish the tunnel from the host through Vagrant to Singularity. Next we install a python virtual environment with `jupyter-lab` and test the tunnel. The following script is to be run inside Singularity in a directory mounted/synced into Vagrant, fox example the following directory as specified in the Vagrantfile:
 
 .. code-block:: bash
 
@@ -463,24 +463,26 @@ Installing the virtual environment in a synced directory allows the virtual envi
 
    return 0
 
-If the script has completes successfully, the virtual environment will be activated. In future singularity sessions, it can be activated as normal with virtual environments, using the `$venv_dir` specified in the script:
+If the script completes successfully, the virtual environment will be activated. In future Singularity sessions, it can be activated as normal with virtual environments, using the `$venv_dir` specified in the script:
 
 .. code-block:: bash
 
-   source ~/jedi/venvs/my_venv
+   source ~/jedi/venvs/my_venv/bin/activate
 
-Then we can starte `jupyter-lab`:
+Then we can navigated to the desired root directory and start `jupyter-lab`:
+
 .. code-block:: bash
 
+   cd /the/path/of/choice
    jupyter-lab --no-browser --port 8111
 
-Jupyter will print much output to the terminal, including a url to use to connect from a browser. Copy and paste the URL from jupyter into your host's browser and go! Testing the the tunnel on any machine (singularity, vagrant, or the host) can be done via
+Jupyter will print output to the terminal, including a url to use to connect from a browser near the end. Copy and paste the URL from jupyter into your host's browser and go! Testing the the tunnel on any machine (Singularity, Vagrant, or the host) can be done via
 
 .. code-block:: bash
 
    curl localhost:8111
 
-If working the `jupyter-lab` in the terminal will register GETs resembling 
+If working, `jupyter-lab` will register GETs in the terminal resembling
 
 .. code-block:: bash
 
