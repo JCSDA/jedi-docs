@@ -397,10 +397,10 @@ If this is the case, you can run VirtualBox directly to manage your VMs.  This c
 
 To access the GUI on a Mac or Windows machine, just go to your Applications folder and double click on the VirtualBox icon.  There you will see a complete list of all the VirtualBox VMs installed on your system and you can delete any that you don't want by selecting the **machine** menu item and then **remove**.
 
-
 .. _tunneling-to-host-from-singularity:
+
 Tunneling to Host from Singularity: jupyter-lab Example
---------------------------------------
+-------------------------------------------------------
 
 Tunneling from Singularity to the host can enable several useful ways of interacting between the host and the container. The benefits are multiple but some of the syntax for doing it could be described obscure. A motivating example use case is running `jupyter-lab` in Singularity and accessing it from the host machine. The general outlines of establishing the tunnel below are followed by a recipe for installing python virtual environments in the container, including `jupyter-lab`.
 
