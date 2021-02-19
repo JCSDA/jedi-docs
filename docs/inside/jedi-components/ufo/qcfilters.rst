@@ -1459,6 +1459,65 @@ Example:
 
 .. _filter-actions:
 
+Profile Background Check
+------------------------
+
+This filter calculates the RMS difference between the observations and the background for a profile.  If that RMS is above the given threshold, then all the observations in the profile are rejected.  Each variable is checked independently, so the rejection of the profile for one variable will not affect the other variables.
+
+The user can specify two options in the yaml: :code:`absolute threshold` and :code:`relative threshold`.  Only one of these two options may be set.  If :code:`absolute threshold` is set, then the RMS is calculated without normalisation.  If :code:`relative threshold` is used, then the differences are normalised by the observation error for each observation-background difference.  Both :code:`absolute threshold` and :code:`relative threshold` can be either a single number or a string.  If they are a string, then this is the name of a variable which will be used to give the threshold for each profile.  The RMS value will be compared against the first value of the given variable in the profile.  The sorting of observations within each profile can be arranged using other options in the yaml file.
+
+.. code-block:: yaml
+
+    window begin: 2020-12-31T23:59:00Z
+    window end: 2021-01-01T00:01:00Z
+
+    observations:
+    - obs space:
+        name: test data
+        obsdatain:
+          obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+          obsgrouping:
+            group variables: [ "record_number" ]
+            sort variable: "latitude"
+            sort order: "descending"
+        simulated variables: [variable]
+      HofX: HofX
+      obs filters:
+      - filter: Profile Background Check
+        filter variables:
+        - name: variable
+        absolute threshold: 2.5
+
+Note: The :code:`obsgrouping: group variables` option is necessary to identify which observations belong to a given profile.  The :code:`sort variable` and :code:`sort order` options are optional.
+
+Note: This is separate from the background check in :ref:`profile consistency checks <profconcheck_background>`.
+
+Profile Few Observations Check
+------------------------------
+
+This filter finds the number of valid observations within a profile.  If this number is less than the filter parameter :code:`threshold` then all observations in the profile are rejected.
+
+.. code-block:: yaml
+
+    window begin: 2020-12-31T23:59:00Z
+    window end: 2021-01-01T00:01:00Z
+
+    observations:
+    - obs space:
+        name: test data
+        obsdatain:
+          obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+          obsgrouping:
+            group variables: ["record_number"]
+        simulated variables: [variable]
+      obs filters:
+      - filter: Profile Few Observations Check
+        filter variables:
+        - name: variable
+        threshold: 10
+
+Note: The :code:`obsgrouping: group variables` option is necessary to identify which observations belong to a given profile.
+
 Filter Actions
 --------------
 The action taken on observations flagged by the filter can be adjusted using the :code:`action` option recognized by each filter.  So far, three actions have been implemented:
