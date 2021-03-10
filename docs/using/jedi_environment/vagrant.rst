@@ -396,3 +396,104 @@ However, it is possible that there might still be VirtualBox VMs on your machine
 If this is the case, you can run VirtualBox directly to manage your VMs.  This can be done through the command line with the :code:`vboxmanage` command (run :code:`vboxmanage --help` for information) but we recommend the **VirtualBox GUI**, which is more user-friendly.
 
 To access the GUI on a Mac or Windows machine, just go to your Applications folder and double click on the VirtualBox icon.  There you will see a complete list of all the VirtualBox VMs installed on your system and you can delete any that you don't want by selecting the **machine** menu item and then **remove**.
+
+.. _tunneling-to-host-from-singularity:
+
+Tunneling to Host from Singularity: jupyter-lab Example
+-------------------------------------------------------
+
+Tunneling from Singularity to the host can enable several useful ways of interacting between the host and the container. The benefits are multiple but some of the syntax for doing it could be described as obscure. A motivating example use case is running ``jupyter-lab`` in Singularity and accessing it from the host machine. This not only allows the user to run jupyter notebooks from the browser, a terminal in ``jupyterlab`` can also be used to build and run JEDI repositores. The general outlines of establishing the tunnel below are followed by a recipe for installing python virtual environments in the container, including ``jupyter-lab``.
+
+Tunneling starts in the Vagrantfile, search "forwarded_port" and set the following line as follows (with your choice of port, we use 8111 throughout):
+
+.. code-block:: bash
+
+   config.vm.network "forwarded_port", guest: 8111, host: 8111
+
+On the host machine, restart Vagrant (if necessary) and enter Vagrant using the special syntax:
+
+.. code-block:: bash
+
+   vagrant halt  # if running
+   vagrant up
+   vagrant ssh -- -L 8111:localhost:8111
+
+Now inside Vagrant, start Singularity thusly:
+
+.. code-block:: bash
+
+   singularity shell -e jedi-clang-mpich-dev_latest.sif portmap=8111:8111/tcp
+
+The above should establish the tunnel from the host through Vagrant to Singularity. Next we install a python virtual environment with ``jupyter-lab`` and test the tunnel. We choose to install our virtual environment(s) in a directory mounted into Vagrant from the host. For example, the ``vagrant_data`` directory as specified above in the Vagrantfile:
+
+.. code-block:: bash
+
+    config.vm.synced_folder "./vagrant_data", "/home/vagrant/vagrant_data",
+      mount_options: ["dmode=775,fmode=777"]
+
+The following script is to be *sourced* inside Singularity, configring the ``venv_dir`` variable to install the virtual environment in a synced directory. The example script installs a virtual environment and ``jupyter-lab`` in that resulting environment:
+
+.. code-block:: bash
+
+   #!/bin/bash
+
+   # Configure where to install:
+   venv_dir=~/vagrant_data/venvs/my_venv
+
+   # ----------------------------------------------------
+   (return 0 2>/dev/null) && sourced=1 || sourced=0
+   if [[ sourced -eq 0 ]]; then
+       echo "This script must be sourced."
+       return 1
+   else
+       echo "Setting up virtual env: $venv_dir"
+   fi
+
+   if [ -d $venv_dir ]; then
+       echo "The environment ($venv_dir) already exists, returning."
+       return 2
+   fi
+
+   export PATH=$PATH:/home/vagrant/.local/bin/
+   python -m pip install --user virtualenv
+
+   # If subsequent installation troubles arise,
+   # run this line to update wheels in venv and try again:
+   # virtualenv --upgrade-embed-wheels True $venv_dir
+
+   virtualenv $venv_dir
+   source $venv_dir/bin/activate
+   pip install jupyter jupyterlab
+
+   return 0
+
+The above script must be sourced in ``bash`` and will produce an error if otherwise executed. If the script completes successfully, the virtual environment will be activated. In future Singularity sessions, it can be activated as normal with virtual environments, using the ``$venv_dir`` specified in the script to locate the ``activate`` script:
+
+.. code-block:: bash
+
+   source ~/vagrant_data/venvs/my_venv/bin/activate
+
+Then we can navigate to the desired root directory and start ``jupyter-lab``:
+
+.. code-block:: bash
+
+   cd /the/path/of/choice
+   jupyter-lab --no-browser --port 8111
+
+Jupyter will print output to the terminal, including a url to use to connect from a browser. Copy and paste the URL from jupyter into your host's browser and go!
+
+We note that in the current containers (March 2021), the following harmless warning is printed in the `jupyter-lab` session when the browser connects: `Could not determine jupyterlab build status without nodejs`. Also noteworthy is that testing the tunnel on any machine (Singularity, Vagrant, or the host) can be done via
+
+.. code-block:: bash
+
+   curl localhost:8111
+
+If working, ``jupyter-lab`` will register GETs in the terminal resembling
+
+.. code-block:: bash
+
+   [I 2021-01-05 22:25:35.249 ServerApp] 302 GET / (::1) 0.62ms
+
+
+   
+   
