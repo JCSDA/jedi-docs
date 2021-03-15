@@ -206,7 +206,7 @@ Note that the options specified with ``#SBATCH`` include the number of nodes but
 
    # make sure the number of tasks it requires matches the SBATCH --ntasks specification above
    cd <path-to-bundle-build-directory>
-   srun --ntasks=4 --cpu_bind_core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
+   srun --ntasks=4 --cpu_bind=core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
 
    exit 0
 
@@ -452,7 +452,7 @@ Note that the options specified with ``#SBATCH`` include the number of nodes but
 
    # make sure the number of tasks it requires matches the SBATCH --ntasks specification above
    cd <path-to-bundle-build-directory>/test/ufo
-   srun --ntasks=4 --cpu_bind_core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
+   srun --ntasks=4 --cpu_bind=core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
 
    exit 0
 
