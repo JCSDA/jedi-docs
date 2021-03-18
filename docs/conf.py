@@ -34,6 +34,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinxcontrib.bibtex'
 ]
+bibtex_bibfiles = ['ref/refs.bib']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -213,4 +214,3 @@ if not shutil.which('git-lfs'):
     # replace local files (links) with their real content
     osCmd = cwd + "/git-lfs checkout"
     os.system(osCmd)
-
