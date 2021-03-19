@@ -81,7 +81,7 @@ Example:
   * other options depend on observation operators (see :doc:`description of existing obs operators</inside/jedi-components/ufo/obsops>`).
 
 * **obs error**: Provides information and specifications for computing the observation error covariance matrix (required for DA applications). The first item in this section is often the key **covariance model**, which identifies the method by which observation error covariances are constructed. The only option supported currently is **diagonal** for diagonal observation error covariances.
-* **obs filters**: Used to define QC filters (optional, see :doc:`description of existing QC filters</inside/jedi-components/ufo/qcfilters>`)
+* **obs filters**: Used to define QC filters (optional, see :doc:`description of existing QC filters</inside/jedi-components/ufo/qcfilters/index>`)
 * **obs bias**: Used to specify the bias correction (optional)
 * **geovals**: Identifies simulated ufo output files and other parameters that are used for testing (optional, only used for UFO tests)
 
