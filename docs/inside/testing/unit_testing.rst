@@ -1,7 +1,7 @@
 JEDI Testing
 ============
 
-Each JEDI bundle has it's own suite of tests.  To run them, first build and compile the bundle as described in our :doc:`bundle build page </using/building_and_running/building_jedi>`.  Step 5 in that building and compiling procedure is to test the code with **ctest**.  This step is described in the :ref:`following section <running-ctest>`.
+Each JEDI bundle has its own suite of tests.  To run them, first build and compile the bundle as described in our :doc:`bundle build page </using/building_and_running/building_jedi>`.  Step 5 in that building and compiling procedure is to test the code with **ctest**.  This step is described in the :ref:`following section <running-ctest>`.
 
 After describing the basic functionality of ctest, we proceed to give a more detailed overview of how tests are organized and implemented in JEDI.  This is a prelude to the :doc:`next document <adding_a_test>`, which describes how you -- yes *you!*  -- can implement your own JEDI unit tests.
 
@@ -121,40 +121,33 @@ If you do run the tests without ctest, keep in in mind a few tips.  First, the t
 The JEDI test suite
 -------------------
 
-What lies "*under the hood*" when you run **ctest**?  Currently, there are two types of tests implemented in JEDI:
+What lies "*under the hood*" when you run :code:`ctest`?  Currently, there are two types of tests implemented in JEDI:
 
 1. Unit tests
 2. Integration and system tests (aka Application tests)
 
-This does not include other types of system and acceptance testing that may be run outside of the ctest framework, by individual developers and testers.  Integration and system tests are refereed to as **Application tests** for reasons that will become clear in the :ref:`next section <test-apps>`.
+This does not include other types of system and acceptance testing that may be run
+outside of the CTest framework by individual developers and testers.
+Integration and system tests are referred to as **Application tests** for
+reasons that will become clear in the :ref:`next section <test-apps>`.
 
-**Unit tests** are currently implemented in JEDI using eckit unit testing framework for initializing and organizing our suite of unit tests, and for generating appropriate status and error messages.  :ref:`See below <init-test>` for further details on how tests are implemented.
+**Unit tests** are implemented in JEDI using the :code:`eckit` unit testing framework
+for initializing and organizing our suite of unit tests.  :ref:`See below <init-test>` for details on how tests are implemented.
 
-Unit testing generally involves evaluating one or more Boolean expressions during the execution of some particular component or components of the code.  For example, one can read in a model state from an input file and then check whether some measure of the State norm agrees with a known value to within some specified tolerance.  Or, one can test whether a particular variable is positive (such as temperature or density) or whether a particular function executes without an error.
+Unit testing generally involves evaluating one or more Boolean expressions during the
+execution of some particular component or components of the code.
+For example, one can read in a model state from an input file and then check whether
+some measure of the State norm agrees with a known value to within some specified tolerance.
+Alternatively, one can test whether a particular variable is positive (such as temperature or density) or whether a particular function executes without an error.
 
-By contrast, **Application tests** check the operation of some application as a whole.  Some may make use of eckit Boolean tests but most focus on the output that these applications generate.  For example, one may wish to run a 4-day forecast with a particular model and initial condition and then check to see that the result of the forecast matches a well-established solution.  This is currently done by writing the output of the test to a file (typically a text file) and comparing it to an analogous output file from a previous execution of the test.  Such reference files are included in many JEDI repositories and can generally be found in a :code:`test/testoutput` subdirectory.
-
-Comparisons between output files are currently done by  **compare.py** (or in some repository **compare.sh**). **compare.py** takes run file (test output), reference file (established solution), float tolerance, and integer difference as input and can be used as:
-
-.. code:: bash
-
-  compare.py run_file ref_file float_tolerance integer_difference
-
-
-Tolerance values are used to allow for small differences between test output and the reference values. Float tolerance is the maximum relative difference between floating numbers in the run file and the reference file. Integer difference is the maxmimum difference between integer numbers in the run file and the reference file.
-Example below shows how **compare.py** can be used with :code:`ecbuild_add_test` to add a test for comparing test output with a reference file. You can find more examples in :code:`test/CMakeLists.txt` in different JEDI repositories
-
-.. code:: bash
-
-  ecbuild_add_test( TARGET       test_fv3jedi_forecast_fv3-gfs_compare
-                    TYPE         SCRIPT
-                    COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                    ARGS         testoutput/forecast_fv3-gfs.run testoutput/forecast_fv3-gfs.ref 1.0e-3 0
-                    TEST_DEPENDS test_fv3jedi_forecast_fv3-gfs )
-
-
-**compare.sh** uses standard unix parsing commands such as :code:`grep` and :code:`diff` to assess whether the two solutions match.  For further details see the section on :ref:`Integration and System testing <app-testing>` below.
-
+By contrast, **Application tests** check the operation of some application as a whole.
+Some may make use of eckit boolean tests but most focus on the output that these applications
+generate.  For example, one may wish to run a 4-day forecast with a particular model
+and initial condition and then check to see that the result of the forecast matches
+a well-established solution. This is currently done by comparing the test output
+to an analogous "reference" output file from a previous execution of the test.
+Such reference files are included in many JEDI repositories and can generally be
+found in a :code:`test/testoutput` subdirectory.  See :ref:`Integration and System testing <app-testing>` for details.
 
 As mentioned above, each JEDI bundle has its own suite of tests and you can list them (without running them) by entering this from the build directory:
 
@@ -166,11 +159,11 @@ Though all tests in a bundle are part of the same master suite, they are defined
 
 With few exceptions, all JEDI repositories contain a :code:`test` directory that defines the tests associated with that repository.  oops itself is one exception because it orchestrates the operation of the code as a whole but there you will find archetypical test directories within the :code:`qg` and :code:`l95` model directories.
 
-Within each :code:`test` directory you will find a file called :code:`CMakeLists.txt`.  This is where each test is added, one by one, to the suite of tests that is executed by **ctest**.  As described in the `CMake documentation <https://cmake.org/documentation/>`_, this is ultimately achieved by repeated calls to the CMake :code:`add_test()` command.
+Within each :code:`test` directory you will find a file called :code:`CMakeLists.txt`.  This is where each test is added, one by one, to the suite of tests that is executed by CTest.  As described in the `CMake documentation <https://cmake.org/documentation/>`_, this is ultimately achieved by repeated calls to the CMake :code:`add_test()` command.
 
-However, the :doc:`ecbuild package <../developer_tools/cmake>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`. Application tests are added by specifying :code:`TYPE SCRIPT` and :code:`COMMAND "compare.py"` to :code:`ecbuild_add_test()`. For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
+However, the :doc:`ecbuild package <../developer_tools/cmake>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`. For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
 
-Since it relies on the net result of an application, each Application test is typically associated with a single **ctest** executable.  However, applications of type :code:`oops::Test` (see :ref:`next section <test-apps>`) will typically execute multiple unit tests for each executable, or in other words each item in the ctest suite.  So, in this sense, the suite of unit tests is nested within each of the individual tests defined by **ctest**.  And, it is this nested suite of unit tests. (see :ref:`below <init-test>`).
+Since it relies on the net result of an application, each Application test is typically associated with a single CTest executable.  However, applications of type :code:`oops::Test` (see :ref:`next section <test-apps>`) will typically execute multiple unit tests for each executable, or in other words each item in the CTest suite.  So, in this sense, the suite of unit tests is nested within each of the individual tests defined by CTest.  And, it is this nested suite of unit tests. (see :ref:`below <init-test>`).
 
 
 .. _test-apps:
@@ -324,32 +317,111 @@ If any of these nested unit tests fail, **ctest** registers a failure for the pa
 Integration and System (Application) Testing
 --------------------------------------------
 
-Though each executable in the **ctest** test suite may run a number of unit tests as described in the previous two sections, many are also used for higher-level integration and system testing.  As described in :ref:`The JEDI Test Suite <jedi-tests>` above, these are currently implemented by comparing the output of these executables to known solutions.
+Though each executable in a CTest suite may run a number of unit tests as
+described in the previous two sections, others are used for higher-level integration
+and system testing.  As described in :ref:`The JEDI Test Suite <jedi-tests>` above,
+these application tests are implemented by comparing the output of these executables to known solutions.
 
-Files containing summary data for these known solutions can be found in the :code:`test/testoutput` directory of many JEDI repositories.  The :code:`test_qg_state` example that we have been using throughout this document is a unit test suite (:ref:`Type 1 <jedi-tests>`) as opposed to an Application test (:ref:`Type 2 <jedi-tests>`) so it does not have a reference output file.  However, as an Application test, :code:`test_qg_truth` does have such a file.  The name of this reference file is :code:`truth.test` and its contents are as follows:
-
-.. code-block:: bash
-
-    Test     : Initial state: 13.1
-    Test     : Final state: 15.1417
-
-This lists the norm of the initial and final states in an 18 day forecast.  So, the ostensibly sparse contents of this file are misleading: *a lot of things have to go right in order for those two data points to agree precisely*!
-
-This and other reference files are included in the GitHub repositories but the output files themselves are not.  They are generated in the build directory by running the test, and they follow the same directory structure as the repository itself.  Furthermore, they have the same name as the reference files they are to be compared to but with an extension of :code:`.test.out`.  Messages sent to :code:`stdout` during the execution of the test are written to another file with an extension :code:`.log.out`.
-
-So, in our example above, the output of :code:`test_qg_truth` will be written to
+Reference files define these known solutions and are found in
+the :code:`test/testoutput` directory of JEDI repositories.
+For example, :code:`test_qg_state` is a unit test suite (:ref:`Type 1 <jedi-tests>`) as opposed to an Application test (:ref:`Type 2 <jedi-tests>`) so it does not have a reference output file.
+However, as an Application test, :code:`test_qg_truth` does have such a file, which is named :code:`truth.test`. This file includes all the messages written using :code:`oops::Log::test()` command such as:
 
 .. code-block:: bash
 
-      <build-directory>/oops/qg/test/testoutput/truth.test.test.out`
+    Initial state: 13.1
+    Final state: 15.1417
 
-In the same directory you will find a soft link to the reference file, :code:`truth.test`, as well as the log file, :code:`truth.test.log.out`.
+This lists the norm of the initial and final states in an 18 day forecast.
+So, the ostensibly sparse contents of this file are misleading: *a lot of things
+have to go right in order for those two data points to agree precisely*!
 
-When the test is executed, the :code:`compare.sh` script in the :code:`test` directory of the repository (which also has a soft link in the build directory) will compare the output file to the reference file by first extracting the lines that begin with "Test" (using :code:`grep`) and then comparing the (text) results (using :code:`diff`).  In our example, the two files to be compared are :code:`test.truth` and :code:`test.truth.test.out`.  If these do not match, **ctest** registers a failure.
+Currently, there are two comparing methods implemented in JEDI. One uses :code:`compare.py` and
+the other compares the test output and the reference file internally as the final step of the C++ executable.  Eventually all tests will use the C++ comparison rather than :code:`compare.py`.
+
+Testing using compare.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. warning::
 
-   The **compare.py** script may have problems if you run with multiple processors.
+   The :code:`compare.py` script is being replaced by a new method of testing
+   using the internal test reference comparison
+
+**compare.py** (or in some repository **compare.sh**) takes run file (test output),
+reference file (established solution), float tolerance, and integer difference as input and can be used as:
+
+.. code:: bash
+
+  compare.py run_file ref_file float_tolerance integer_difference
+
+
+Tolerance values are used to allow for small differences between test output and the reference values.
+Float tolerance is the maximum relative difference between floating numbers in the run file and the reference file.
+Integer difference is the maximum difference between integer numbers in the run file and the reference file.
+Example below shows how :code:`compare.py` can be used with :code:`ecbuild_add_test` to add a
+test for comparing test output with a reference file. You can find more examples in :code:`test/CMakeLists.txt` in different JEDI repositories
+
+.. code:: bash
+
+  ecbuild_add_test( TARGET       test_fv3jedi_forecast_fv3-gfs_compare
+                    TYPE         SCRIPT
+                    COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                    ARGS         testoutput/forecast_fv3-gfs.run testoutput/forecast_fv3-gfs.ref 1.0e-3 0
+                    TEST_DEPENDS test_fv3jedi_forecast_fv3-gfs )
+
+
+When the test is executed, the :code:`compare.py` script in the :code:`test` directory
+of the repository (which also has a soft link in the build directory) will compare
+the output file to the reference file by first extracting the lines that begin
+with "Test" (using :code:`grep`) and then comparing the (text) results (using :code:`diff`).
+In our example, the two files to be compared are :code:`test.truth` and :code:`test.truth.test.out`.
+If these do not match, :code:`ctest` registers a failure.
+
+Testing using the internal test reference comparison
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Alternatively, comparison of the test log and reference file can be done internally as the final step of the C++ execution, removing the need for :code:`compare.py`.  The :code:`test` section of the test's YAML configuration is used to control the test-reference comparison.
+For example, the :code:`test:` section in an application test's YAML file might look like:
+
+.. code:: bash
+
+  test:
+    reference filename: testoutput/4dvar.obsbias.test
+    #  Optional:
+    float relative tolerance: 0.0
+    integer tolerance: 0
+    log output filename: testoutput/4dvar.obsbias.log.out
+    test output filename: testoutput/4dvar.obsbias.test.out
+
+
+The :code:`reference filename` specifies the reference file name that will be used to compare with the test output channel.
+
+The test channel output and the reference file are compared line-by-line, and must contain the same number of lines.  If there are no numeric elements in the lines, they must match exactly.  Lines that contain numeric elements are compared numerically.  Each line must have the same count of numeric elements, and each of the numeric elements must be within tolerance.  Tolerance values for integer and floating-point variables may optionally be specified but default to 0.  If numeric elements from the test and reference files parse as integers, the  :code:`integer tolerance` controls the acceptable tolerance.  Otherwise, numeric values are treated as floating point, and the :code:`float relative tolerance` controls the acceptable relative difference between floating-point values.
+
+.. code:: bash
+
+   relative_difference = |reference - test|/(0.5*(reference + test))
+
+If the test channel fails to match the reference file, an exception from a sub-class of :code:`oops::TestReferenceError` containing relevant information about the cause of the mismatch is thrown.
+
+Additional options for the :code:`test:` YAML sub-section:
+
+* :code:`log output filename` - *(Optional)* A file to save the complete log output.
+* :code:`test output filename` - *(Optional)* A file to save the test-channel specific log output.  This file can be used to replace the test reference file when needed.
+
+After adding the test section to the YAML file, the test can simply be added in :code:`test/CMakeLists.txt`
+using :code:`ecbuild_add_test`:
+
+.. code:: bash
+
+  ecbuild_add_test( TARGET test_l95_4dvar.obsbias
+                    COMMAND l95_4dvar.x
+                    ARGS testinput/4dvar.obsbias.yaml
+                    TEST_DEPENDS test_l95_forecast test_l95_makeobsbias )
+
+.. note::
+  An advantage of the internal comparison method is that filenames are not hard-coded into the `CMakeLists.txt`.  Instead, they are easily modified in the test's YAML file without triggering the CMake configuration phase to rerun on each build.  In most cases, this will lead to faster rebuilds when developing and debugging application tests.
+
 
 .. _test-framework:
 

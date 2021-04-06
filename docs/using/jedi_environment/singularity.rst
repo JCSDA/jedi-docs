@@ -3,7 +3,7 @@
 Singularity
 ===========
 
-`Singularity <https://www.sylabs.io/docs/>`_ is arguably the leading provider of software containers for HPC applications.  It was originally developed at Lawrence Berkeley Labs but then branched off into it's own enterprise that is now called SyLabs.  It is designed to be used for scientific applications on HPC systems, and to support general scientific use cases.  Singularity encapsulates your software environment in a single disk **image file** that can be copied to and invoked on any system on which Singularity itself is installed.  The JEDI environment is contained in one such image file (see :ref:`below <build_env>`).
+`Singularity <https://www.sylabs.io/docs/>`_ is arguably the leading provider of software containers for HPC applications.  It was originally developed at Lawrence Berkeley Labs but then branched off into its own enterprise that is now called SyLabs.  It is designed to be used for scientific applications on HPC systems, and to support general scientific use cases.  Singularity encapsulates your software environment in a single disk **image file** that can be copied to and invoked on any system on which Singularity itself is installed.  The JEDI environment is contained in one such image file (see :ref:`below <build_env>`).
 
 **For these reasons, Singularity is the recommended container platform for JEDI users and developers.**
 

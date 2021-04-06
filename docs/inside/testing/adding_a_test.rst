@@ -221,7 +221,6 @@ We'll start with the configuration file because every new test you add is likely
      testinput/test_op_obs.yaml
      testinput/analytic_init.yaml
      testinput/analytic_init_fc.yaml
-     compare.sh
    )
 
 You would add your input file, :code:`test/testinput/myclass.yaml` to this list (note that the path is relative to the path of the :code:`CMakeLists.txt` file itself).  If you search on :code:`qg_test_input` in the file, you can see that list is later used to create a soft link for the input files in the build directory, where the tests will be run.
@@ -258,21 +257,13 @@ There are many other useful arguments for :code:`ecbuild_add_test()`.  As usual,
 Adding an Application Test
 --------------------------
 
-The steps above are specific to Unit Tests.  You could in principle follow much of the same procedure to create an :ref:`Application test <jedi-tests>` but since these are usually used to test existing :ref:`Applications <test-apps>`, steps 1-5 would usually not be necessary.
+The steps above are specific to Unit Tests.  You could in principle follow much of
+the same procedure to create an :ref:`Application test <jedi-tests>` but since
+these are usually used to test existing :ref:`Applications <test-apps>`,
+steps 1-5 would usually not be necessary.
 
-You would have to design your application to produce a text output file as described in :ref:`Application Testing <app-testing>` and you would have to provide a reference output file to compare against.  These reference output files would be have to be added to the CMakeLists.txt file in much the same way as the input configuration files (Step 8) in order to ensure that they will be visible from the build directory; see :code:`oops/qg/test/CMakeLists.txt` for an example.
-
-You would add your test to the appropriate CMakeLists.txt file with :code:`ecbuild_add_test()` as described in Step 8 but the argument list would be somewhat different as illustrated here:
-
-.. code-block:: CMake
-
-   ecbuild_add_test( TARGET test_qg_truth
-                  TYPE SCRIPT
-                  COMMAND "compare.sh"
-                  ARGS "${CMAKE_BINARY_DIR}/bin/qg_forecast.x testinput/truth.yaml"
-                       testoutput/truth.test
-                  DEPENDS qg_forecast.x )
-
-Here we include a TYPE SCRIPT argument and we specify :code:`command.sh` as the command to be executed.  The ARGS argument now includes the two files to be compared, namely the output of our application :code:`${CMAKE_BINARY_DIR}/bin/qg_forecast.x testinput/truth.yaml` (set off by quotes) and our reference file, :code:`testoutput/truth.test`.  We include the executable application in the DEPENDS argument to make sure that CMake knows it needs to compile this application before running the test.
-
-However, before you add an Application test we must warn you :ref:`again <app-testing>` that the :code:`compare.sh` script may run into problems if you run your application on multiple MPI threads.  We are currently working on a more robust framework for Application testing.
+You would have to design your application to produce a text output file as described 
+in :ref:`Application Testing <app-testing>` and you would have to provide a reference
+output file to compare against.  These reference output files can be specified in the
+test configuration file (YAML file) under :code:`test` section as described  :ref:`here <test-apps>`.
+No additional modifications is needed in :code`CMakeLists.txt`.
