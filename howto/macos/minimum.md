@@ -14,14 +14,15 @@ git
 git-lfs
 lmod
 openssl@1.1
+wget
 ```
 
 Make sure the proper line for initializing lmod is included in your `.bashrc` or `.zshrc` file.
-While you are doing this, you also want to define the `JEDI_OPT` environment variable:
+While editing the file, add the following lines in preparation for the next step:
 ```bash
 export JEDI_OPT=/opt/modules
+module use $JEDI_OPT/modulefiles/core
 ```
-Note that in what follows only gfortran is used out of gcc.
 
 ### Install JEDI stack
 
@@ -29,7 +30,9 @@ Note that in what follows only gfortran is used out of gcc.
 git clone https://github.com/JCSDA/jedi-stack.git
 ```
 
-Then you need to get into jedi-stack and edit two files. First, in `buildscripts/config/config_mac.sh`, you need to set the compiler and MPI versions you want to use. In my case I chose:
+(Note that in what follows only gfortran is used from the `brew`-installed `gcc` package.)
+
+Within the cloned jedi-stack repository, edit `buildscripts/config/config_mac.sh`. You need to set the compiler and MPI versions you want to use. In my case I chose:
 
 ```bash
 export JEDI_COMPILER="clang/12.0.0"
@@ -37,14 +40,14 @@ export JEDI_MPI="mpich/3.3.2"
 ```
 
 In the past I used to work with `mpich` installed from homebrew but it doesn't seem to work anymore.
-Then from the `buildscripts` directory, run:
+If any modules are already loaded, clear them with `module purge` before proceeding. Then from the `buildscripts` directory, run:
 ```bash
 ./setup_modules.sh mac
 ```
 
-Once this is done, you need to run the command (which can be included in your  `.bashrc` or `.zshrc`):
+If you have errors with the compiler when running the script, you may need to set the following environment variable. (Probably Catalina-specific)
 ```bash
-module use $JEDI_OPT/modulefiles/core
+export CPATH=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/
 ```
 
 Now you can go to the second step and build the JEDI stack itself. You need to edit `buildscripts/config/choose_modules.sh` to select the components you want. For this minimum configuration, I chose:
@@ -95,3 +98,32 @@ ctest
 ```
 
 **Note:** In reality I don't clone a bundle. I have a directory that contains all the repos I'm interested in, and in the same directory a `CMakeLists.txt` (the only file that matters in a bundle repo) that contains all the repos and where I comment or uncomment the repos I want at a given time. This way I have only one copy of each repo, and can work with any application (bundle) I am interested in, including more than one model at the same time. When I want to add a repo I just add it to the `CMakeLists.txt` and ecbuild will get it for me. I include `eckit` in my bundle because it's only built the first time so it's not a big burden and I like to have the code just there when I'm looking for a function I want to use.
+
+**Troubleshooting 1:** Some people have had problems with compiler `unknown argument` errors when building some bundles after loading
+the modules "individually" as described above. If this happens to you, try this additional setup:
+
+In addition to the `STACK_BUILD` variables listed above, also set the following variables to `Y` in `choose_modules.sh`
+before running `./setup_modules.sh mac`:
+```bash
+STACK_BUILD_LAPACK
+STACK_BUILD_BUFR
+STACK_BUILD_GSL_LITE
+STACK_BUILD_JSON
+STACK_BUILD_JSON_SCHEMA_VALIDATOR
+```
+
+To your shell setup script, add the following:
+```bash
+module use <path>/<to>/jedi-stack/modulefiles/apps
+```
+
+Then you can load a set of jedi modules with the command:
+```bash
+module load jedi/clang-mpich
+```
+
+Now clear your `CMakeCache.txt` from your build directory and try to build again.
+
+**Troubleshooting 2** If, when building a bundle, you get an error containing wording like `...your binary is not an allowed client of /usr/lib/libcrypto.dylib`,
+it means that the linker is trying to link to the macOS OpenSSL libraries (which is not allowed) instead of the homebrew-installed openssl libraries. 
+One solution to this problem is to add the option `-DOPENSSL_ROOT_DIR=/usr/local/opt/openssl` to your `ecbuild` command for the bundle.
