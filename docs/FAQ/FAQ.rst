@@ -127,3 +127,18 @@ specified branch.  To prevent this fetch command, either:
 If at some point you need to fetch changes from a remote repository, this can be done with ``make update`` in a separate
 terminal window connected to the login-node.  Once the fetch and checkout are complete, the build can proceed on
 the compute node without internet access.
+
+.. _faq-netcdf-unknown-file-format:
+
+``Error code: NetCDF: Unknown file format`` when running tests
+--------------------------------------------------------------
+
+This probably means that you have not initialized git large file service (LFS).
+
+JEDI test files, many of which are in NetCDF format, are not stored directly on GitHub.  This would make the size of the repositories too large.  Instead, NetCDF and other data files are stored on an external data store.  To tell git where to find them, you must enable LFS by entering the following command:
+
+.. code-block:: bash
+
+   git lfs install
+
+You can run this command from anywhere, though ``git`` might give you a warning if you are not in a git repository.  It sets up global filters which you can see by running ``cat ~/.gitconfig`` or ``git config --list``.  So, you only need to do it once.  But, after enabling it, we recommend that you delete your bundle source directory, re-clone it from GitHub, and rebuild the bundle.

@@ -33,13 +33,17 @@ You can obtain the JEDI development container with the following command:
 
 This is the version of the development container that uses gnu compilers and the openmpi MPI library.  :ref:`Other development containers are also available <available_containers>` but the ``gnu-openmpi`` container is the only one that is currently equipped with plotting tools such as ``cartopy`` that are used in some of the tutorials (not this one).  Still, you may wish to repeat this tutorial with the ``clang-mpich-dev`` container.
 
-You should now see a new file in your current directory with the name ``jedi-gnu-openmpi-dev_latest.sif``.  If it has a different name or a different extension you may have an older version of Singularity.  It is recommended that you use Singularity version 3.0 or later.
+You should now see a new file in your current directory with the name ``jedi-gnu-openmpi-dev_latest.sif``.  If it has a different name or a different extension you may have an older version of Singularity.  It is recommended that you use Singularity version 3.6 or later.
 
 If you wish, you can verify that the container came from JCSDA by entering:
 
 .. code-block:: bash
 
    singularity verify jedi-gnu-openmpi-dev_latest.sif
+
+.. note::
+
+   The verification implementation was changed in Singularity version 3.6.  So if you use a version of Singularity earlier than 3.6, you may get a warning when you run this ``verify`` command.  It is ok to ignore it and proceed.
 
 Now you can enter the container with the following command:
 
@@ -70,6 +74,12 @@ But, before we do so, it's a good idea to configure ``git`` so that it will not 
    git config --global --add credential.helper 'store'
 
 This stores your git credentials in your home directory for one hour (3600 seconds).  And, since the container and the host environment share the same home directory, it does not matter if you run these commands inside or outside the container.
+
+You will also have to enable git large file service (LFS) with this command before you clone any JEDI repositories (see :ref:`the FAQ for further information <faq-netcdf-unknown-file-format>`):
+
+.. code-block:: bash
+
+   git lfs install
 
 Now we will put the code in a directory coming off your home directory called ``jedi``.   Feel free to change the location if you wish.
 
