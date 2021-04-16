@@ -42,6 +42,41 @@ Supported modifications to the driver
   driver:
     run as observer only: false #default value
 
+* Save posterior mean. Requires "output" section in the yaml file.
+.. code:: yaml
+ driver: 
+   save posterior mean: false #default value
+
+* Save posterior ensemble. Requires "output" section in the yaml file. 
+.. code:: yaml
+ driver: 
+   save posterior ensemble: true #default value
+
+* Save prior mean. Requires "output mean prior" section in the yaml file.
+.. code:: yaml
+ driver: 
+   save prior mean: false #default value
+   
+* save posterior mean increment. Requires "output increment" section in the yaml file.
+.. code:: yaml
+ driver: 
+   save posterior mean increment: false #default value
+   
+* save prior variance. Requires "output variance prior" section in the yaml file.
+.. code:: yaml
+ driver: 
+   save prior variance: false #default value
+
+* save posterior variance. Requires "output variance posterior" section in the yaml file.
+.. code:: yaml
+ driver: 
+   save posterior variance: false #default value
+   
+* If Halo obs. distribution is used, one also needs to set  the following option as "true"
+.. code:: yaml
+ driver: 
+   update obs config with geometry info: fasle #default value
+
 
 Supported Local Ensemble Kalman filters
 ---------------------------------------
@@ -191,5 +226,16 @@ Parameter of RTPS inflation is controlled by :code:`inflation.rtps` configuratio
 
 NOTE about obs distributions
 -----------------------------
-Currently Local Ensemble DA requires :code:`InefficientDistribution` obs distribution. I.e. each obs and H(x) is replicated on each PE. 
-This is clearly Inefficient. We have an option to run Local Ensemble DA in the observer only mode with :code:`RoundRobin` to compute H(X). Then one can read ensemble of H(x) from disk using :code:`driver.read HX from disk == true` and :code:`driver.do posterior observer == false` that will remove all duplicate H(X) operations from the solver.  
+Currently Local Ensemble DA supports :code:`InefficientDistribution` and :code:`Halo` obs distribution. For InefficientDistribution each obs and H(x) is replicated on each PE. For Halo distribution only obs. needed on this PE are stored on each PE. Halo is more efficient however it is less mature compared to InefficientDistribution. 
+We also have an option to run Local Ensemble DA in the observer only mode with :code:`RoundRobin` to compute H(X). Then one can read ensemble of H(x) from disk using :code:`driver.read HX from disk == true` and :code:`driver.do posterior observer == false`. 
+
+The type of the obs. distribution is specified for each ObsSpace:
+.. code-block:: yaml
+observations:
+- obs space:
+    distribution: Halo 
+
+If Halo obs. distribution is used one also needs to specify
+.. code-block:: yaml
+ driver: 
+   update obs config with geometry info: true
