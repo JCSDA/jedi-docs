@@ -141,10 +141,11 @@ Observation-space :math:`R`-localization is used in the horizontal in all of the
        name: radiosonde
      ...
      obs error:
-       covariance model: localized diagonal   # inflate obs errors based on the distance from the updated grid point
-       localization:
-         localization method: Gaspari-Cohn
-         lengthscale: 1000e3                  # localization distance in meters
+       covariance model: diagonal
+     obs localization:
+       localization method: Gaspari-Cohn    # inflate errors with Gaspari-Cohn function, based on the
+                                            # horizontal distance from the updated grid point
+       lengthscale: 1000e3                  # localization distance in meters
 
 
 There is currently no vertical localization in LETKF implementations in JEDI. LGETKF implementation uses ensemble modulation to emulate model-space vertical localization.
