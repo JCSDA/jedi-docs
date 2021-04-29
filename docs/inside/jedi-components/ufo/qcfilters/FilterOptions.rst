@@ -57,7 +57,7 @@ This would cause the filter to be applied only to air temperature observations `
 
 The list passed to the :code:`where` keyword can contain more than one item, each representing a separate condition imposed on a particular variable. The filter is applied only to observations meeting all of these conditions. The following kinds of conditions are accepted:
 
-- :code:`minvalue` and/or :code:`maxvalue`: filter applied only to observations for which the condition variable lies in the specified range. The upper and lower bounds can be floating-point numbers or datetimes in the ISO 8601 format. If any date/time components are set to zero, they are disregarded. See :ref:`Example 2 <where-example-2>` below on where this can be useful.
+- :code:`minvalue` and/or :code:`maxvalue`: filter applied only to observations for which the condition variable lies in the specified range. The upper and lower bounds can be floating-point numbers or datetimes in the ISO 8601 format. If any date/time components are set to `*`, they are disregarded. See :ref:`Example 2 <where-example-2>` below on where this can be useful.  Each of these strings must be 20 characters long so defining 'any year' would be indicated by `****`.
 - :code:`is_defined`: filter applied only to observations for which the condition variable has a valid value (not a missing data indicator).
 - :code:`is_not_defined`: filter applied only to observations for which the condition variable is set to a missing data indicator.
 - :code:`is_in`: filter applied only to observations for which the condition variable is set to a value belonging to the given whitelist.
@@ -106,17 +106,17 @@ Example 2
 
 .. code-block:: yaml
     
-        where:
-        - variable:
-            name:  datetime@MetaData
-            minvalue: 0000-01-01T00:00:00Z
-            maxvalue: 0000-25-05T00:00:00Z
-        - variable:
-            name:  datetime@MetaData
-            minvalue: 0000-00-00T09:00:00Z
-            maxvalue: 0000-00-00T17:59:59Z
+    where:
+    - variable:
+        name:  datetime@MetaData
+        minvalue: "****-01-01T00:00:00Z"
+        maxvalue: "****-25-05T00:00:00Z"
+    - variable:
+        name:  datetime@MetaData
+        minvalue: "****-**-**T09:00:00Z"
+        maxvalue: "****-**-**T18:00:00Z"
     
-In this example, the filter will be applied only to observations taken between 09:00:00 and 17:59:59, between 1st January and 25th May of every year.
+    In this example, the filter will be applied only to observations taken between 09:00:00 and 18:00:00, between 1st January and 25th May of every year (end inclusive).  Note that datetime components are not yet 'loop aware'.  That is, a where clause between May and February for example would require two filters: one covering the Jan-Feb period and a second to cover the May-Dec period.
 
 Example 3
 ^^^^^^^^^
