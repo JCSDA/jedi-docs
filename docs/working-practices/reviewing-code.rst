@@ -4,7 +4,7 @@
 Reviewing Code
 ##############
 
-The role of the review process is to control the contents of branches, especially the develop and master branches of a repository. Discussions and decisions of a scientific nature should happen at the ZenHub level, before reaching the level of pull requests (PRs) and code reviews.
+The role of the review process is to control the contents of branches, especially the develop and main branches of a repository. Discussions and decisions of a scientific nature should happen at the ZenHub level, before reaching the level of pull requests (PRs) and code reviews.
 
 What is a Code Review?
 ^^^^^^^^^^^^^^^^^^^^^^

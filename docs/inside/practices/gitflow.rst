@@ -15,10 +15,15 @@ The git flow paradigm was introduced in 2010 in a `brief but compelling blog pos
 
 Furthermore, we recommend that all JEDI developers keep `the git flow diagram <https://nvie.com/files/Git-branching-model.pdf>`_ handy as a (virtual) desktop reference.
 
+.. note::
+
+   Where in the above references `master` branch is used, in JEDI we use `main` branch, as many other Git communities do.
+
+
 In the git flow model, the code is organized into the following branches that are maintained using the `git version control system <https://git-scm.com/>`_:
 
-- :code:`master` branch
-   - One permanent master branch that is used for releases only
+- :code:`main` branch
+   - One permanent main branch that is used for releases only
    - Must pass all tests at all times
    - Direct code changes (commits and pushes) not allowed: all changes are made through GitHub pull requests and subject to code reviews
    - All changes are tagged with a release number
@@ -39,13 +44,13 @@ In the git flow model, the code is organized into the following branches that ar
    - Temporary: each branch is deleted after it is merged
 - :code:`hotfix/*` branches
    - For correcting errors or omissions
-   - Branch off of master
-   - Merge back into master and develop
+   - Branch off of main
+   - Merge back into main and develop
    - Temporary: each branch is deleted after it is merged
 - :code:`release/*` branches
    - For refinement, bug fixes, and documentation leading up to a release
    - Branch off of develop
-   - Merge into master and develop
+   - Merge into main and develop
    - Temporary: each branch is deleted after it is merged
 
 One of the most important principles of agile software development is to:

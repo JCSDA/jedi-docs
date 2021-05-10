@@ -3,12 +3,12 @@ Branching and merging code
 ##########################
 
 Following the :doc:`git flow structure </inside/practices/gitflow>`, repositories contain two special branches:
-the master branch which contains released versions of the code, and the develop
+the main branch which contains released versions of the code, and the develop
 branch which will contain all developments to be included in future releases.
 The branching model also provides three categories for other branches: feature
 branches where most developments happen, release branches for preparing new code
 releases and hotfix branches for bug fixes in already released code.
-This is different from older common working practices where master and develop
+This is different from older common working practices where main and develop
 are in the same branch (trunk) which is also where preparation of releases happen
 and where bugs are fixed.
 
@@ -41,19 +41,19 @@ and merging process (explained below).
 
 At some point, it will become necessary to prepare releases of the code.
 This process happens in specific releasebranches.
-Once a release is ready and fully tested it is merged into both the master and
+Once a release is ready and fully tested it is merged into both the main and
 develop branches and tagged.
 Typically, the tag will contain the release number (for example 2.0 for a major
 release, or 2.1 for a minor one).
-The masterbranch then contains the new official release and development work
+The main branch then contains the new official release and development work
 continues in the develop branch based on the release.
 
 Despite all the care being taken in the testing, there will always be (hopefully rare)
 bugs needing fixing in any software.
 When such a bug is detected in a release, a hotfix branch is created from the
-master branch to implement and test the fix.
-Once a satisfactory fix is implemented, the bug fix branch is merged into both
-the master and develop branches and the release number is incremented (a new tag
+main branch to implement and test the fix.
+Once a satisfactory fix is implemented, the hot fix branch is merged into both
+the main and develop branches and the release number is incremented (a new tag
 is created with a minor version number increased, for example from 2.1.0 to 2.1.1).
 For reproducibility, an existing tag should never be moved.
 

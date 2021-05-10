@@ -16,7 +16,7 @@ The cheat sheet below includes instructions on how to install :code:`git-flow` a
     `Click here for a git flow cheat sheet <https://danielkummer.github.io/git-flow-cheatsheet/>`_
 
 The primer and cheat sheet both assume that you have permission to push commits
-into the develop branches of the remote GitHub repository.  In JEDI we do not follow this approach; all changes to the :code:`develop` and :code:`master` branches of a repository must only be done through :doc:`GitHub pull requests <../practices/pullrequest>`.
+into the develop branches of the remote GitHub repository.  In JEDI we do not follow this approach; all changes to the :code:`develop` and :code:`main` branches of a repository must only be done through :doc:`GitHub pull requests <../practices/pullrequest>`.
 
 Installing git flow
 -------------------
@@ -64,7 +64,7 @@ The difference between bugfix and hotfix has to do with where they fit into the 
 
 .. code-block:: bash
 
-   git flow hotfix start wrongoutput # branches off of master
+   git flow hotfix start wrongoutput main # branches off of main
 
 The default base for a bugfix branch is develop but you can also fix a bug in a feature branch as follows.
 
@@ -79,7 +79,7 @@ Bugfix and hotfix branches can be published and finalized :ref:`as described els
 
    git flow bugfix publish wrongoutput
 
-Once your branch is on GitHub, you can issue a pull request to merge it in to the relevant branch (master, develop, or feature).  Our standard workflow is to delete the bugfix or hotfix branch on GitHub after it has been merged by an appropriate JEDI master.
+Once your branch is on GitHub, you can issue a pull request to merge it in to the relevant branch (main, develop, or feature).  Our standard workflow is to delete the bugfix or hotfix branch on GitHub after it has been merged by an appropriate JEDI master.
 
 Once it is successfully integrated into the desired branch, you may wish to delete your local branch manually using the standard git command:
 
