@@ -107,11 +107,11 @@ Background error covariance
 VarBC example
 +++++++++++++++++++++++++
 
-To use the bias correction in an observation operator, add the :code:`obs bias` section as the highlighted lines.
+To use the bias correction in an observation operator, add the :code:`obs bias` section as shown in the highlighted lines below.
 
 .. code-block:: yaml
   :linenos:
-  :emphasize-lines: 12-34
+  :emphasize-lines: 12-27
 
   observations:
   - obs space:
@@ -126,69 +126,53 @@ To use the bias correction in an observation operator, add the :code:`obs bias` 
       ...
     obs bias:
       input file: Data/obs/satbias_crtm_in_amsua_n19.nc4
-      sensor: amsua_n19
-      jobs: 1-15
-      predictors:
-      - predictor:
-          name: constant
-      - predictor:
-          name: emissivity
-      - predictor:
-          name: scan_angle
+      variational bc:
+        predictors:
+        - name: constant
+        - name: emissivity
+        - name: scan_angle
           options:
             order: 4
-      - predictor:
-          name: scan_angle
+        - name: scan_angle
           options:
             order: 3
-      - predictor:
-          name: scan_angle
+        - name: scan_angle
           options:
             order: 2
-      - predictor:
-          name: scan_angle
+        - name: scan_angle
 
 Here is the detailed explanation:
 
   1. Defines the predictors (required)
   
-    Here, we defined 6 predictors, which are :code:`constant`, :code:`emissivity`, and 1st, 2nd, 3rd, 4th order :code:`scan_angle`, respectively. To find what predictor functions are available, please refer to directory :code:`ufo/src/ufo/predictors/`.
+    Here, we defined 6 predictors to be used for VarBC, which are :code:`constant`, :code:`emissivity`, and 1st, 2nd, 3rd, 4th order :code:`scan_angle`, respectively. To find what predictor functions are available, please refer to directory :code:`ufo/src/ufo/predictors/`.
 
     .. code-block:: yaml
 
+      variational bc:
         predictors:
-        - predictor:
-            name: constant
-        - predictor:
-            name: emissivity
-        - predictor:
-            name: scan_angle
-            options:
-              order: 4
-        - predictor:
-            name: scan_angle
-            options:
-              order: 3
-        - predictor:
-            name: scan_angle
-            options:
-              order: 2
-        - predictor:
-            name: scan_angle
+        - name: constant
+        - name: emissivity
+        - name: scan_angle
+          options:
+            order: 4
+        - name: scan_angle
+          options:
+            order: 3
+        - name: scan_angle
+          options:
+            order: 2
+        - name: scan_angle
 
   2. Defines the input file for the bias coefficients prior (optional)
 
-     Usually, the prior is coming from the previous data assimilation cycle. if it is not available, all coefficients will start with zero.
+     Usually, the prior is coming from the previous data assimilation cycle. If it is not available, all coefficients will start with zero.
 
     .. code-block:: yaml
 
-        input file: Data/obs/satbias_crtm_in_amsua_n19.nc4
-  
-  3. Defines the Sensor_ID and Channels (jobs) for bias correction (required)
+      input file: Data/obs/satbias_crtm_in_amsua_n19.nc4
 
-    Usually, use the consistent values with ObsOperator
+Static Bias Correction in UFO
+=============================
 
-    .. code-block:: yaml
-
-        sensor: amsua_n19   # or *Sensor_ID
-        jobs: 1-15          # or *channels
+Static bias correction is handled very similarly to variational bias correction. Mathematically, the only difference is that the coefficients :math:`\beta_i` of predictors used for static bias correction are kept constant and equal to 1. These predictors are defined in the :code:`obs bias.static bc` YAML section, whose syntax is identical to :code:`obs bias.variational bc`.
