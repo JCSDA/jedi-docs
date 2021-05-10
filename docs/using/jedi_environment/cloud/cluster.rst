@@ -157,7 +157,7 @@ So, after compiling your bundle, you will want to create a run directory and cre
 
     source /usr/share/modules/init/bash
     module purge
-    export $JEDI_OPT=/optjedi/modules
+    export JEDI_OPT=/optjedi/modules
     module use $JEDI_OPT/modulefiles/core
     module load jedi/intel-impi
     module list

@@ -15,5 +15,6 @@ These documents give a high-level overview of the OOPS code repository.  `A low-
 
    introduction
    applications/index.rst
+   algorithmic_details/index.rst
    interfaces/index.rst
    toy-models/index.rst
