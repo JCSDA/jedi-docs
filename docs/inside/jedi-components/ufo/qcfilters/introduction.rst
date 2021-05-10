@@ -40,6 +40,8 @@ The flow of this computation in OOPS is as follows:
 
 The :code:`Observer` calls the :code:`preProcess` method of :code:`ObsFilters` before the loop over time steps. After the loop, it calls the :code:`priorFilter` and :code:`postFilter` methods just before and just after calling the :code:`simulateObs` method of :code:`ObsOperator`. The observation filters are very generic and can perform a number of tasks, but mostly they are used for quality control.
 
+.. _Observation-Filters:
+
 Observation Filters
 -------------------
 
