@@ -8,11 +8,15 @@ Vertical Interpolation
 
 Description:
 ^^^^^^^^^^^^
-Vertical interpolation observation operator implements linear interpolation in vertical coordinate. If vertical coordinate is air_pressure or air_pressure_levels, interpolation is done in logarithm of air pressure. For all other vertical coordinates interpolation is done in specified coordinate (no logarithm applied)
+This observation operator implements linear interpolation in a vertical coordinate. If the vertical coordinate is :code:`air_pressure` or :code:`air_pressure_levels`, interpolation is done in the logarithm of air pressure. For all other vertical coordinates interpolation is done in the specified coordinate (no logarithm applied).
+
+This operator can be used as a component of the `Composite` operator.
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
-* :code:`vertical coordinate` [optional] : specifies which vertical coordinate to use in interpolation. If air_pressure or air_pressure_levels is used, the interpolation is done in log(air pressure). Default value is air pressure.
+* :code:`vertical coordinate` [optional]: the vertical coordinate to use in interpolation. If set to :code:`air_pressure` or :code:`air_pressure_levels`, the interpolation is done in log(air pressure). The default value is :code:`air_pressure`.
+* :code:`observation vertical coordinate` [optional]: name of the ObsSpace variable (from the :code:`MetaData` group) storing the vertical coordinate of observation locations. If not set, assumed to be the same as :code:`vertical coordinate`.
+* :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator (see the example below). This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -21,7 +25,7 @@ Examples of yaml:
   obs operator:
     name: VertInterp
 
-Observation operator in the above example does vertical interpolation in log(air pressure).
+The observation operator in the above example does vertical interpolation in log(air pressure).
 
 .. code-block:: yaml
 
@@ -29,7 +33,31 @@ Observation operator in the above example does vertical interpolation in log(air
     name: VertInterp
     vertical coordinate: height
 
-Observation operator in the above example does vertical interpolation in height.
+The observation operator in the above example does vertical interpolation in height.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: VertInterp
+    vertical coordinate: air_pressure_levels
+    observation vertical coordinate: air_pressure
+
+The observation operator in the above example does vertical interpolation in log(air_pressure) on the levels taken from the :code:`air_pressure_levels` GeoVaL.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Composite
+    components:
+    - name: VertInterp
+      variables:
+      - name: eastward_wind
+      - name: northward_wind
+    - name: Identity
+      variables:
+      - name: surface_pressure
+
+In the example above, the `VertInterp` operator is used to simulate only the wind components; the surface pressure is simulated using the `Identity` operator.
 
 Atmosphere Vertical Layer Interpolation
 ----------------------------------------
@@ -519,7 +547,14 @@ Identity observation operator
 Description:
 ^^^^^^^^^^^^
 
-A simple identity observation operator, can be used for all cases where observation operator only does horizontal interpolation of model variables.
+A simple identity observation operator, applicable whenever only horizontal interpolation of model variables is required.
+
+This operator can be used as a component of the `Composite` operator.
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator (see the example below). This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -528,6 +563,23 @@ Examples of yaml:
 
    obs operator:
      name: Identity
+
+In the example above, the `Identity` operator is used to simulate all ObsSpace variables.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Composite
+    components:
+    - name: VertInterp
+      variables:
+      - name: eastward_wind
+      - name: northward_wind
+    - name: Identity
+      variables:
+      - name: surface_pressure
+
+In the example above, the `Identity` operator is used to simulate only the surface pressure; the wind components are simulated using the `VertInterp` operator.
 
 Radar Reflectivity
 ----------------------
@@ -616,3 +668,163 @@ References:
 Cotton, J., 2018. Update on surface wind activities at the Met Office.
 Proceedings for the 14 th International Winds Workshop, 23-27 April 2018, Jeju City, South Korea. 
 Available from http://cimss.ssec.wisc.edu/iwwg/iww14/program/index.html.
+
+Composite
+---------
+
+Description
+^^^^^^^^^^^
+
+This "meta-operator" wraps a collection of observation operators, each used to simulate a different
+subset of variables from the ObsSpace. Example applications of this operator are discussed below.
+
+.. warning::
+
+  At present, many observation operators implicitly assume they need to simulate all variables from
+  the ObsSpace. Such operators cannot be used as components of the `Composite` operator. Operators
+  compatible with the `Composite` operator are marked as such in their documentation.
+
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`components`: a list of one or more items, each configuring the observation operator to be
+  applied to a specified subset of variables.
+
+Example 1
+^^^^^^^^^
+
+The YAML snippet below shows how to use the `VertInterp` operator to simulate upper-air variables
+from the ObsSpace and the `Identity` operator to simulate surface variables. Note that the
+variables to be simulated by both these operators can be specified using the :code:`variables`
+option; if this option is not present, all variables in the ObsSpace are simulated.
+
+.. code-block:: yaml
+
+  obs space:
+    name: Radiosonde
+    obsdatain:
+      obsfile: Data/ioda/testinput_tier_1/sondes_obs_2018041500_s.nc4
+    simulated variables: [eastward_wind, northward_wind, surface_pressure, relative_humidity]
+  obs operator:
+    name: Composite
+    components:
+    - name: VertInterp
+      variables:
+      - name: relative_humidity
+      - name: eastward_wind
+      - name: northward_wind
+    - name: Identity
+      variables:
+      - name: surface_pressure
+
+Example 2
+^^^^^^^^^
+
+The YAML snippet below shows how to handle a model with a staggered grid, with wind components
+defined on different model levels than the air temperature. The :code:`vertical coordinate` option
+of the :code:`VertInterp` operator indicates the GeoVaL containing the levels to use for the
+vertical interpolation of the variables simulated by this operator.
+
+.. code-block:: yaml
+
+  obs space:
+    name: Radiosonde with staggered vertical levels
+    obsdatain:
+      obsfile: Data/ufo/testinput_tier_1/met_office_composite_operator_sonde_obs.nc4
+    simulated variables: [eastward_wind, northward_wind, air_temperature]
+  obs operator:
+    name: Composite
+    components:
+    - name: VertInterp
+      variables:
+      - name: air_temperature
+      vertical coordinate: air_pressure
+      observation vertical coordinate: air_pressure
+    - name: VertInterp
+      variables:
+      - name: northward_wind
+      - name: eastward_wind
+      vertical coordinate: air_pressure_levels
+      observation vertical coordinate: air_pressure
+
+Background Error Vertical Interpolation
+---------------------------------------
+
+This operator calculates ObsDiagnostics representing vertically interpolated
+background errors of the simulated variables.
+
+It should be used as a component of the `Composite` observation operator (with another
+component handling the calculation of model equivalents of observations). It populates all
+requested ObsDiagnostics called :code:`<var>_background_error`, where :code:`<var>` is the name of a
+simulated variable, by vertically interpolating the :code:`<var>_background_error` GeoVaL at the
+observation locations. Element (i, j) of this GeoVaL is interpreted as the background error
+estimate of variable :code:`<var>` at the ith observation location and the vertical position read from
+the (i, j)th element of the GeoVaL specified in the :code:`interpolation level` option of the
+operator.
+
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`vertical coordinate`: name of the GeoVaL storing the interpolation levels of background
+  errors.
+* :code:`observation vertical coordinate`: name of the ufo variable (from the `MetaData` group)
+  storing the vertical coordinate of observation locations.
+* :code:`variables` [optional]: simulated variables whose background errors may be calculated by
+  this operator. If not specified, defaults to the list of all simulated variables in the ObsSpace.
+
+.. _Background Error Vertical Interpolation Example:
+
+Example
+^^^^^^^
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Composite
+    components:
+    # operators used to evaluate H(x)
+    - name: VertInterp
+      variables:
+      - name: air_temperature
+      - name: specific_humidity
+      - name: northward_wind
+      - name: eastward_wind
+    - name: Identity
+      variables:
+      - name: surface_pressure
+    # operators used to evaluate background errors
+    - name: BackgroundErrorVertInterp
+      variables:
+      - name: northward_wind
+      - name: eastward_wind
+      - name: air_temperature
+      - name: specific_humidity
+      observation vertical coordinate: air_pressure
+      vertical coordinate: background_error_air_pressure
+    - name: BackgroundErrorIdentity
+      variables:
+      - name: surface_pressure
+
+Background Error Identity
+-------------------------
+
+This operator calculates ObsDiagnostics representing single-level
+background errors of the simulated variables.
+
+It should be used as a component of the `Composite` observation operator (with another
+component handling the calculation of model equivalents of observation). It populates all
+requested ObsDiagnostics called :code:`<var>_background_error`, where :code:`<var>` is the name of a
+simulated variable, by copying the :code:`<var>_background_error` GeoVaL at the observation
+locations.
+
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`variables` [optional]: simulated variables whose background errors may be calculated by
+  this operator. If not specified, defaults to the list of all simulated variables in the ObsSpace.
+
+Example
+^^^^^^^
+
+See the listing in the :ref:`Background Error Vertical Interpolation Example` section of the
+documentation of the Background Error Vertical Interpolation operator.
