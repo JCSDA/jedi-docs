@@ -221,7 +221,8 @@ The action taken on observations flagged by the filter can be adjusted using the
 
 The default action (taken when the :code:`action` keyword is omitted) is to reject the flagged observations.
 
-Examples:
+Example 1
+^^^^^^^^^
 
 .. code-block:: yaml
     
@@ -274,7 +275,31 @@ Examples:
                     0.300,  0.230,  0.250,  0.250,  0.350,
                     0.400,  0.550,  0.800,  3.000, 18.000]
 
- 
+
+Example 2 - DrawObsErrorFromFile@ObsFunction
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Next we demonstrate deriving the observation error from a NetCDF file which defines the variance/covariance:
+
+.. code-block:: yaml
+
+    - Filter: Perform Action
+      filter variables:
+      - name: air_temperature
+      action:
+        name: assign error
+        error function:
+          name: DrawObsErrorFromFile@ObsFunction
+          options:
+            file: <filepath>
+            interpolation:
+            - name: satellite_id@MetaData
+              method: exact
+            - name: processing_center@MetaData
+              method: exact
+            - name: air_pressure@MetaData
+              method: linear
+
+
 Outer Loop Iterations
 ---------------------
 
