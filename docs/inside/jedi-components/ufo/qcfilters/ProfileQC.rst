@@ -60,6 +60,49 @@ This filter finds the number of valid observations within a profile.  If this nu
 
 Note: The :code:`obsgrouping: group variables` option is necessary to identify which observations belong to a given profile.
 
+Impact Height Check
+-------------------
+
+This filter is specific to GNSS-RO.  It is based on the impact height, which is calculated from the model as :math:`x = 10^{-6} N (r_0 + z) + z`, where :math:`N` is the refractivity, :math:`r_0` is the radius of curvature of the earth at the observation tangent point and :math:`z` is the geopotential height of the model layer.
+
+For each observation it calculates the impact height of the lowest and highest model level.  If the observation is outside this range (plus :code:`surface offset`:) then the observation is rejected.
+
+The filter also looks for regions where the vertical gradient of refractivity is large (i.e. less than :code:`gradient threshold`:, which is normally negative).  Any observations lower in the atmosphere than a large vertical gradient (plus :code:`sharp gradient offset`:) are rejected.  The algorithm starts looking from the top of the profile.  Therefore a large gradient which is highest in the atmosphere will be the one which is considered.  Large refractivity gradients are often associated with temperature inversions, and the radio-occultation retrieval can become ill-posed below such layers.
+
+The following are the optional flags which may be used with this routine:
+
+* :code:`surface offset`:  Reject data which is within this height (in m) of the surface. Default: :code:`600`.
+* :code:`gradient threshold`:  The threshold used to define a sharp gradient in refractivity. Units: N-units / m. Default: :code:`-0.08`.
+* :code:`sharp gradient offset`:  The height (in m) of a buffer-zone for rejecting data above sharp gradients. Default: :code:`500`.
+
+This filter relies on the refractivity and model geopotential heights being saved as :code:`ObsDiagnostics`.  If these are not saved by the observation operator, then the code will fail.  More details on saving diagnostics are given below.  :code:`GnssroBendMetOffice` is an example of an observation operator which saves these data.
+
+.. code-block:: yaml
+
+    window begin: 2020-05-01T03:00:00Z
+    window end: 2020-05-01T09:00:00Z
+
+    observations:
+    - obs operator:
+        name: GnssroBendMetOffice
+        obs options:
+          vert_interp_ops: true
+          pseudo_ops: true
+      obs space:
+        name: GnssroBnd
+        obsdatain:
+          obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2020050106_1dvar.nc4
+        simulated variables: [bending_angle]
+      geovals:
+        filename: Data/ufo/testinput_tier_1/gnssro_geoval_2020050106_1dvar.nc4
+      obs filters:
+      - filter: GNSSRO Impact Height Check
+        filter variables:
+        - name: bending_angle
+        gradient threshold: -0.08
+        sharp gradient offset: 600
+        surface offset: 500
+
 
 Profile Consistency Checks
 --------------------------
