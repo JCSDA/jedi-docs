@@ -222,13 +222,14 @@ Warning: ObsFunctions are evaluated for all observations, including those that h
 
 Filter Actions
 --------------
-The action taken on observations flagged by the filter can be adjusted using the :code:`action` option recognized by each filter.  So far, three actions have been implemented:
+The action taken on observations flagged by the filter can be adjusted using the :code:`action` option recognized by each filter.  So far, four actions have been implemented:
 
 * :code:`reject`: observations flagged by the filter are marked as rejected.
+* :code:`accept`: observations flagged by the filter are marked as accepted if they have previously been rejected for any reason other than missing data, a pre-processing flag indicating rejection, or failure of the ObsOperator.
 * :code:`inflate error`: the error estimates of observations flagged by the filter are multiplied by a factor. This can be either a constant (specified using the :code:`inflation factor` option) or a variable (specified using the :code:`inflation variable` option).
 * :code:`assign error`: the error estimates of observations flagged by the filter are set to a specified value. Again. this can be either a constant (specified using the :code:`error parameter` option) or a variable (specified using the :code:`error function` option).
 
-The default action (taken when the :code:`action` keyword is omitted) is to reject the flagged observations.
+The default action for almost all filters (taken when the :code:`action` keyword is omitted) is :code:`reject`. There are two exceptions: the default action of the :code:`AcceptList` filter is :code:`accept` and the :code:`Perform Action` filter has no default action (it requires the :code:`action` keyword to be present).
 
 Example 1
 ^^^^^^^^^

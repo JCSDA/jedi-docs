@@ -122,7 +122,7 @@ This filter retains all observations selected by the :ref:`"where" statement <wh
 BlackList Filter
 ----------------
 
-This filter behaves like the exact opposite of Domain Check: it rejects all observations selected by the :ref:`"where" statement <where-statement>` statement and retains all others. Below, the filter is configured to reject observations taken by stations with IDs 1, 7 or belonging to the range 100-199:
+This filter behaves like the exact opposite of Domain Check: it rejects all observations selected by the :ref:`"where" statement <where-statement>` statement. The status of all others remains the same. Below, the filter is configured to reject observations taken by stations with IDs 1, 7 or belonging to the range 100-199:
 
 .. code-block:: yaml
 
@@ -131,6 +131,75 @@ This filter behaves like the exact opposite of Domain Check: it rejects all obse
      - variable:
          name: station_id@MetaData
        is_in: 1, 7, 100-199
+
+RejectList Filter
+-----------------
+
+This is an alternative name for the BlackList filter.
+
+AcceptList Filter
+-----------------
+
+This filter sets the QC flag to `pass` for all observations selected by the :ref:`"where" statement <where-statement>` that have previously been rejected for any reason other than missing data, a pre-processing flag indicating rejection, or failure of the ObsOperator. This is mostly useful in QC procedures where all observations are initially rejected and then those fulfilling certain criteria are accepted, overriding the rejection.
+
+Below, the filter is configured to accept only observations taken by stations with IDs 1, 7 or belonging to the range 100-199 (inclusive):
+
+.. code-block:: yaml
+
+   - filter: RejectList  # initially reject all observations
+   - filter: AcceptList  # accept back selected observations
+     where:
+     - variable:
+         name: station_id@MetaData
+       is_in: 1, 7, 100-199
+
+Perform Action Filter
+---------------------
+
+This filter performs the action specified in the :code:`action` parameter on observations selected by the :ref:`"where" statement <where-statement>`.
+
+Example 1
+^^^^^^^^^
+
+Here the filter is configured to inflate errors of all observations from the Southern hemisphere by a factor of two:
+
+.. code-block:: yaml
+
+   - filter: Perform Action 
+     action:
+       name: inflate error
+       inflation: 2.0
+     where:
+     - variable: latitude
+       maxvalue: 0
+
+.. note::
+
+  Technically, the same result could be obtained by replacing :code:`Perform Action` in the listing
+  above by :code:`RejectList`. However, having a :code:`RejectList` filter that does not actually
+  reject any observations can be confusing.
+
+Example 2
+^^^^^^^^^
+
+The filter configured in this way behaves like :code:`RejectList`:
+
+.. code-block:: yaml
+
+   - filter: Perform Action 
+     action:
+       name: reject
+
+Example 3
+^^^^^^^^^
+
+The filter configured in this way behaves like :code:`AcceptList`:
+
+.. code-block:: yaml
+
+   - filter: Perform Action 
+     action:
+       name: accept
 
 Thinning Filter
 ---------------
