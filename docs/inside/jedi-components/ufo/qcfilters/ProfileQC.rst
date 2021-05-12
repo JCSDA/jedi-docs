@@ -19,13 +19,13 @@ The user can specify two options in the yaml: :code:`absolute threshold` and :co
         obsdatain:
         obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
         obsgrouping:
-            group variables: [ "record_number" ]
-            sort variable: "latitude"
-            sort order: "descending"
+          group variables: [ "record_number" ]
+          sort variable: "latitude"
+          sort order: "descending"
         simulated variables: [variable]
-    HofX: HofX
-    obs filters:
-    - filter: Profile Background Check
+      HofX: HofX
+      obs filters:
+      - filter: Profile Background Check
         filter variables:
         - name: variable
         absolute threshold: 2.5
@@ -50,10 +50,10 @@ This filter finds the number of valid observations within a profile.  If this nu
         obsdatain:
         obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
         obsgrouping:
-            group variables: ["record_number"]
+          group variables: ["record_number"]
         simulated variables: [variable]
-    obs filters:
-    - filter: Profile Few Observations Check
+      obs filters:
+      - filter: Profile Few Observations Check
         filter variables:
         - name: variable
         threshold: 10

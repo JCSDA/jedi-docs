@@ -44,12 +44,13 @@ and suppose that we want to reject air temperature observations below 230 K take
 .. code-block:: yaml
     
     - filter: Bounds Check
-        filter variables: air_temperature
-        minvalue: 230
-        action: reject # this is the default action, specified explicitly for clarity
-        where:
-        - variable:
-            name: latitude@MetaData
+      filter variables: air_temperature
+      minvalue: 230
+      action:
+        name: reject # this is the default action, specified explicitly for clarity
+      where:
+      - variable:
+          name: latitude@MetaData
         minvalue: -30
         maxvalue:  30
     
@@ -80,17 +81,17 @@ Example 1
     where:
     - variable:
         name: sea_surface_temperature@GeoVaLs
-        minvalue: 200
-        maxvalue: 300
+      minvalue: 200
+      maxvalue: 300
     - variable:
         name: latitude@MetaData
-        maxvalue: 60.
+      maxvalue: 60.
     - variable:
         name: height@MetaData
-        is_defined:
+      is_defined:
     - variable:
         name: station_id@MetaData
-        is_in: 3, 6, 11-120
+      is_in: 3, 6, 11-120
     
 In this example, the filter will be applied only to observations for which all of the following four criteria are met:
 
@@ -109,12 +110,12 @@ Example 2
     where:
     - variable:
         name:  datetime@MetaData
-        minvalue: "****-01-01T00:00:00Z"
-        maxvalue: "****-25-05T00:00:00Z"
+      minvalue: "****-01-01T00:00:00Z"
+      maxvalue: "****-25-05T00:00:00Z"
     - variable:
         name:  datetime@MetaData
-        minvalue: "****-**-**T09:00:00Z"
-        maxvalue: "****-**-**T18:00:00Z"
+      minvalue: "****-**-**T09:00:00Z"
+      maxvalue: "****-**-**T18:00:00Z"
     
     In this example, the filter will be applied only to observations taken between 09:00:00 and 18:00:00, between 1st January and 25th May of every year (end inclusive).  Note that datetime components are not yet 'loop aware'.  That is, a where clause between May and February for example would require two filters: one covering the Jan-Feb period and a second to cover the May-Dec period.
 
@@ -126,7 +127,7 @@ Example 3
     where:
     - variable:
         name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
-        any_bit_set_of: 0, 1
+      any_bit_set_of: 0, 1
     
     In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 0 and/or position 1. (Position 0 denotes the least significant bit -- in other words, bits are numbered "from right to left".)
     
@@ -138,10 +139,10 @@ Example 4
     where:
     - variable:
         name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
-        any_bit_set_of: 4
+      any_bit_set_of: 4
     - variable:
         name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
-        any_bit_unset_of: 10-12
+      any_bit_unset_of: 10-12
     
     In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 4 and a 0 at any of positions 10 to 12.
     
@@ -153,7 +154,7 @@ Example 5
     where:
     - variable:
         name: station_id@MetaData
-        matches_regex: 'EUR[A-Z]*'
+      matches_regex: 'EUR[A-Z]*'
     
     In this example, the filter will be applied only to observations taken by stations whose IDs match the regular expression :code:`EUR[A-Z]*`, i.e. consist of the string :code:`EUR` followed by any number of capital letters.
     
@@ -165,7 +166,7 @@ Example 6
     where:
     - variable:
         name: station_id@MetaData
-        matches_wildcard: 'EUR??TEST*'
+      matches_wildcard: 'EUR??TEST*'
     
     In this example, the filter will be applied only to observations taken by stations whose IDs match the wildcard pattern :code:`EUR??TEST*`, i.e. consist of the string :code:`EUR` followed by two arbitrary characters, the string :code:`TEST` and any number of arbitrary characters.
     
@@ -177,7 +178,7 @@ Example 7
     where:
     - variable:
         name: observation_type@MetaData
-        matches_any_wildcard: ['102*', '103*']
+      matches_any_wildcard: ['102*', '103*']
     
 In this example, assuming that :code:`observation_type@MetaData` is an integer variable, the filter will be applied only to observations whose types have decimal representations starting with :code:`102` or :code:`103`.
 
@@ -195,11 +196,11 @@ In addition to, e.g., :code:`@GeoVaLs`, :code:`@MetaData`, :code:`@ObsValue`, :c
 .. code-block:: yaml
 
     - filter: Domain Check
-        filter variables:
-        - name: eastward_wind
-        - name: northward_wind
-        where:
-        - variable: Velocity@ObsFunction
+      filter variables:
+      - name: eastward_wind
+      - name: northward_wind
+      where:
+      - variable: Velocity@ObsFunction
         maxvalue: 20.0
 
 Warning: ObsFunctions are evaluated for all observations, including those that have been unselected by previous elements of the :code:`where` list or rejected by filters run earlier. This can lead to problems if these ObsFunctions incorrectly assume they will always be given valid inputs.
@@ -237,38 +238,38 @@ Example 1
 .. code-block:: yaml
     
     - filter: Background Check
-        filter variables:
-        - name: air_temperature
-        threshold: 2.0
-        absolute threshold: 1.0
-        action:
+      filter variables:
+      - name: air_temperature
+      threshold: 2.0
+      absolute threshold: 1.0
+      action:
         name: reject
     - filter: Background Check
-        filter variables:
-        - name: eastward_wind
-        - name: northward_wind
-        threshold: 2.0
-        where:
-        - variable: latitude
+      filter variables:
+      - name: eastward_wind
+      - name: northward_wind
+      threshold: 2.0
+      where:
+      - variable: latitude
         minvalue: -60.0
         maxvalue: 60.0
-        action:
+      action:
         name: inflate error
         inflation: 2.0
     - filter: BlackList
-        filter variables:
-        - name: brightness_temperature
-        channels: *all_channels
-        action:
+      filter variables:
+      - name: brightness_temperature
+      channels: *all_channels
+      action:
         name: assign error
         error function:
-            name: ObsErrorModelRamp@ObsFunction
-            channels: *all_channels
-            options:
+          name: ObsErrorModelRamp@ObsFunction
+          channels: *all_channels
+          options:
             channels: *all_channels
             xvar:
-                name: CLWRetSymmetricMW@ObsFunction
-                options:
+              name: CLWRetSymmetricMW@ObsFunction
+              options:
                 clwret_ch238: 1
                 clwret_ch314: 2
                 clwret_types: [ObsValue, HofX]
@@ -318,5 +319,5 @@ By default, filters are applied only before the first iteration of the outer loo
 .. code-block:: yaml
 
     - filter: Background Check
-        apply at iterations: 0,1
-        threshold: 0.25                    
+      apply at iterations: 0,1
+      threshold: 0.25

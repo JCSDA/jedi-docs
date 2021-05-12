@@ -649,10 +649,10 @@ Example:
     - name: air_temperature
     rejection_threshold: 0.5
     traced_boxes: # trace all observations
-      - min_latitude: -90
-        max_latitude:  90
-        min_longitude: -180
-        max_longitude:  180
+    - min_latitude: -90
+      max_latitude:  90
+      min_longitude: -180
+      max_longitude:  180
     search_radius: 100 # km
     station_id_variable:
       name: station_id@MetaData
@@ -711,11 +711,11 @@ Create new variables :code:`air_temperature@GrossErrorProbability` and
 .. code:: yaml
     
     - filter: Variable Assignment
-        assignments:
-        - name: air_temperature@GrossErrorProbability
+      assignments:
+      - name: air_temperature@GrossErrorProbability
         type: float  # type must be specified if the variable doesn't already exist
         value: 0.1
-        - name: relative_humidity@GrossErrorProbability
+      - name: relative_humidity@GrossErrorProbability
         type: float
         value: 0.1
     
@@ -727,13 +727,13 @@ Set :code:`air_temperature@GrossErrorProbability` to 0.05 at all locations in th
 .. code:: yaml
     
     - filter: Variable Assignment
-        where:
-        - variable:
-            name: latitude@MetaData
+      where:
+      - variable:
+          name: latitude@MetaData
         minvalue: -30
         maxvalue:  30
-        assignments:
-        - name: air_temperature@GrossErrorProbability
+      assignments:
+      - name: air_temperature@GrossErrorProbability
         value: 0.05
     
 Example 3
@@ -746,13 +746,13 @@ transition in between).
 .. code:: yaml
     
     - filter: Variable Assignment
-        assignments:
-        - name: relative_humidity@GrossErrorProbability
+      assignments:
+      - name: relative_humidity@GrossErrorProbability
         function:
-            name: ObsErrorModelRamp@ObsFunction
-            options:
+          name: ObsErrorModelRamp@ObsFunction
+          options:
             xvar:
-                name: latitude@MetaData
+              name: latitude@MetaData
             x0: [-30]
             x1: [30]
             err0: [0.1]
@@ -800,29 +800,29 @@ Example:
 .. code:: yaml
     
     - filter: RTTOV OneDVar Check
-        BMatrix: ../resources/bmatrix/rttov/atms_bmatrix_70_test.dat
-        RMatrix: ../resources/rmatrix/rttov/atms_noaa_20_rmatrix_test.nc4
-        nlevels: 70
-        retrieval variables:
-        - air_temperature
-        - specific_humidity
-        - mass_content_of_cloud_liquid_water_in_atmosphere_layer
-        - mass_content_of_cloud_ice_in_atmosphere_layer
-        - surface_temperature
-        - specific_humidity_at_two_meters_above_surface
-        - skin_temperature
-        - air_pressure_at_two_meters_above_surface
-        ModOptions:
-        Absorbers: [Water_vapour, CLW, CIW]
-        obs options:
-            RTTOV_default_opts: OPS
-            SatRad_compatibility: false # done in filter
-            Sensor_ID: noaa_20_atms
-            CoefficientPath: Data/
-        filter variables:
-        - name: brightness_temperature
+      BMatrix: ../resources/bmatrix/rttov/atms_bmatrix_70_test.dat
+      RMatrix: ../resources/rmatrix/rttov/atms_noaa_20_rmatrix_test.nc4
+      nlevels: 70
+      retrieval variables:
+      - air_temperature
+      - specific_humidity
+      - mass_content_of_cloud_liquid_water_in_atmosphere_layer
+      - mass_content_of_cloud_ice_in_atmosphere_layer
+      - surface_temperature
+      - specific_humidity_at_two_meters_above_surface
+      - skin_temperature
+      - air_pressure_at_two_meters_above_surface
+      ModOptions:
+      Absorbers: [Water_vapour, CLW, CIW]
+      obs options:
+        RTTOV_default_opts: OPS
+        SatRad_compatibility: false # done in filter
+        Sensor_ID: noaa_20_atms
+        CoefficientPath: Data/
+      filter variables:
+      - name: brightness_temperature
         channels: 1-22
-        qtotal: true
+      qtotal: true
     
     
    
