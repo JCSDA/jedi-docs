@@ -59,6 +59,8 @@ export       STACK_BUILD_HDF5=Y
 export    STACK_BUILD_PNETCDF=Y
 export     STACK_BUILD_NETCDF=Y
 export      STACK_BUILD_NCCMP=Y
+export    STACK_BUILD_ECBUILD=Y
+export   STACK_BUILD_GSL_LITE=Y
 ```
 and set everything else to `N`. You will need more if you want to run the ioda converters (requires bufr...) or MPAS (PIO...).
 
@@ -71,18 +73,12 @@ All the selected modules can now be loaded:
 ```bash
 module load jedi-clang/12.0.0
 module load jedi-mpich/3.3.2
-module load hdf5/1.12.0 netcdf/4.7.4 pnetcdf/1.12.1 nccmp/1.8.7.0
+module load hdf5 netcdf pnetcdf nccmp ecbuild
 ```
 
 You are now ready for JEDI!
 
 ### Get and build JEDI
-
-The last tool you need before JEDI itself is ecbuild. The easiest way is to clone the repository:
-```bash
-git clone https://github.com/JCSDA-internal/ecbuild.git
-```
-and make sure ecbuild/bin is in your `$PATH`. There is no need to compile or install anything.
 
 You can now choose the bundle you want to work with, the example below is with fv3-bundle:
 ```bash
@@ -107,7 +103,6 @@ before running `./setup_modules.sh mac`:
 ```bash
 STACK_BUILD_LAPACK
 STACK_BUILD_BUFR
-STACK_BUILD_GSL_LITE
 STACK_BUILD_JSON
 STACK_BUILD_JSON_SCHEMA_VALIDATOR
 ```
@@ -125,5 +120,5 @@ module load jedi/clang-mpich
 Now clear your `CMakeCache.txt` from your build directory and try to build again.
 
 **Troubleshooting 2** If, when building a bundle, you get an error containing wording like `...your binary is not an allowed client of /usr/lib/libcrypto.dylib`,
-it means that the linker is trying to link to the macOS OpenSSL libraries (which is not allowed) instead of the homebrew-installed openssl libraries. 
+it means that the linker is trying to link to the macOS OpenSSL libraries (which is not allowed) instead of the homebrew-installed openssl libraries.
 One solution to this problem is to add the option `-DOPENSSL_ROOT_DIR=/usr/local/opt/openssl` to your `ecbuild` command for the bundle.
