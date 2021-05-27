@@ -581,30 +581,6 @@ In the example above, the `Identity` operator is used to simulate all ObsSpace v
 
 In the example above, the `Identity` operator is used to simulate only the surface pressure; the wind components are simulated using the `VertInterp` operator.
 
-Radar Reflectivity
-----------------------
-
-Description:
-^^^^^^^^^^^^
-
-UFO radar operator for reflectivity. It is tested with radar observations dumped from a specific modified GSI program at NSSL for the Warn-on-Forecast project.
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-
-.. code-block:: yaml
-
-  observations:
-  - obs operator:
-      name: RadarReflectivity
-      VertCoord: geopotential_height
-    obs space:
-      name: Radar
-      obsdatain:
-        obsfile: Data/radar_dbz_obs_2019052222.nc4
-      simulated variables: [equivalent_reflectivity_factor]
-
-
 Radar Radial Velocity
 --------------------------
 
