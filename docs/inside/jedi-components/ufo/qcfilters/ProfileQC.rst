@@ -1,6 +1,8 @@
 Profile Specific QC Filters
 ===========================
 
+.. _profbkgcheck:
+
 Profile Background Check
 ------------------------
 
@@ -33,6 +35,8 @@ The user can specify two options in the yaml: :code:`absolute threshold` and :co
 Note: The :code:`obsgrouping: group variables` option is necessary to identify which observations belong to a given profile.  The :code:`sort variable` and :code:`sort order` options are optional.
 
 Note: This is separate from the background check in :ref:`profile consistency checks <profconcheck_background>`.
+
+.. _proffewobscheck:
 
 Profile Few Observations Check
 ------------------------------
@@ -112,7 +116,7 @@ Profile Consistency Checks
 Overview
 ^^^^^^^^
 
-This filter comprises several QC checks that can be applied to atmospheric profile data (e.g. as measured by radiosondes) whose observations lie at particular pressure levels.
+This filter comprises several QC checks that can be applied to conventional atmospheric profile data (e.g. as measured by radiosondes) whose observations lie at particular pressure levels.
 These checks have been ported from UK Met Office observation processing system (OPS).
 The following checks are available:
 
@@ -172,6 +176,10 @@ This filter can apply more than one check in turn. Please note the following:
   If this number exceeds a threshold (set by defining the parameter :code:`nErrorsFail`) then the entire profile is rejected.
 
 - The basic checks are always performed unless they are specifically disabled (by setting the parameter :code:`flagBasicChecksFail` to true).
+
+Other filters that deal with atmospheric profiles include the :ref:`Profile Background Check <profbkgcheck>`
+and the :ref:`Profile Few Observations Check <proffewobscheck>`. Note that the Profile Background Check is different to the
+Bayesian background check which is described in the :ref:`BackgroundX <profconcheck_background>` section below.
 
 ..
   (Commented out for now - will be revisited once all of the filters are in place)
@@ -463,6 +471,9 @@ The maximum permitted difference is referred to as a 'big gap'. The value of the
 as this pressure reduces (and passes thresholds defined in :code:`UICheck_BigGapsPThresh`), the value of the big gap also reduces
 (according to the values in :code:`UICheck_BigGaps`),
 down to a minimum value given by the value of :code:`UICheck_BigGapLowP`.
+
+There is an alternative implementation of this check called **UInterpAlternative**. The UInterpAlternative check uses an different data handling method but otherwise
+behaves identically to the UInterp check. As such the UInterpAlternative check does not need to be used operationally (but should be kept to aid regression testing).
 
 **Summary of yaml parameters**
 
