@@ -3,6 +3,151 @@
 Observation Operators in UFO
 =============================
 
+Introduction
+------------
+
+There are three meta-operators which, when selected, run other operators and manipulate their output:
+
+* :ref:`Categorical <obsops_categorical>`,
+
+* :ref:`Composite <obsops_composite>`,
+
+* Time interpolation (documentation to be added).
+
+.. _obsops_categorical:
+
+Categorical
+-----------
+
+Description
+^^^^^^^^^^^
+
+The Categorical meta-operator can be used to run several observation operators, each of which produces a vector of H(x) values.
+The Categorical operator then creates a final H(x) vector by selecting the observation operator at each location according to a categorical variable.
+
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`categorical variable`: the name of the variable that is used to determine which observation operator is selected at each location.
+  This must be an integer or string variable in the MetaData group.
+
+* :code:`categorised operators`: a map between values of the categorical variable and the operator to be selected.
+
+* :code:`fallback operator`: the name of the observation operator that will be used whenever a particular value of the categorical variable does not exist in :code:`categorised operators`.
+
+* :code:`operator configurations`: the configuration of all observation operators whose output will be used to produce the final H(x) vector.
+  If either the fallback operator or one of the categorised operators have not been configured, an exception will be thrown.
+
+Example
+^^^^^^^
+
+In this example the Categorical operator uses :code:`station_id@MetaData` as the categorical variable.
+Both the :ref:`Identity <obsops_identity>` and :ref:`Composite <obsops_composite>` operators are used to produce H(x) vectors.
+Then, at each location in the ObsSpace, if :code:`station_id@MetaData` is equal to 54857 then the Identity H(x) is selected.
+Otherwise, the H(x) produced by the fallback operator (i.e. Composite) is selected.
+
+.. code-block:: yaml
+
+ obs operator:
+   name: Categorical
+   categorical variable: station_id
+   fallback operator: "Composite"
+   categorised operators: {"54857": "Identity"}
+   operator configurations:
+   - name: Identity
+   - name: Composite
+     components:
+      - name: Identity
+        variables:
+        - name: air_temperature
+        - name: surface_pressure
+      - name: VertInterp
+        variables:
+        - name: northward_wind
+        - name: eastward_wind
+
+.. _obsops_composite:
+
+Composite
+---------
+
+Description
+^^^^^^^^^^^
+
+This meta-operator wraps a collection of observation operators, each used to simulate a different
+subset of variables from the ObsSpace. Example applications of this operator are discussed below.
+
+.. warning::
+
+  At present, many observation operators implicitly assume they need to simulate all variables from
+  the ObsSpace. Such operators cannot be used as components of the `Composite` operator. Operators
+  compatible with the `Composite` operator are marked as such in their documentation.
+
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`components`: a list of one or more items, each configuring the observation operator to be
+  applied to a specified subset of variables.
+
+Example 1
+^^^^^^^^^
+
+The YAML snippet below shows how to use the :ref:`VertInterp <obsops_vertinterp>` operator to simulate upper-air variables
+from the ObsSpace and the :ref:`Identity <obsops_identity>` operator to simulate surface variables. Note that the
+variables to be simulated by both these operators can be specified using the :code:`variables`
+option; if this option is not present, all variables in the ObsSpace are simulated.
+
+.. code-block:: yaml
+
+  obs space:
+    name: Radiosonde
+    obsdatain:
+      obsfile: Data/ioda/testinput_tier_1/sondes_obs_2018041500_s.nc4
+    simulated variables: [eastward_wind, northward_wind, surface_pressure, relative_humidity]
+  obs operator:
+    name: Composite
+    components:
+    - name: VertInterp
+      variables:
+      - name: relative_humidity
+      - name: eastward_wind
+      - name: northward_wind
+    - name: Identity
+      variables:
+      - name: surface_pressure
+
+Example 2
+^^^^^^^^^
+
+The YAML snippet below shows how to handle a model with a staggered grid, with wind components
+defined on different model levels than the air temperature. The :code:`vertical coordinate` option
+of the :code:`VertInterp` operator indicates the GeoVaL containing the levels to use for the
+vertical interpolation of the variables simulated by this operator.
+
+.. code-block:: yaml
+
+  obs space:
+    name: Radiosonde with staggered vertical levels
+    obsdatain:
+      obsfile: Data/ufo/testinput_tier_1/met_office_composite_operator_sonde_obs.nc4
+    simulated variables: [eastward_wind, northward_wind, air_temperature]
+  obs operator:
+    name: Composite
+    components:
+    - name: VertInterp
+      variables:
+      - name: air_temperature
+      vertical coordinate: air_pressure
+      observation vertical coordinate: air_pressure
+    - name: VertInterp
+      variables:
+      - name: northward_wind
+      - name: eastward_wind
+      vertical coordinate: air_pressure_levels
+      observation vertical coordinate: air_pressure
+
+.. _obsops_vertinterp:
+
 Vertical Interpolation
 ----------------------
 
@@ -541,6 +686,8 @@ Examples of yaml:
      - name: [refractivity]
      threshold: 3
 
+.. _obsops_identity:
+
 Identity observation operator
 -----------------------------------
 
@@ -549,7 +696,7 @@ Description:
 
 A simple identity observation operator, applicable whenever only horizontal interpolation of model variables is required.
 
-This operator can be used as a component of the `Composite` operator.
+This operator can be used as a component of the :ref:`Composite <obsops_composite>` operator.
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -645,91 +792,13 @@ Cotton, J., 2018. Update on surface wind activities at the Met Office.
 Proceedings for the 14 th International Winds Workshop, 23-27 April 2018, Jeju City, South Korea. 
 Available from http://cimss.ssec.wisc.edu/iwwg/iww14/program/index.html.
 
-Composite
----------
-
-Description
-^^^^^^^^^^^
-
-This "meta-operator" wraps a collection of observation operators, each used to simulate a different
-subset of variables from the ObsSpace. Example applications of this operator are discussed below.
-
-.. warning::
-
-  At present, many observation operators implicitly assume they need to simulate all variables from
-  the ObsSpace. Such operators cannot be used as components of the `Composite` operator. Operators
-  compatible with the `Composite` operator are marked as such in their documentation.
-
-Configuration options
-^^^^^^^^^^^^^^^^^^^^^
-
-* :code:`components`: a list of one or more items, each configuring the observation operator to be
-  applied to a specified subset of variables.
-
-Example 1
-^^^^^^^^^
-
-The YAML snippet below shows how to use the `VertInterp` operator to simulate upper-air variables
-from the ObsSpace and the `Identity` operator to simulate surface variables. Note that the
-variables to be simulated by both these operators can be specified using the :code:`variables`
-option; if this option is not present, all variables in the ObsSpace are simulated.
-
-.. code-block:: yaml
-
-  obs space:
-    name: Radiosonde
-    obsdatain:
-      obsfile: Data/ioda/testinput_tier_1/sondes_obs_2018041500_s.nc4
-    simulated variables: [eastward_wind, northward_wind, surface_pressure, relative_humidity]
-  obs operator:
-    name: Composite
-    components:
-    - name: VertInterp
-      variables:
-      - name: relative_humidity
-      - name: eastward_wind
-      - name: northward_wind
-    - name: Identity
-      variables:
-      - name: surface_pressure
-
-Example 2
-^^^^^^^^^
-
-The YAML snippet below shows how to handle a model with a staggered grid, with wind components
-defined on different model levels than the air temperature. The :code:`vertical coordinate` option
-of the :code:`VertInterp` operator indicates the GeoVaL containing the levels to use for the
-vertical interpolation of the variables simulated by this operator.
-
-.. code-block:: yaml
-
-  obs space:
-    name: Radiosonde with staggered vertical levels
-    obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_composite_operator_sonde_obs.nc4
-    simulated variables: [eastward_wind, northward_wind, air_temperature]
-  obs operator:
-    name: Composite
-    components:
-    - name: VertInterp
-      variables:
-      - name: air_temperature
-      vertical coordinate: air_pressure
-      observation vertical coordinate: air_pressure
-    - name: VertInterp
-      variables:
-      - name: northward_wind
-      - name: eastward_wind
-      vertical coordinate: air_pressure_levels
-      observation vertical coordinate: air_pressure
-
 Background Error Vertical Interpolation
 ---------------------------------------
 
 This operator calculates ObsDiagnostics representing vertically interpolated
 background errors of the simulated variables.
 
-It should be used as a component of the `Composite` observation operator (with another
+It should be used as a component of the :ref:`Composite <obsops_composite>` observation operator (with another
 component handling the calculation of model equivalents of observations). It populates all
 requested ObsDiagnostics called :code:`<var>_background_error`, where :code:`<var>` is the name of a
 simulated variable, by vertically interpolating the :code:`<var>_background_error` GeoVaL at the
@@ -787,7 +856,7 @@ Background Error Identity
 This operator calculates ObsDiagnostics representing single-level
 background errors of the simulated variables.
 
-It should be used as a component of the `Composite` observation operator (with another
+It should be used as a component of the :ref:`Composite <obsops_composite>` observation operator (with another
 component handling the calculation of model equivalents of observation). It populates all
 requested ObsDiagnostics called :code:`<var>_background_error`, where :code:`<var>` is the name of a
 simulated variable, by copying the :code:`<var>_background_error` GeoVaL at the observation
