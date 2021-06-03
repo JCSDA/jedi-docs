@@ -45,38 +45,46 @@ Hera is an HPC system located in NOAA's NESCC facility in Fairmont, WV. The foll
 
 .. code-block:: bash
 
-   export JEDI_OPT=/scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt
-   module use /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt/modulefiles/core
-   module use /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt/modulefiles/apps
+   export JEDI_OPT=/scratch1/NCEPDEV/jcsda/jedipara/opt/modules
+   module use $JEDI_OPT/modulefiles/core
 
 If you use tcsh, use these commands:
 
 .. code-block:: bash
 
-   setenv JEDI_OPT /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt
-   module use /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt/modulefiles/core
-   module use /scratch1/NCEPDEV/jcsda/Ryan.Honeyager/jedi-stack/opt/modulefiles/apps
+   setenv JEDI_OPT=/scratch1/NCEPDEV/jcsda/jedipara/opt/modules
+   module use $JEDI_OPT/modulefiles/core
 
-The modules in "core" are the individual components. The modules in "apps" represent meta-modules that load
-in all of the necessary core components to build and run JEDI.
-
-There are five modules in apps/jedi which represent different compinations of Intel compilers and MPI stacks.
-The supported compilers are Intel 2018, 2019, and 2020.2. We link aginst three MPI stacks,
-Intel MPI 18, 19, and 20.2. You do not, however, have to match the compiler and MPI stack version, and
-Intel MPI 18 is preferred on Hera.
-
-The default JEDI module is jedi/intel-20.2-impi-18. To load this, simply run:
+If you wish to use the intel compiler suite, the preferred jedi modules are those from 2020.2:
 
 .. code-block:: bash
 
-   module load jedi/intel-20.2-impi-18
+   module purge
+   module load jedi/intel-impi/2020.2
+
+If you wish to use the gnu compiler suite with the openmpi library, enter:
+
+.. code-block:: bash
+
+   module purge
+   module load jedi/gnu-openmpi
+
+It is not required, but if you wish to use version 18 of the intel compilers and mpi libraries, we also maintain modules for that.  To use the intel 18 modules, enter the following commands **in addition to** the corresponding ``JEDI_OPT`` commands described above:
+
+.. code-block:: bash
+
+   # replace with setenv if you use tcsh, as above
+   export JEDI_OPT2=/home/role.jedipara/opt/modules
+   module use $JEDI_OPT2/modulefiles/core
+   module purge
+   module load jedi/intel-impi/18
 
 It is important to note that the JEDI modules may conflict with other modules provided by other developers on
 Hera, particularly for installations of HDF5 and NetCDF. The Hera sysadmins have provided their own builds of
-HDF5 and NetCDF (in /apps/modules/modulefamilies/intel) and netcdf-hdf5parallel
-(in /apps/modules/modulefamilies/intel_impi). Unfortunately, these libraries have incompatible versions and compile-time
+HDF5 and NetCDF (in ``/apps/modules/modulefamilies/intel``) and netcdf-hdf5parallel
+(in ``/apps/modules/modulefamilies/intel_impi``). Unfortunately, these libraries have incompatible versions and compile-time
 options that conflict with the JEDI components. For a JEDI-related project, use our modules.
-If modules have been mixed, you can unload all modules and start over with *module purge*.
+If modules have been mixed, you can unload all modules and start over with ``module purge``.
 
 Also, it is recommended that you specify :code:`srun` as your mpi process manager when building, like so:
 
@@ -108,19 +116,17 @@ A few steps are necessary to access the installed jedi modules.  The following b
 
 Currently there are two sets of compiler / MPI module suites available to load (choose only one):
 
-Intel compiler suite v20.0.166 and associated Intel MPI:
+Intel Parallel Studio version 20.0.166 (which contains version 19.1.0.166 of the compiler suite):
 
 .. code-block:: bash
 
-   module load jedi/intel-impi # Intel compiler suite v20.0.166 with Intel MPI
+   module load jedi/intel-impi # Intel compiler suite with intel MPI
 
-
-and GNU compilers v8.3.0 and OpenMPI v4.0.2
+and version 10.2.0 of the GNU compiler suite, with OpenMPI v4.0.4
 
 .. code-block:: bash
 
-   module load jedi/gnu-openmpi # GNU compiler suite v8.3.0 with OpenMPI v4.0.2
-
+   module load jedi/gnu-openmpi # GNU compilers with OpenMPI
 
 Orion uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs.  Though some slurm implementations allow you to use the usual mpi job scripts :code:`mpirun` or :code:`mpiexec`, these may not function properly on orion.  Instead, you are advised to use the slurm run script :code:`srun`; an appropriate jedi cmake toolchain is available to set this up.
 
