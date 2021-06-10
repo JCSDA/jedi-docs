@@ -175,4 +175,462 @@ Here is the detailed explanation:
 Static Bias Correction in UFO
 =============================
 
-Static bias correction is handled very similarly to variational bias correction. Mathematically, the only difference is that the coefficients :math:`\beta_i` of predictors used for static bias correction are kept constant and equal to 1. These predictors are defined in the :code:`obs bias.static bc` YAML section, whose syntax is identical to :code:`obs bias.variational bc`.
+Static bias correction is handled very similarly to variational bias correction. Mathematically, the only difference is that the coefficients :math:`\beta_i` of predictors used for static bias correction are kept constant and equal to 1. These predictors are defined in the :code:`obs bias.static bc` YAML section, whose syntax is identical to :code:`obs bias.variational bc`. For example,
+
+.. code-block:: yaml
+
+  static bc:
+    predictors:
+    - name: interpolate_data_from_file
+      options:
+        corrected variables:
+        - name: air_temperature
+          file: air_temperature_static_bc.csv
+          interpolation:
+          - name: station_id@MetaData
+            method: exact
+        - name: relative_humidity
+          file: relative_humidity_static_bc.csv
+          interpolation:
+          - name: station_id@MetaData
+            method: exact
+          - name: air_pressure@MetaData
+            method: least upper bound
+
+See the :ref:`interpolate_data_from_file` section for more information about the predictor used
+above, which was written specifically with static bias correction in mind.
+
+Available Predictors
+====================
+
+Unless specified otherwise, all configuration parameters of predictors are specified in the :code:`options` group in the YAML file.
+
+`cloud_liquid_water`
+++++++++++++++++++++
+
+Cloud liquid water.
+
+The following options are supported:
+
+* :code:`satellite`: Satellite reference name such as :code:`SSMIS`; this lets the predictor know which which channels to expect. At present :code:`SSMIS` is the only supported satellite.
+* :code:`varGroup`: (Optional) Name of the ObsSpace group from which brightness temperatures will be loaded. By default, :code:`ObsValue`.
+* :code:`ch...`: Satellite-dependent channel numbers used for cloud liquid water calculation. For :code:`SSMIS` the following channel numbers need to be specified: :code:`ch19h`, :code:`ch19v`, :code:`ch22v`, :code:`ch37h`, :code:`ch37v`, :code:`ch91h` and :code:`ch91v`:.
+
+Example
+.......
+
+.. code-block:: yaml
+
+  name: cloud_liquid_water
+  options:
+    satellite: SSMIS
+    ch19h: 12
+    ch19v: 13
+    ch22v: 14
+    ch37h: 15
+    ch37v: 16
+    ch91v: 17
+    ch91h: 18
+
+`constant`
+++++++++++
+
+A predictor equal to one at all locations.
+
+`cosine_of_latitude_times_orbit_node`
++++++++++++++++++++++++++++++++++++++
+
+Cosine of the observation latitude multiplied by the sensor azimuth angle.
+
+`emissivity`
+++++++++++++
+
+Emissivity.
+
+.. _interpolate_data_from_file:
+
+`interpolate_data_from_file`
+++++++++++++++++++++++++++++
+
+A predictor drawing values from an input CSV or NetCDf file depending on the values of specified
+ObsSpace variables. Typically used for static bias correction.
+
+Example 1 (minimal)
+...................
+
+Consider a simple example first and suppose this predictor is configured as follows:
+
+.. code-block:: yaml
+
+  name: interpolate_data_from_file
+  options:
+    corrected variables:
+    - name: air_temperature
+      file: myfolder/example_1.csv
+      interpolation:
+      - name: station_id@MetaData
+        method: exact
+
+and the :code:`example_1.csv` file looks like this:
+
+.. code-block::
+
+    station_id@MetaData,air_temperature@ObsBias
+    string,float
+    ABC,0.1
+    DEF,0.2
+    GHI,0.3
+
+The predictor will load this file and at each location compute the bias correction of air temperature by
+
+* selecting the row of the CSV file in which the value in the :code:`station_id@MetaData` column matches exactly the value of the :code:`station_id@MetaData` ObsSpace variable at that location and
+* taking the value of the :code:`air_temperature@ObsBias` column from the selected row.
+
+It is possible to customize this process in several ways by
+
+* correcting more than one variable
+* making the bias correction dependent on more than one variable
+* using other interpolation methods than exact match (for example nearest-neighbor match or linear interpolation)
+* using a NetCDF rather than a CSV input file.
+
+This is explained in more detail below.
+
+The :code:`corrected variables` option
+......................................
+
+Each element of the :code:`corrected variables` list specifies how to generate bias corrections for
+a particular bias-corrected variable and should have the following attributes:
+
+* :code:`name`: Name of a bias-corrected variable.
+* :code:`channels`: (Optional) List of channel numbers of the bias-corrected variable.
+* :code:`file`: Path to an input NetCDF or CSV file. The input file formats are described in more detail below.
+* :code:`interpolation` A list of one or more elements indicating how to map specific ObsSpace variables to slices of arrays loaded from the input file. This list is described in more detail below.
+
+The predictor produces zeros for all bias-corrected variables missing from the :code:`corrected
+variables` list.
+
+Input file formats
+..................
+
+CSV
+!!!
+
+An input CSV file should have the following structure:
+
+* First line: comma-separated column names in ioda-v1 style (:code:`var@Group`) or ioda-v2 style
+  (:code:`Group/var`)
+* Second line: comma-separated column data types (datetime, float, int or string)
+* Further lines: comma-separated data entries.
+
+The number of entries in each line should be the same. The column order does not matter. One of the
+columns should belong to the :code:`ObsBias` group and contain the bias corrections to use in
+specific circumstances. Its data type should be either :code:`float` or :code:`int`. The values
+from the other columns (sometimes called `coordinates` below) are compared against ObsSpace
+variables with the same names to determine the row or rows from which the bias correction is
+extracted at each location. The details of this comparison (e.g. whether an exact match is
+required, the nearest match is used, or piecewise linear interpolation is performed) depend on the
+:code:`interpolation` option described below.
+
+Notes:
+
+* A column containing channel numbers (which aren't stored in a separate ObsSpace variable)
+  should be labelled :code:`channel_number@MetaData` or :code:`MetaData/channel_number`, as shown
+  in :ref:`interpolate example 3` below.
+
+* Single underscores serve as placeholders for missing values; for example, the following row
+
+  .. code-block::
+
+     ABC,_,_
+
+  contains missing values in the second and third columns.
+
+NetCDF
+!!!!!!
+
+ioda-v1 and ioda-v2-style NetCDF files are supported. ioda-v1-style files should have the
+following structure:
+
+* They should contain exactly one 1D or 2D array of type :code:`float` with a name ending with
+  :code:`@ObsBias` and containing bias corrections.
+
+* Each dimension of this array should be indexed by at least one 1D coordinate array. Coordinates
+  can be of type :code:`float`, :code:`int` or :code:`string`. Datetimes should be represented as
+  ISO-8601 strings. Coordinate names should correspond to names of ObsSpace variables. Use the name
+  :code:`channel_number@MetaData` for channel numbers (for which there is no dedicated ObsSpace
+  variable).
+
+ioda-v2-style files are similar except that
+
+* Bias corrections should be stored in an array placed in the :code:`ObsBias` group (rather than
+  with a :code:`@ObsBias` suffix).
+* Coordinate variables should be placed in appropriate groups, e.g. :code:`MetaData`. Because
+  of the limitations of the NetCDF file format, these variables can only be used as auxiliary
+  coordinates of the payload variable (listed in its :code:`coordinates` attribute).
+
+The :code:`interpolation` option
+................................
+
+This list indicates which ObsSpace variables, and in which order, will be used as criteria determining the value produced by the predictor.
+
+Each element of this list should have the following attributes:
+
+* :code:`name`: Name of an ObsSpace variable (and of a coordinate present in the input CSV or NetCDF
+  file).
+* :code:`method`: Method used to map values of this variable at individual location to matching slices
+  of the bias correction array loaded from the input file. This can be one of:
+
+  - :code:`exact`: Selects slices where the coordinate matches exactly the value of the specified
+    ObsSpace variable.
+
+    If no match is found, an error is reported unless there are slices where the indexing
+    coordinate is set to the missing value placeholder; in this case these slices are selected
+    instead. This can be used to define a fallback value (used if there is no exact match), as shown
+    in :ref:`interpolate example 4` below.
+
+    This is the only method that can be used for variables of type :code:`string`.
+
+  - :code:`nearest`: Selects slices where the coordinate is closest to the value of the
+    specified ObsSpace variable.
+
+    In case of a tie (e.g. if the value of the ObsSpace variable is 3 and the coordinate contains
+    values 2 and 4, but not 3), the smaller of the candidate coordinate values is used (in this
+    example, 2).
+
+  - :code:`least upper bound`: Select slices corresponding to the least value of the coordinate
+    greater than or equal to the value of the specified ObsSpace variable.
+
+  - :code:`greatest upper bound`: Select slices corresponding to the greatest value of the coordinate
+    less than or equal to the value of the specified ObsSpace variable.
+
+  - :code:`linear`: Performs a piecewise linear interpolation along the dimension indexed by the
+    specified ObsSpace variable.
+
+    This method can only be used in the last element of the :code:`interpolation` list.
+
+At each location the criterion variables specified in the :code:`interpolation` list are inspected
+in order, successively restricting the range of selected slices. An error is reported if the end
+result is an empty range of slices or (unless linear interpolation is used for the last criterion
+variable) a range containing more than one slice.
+
+Note: If the :code:`channels` option has been specified, the channel number is implicitly used as the
+first criterion variable and needs to match exactly a value from the :code:`channel_number@MetaData` coordinate.
+
+The following examples illustrate more advanced applications of this predictor.
+
+Example 2 (multiple criterion variables, linear interpolation)
+..............................................................
+
+To make the air-temperature bias correction depend not only on the station ID, but also on the air pressure, we could use the following YAML snippet
+
+.. code-block:: yaml
+
+  name: interpolate_data_from_file
+  options:
+    corrected variables:
+    - name: air_temperature
+      file: example_2.csv
+      interpolation:
+      - name: station_id@MetaData
+        method: exact
+      - name: air_pressure@MetaData
+        method: linear
+
+and CSV file:
+
+.. code-block::
+
+    station_id@MetaData,air_pressure@MetaData,air_temperature@ObsBias
+    string,float,float
+    ABC,30000,0.1
+    ABC,60000,0.2
+    ABC,90000,0.3
+    XYZ,40000,0.4
+    XYZ,80000,0.5
+
+For an observation taken by station XYZ at pressure 60000 the bias correction would be evaluated in
+the following way:
+
+* First, find all rows in the CSV file with a value of :code:`XYZ` in the :code:`station_id@MetaData`
+  column.
+* Then take the values of the :code:`air_pressure@MetaData` and :code:`air_temperature@ObsBias` columns
+  in these rows and use them to construct a piecewise linear interpolant. Evaluate this
+  interpolant at pressure 60000. This produces the value of 0.45.
+
+.. _interpolate example 3:
+
+Example 3 (multichannel variables)
+..................................
+
+To make the brightness-temperature bias correction vary with the channel number and scan position,
+we could use the following YAML snippet
+
+.. code-block:: yaml
+
+  name: interpolate_data_from_file
+  options:
+    corrected variables:
+    - name: brightness_temperature
+      channels: 1-2, 4-6
+      file: example_3.csv
+      interpolation:
+      - name: scan_position@MetaData
+        method: nearest
+
+and CSV file:
+
+.. code-block::
+
+    channel_number@MetaData,scan_position@MetaData,brightness_temperature@ObsBias
+    int,int,float
+    1,25,0.01
+    2,25,0.02
+    4,25,0.04
+    5,25,0.05
+    6,25,0.06
+    1,75,0.11
+    2,75,0.12
+    4,75,0.14
+    5,75,0.15
+    6,75,0.16
+
+This would produce, for example, a bias correction of 0.12 for an observation from channel 2 taken
+at scan position 60.
+
+.. _interpolate example 4:
+
+Example 4 (fallback values, ranges)
+...................................
+
+To apply a bias correction of 1.0 to observations taken by station XYZ in the Northern hemisphere
+and 0.0 to all other observations, we could use the following YAML snippet
+
+.. code-block:: yaml
+
+  name: interpolate_data_from_file
+  options:
+    corrected variables:
+    - name: air_temperature
+      file: example_4.csv
+      interpolation:
+      - name: station_id@MetaData
+        method: exact
+      - name: latitude@MetaData
+        method: least upper bound
+
+and CSV file:
+
+.. code-block::
+
+    station_id@MetaData,latitude@MetaData,air_temperature@ObsBias
+    string,float,float
+    _,_,0
+    XYZ,0,0
+    XYZ,90,1
+
+Above, the first row of the data block (:code:`_,_,0`) encodes the bias correction to apply to
+observations taken by stations other than XYZ; the second row, to observations taken by station XYZ
+in the Southern hemisphere or on the equator (:code:`latitude` ≤ 0); and the third row, to
+observations taken by station XYZ in the Northern hemisphere.
+
+`lapse_rate`
+++++++++++++
+
+nth power of the lapse rate.
+
+The following options are supported:
+
+* :code:`order` (Optional) Power to which to raise the lapse rate. By default, 1.
+
+`Legendre`
+++++++++++
+
+The Legendre polynomial :math:`P_n(x)` where `n` is the value of the :code:`order` option,
+
+    x = -1 + 2 * (scan_position - 1) / (n_scan_positions - 1),
+
+:code:`n_scan_positions` is the value of the :code:`number of scan positions` option and :code:`scan_position` is the sensor scan position loaded from the :code:`scan_position@MetaData` variable (assumed to range from 1 to :code:`n_scan_positions`).
+
+The following options are supported:
+
+* :code:`number of scan positions` The number of scan positions. Note: this parameter should not be inside the :code:`options` group.
+* :code:`order` (Optional) Order of the Legendre polynomial. By default, 1.
+
+Example
+.......
+
+.. code-block:: yaml
+
+  name: Legendre
+  number of scan positions: 32
+  options:
+    order: 2
+
+`orbital_angle`
++++++++++++++++
+
+A term of the Fourier series of the orbital angle :math:`\theta` (loaded from the :code:`satellite_orbital_angle@MetaData` variable), i.e. :math:`\sin(n\theta)` or :math:`\cos(n\theta)`.
+
+The following options are supported:
+
+* :code:`component`: Either :code:`sin` or :code:`cos`.
+* :code:`order` (Optional) Order of the term to be calculated (:math:`n` in the formulas above). By default, 1.
+
+Example
+.......
+
+.. code-block:: yaml
+
+  name: orbital_angle
+  options:
+    component: cos
+    order: 2
+
+`scan_angle`
+++++++++++++
+
+nth power of the scan angle.
+
+The following options are supported:
+
+* :code:`var_name`: (Optional) Name of the ObsSpace variable (from the :code:`MetaData` group) storing the scan angle (in degrees). By default, :code:`sensor_view_angle`.
+* :code:`order` (Optional) Power to which to raise the scan angle. By default, 1.
+
+Example
+.......
+
+.. code-block:: yaml
+
+  name: scan_angle
+  options:
+    var_name: scan_position
+    order: 2
+
+`sine_of_latitude`
+++++++++++++++++++
+
+Sine of the observation latitude.
+
+`thickness`
++++++++++++
+
+Thickness (in km) of a specified pressure level interval, calculated as the difference between the geopotential heights at two pressure levels and normalized to zero mean and unit variance.
+
+The following options are required:
+
+* :code:`layer top`: Pressure value (in Pa) at the top of the required thickness layer.
+* :code:`layer base`: Pressure value (in Pa) at the bottom of the required thickness layer.
+* :code:`mean`: Climatological mean of the predictor.
+* :code:`standard deviation`: Climatological standard deviation of the predictor.
+
+Example
+.......
+
+.. code-block:: yaml
+
+  name: thickness
+  options:
+    layer top: 30000
+    layer base: 85000
+    mean: 7.6
+    standard deviation: 0.4
