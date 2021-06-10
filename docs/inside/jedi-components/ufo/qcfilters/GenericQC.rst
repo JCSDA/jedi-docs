@@ -971,5 +971,52 @@ Example:
         channels: 1-22
       qtotal: true
     
-    
+ModelOb Threshold Filter
+----------------------------------------
+      
+This filter applies a threshold to a model profile interpolated to the observation 
+height.
    
+The specified model profile variable is linearly (vertical) interpolated
+to the observation height using the specified model vertical coordinate variable.
+This is referred to as the "ModelOb". Note that the ModelOb is not necessarily
+one of the HofX variables.
+
+The observation height must be in the same coordinate system as that specified
+for the model vertical coordinate, e.g. both pressure.
+
+The ModelOb is compared against a set of height-dependent thresholds.
+We supply a vector of threshold values, and a vector of vertical coordinate
+values corresponding to those thresholds. The coordinate values must be in the same
+vertical coordinate as the observation, e.g. pressure. The threshold values are
+then linearly interpolated to the observation height.
+
+The observation is flagged for rejection if the ModelOb lies outside the threshold
+value according to threshold type - min or max. E.g. if the threshold type is min,
+then the observation is flagged if ModelOb is less than the interpolated threshold
+value.
+
+This filter requires the following YAML parameters:
+
+* :code:`model profile`: name of the model profile variable (GeoVaLs).
+* :code:`model vertical coordinate`: name of the model vertical coordinate variable (GeoVal).
+* :code:`observation height`: name of the observation height variable to interpolate to.
+* :code:`thresholds`: vector of threshold values.
+* :code:`coordinate values`: vector of vertical coordinate values corresponding to :code:`thresholds`.
+* :code:`threshold type`: :code:`min`. or :code:`max`.
+
+Example
+
+.. code:: yaml
+
+    - filter: ModelOb Threshold
+      model profile:
+        name: relative_humidity@GeoVaLs
+      model vertical coordinate:
+        name: air_pressure@GeoVaLs
+      observation height:
+        name: air_pressure_levels@MetaData
+      thresholds: [50,50,40,30]
+      coordinate values: [100000,80000,50000,20000]
+      threshold type: min
+ 
