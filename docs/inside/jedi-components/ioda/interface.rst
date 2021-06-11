@@ -6,100 +6,64 @@ IODA Interfaces
 Background
 ----------
 
-IODA interacts with external observation data on one side and with the OOPS and UFO components of JEDI on the other side (:numref:`ioda-hlev-dflow`).
+In the context of running a DA flow, IODA interacts with external observation data on one side and with the OOPS and UFO components of JEDI on the other side (:numref:`ioda-jedi-structure`).
 On the observation data side there exist huge amounts of data, thus creating the need to pare these data down to a manageable size for JEDI during a particular DA run.
 The primary mechanism for accomplishing this is to filter out all of the observations that lie outside the current DA timing window, and present only that subset to be read into memory during a DA run.
 
 There are many different types of observations that come with a variety of ways that the observation data are organized.
 To the extent that is feasible, it is desirable to devise a common data organization of which all of these observation types can employ.
-The memory representation of observation data in IODA has started with a prototype along these lines that successfully places a number of observation types (radiosonde, aircraft, AMSU-A, GNSSRO, plus several more) into a common organization.
+This is where the IODA Data Model (:numref:`ioda-data-model`) comes into play.
+The IODA Data Model provides a means for storing conventional (1D trajectories) and radiance (2D images) data in a common Group, Variable and Attribute structure.
 
-At this point, we have a prototype architecture defined for the handling of files containing observation data (:numref:`ioda-file-handling`).
+A schematic representation of the IODA data model is shown in (:numref:`ioda-schematic`).
 
-.. _ioda-file-handling:
-.. figure:: images/IODA_FileHandling.png
+.. _ioda-schematic:
+.. figure:: images/IODA_Schematic.png
    :height: 400px
    :align: center
 
-   IODA file handling
+   Schematic representation of the IODA data model
 
-The intent of this architecture is to enable the use of one IODA file reader/writer implementation, namely the IodaIO class in :numref:`ioda-file-handling`.
-Using the single IodaIO class will make future maintenance much simpler, especially since we have not yet settled on the particular file format to use for the IODA Datafile piece.
+Central to this scheme are the 2D tables holding the observation data quantities (ObsValue, ObsError, HofX in :numref:`ioda-schematic`).
+Note that a given Group (ObsValue, MetaData, etc.) in the IODA Data Model represents a particular table in the schematic, and the Variables contained by that group are represented by the columns of the associated table.
+Each column of a given table holds a particular variable of observation data, where each variable can be a vector (1D), matrix (2D) or of higher rank.
+The height of each column is equal to the number of unique locations, (x,y,z,t) or (x,y,t) tuple values, and the number of columns corresponds to the set of available observation variables.
+Note that an ObsVector can be constructed using a subset of the variables (columns) in a given table.
 
-A first pass implementation of this architecture has been created in the `ioda-converters github repository <https://github.com/JCSDA/ioda-converters.git>`_.
-This implementation is not quite in the form of the prototype architecture, but is evolving toward that goal.
-Currently, we are using netcdf for the IODA Datafile format (subject to change) and we have a common netcdf writer in the ioda-converters with a collection of readers for the various observation data file formats.
-Work is in progress to evolve the current implementation to the prototype architecture.
+In addition to the primary data tables (:numref:`ioda-schematic`, color), tables of meta data (:numref:`ioda-schematic`, gray) can be stored.
+The MetaData table (related to locations) contains columns (variables) corresponding to meta data associated with each location.
+Examples of location-related meta data are quantities that describe each location such as Latitude, Longitude, Date/Time, and descriptive quantities associated with locations such the Scan Angle of a satellite-borne instrument.
 
-A prototype interface, using a common data organization (:numref:`ioda-inmem-schematic`), has been defined for access to observation data from the JEDI components OOPS and UFO.
+The Additional MetaData table is similar to the MetaData array, except that it holds meta data associated with other dimensions than the locations dimension.
+Examples include the variable names, and in the case of satellite instruments, channel frequencies.
 
-.. _ioda-inmem-schematic:
-.. figure:: images/IODA_InMemorySchematic.png
+A primary design principle for IODA is to not alter the original observations and meta data that was received from the data providers.
+Nervertheless, there are still important fuctions that IODA needs to perform as shown in :numref:`ioda-operations`.
+
+.. _ioda-operations:
+.. figure:: images/IODA_Operations.png
    :height: 400px
    :align: center
 
-   Schematic view of the IODA in-memory representation
+   Operations performed by IODA when reading in observation data
 
-Central to this scheme are the 2D arrays holding the observation data quantities (ObsValue, ObsError, HofX in :numref:`ioda-inmem-schematic`).
-Each row of the ObsData array holds a particular vector of observation-related data.
-The length of each row is equal to the number of unique locations (nlocs), (x,y,z,t) or (x,y,t) tuple values, and the number of rows corresponds to the set of available observation variables (nvars).
-Note that an ObsVector can be constructed using a subset of the variables (rows) in the ObsData arrays.
-In the case of satellite data, the rows correspond to individual instrument channels.
+IODA performs three operations that must go in the order shown in :numref:`ioda-operations`.
+First all observations that lie outside the DA time window are removed.
+Then the locations are organized into groups called "records" according to optional specifications that can be entered in the YAML configuration.
+The default is to place each individual location into its own unique record (no grouping).
+An example is to organize radiosonde locations by station ID and launch time (ie, locations with matching station ID and launch time values are grouped together into a single record) so that records contain individual soundings.
+Lastly the records are distributed to MPI tasks according to distribution specifications in the YAML configuration.
+The point of doing the observation grouping before the MPI distribution is to ensure that IODA does not break up the groups (e.g., radiosonde soundings) during the MPI distribution step.
 
-Currently, the elements in an ObsData array are either floating point numbers or integers (e.g., QC marks).
-As more complex observation types come on board, the idea is to enhance the ObsData array so that each element can be a more complex data type.
-For example, each element could be a vector, or a higher rank array of numbers.
-In the case of using vectors for each element, the ObsData array effectively becomes a three-dimensional array.
-
-In addition to the ObsData arrays, two more arrays are added that contain meta data.
-The Location Meta Data array (:numref:`ioda-inmem-schematic`) contains rows, of length nlocs, corresponding to meta data oriented by location.
-Examples of Location Meta Data are quantities that describe each location such as Latitude, Longitude, Date/Time, and descriptive quantities associated with locations such the Scan Angle of an satellite-borne instrument.
-
-The Variable Meta Data array is analogous to the Location Meta Data array, except that it holds meta data associated with the variables in the ObsData arrays.
-Examples include the variable names, and in the case of some instruments, channel numbers and channel frequencies.
-
-A first pass implementation of this interface has been implemented in the `ioda github repository <https://github.com/JCSDA/ioda.git>`_.
-This implementation is entirely in C++ and is successfully handling a small set of observation types including radiosonde, aircraft, ADO, AMSU-A, GNSSRO and Marine (SST, sea ice thickness and fraction, etc.) test cases.
-
-.. _int-ext-obs-data:
-
-Interfaces to External Observation Data
----------------------------------------
-
-These interfaces are under heavy development and currently not well defined.
-We are working with data providers to get these interfaces more clearly defined over the next one to two months.
-
-Data Tanks
-^^^^^^^^^^
-
-The means for converting observation data in the external data tanks into files that IODA can read are being handled by a number of scripts and programs in the `ioda-converters github repository <https://github.com/JCSDA/ioda-converters.git>`_.
-This code is relatively new and under active development.
-The goal is to organize the code into specific readers for each data tank format, all tied into a general IODA file writer, namely the IodaIO abstract interface class shown in :numref:`ioda-file-handling`.
-Organizing this way will allow us to experiment with different file formats, for the IODA datafile piece (:numref:`ioda-file-handling`), with minimal interference for the clients of the IodaIO class.
-
-Diagnostic Files
-^^^^^^^^^^^^^^^^
-
-At this point, we are actively investigating the best option for the diagnostic file type and data organization in IODA.
-We are using the same data organization as the IODA input file which currently is a netcdf file.
-As the requirements for downstream diagnostic tools get clarified, the file type and data organization are subject to change.
-
-The creation of the diagnostics file (IODA output) is specified in the YAML configuration.
-The :code:`ObsDataOut` keyword along with the :code:`obsfile` sub-keyword are used to request that a diagnostics file be created.
-This occurs during the destructor of the ObsSpace object, which is near the end of the DA run.
-Currently, the entire contents of the memory store is written into the output file, and there are plans to allow for the selection of a subset of the memory store via the YAML configuration.
-
-If the DA run is using multiple process elements, one file per element is created using just the observation data associated with that element.
-The file names get the process element rank number appended to them which avoids file collisions.
-This scheme is okay for testing with small datasets, but could be problematic when using a large number of process elements.
-This will need to be addressed before getting into operational sized DA runs.
+IODA also handles the transfer of observation data between the GTS network (data providers) and the diagnostics/monitoring system (:numref:`ioda-hlev-dflow`).
+As of the JEDI 1.1.0 release, the IODA architecture (:numref:`ioda-structure`) is targeted to handle these tasks and work is actively progressing to migrate the current implementaions (e.g. ioda converters, diagnostic plotting tools) to the IODA client API.
 
 .. _radiosonde_example_yaml:
 
 Example Radiosonde YAML
 """""""""""""""""""""""
 
-The following is the YAML for the UFO test "test_ufo_radiosonde_opr".
+The following is a YAML example for configuring the processing of radiosonde data in UFO.
 
 .. code-block:: YAML
 
@@ -109,7 +73,11 @@ The following is the YAML for the UFO test "test_ufo_radiosonde_opr".
    - obs space:
        name: Radiosonde
        obsdatain:
-         obsfile: Data/sondes_obs_2018041500_m.nc4
+         obsfile: Data/testinput_tier_1/sondes_obs_2018041500_m.nc4
+         obsgrouping:
+           group variables: [ "station_id" ]
+           sort variable: "air_pressure"
+           sort order: "descending"
        obsdataout:
          obsfile: Data/sondes_obs_2018041500_m_out.nc4
        simulated variables: [air_temperature]
@@ -125,9 +93,20 @@ The following is the YAML for the UFO test "test_ufo_radiosonde_opr".
        tolerance TL: 1.0e-9
        tolerance AD: 1.0e-11
 
+
+The :code:`obs space.obsdatain.obsgrouping` keyword is used to initate the obs grouping step in the IODA input flow (:numref:`ioda-operations`).
+This specification is requesting that IODA group locations according the MetaData variable "station_id" ("MetaData/station_id").
+All locations with the same unique station_id value will be grouped into an individual record
+before doing the MPI distribution step.
+The intent of this specification is to keep individual soundings intact during the MPI distribution step.
+
+IODA has an additional feature that provides functions that denote the sorting of locations within each record.
+A MetaData variable and sort order is specified to enable and drive this feature.
+The :code:`obs space.obsdatain.obsgrouping.sort variable` and :code:`obs space.obsdatain.obsgrouping.sort order` are telling IODA to use the values of the "MetaData/air_pressure" variable in corresponding locations to sort the soundings into ascending order (i.e., descending pressure values).
+
 Under the :code:`obs space.obsdataout.obsfile` specification, the output file is requested to be created in the path: :code:`Data/sondes_obs_2018041500_m_out.nc4`.
-If there is only one process element, then the output will appear in the file as specified.
-However, if there are 4 process elements, then the output will appear in the following four files:
+IODA tags the MPI rank number onto the end of the file name (before the ".nc4" suffix) so that multiple MPI tasks writing files do not collide.
+If there are 4 MPI tasks, then the output will appear in the following four files:
 
 .. code-block:: bash
 
@@ -141,20 +120,22 @@ More details about constructing and processing YAML configuration files can be f
 Interfaces to other JEDI Components
 -----------------------------------
 
-These interfaces have a much clearer definition than the interfaces to external observation data (see :ref:`int-ext-obs-data` above).
-However, these are still new and will likey need to evolve as more observation types are added to the system.
+For the JEDI 1.1.0 release, the ObsSpace and ObsVector interfaces remained backward compatible with the existing OOPS and UFO facing interfaces which are described below.
+After the release, the stage will be set to migrate the relevant classes to directly utilize the IODA client API (:numref:`ioda-structure`).
+Once accomplished the OOPS and UFO interfaces below will be obsoleted and replaced with the much richer IODA client API.
+See the `low-level description of the classes, functions, and subroutines <http://data.jcsda.org/doxygen/Release/1.1.0/ioda/index.html>`_ for details about the client API.
 
 .. _ioda-oops-interface:
 
 OOPS Interface
-^^^^^^^^^^^^^^
+""""""""""""""
 
 OOPS accesses observation data via C++ methods belonging to the ObsVector class.
 The variables being assimilated are selected in the YAML configuration using the :code:`simulated variables` sub-keyword under the :code:`obs space` keyword.
 In the :ref:`radiosonde example <radiosonde_example_yaml>` above, one variable "air_temperature" is being assimilated.
-In this case, the ObsVector will read only the air_temperature row from the ObsData table and load that into a vector.
+In this case, the ObsVector will read only the air_temperature row from the ObsSpace and load that into a vector.
 
-The ObsVector class contains the following two methods, :code:`read()` for filling a vector from an ObsData array in memory and :code:`save()` for storing a vector into an ObsData array.
+The ObsVector class contains the following two methods, :code:`read()` for filling a vector from an ObsSpace in memory and :code:`save()` for storing a vector into an ObsSpace.
 
 .. code-block:: C++
 
@@ -162,7 +143,7 @@ The ObsVector class contains the following two methods, :code:`read()` for filli
    void read(const std::string &);
    void save(const std::string &) const;
 
-* The :code:`std::string` arguments are the names of the ObsData array that is to be accessed.
+* The :code:`std::string` arguments are the names of the ObsSpace Group that is to be accessed.
 
 Following is an example of reading into an observation vector.
 Note that the ObsVector object yobs\_ has already been constructed which included the allocation of the memory to store the observation data coming from the :code:`read()` method.
@@ -174,8 +155,8 @@ Note that the ObsVector object yobs\_ has already been constructed which include
    yobs_.read("ObsValue");
    Log::trace() << "CostJo::CostJo done" << std::endl;
 
-Here is an example of saving the contents of an observation vector, H(x), into an ObsData array.
-The ObsVector object yobs is constructed in the first line, and the third line creates an ObsData array called "hofx" and stores the vector data into that ObsData array.
+Here is an example of saving the contents of an observation vector, H(x), into an ObsSpace.
+The ObsVector object yobs is constructed in the first line, and the third line creates an ObsSpace Group called "hofx" and stores the vector data into that ObsSpace.
 
 .. code-block:: C++
 
@@ -185,12 +166,12 @@ The ObsVector object yobs is constructed in the first line, and the third line c
    yobs->save("hofx");
 
 UFO Interface
-^^^^^^^^^^^^^
+"""""""""""""
 
 UFO accesses observation data via Fortran functions and subroutines belonging to the ObsSpace class.
 ObsSpace is implemented in C++ and a Fortran interface layer is provided for UFO.
-The following three routines are used to access observation data, and unlike the ObsVector methods in the :ref:`ioda-oops-interface` above, access is available to ObsData arrays and all Meta Data arrays.
-Reasons to access ObsData arrays from UFO would be for debugging purposes or for storing results, such as H(x), for post analysis.
+The following three routines are used to access observation data, and unlike the ObsVector methods in the :ref:`ioda-oops-interface` above, access is available to ObsSpace Groups and all MetaData variables.
+Reasons to access ObsSpace Groups from UFO would be for debugging purposes or for storing results, such as H(x), for post analysis.
 Typically, only meta data are used in the actual H(x) calculations.
 
 .. code-block:: Fortran
@@ -201,9 +182,9 @@ Typically, only meta data are used in the actual H(x) calculations.
    subroutine obsspace_put_db(obss, group, vname, vect)
 
 * The :code:`obss` arguments are C pointers to ObsSpace objects.
-* The :code:`group` arguments are names of the ObsData arrays holding the requested variable
+* The :code:`group` arguments are names of the ObsSpace Group holding the requested variable
     * E.g., "HofX", "MetaData"
-* The :code:`vname` arguments are names of the requested variable (row)
+* The :code:`vname` arguments are names of the requested variable (column)
     * E.g., "air_temperature", "Scan_Angle"
 * The :code:`vect` argument is a Fortran array for holding the data values
     * The client (caller) is responsible for allocating the memory for the :code:`vect` argument
