@@ -119,7 +119,7 @@ Note that this is very different than the :code:`vagrant destroy` command, which
 
 E: Enable X Forwarding (Optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-If you'd like to use graphical tools such as :ref:`kdbg <kdbg>` or :code:`emacs` from within the Singularity or Charliecloud container, you will need to set up X forwarding.  If you're doing this on a Mac, you will first need to install `XQuartz <https://www.xquartz.org/>`_, if it's not already installed.
+If you'd like to use graphical tools such as :code:`emacs` from within the Singularity or Charliecloud container, you will need to set up X forwarding.  If you're doing this on a Mac, you will first need to install `XQuartz <https://www.xquartz.org/>`_, if it's not already installed.
 
 After XQuartz is up and running, you can create and enter your VM as described in step C above.   Next you will have to set your :code:`DISPLAY` environment variable to use your local machine.  This is best done from within the container (either Singularity or Charliecloud) because environment variables set outside the container may not be accessible from within.
 

@@ -150,7 +150,6 @@ The container contains everything you need to run a Data Assimilation (DA) appli
    mkdir -p $HOME/jedi/tutorials
    cp -r /opt/jedi/fv3-bundle/tutorials/runjedi $HOME/jedi/tutorials
    cd $HOME/jedi/tutorials/runjedi
-   chmod a+x run.bash
 
 .. note::
 
@@ -171,9 +170,9 @@ The container contains everything you need to run a Data Assimilation (DA) appli
 
 Take a look at the files you just copied over.  The run script defines a workflow that is needed to run a variational data assimilation application with :doc:`FV3-JEDI <../../../inside/jedi-components/fv3-jedi/index>` and the B-Matrix Unstructured Mesh Package (:doc:`BUMP <../../../inside/jedi-components/saber/BUMP>`).  First BUMP is used to compute the correlation statistics and localization for the background error covariance matrix (B-Matrix).  Then the variational application is run, and a separate application computes the increment.  Each application runs with at least 6 MPI tasks (the minimum for fv3) and requires only one argument, namely a (yaml) :doc:`configuration file <../../../inside/jedi-components/configuration/configuration>`).  A log file is also specified for saving the text output.
 
-The ``conf`` directory contains jedi configuration files in ``yaml`` format that govern the execution of the application, including the specification of input data files, control flags, and parameter values.  If you look inside, you'll see references to where the input data files are.  For example, the ``/jedi/build/fv3-jedi/test/Data/fv3files`` directory contains namelist and other configuration files for the FV3 model and the ``/jedi/build/fv3-jedi/test/Data/inputs/gfs_c12`` directory contains model backgrounds and ensemble states that are used to define the grid, initialize forecasts, and compute the B-Matrix.  The ``c12`` refers to the horizontal resolution, signifying 12 by 12 grid points on each of the 6 faces of the cubed sphere grid, or 864 horizontal grid points total.  This is, of course, much lower resolution than operational forecasts but it is sufficient to run efficiently for a tutorial!
+The ``config`` directory contains jedi configuration files in ``yaml`` format that govern the execution of the application, including the specification of input data files, control flags, and parameter values.  If you look inside, you'll see references to where the input data files are.  For example, the ``/opt/jedi/build/fv3-jedi/test/Data/fv3files`` directory contains namelist and other configuration files for the FV3 model and the ``/opt/jedi/build/fv3-jedi/test/Data/inputs/gfs_c12`` directory contains model backgrounds and ensemble states that are used to define the grid, initialize forecasts, and compute the B-Matrix.  The ``c12`` refers to the horizontal resolution, signifying 12 by 12 grid points on each of the 6 faces of the cubed sphere grid, or 864 horizontal grid points total.  This is, of course, much lower resolution than operational forecasts but it is sufficient to run efficiently for a tutorial!
 
-If you peruse the config files further, you may see references to the ``/jedi/build/fv3-jedi/test/Data/obs`` directory, which contains links to the observation files that are being assimilated.  Another source of input data is the ``/jedi/build/fv3-jedi/test/Data/crtm`` directory, which contains coefficients for JCSDA's Community Radiative Transfer Model (`CRTM <https://github.com/JCSDA/crtm>`_) that are used to compute simulated satellite radiance observations from model states (i..e. observation operators).
+If you peruse the config files further, you may see references to the ``/opt/jedi/build/fv3-jedi/test/Data/obs`` directory, which contains links to the observation files that are being assimilated.  Another source of input data is the ``/opt/jedi/build/fv3-jedi/test/Data/crtm`` directory, which contains coefficients for JCSDA's Community Radiative Transfer Model (`CRTM <https://github.com/JCSDA/crtm>`_) that are used to compute simulated satellite radiance observations from model states (i..e. observation operators).
 
 We again encourage you to explore these various directories to get a feel for how the input to jedi applications is provided.
 
@@ -249,8 +248,8 @@ This is really a :doc:`Padawan level activity <../level2/index>` so feel free to
 
 Here are a few possible activities - we encourage you to come up with your own:
 
-- change the variable list in one or more of the observations that are assimilated.   For example, you can remove ``eastward_wind`` and ``northward_wind`` from the aircraft and/or radiosonde observations, leaving only temperature.
-- remove one of the observation types entirely, such as aircraft or GNSSRO refractivity measurements (*hint: you may wish to review the* `basic yaml syntax <https://learn.getgrav.org/16/advanced/yaml>`_ *to see how components of a particular yaml item are defined*).
-- change the localization length scales for bump (*hint:* ``rh`` *and* ``rv`` *correspond to horizonal and vertical length scales respectively, in units of meters*)
+- change the variable list in one or more of the observations that are assimilated.   For example, you can remove ``eastward_wind`` and ``northward_wind`` from the aircraft observations, leaving only temperature.
+- Remove one of the observation types entirely, such as aircraft or AMSUA radiance measurements (*hint: you may wish to review the* `basic yaml syntax <https://learn.getgrav.org/16/advanced/yaml>`_ *to see how components of a particular yaml item are defined*).
+- change the localization length scales for bump (*hint:* ``rh`` *and* ``rv`` *correspond to horizonal and vertical length scales respectively, in units of meters and levels*)
 
 After each change remember to run the ``run.bash`` script again to generate new output.

@@ -1,11 +1,10 @@
 .. _top-tut-hofx-nrt:
 
-Tutorial: Simulating Observations like JCSDA Near-Real-Time Application
-=======================================================================
+Tutorial: Simulating Observations with UFO
+==========================================
 
 Learning Goals:
- - Create simulated observations similar to those highlighted on JCSDA's `Near Real-Time (NRT) Observation Modeling web site <http://nrt.jcsda.org>`_
- - Acquaint yourself with the rich variety of observation operators now available in :doc:`UFO <../../../inside/jedi-components/ufo/index>`
+ - Acquaint yourself with some of the rich variety of observation operators now available in :doc:`UFO <../../../inside/jedi-components/ufo/index>`
 
 Prerequisites:
  - :doc:`Run JEDI in a Container <run-jedi>`
@@ -19,12 +18,9 @@ The comparison between observations and forecasts is an essential component of a
 
 In the data assimilation literature, this procedure is often represented by the expression :math:`H({\bf x})`.  Here :math:`{\bf x}` represents prognostic variables on the model grid, typically obtained from a forecast, and :math:`H` represents the *observation operator* that generates simulated observations from that model state.  The sophistication of observation operators varies widely, from in situ measurements where it may just involve interpolation and possibly a change of variables (e.g. radiosondes), to remote sensing measurements that require physical modeling to produce a meaningful result (e.g. radiance, GNSSRO).
 
-So, in this tutorial, we will be running an application called :math:`H({\bf x})`, which is often denoted in program and function names as ``Hofx``.  This in turn will highlight the capabilities of JEDI's Unified Forward Operator (:doc:`UFO <../../../inside/jedi-components/ufo/index>`).
+So, in this tutorial, we will be running an application called :math:`H({\bf x})`, which is often denoted in program and function names as ``Hofx``.  This will highlight the capabilities of JEDI's Unified Forward Operator (:doc:`UFO <../../../inside/jedi-components/ufo/index>`).
 
-The goal is to create plots comparable to JCSDA's `Near Real-Time (NRT) Observation Modeling web site <http://nrt.jcsda.org>`_.  This site regularly ingests observation data for the complete set of operational instruments at NOAA.  And, it compares these observations to forecasts made through NOAA's operational Global Forecasting System (FV3-GFS) and NASA's Goddard Earth Observing System (FV3-GEOS).
-
-But there is a caveat.  The NRT web site regularly simulates millions of observations using model backgrounds with operational resolution - and it does this every six hours!  That requires substantial high-performance computing (HPC) resources.  We want to mimic this procedure in a way that can be run on a laptop computer.  So, the model background you will use will be at a much lower horizontal resolution (c48, corresponding to about 14 thousand points in latitude and longitude) than the NRT website (GFS operational resolution of c768, corresponding to about 3.5 million points).
-
+When operational models compute ``Hofx`` as part of their cycling DA applications, they use high-resolution model backgrounds that require substantial high-performance computing (HPC) resources.  We want to mimic this procedure in a way that can be run on a laptop computer.  So, the model background you will use will be at a much lower horizontal resolution (c48, corresponding to about 14 thousand points in latitude and longitude) than the NOAA operational system (GFS resolution of c768, corresponding to about 3.5 million points).
 
 Step 1: Setup
 -------------
@@ -42,46 +38,11 @@ And, though this may be already set if you just did the previous tutorial, it's 
     ulimit -s unlimited
     ulimit -v unlimited
 
-
 Now, the description in the previous section gives us a good idea of what we need to run :math:`H({\bf x})`.  First, we need :math:`{\bf x}` - the model state.  In this tutorial we will use background states from the FV3-GFS model with a resolution of c48, as mentioned above.
 
-Next, we need observations to compare our forecast to.  Example observations available in this tutorial include (see the `NRT website <http://nrt.jcsda.org>`_ for an explanation of acronyms):
+Next, we need observations and the observation operators needed to simulate them.  For an overview of the observation operators currently implemented in JEDI, see the `JEDI documentation for UFO <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/inside/jedi-components/ufo/obsops.html>`_.
 
-* Aircraft
-* Sonde
-* Satwinds
-* Scatwinds
-* Vadwind
-* Windprof
-* SST
-* Ship
-* Surface
-* cris-npp
-* cris-n20
-* airs-aqua
-* gome-metopa
-* gome-metopb
-* sbuv2-n19
-* amsua-aqua
-* amsua-n15
-* Amsua-n18
-* amsua-n19
-* amsua-metopa
-* amsua-metopb
-* amsua-metopc
-* iasi-metopa
-* iasi-metopb
-* seviri-m08
-* seviri-m11
-* mhs-metopa
-* mhs-metopb
-* mhs-metopc
-* mhs-n19
-* ssmis-f17
-* ssmis-f18
-* atms-n20
-
-The script to get these background and observation files is in the container.  But, before we run it, we should find a good place to run our application.  The ``fv3-bundle`` directory is inside the container and thus read-only, so that will not do.
+The script to get the background and observation files is in the container.  But, before we run it, we should find a good place to run our application.  The ``fv3-bundle`` directory is inside the container and thus read-only, so that will not do.
 
 So, you'll need to copy the files you need over to your home directory that is dedicated to running the tutorial:
 
@@ -90,7 +51,6 @@ So, you'll need to copy the files you need over to your home directory that is d
    mkdir -p $HOME/jedi/tutorials
    cp -r /opt/jedi/fv3-bundle/tutorials/Hofx $HOME/jedi/tutorials
    cd $HOME/jedi/tutorials/Hofx
-   chmod a+x run.bash
 
 We'll call ``$HOME/jedi/tutorials/Hofx`` the run directory.
 
@@ -126,15 +86,17 @@ Skim the text output as it is flowing by.  Can you spot where the quality contro
 Step 3: View the Simulated Observations
 ---------------------------------------
 
-You'll find the graphical output from Step 2 in the ``output/plots/Amsua_n19`` directory.
-
-You can use the linux utility ``feh`` to view the png files:
+After the ``run.bash`` script completes, the last line of the output should tell you the name of a plot that was generated:
 
 .. code-block:: bash
 
-   cd output/plots/Amsua_n19
-   feh brightness_temperature_12_ObsValue.png
+    Saving figure as output/plots/Amsua_n19/brightness_temperature-channel4_hofx_20201001_030000.png
 
+You can copy and paste that file name as an argument to the linux utility ``feh`` to view the png file:
+
+.. code-block:: bash
+
+   feh output/plots/Amsua_n19/brightness_temperature-channel4_hofx_20201001_030000.png
 
 If you get an error message it may be because you are accessing singularity from a remote machine.  As with other remote graphical applications, you need to make sure you use the `-Y` option to ``ssh`` to enable X forwarding, e.g. ``ssh -Y ...``.  Another tip is to open another window on that same machine and see what your ``DISPLAY`` environment variable is set to:
 
@@ -150,25 +112,84 @@ Then, set the ``DISPLAY`` variable to be the same *inside* the container, for ex
 
 If this still does not work, it might be worthwhile to copy the png files to your laptop or workstation for easier viewing.  Similar arguments apply if you are running singularity in a Vagrant virtual machine: see our :doc:`Vagrant documentation <../../../using/jedi_environment/vagrant>` for tips on setting up X forwarding in that case or on viewing the files from the host.
 
-When are able to view the plot, it should look something like what is shown on the JCSDA `NRT web site <http://nrt.jcsda.org/gfs/gfs/amsu-a-noaa19.html>`_:
+When are able to view the plot, it should look something like this:
 
-.. image:: images/brightness_temperature_12_ObsValue.png
+.. image:: images/brightness_temperature-channel4_hofx_20201001_030000.png
 
-This shows temperature measurements over a 6-hour period.  Each band of points corresponds to an orbit of the spacecraft.
+This shows simulated temperature measurements (``hofx``) over a 6-hour period computed by means of the :math:`H({\bf x})` operation described :ref:`above <hofxnrt-overview>`.  Each band of points corresponds to an orbit of the spacecraft.  This forward operator relies on JCSDA's Community Radiative Transfer Model (`CRTM <https://github.com/JCSDA/crtm>`_) to predict what this instrument would see for that model background state.
 
-Now look at some of the other fields.   The files marked with ``ObsValue`` correspond to the observations and the files marked with ``hofx`` represent the simulated observations computed by means of the :math:`H({\bf x})` operation described :ref:`above <hofxnrt-overview>`.  This forward operator relies on JCSDA's Community Radiative Transfer Model (`CRTM <https://github.com/JCSDA/crtm>`_) to predict what this instrument would see for that model background state.
+This is the default field to plot.  But, you can also plot other fields.  For example, one thing we may wish to do is to compare the simulated observations, ``hofx``, with the actual observations.  To do this, first edit the plot configuration file, ``config/Amsua_n19_gfs.hofx3d.plot.yaml`` and look for section like this:
 
-The files marked ``omb`` represent the difference between the two: observations minus background.  In data assimilation this is often referred to as the *innovation* and it plays a critical role in the forecasting process; it contains newly available information from the latest observations that can be used to improve the next forecast.  To see the innovation for this instrument over this time period, view this file:
+.. code-block:: yaml
+
+  # Group to plot (or omb)
+  metric: hofx
+
+  # Variable to plot
+  field: brightness_temperature
+
+  # Channel to plot
+  channel: 4
+
+To plot the actual observations, replace "hofx" in the "Group to plot" with ``ObsValue`` (capitalization is important):
+
+.. code-block:: yaml
+
+  # Group to plot (or omb)
+  metric: ObsValue
+
+Now return to the main directory of the tutorial and run the ``fv3jeditools`` program as follows:
 
 .. code-block:: bash
 
-   feh brightness_temperature_12_latlon_ombg_mean.png
+   cd $HOME/jedi/tutorials/Hofx
+   fv3jeditools.x 2020-10-01T03:00:00 config/Amsua_n19_gfs.hofx3d.plot.yaml
+
+and view the file in the last line of the output:
+
+.. code-block:: bash
+
+   feh output/plots/Amsua_n19/brightness_temperature-channel4_ObsValue_20201001_030000.png
+
+You may wish to download the files to your computer or open another remote window to view the two images side by side.  Another way to compare them is to edit the configuration file again and change the ``metric`` value to ``omb``.  This stands for "observation minus background"; the difference between the other two images.  Then run the ``fv3jeditools.x`` command again to generate the plot.
+
+In data assimilation this is often referred to as the *innovation* and it plays a critical role in the forecasting process; it contains newly available information from the latest observations that can be used to improve the next forecast.
 
 If you are curious, you can find the application output in the directory called ``output/hofx``. There you'll see 12 files generated, one for each of the 12 MPI tasks. This is the data from which the plots are created. The output filenames include information about the application (``hofx3d``), the model and resolution of the background (``gfs_c48``), the file format (``ncdiag``), the instrument (``amsua``), and the time stamp.
 
 Step 4: Explore
 ---------------
 
-The main objective here is to return to Steps 2 and 3 and repeat for different observation types.  Try running another observation type and look at the results in the ``output/plots`` directory.  A few suggestions: look at how the aircraft observations trace popular flight routes; look at the mean vertical temperature and wind profiles as determined from radiosondes; discover what observational quantities are derived from Global Navigation Satellite System radio occultation measurements (GNSSRO); revel in the 22 wavelength channels of the Advanced Technology Microwave Sounder (`ATMS <http://nrt.jcsda.org/gfs/gfs/atms-n20.html>`_).  For more information on any of these instruments, consult JCSDA's `NRT Observation Modeling web site <http://nrt.jcsda.org>`_.
+The main objective here is to return to Steps 2 and 3 and repeat for different observation types.  Try running a different instrument from the list and look at the results in the ``output/plots`` directory.   As with the ``Amsua_n19`` example, the default plot is ``hofx`` but you can edit the configuration file to plot ``ObsValue`` or ``omb`` instead.  Be sure to run the ``fv3jeditools.x`` program again to generate a new plot, for example:
 
-The most attentive users may notice an unused configuration file in the ``config`` directory called ``Medley_gfs.hofx3d.jedi.yaml``.  Advanced users may seek to run this themselves, guided by the ``run.bash`` script.  This runs a large number of different observation types so it takes much longer to run.  This is included in the tutorial merely to give you the flavor of what is involved in creating the NRT site.  This generates plots for over 40 instruments every six hours, using higher-resolution model backgrounds that have more than :ref:`250 times more horizontal points <hofxnrt-overview>` than what we are running here.  The `GEOS-NRT <http://nrt.jcsda.org/geos/>`_ site goes a step further in terms of computational resources - displaying continuous *4D* :math:`H({\bf x})` calculations.
+.. code-block:: bash
+
+   fv3jeditools.x 2020-10-01T03:00:00 config/Radiosonde_gfs.hofx3d.plot.yaml
+
+The first argument (the date/time) is the same for all; you just select the configuration file you want.  But, be sure to run the ``run.bash`` script first to generate the data to plot.
+
+You can also select a different variable to plot by changing the ``field``.  Or, for radiance data, you can select the spectral ``channel``.  You can determine possible values for these fields by looking in the corresponding ``jedi`` configuration file for the run.  For example, in the ``config/Radiosonde_gfs.hofx3d.jedi.yaml`` file, you'll find a section like this:
+
+.. code-block:: yaml
+
+   observations:
+   - obs space:
+       name: Radiosonde
+       obsdatain:
+         obsfile: input/obs/ioda_ncdiag_radiosonde_PT6H_20201001_0300Z.nc4
+       obsdataout:
+         obsfile: output/hofx/hofx3d_gfs_c48_ncdiag_radiosonde_PT6H_20201001_0300Z.nc4
+       simulated variables:
+       - eastward_wind
+       - northward_wind
+       - air_temperature
+     obs operator:
+       name: VertInterp
+
+This tells you that possible ``field`` (variable) values are ``eastward_wind``, ``northward_wind``, and ``air_temperature``.
+
+.. note::
+
+   For those who are familiar with it, running the NetCDF utility ``ncdump`` on the ``output/hofx`` file is another way to see the fields that are available to plot.
+
+A few suggestions: look at how the aircraft observations trace popular flight routes; look at the mean vertical temperature and wind profiles as determined from radiosondes; discover what observational quantities are derived from Global Navigation Satellite System radio occultation measurements (GNSSRO); revel in the 22 wavelength channels of the Advanced Technology Microwave Sounder (`ATMS <http://nrt.jcsda.org/gfs/gfs/atms-n20.html>`_).  For more information on any of these instruments, consult JCSDA's `NRT Observation Modeling web site <http://nrt.jcsda.org>`_.
