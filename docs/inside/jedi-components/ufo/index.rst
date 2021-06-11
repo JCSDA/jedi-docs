@@ -11,7 +11,7 @@ These documents give a high-level overview of the UFO code repository.  `A low-l
 .. toctree::
    :maxdepth: 2
 
-   obsops
+   obsops.rst
    newobsop
    qcfilters/index.rst
    variabletransforms/index.rst

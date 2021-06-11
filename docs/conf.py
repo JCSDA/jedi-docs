@@ -50,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'JEDI Documentation'
-copyright = '2018-2019, University Corporation for Atmospheric Research'
+copyright = '2018-2021, University Corporation for Atmospheric Research'
 author = 'JEDI Core Team'
 
 # The version info for the project you're documenting, acts as replacement for

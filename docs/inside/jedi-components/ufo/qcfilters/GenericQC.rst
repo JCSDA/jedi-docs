@@ -92,6 +92,22 @@ The second filter would flag wind component observations where abs((y+bias)-H(x)
 
 Please see the :ref:`Filter Actions <filter-actions>` section for more detail.
 
+There is an option for the background check filter checks for distance between observation value and model simulated value without bias correction (:math:`y-H(x)`) when the additional parameter bias correction parameter is set to 1.0 and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * sigma_o when the filter action is set to :code:`reject`.If no action section is included in the yaml, the filter is set to reject the flagged observations.
+
+.. code-block:: yaml
+
+  - filter: Background Check
+    filter variables:
+    - name: brightness_temperature
+      channels: 1-24
+    absolute threshold: 3.5
+    bias correction parameter: 1.0 
+    action:
+      name: reject  
+
+This filter would flag temperature observations where abs(y-H(x)) > min ( absolute_threshold, threshold * sigma_o), and
+then the flagged data are rejected due to filter action is set to reject.
+
 Domain Check Filter
 -------------------
 

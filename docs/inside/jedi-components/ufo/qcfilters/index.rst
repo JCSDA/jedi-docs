@@ -7,6 +7,7 @@ Quality Control in UFO
 
    introduction
    GenericQC
+   obsfunctions/index.rst
    ProfileQC
    FilterOptions
    NewFilter

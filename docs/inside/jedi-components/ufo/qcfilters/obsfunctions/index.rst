@@ -1,0 +1,112 @@
+ObsFunctions in UFO
+===================
+
+Observation Functions are more advanced filtering routines that are encapsulated together in
+a unit. They usually combine several complicated logic operations, and decomposing these
+filters into separate parts would have an obfuscating effect.
+
+:ref:`ChannelUseflagCheckRad <ChannelUseflagCheckRad>`
+  Channel usage flag check for radiances
+
+:ref:`CloudDetectMinResidualIR <CloudDetectMinResidualIR>`
+  Cloud detection using Minimum Residual Method for IR Sensors
+
+:ref:`CLWMatchIndexMW <CLWMatchIndexMW>`
+  Cloud liquid water match index for microwave radiances
+
+:ref:`CLWRetMW_SSMIS <CLWRetMW_SSMIS>`
+  Cloud liquid water for SSMIS
+
+:ref:`InterChannelConsistencyCheck <InterChannelConsistencyCheck>`
+  Inter-channel consistency check for radiances
+
+:ref:`NearSSTRetCheckIR <NearSSTRetCheckIR>`
+  NCEP-GDAP near-sea-surface temperature IR retrieval
+
+:ref:`ObsErrorBoundIR <ObsErrorBoundIR>`
+  Observation error bound for gross check
+
+:ref:`ObsErrorBoundMW <ObsErrorBoundMW>`
+  Obseration error bounds for microwave radiances
+
+:ref:`ObsErrorFactorConventional <ObsErrorFactorConventional>`
+  Compute observation error inflation factor for conventional observations based on vertical spacing
+
+:ref:`ObsErrorFactorLatRad <ObsErrorFactorLatRad>`
+  Observation error bound reduction within tropics
+
+:ref:`ObsErrorFactorQuotient <ObsErrorFactorQuotient>`
+  Reject observations based on comparing final observation error to initial error estimate
+
+:ref:`ObsErrorFactorSfcPressure <ObsErrorFactorSfcPressure>`
+  Inflate observation error for surface pressure (as in GSI)
+
+:ref:`ObsErrorFactorSituDependMW <ObsErrorFactorSituDependMW>`
+  Compute error inflation factors for AMSU-A and ATMS
+
+:ref:`ObsErrorFactorSurfJacobianRad <ObsErrorFactorSurfJacobianRad>`
+  Inflate error using surface temperature and emissivity Jacobians
+
+:ref:`ObsErrorFactorTopoRad <ObsErrorFactorTopoRad>`
+  GSI error inflation as a function of terrain height, channel, and transmittance
+
+:ref:`ObsErrorFactorTransmitTopRad <ObsErrorFactorTransmitTopRad>`
+  Satellite radiance observation error inflation factor
+
+:ref:`ObsErrorFactorWavenumIR <ObsErrorFactorWavenumIR>`
+  Observation error inflation for satellite infrared sensors
+
+:ref:`ObsErrorModelRamp <ObsErrorModelRamp>`
+  Parameterize observation error as a piecewise linear function
+
+:ref:`ObsErrorModelStepwiseLinear <ObsErrorModelStepwiseLinear>`
+  GSI variant of ObsErrorModelRamp
+
+:ref:`ObsFunctionVelocity <ObsFunctionVelocity>`
+  Compute wind speed from u- and v- components
+
+:ref:`RONBAMErrInflate <RONBAMErrInflate>`
+  Observation error inflation factor for GnssroBndNBAM
+
+:ref:`SatWindsLNVDCheck <SatWindsLNVDCheck>`
+  log-normal vector difference (LNVD) between observed and model winds
+
+:ref:`SatWindsSPDBCheck <SatWindsSPDBCheck>`
+  Wind gross error check
+
+:ref:`TropopauseEstimate <TropopauseEstimate>`
+  First-guess extimate of tropopause pressure from climatology
+
+:ref:`WindDirAngleDiff <WindDirAngleDiff>`
+  Compute wind direction angle different between observation and model
+
+
+.. toctree::
+   :hidden:
+
+   ChannelUseflagCheckRad
+   CloudDetectMinResidualIR
+   CLWMatchIndexMW
+   CLWRetMW_SSMIS
+   InterChannelConsistencyCheck
+   NearSSTRetCheckIR
+   ObsErrorBoundIR
+   ObsErrorBoundMW
+   ObsErrorFactorConventional
+   ObsErrorFactorLatRad
+   ObsErrorFactorQuotient
+   ObsErrorFactorSfcPressure
+   ObsErrorFactorSituDependMW
+   ObsErrorFactorSurfJacobianRad
+   ObsErrorFactorTopoRad
+   ObsErrorFactorTransmitTopRad
+   ObsErrorFactorWavenumIR
+   ObsErrorModelRamp
+   ObsErrorModelStepwiseLinear
+   ObsFunctionVelocity
+   ROobserrInflation
+   SatWindsLNVDCheck
+   SatWindsSPDBCheck
+   TropopauseEstimate
+   WindDirAngleDiff
+
