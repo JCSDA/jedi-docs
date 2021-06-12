@@ -149,7 +149,7 @@ and view the file in the last line of the output:
 
 .. code-block:: bash
 
-   feh output/plots/Amsua_n19/brightness_temperature-channel4_ObsValue_20201001_030000.png
+   feh output/plots/Amsua_n19/brightness_temperature-channel4_hofx_20201001_030000.png
 
 You may wish to download the files to your computer or open another remote window to view the two images side by side.  Another way to compare them is to edit the configuration file again and change the ``metric`` value to ``omb``.  This stands for "observation minus background"; the difference between the other two images.  Then run the ``fv3jeditools.x`` command again to generate the plot.
 
