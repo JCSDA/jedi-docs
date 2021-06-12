@@ -124,7 +124,7 @@ This is the focus of the sixth example of the python IODA API.  We have included
 
 .. code-block:: bash
 
-   export IODA_DATA_DIR=/opt/jedi/fv3-bundle/ioda-data/testinput_tier_1/
+   export IODA_DATA_DIR=/opt/jedi/fv3-bundle/test-data-release/ioda/2.0.0/testinput_tier_1/
    python $PYIODA/06-ReadIodaOutputFile.py $IODA_DATA_DIR/sample_hofx_output_amsua_n19.nc4
 
 As before, you can use ``h5dump`` and ``ncdump`` commands to see what is in the file:
