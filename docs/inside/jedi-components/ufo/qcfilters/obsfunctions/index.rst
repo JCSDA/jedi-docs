@@ -8,14 +8,29 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ChannelUseflagCheckRad <ChannelUseflagCheckRad>`
   Channel usage flag check for radiances
 
+:ref:`CloudDetectMinResidualAVHRR <CloudDetectMinResidualAVHRR>`
+  Cloud detection using Minimum Residual Method for AVHRR
+
 :ref:`CloudDetectMinResidualIR <CloudDetectMinResidualIR>`
   Cloud detection using Minimum Residual Method for IR Sensors
 
 :ref:`CLWMatchIndexMW <CLWMatchIndexMW>`
   Cloud liquid water match index for microwave radiances
 
+:ref:`CLWRetMW <CLWRetMW>`
+  Retrieve cloud liquid water using MW channels (non-SSMIS version)
+
 :ref:`CLWRetMW_SSMIS <CLWRetMW_SSMIS>`
   Cloud liquid water for SSMIS
+
+:ref:`CLWRetSymmetricMW <CLWRetSymmetricMW>`
+  Estimates the actual Cloud Liquid Water (CLW) content from both model background and observed content
+
+:ref:`HydrometeorCheckAMSUA <HydrometeorCheckAMSUA>`
+  AMSU-A cloud and precipitation checks
+
+:ref:`HydrometeorCheckATMS <HydrometeorCheckATMS>`
+  ATMS cloud and precipitation checks
 
 :ref:`InterChannelConsistencyCheck <InterChannelConsistencyCheck>`
   Inter-channel consistency check for radiances
@@ -74,6 +89,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`SatWindsSPDBCheck <SatWindsSPDBCheck>`
   Wind gross error check
 
+:ref:`SCATRetMW <SCATRetMW>`
+  Retrieve Grody et al. scattering index from bias-adjusted channels over water surfaces
+
 :ref:`TropopauseEstimate <TropopauseEstimate>`
   First-guess extimate of tropopause pressure from climatology
 
@@ -85,9 +103,14 @@ filters into separate parts would have an obfuscating effect.
    :hidden:
 
    ChannelUseflagCheckRad
+   CloudDetectMinResidualAVHRR
    CloudDetectMinResidualIR
    CLWMatchIndexMW
+   CLWRetMW
    CLWRetMW_SSMIS
+   CLWRetSymmetricMW
+   HydrometeorCheckAMSUA
+   HydrometeorCheckATMS
    InterChannelConsistencyCheck
    NearSSTRetCheckIR
    ObsErrorBoundIR
@@ -107,6 +130,7 @@ filters into separate parts would have an obfuscating effect.
    ROobserrInflation
    SatWindsLNVDCheck
    SatWindsSPDBCheck
+   SCATRetMW
    TropopauseEstimate
    WindDirAngleDiff
 
