@@ -769,7 +769,75 @@ Example:
      rejection_threshold: 0.5
      station_id_variable: station_id@MetaData
   
+Ship Track Check Filter
+-----------------------
 
+This filter checks tracks of mobile weather stations, rejecting observations inconsistent with the 
+rest of the track. It differs from :code:`Track Check Filter` in that it only considers 
+inconsistencies in the lat-lon and time dimensions of each observation.
+
+Each track is checked separately. The algorithm starts by performing the following calculations
+between consecutive observations:
+
+1. Distances between each observation
+2. The speed between each observation
+3. Angles of the track formed by each triplet of consecutive observations
+
+Various track statistics will be calculated:
+
+1. The number of track segments (tracks between two consecutive observations) with less than an
+   hour between the two observations.
+2. The number of track segments which exceed a user-defined maximum speed.
+3. The average speed of all track segments which do not fall into categories (1) and (2).
+4. The number of track angles which are greater than or equal to 90 degrees.
+
+If (1), (2), and (4) exceed a percentage of the total observations and the user-defined 
+:code:`early break check` setting is enabled, then the track is skipped over, with all 
+observations left unflagged.
+
+If the filter proceeds, observations are flagged iteratively by removing one of the two
+observations forming the fastest segment, until either (a) the segment with the fastest speed is
+less than a user-defined :code:`max speed (m/s)` and the angles formed by this segment with its
+adjacent segments are both less than 90 degrees or (b) the segment with the fastest speed is less
+than 80 percent of :code:`max speed (m/s)`.
+
+Numerous criteria are applied to choose which of the two observations forming the fastest track
+segment should be removed, and track statistic (3) is heavily used in this assessment.
+If the percentage of observations rejected rises greater than a
+user-defined :code:`rejection threshold` fraction, the full track is rejected.
+
+The following YAML parameters are supported:
+
+* :code:`temporal resolution`: Assumed temporal resolution of the observations (i.e. absolute
+  accuracy of the reported observation times), used for the speed calculations. Required parameter.
+
+* :code:`spatial resolution (km)`: Assumed spatial resolution of the observations (in km), i.e.
+  absolute accuracy of the reported positions. Required parameter.
+
+* :code:`max speed (m/s)`: The maximum speed (in m/s) between any two observations, above which
+  requires the rejection of one of the comprising observations. Required parameter.
+
+* :code:`rejection threshold`: The maximum fraction of track observations to be rejected, above
+  which causes the full track to be rejected. Required parameter.
+
+* :code:`early break check`: A boolean setting that determines if a track should be skipped
+  (unfiltered) if its count of track statistics (1), (2), and (4) are too large a percentage of the
+  total number of observations. Required parameter.
+
+* :code:`input category`: The type of input source. If a static source such as BUOY, track
+  statistic (1) will not be considered in deciding if a track should be skipped. Default: SHPSYN.
+  The supported sources are: LNDSYN, SHPSYN, BUOY, MOBSYN, OPENROAD, TEMP, BATHY, TESAC, BUOYPROF,
+  LNDSYB, and SHPSYB.
+
+Example:
+
+.. code-block:: yaml
+
+  - filter: Ship Track Check
+    temporal resolution: PT30S
+    spatial resolution (km): .1
+    max speed (m/s): 3.0
+    rejection threshold: 0.5
 
 Met Office Buddy Check Filter
 -----------------------------
