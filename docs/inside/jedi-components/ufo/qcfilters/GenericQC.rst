@@ -541,6 +541,67 @@ position and time. The exclusion volumes are ellipsoidal. Shuffling is disabled.
       exclusion_volume_shape: ellipsoid
       shuffle: false
 
+Stuck Check Filter
+------------------
+
+This filter thins observations by iterating over them by station and flagging each observation that
+is part of a "streak" of sequential observations. The first condition for a "streak" is that the
+observational values are the same over a certain count of sequential observations. The second 
+condition is either (a) that this set of observations is longer than a user-defined duration or (b)
+that it covers the full trajectory of a station.
+The observational values which are used for evaluation of whether a "streak" exists are the
+:code:`filter variables`. If multiple :code:`filter variables` are present, then each variable is
+considered independently. In other words the filter flags observations based on each variable,
+independent to the other variables.
+the original full track for each filter variable. Any observations that form streaks in at least one
+variable will be flagged.
+The following YAML parameters are supported:
+
+* :code:`filter variables`: the variables to use to classify observations as "stuck".
+  This required parameter must be entered as a string vector.
+
+* :code:`number stuck tolerance`: the maximum number of observations in a row with the same
+  observational value before its classification as a potential streak is made.
+  This required parameter must be entered as a non-negative integer.
+
+* :code:`time stuck tolerance`: the maximum time duration before a potential streak is rejected
+  This required parameter must be entered in ISO 8601 duration format. If
+  :code:`number stuck tolerance` is exceeded and all of the station's observations are part of the
+  same streak, :code:`time stuck tolerance` is ignored and all of the observations are rejected
+  regardless of the duration.
+
+Example 1
+^^^^^^^^^
+
+With the following parameters, a "streak" of observations is defined as sequential observations with
+identical air temperature measured values. All observations in the streak will be flagged if the
+streak (a) consists of more than 2 observations and (b) lasts longer than 2 hours or consists of the
+full set of observations from the station.
+
+.. code-block:: yaml
+
+  - filter: Stuck Check:
+    filter variables: [air_temperature]
+    number stuck tolerance: 2
+    time stuck tolerance: PT2H
+
+Example 2
+^^^^^^^^^
+
+With the following parameters, 2 types of streaks will be identified independently and the
+observations will be flagged accordingly if either of the following observed values are classified
+as "stuck": air temperature and air pressure.
+
+.. code-block:: yaml
+
+  - filter: Stuck Check:
+    filter variables: [air_temperature, air_pressure]
+    number stuck tolerance: 2
+    time stuck tolerance: PT2H
+
+Say we have 5 observations each taken an hour apart. Let the air temperature values equal: 274, 274
+274, 275, 275; and the air pressure values equal 4, 4, 5, 5, 5. In this case, all of the
+observations would be rejected.
 
 Difference Check Filter
 -----------------------
