@@ -1165,3 +1165,53 @@ Example
       coordinate values: [100000,80000,50000,20000]
       threshold type: min
  
+Satwind Inversion Filter
+----------------------------------------
+   
+This filter is a processing step which modifies the assigned pressure of AMV observations if a
+temperature inversion is detected in the model profile and defined criteria
+are met.
+
+The model profile is searched for the presence of a temperature
+inversion. Where there are multiple temperature inversions, only the lowest one is found.
+This is intended only for use on low level AMVs, typically below 700 hPa height.
+
+The pressure of the AMV is corrected downwards in height if the following conditions are true:
+
+* Originally assigned pressure is greater than or equal to min_pressure (Pa).
+* AMV derived from IR and visible channels only.
+* Temperature inversion is present in the model profile for pressures less than or equal to
+  max_pressure (Pa).
+* In order to be considered significant, the temperature difference across the top and base of
+  the inversion must be greater than or equal to the inversion_temperature (K) value.
+* Relative humidity at the top of the inversion is less than the rh_threshold value.
+* AMV has been assigned above the height of the inversion base.
+
+The AMV is then re-assigned to the base of the inversion.
+
+Reference for initial implementation:
+
+Cotton, J., Forsythe, M., Warrick, F., (2016). Towards improved height assignment and
+quality control of AMVs in Met Office NWP. Proceedings for the 13th International Winds
+Workshop 27 June - 1 July 2016, Monterey, California, USA.
+
+This filter requires the following YAML parameters:
+
+* :code:`observation pressure`: name of the observation pressure variable to correct.
+* :code:`RH threshold`: relative humidity (%) threshold value.
+
+The following are optional YAML parameters with appropriate defaults:
+
+* :code:`minimum pressure`: minimum AMV pressure (Pa) to consider for correction. Default: :code:`70000.` Pa.
+* :code:`maximum pressure`: maximum model pressure (Pa) to consider. Default: :code:`105000.` Pa.
+* :code:`inversion temperature`: temperature difference (K) between the inversion base and top. Default: :code:`2.0` K.
+
+Example:
+
+.. code:: yaml
+    
+    - filter: Satwind Inversion Correction
+      observation pressure:
+        name: air_pressure_levels@MetaData
+      RH threshold: 50
+      maximum pressure: 96000
