@@ -964,6 +964,95 @@ Implementation Notes
 
 The implementation of this filter consists of four steps: sorting, buddy pair identification, PGE update and observation flagging. Observations are grouped into zonal bands and sorted by (a) band index, (b) longitude, (c) latitude, in descending order, (d) pressure (if the :code:`sort_by_pressure` option is on), and (e) datetime. Observations are then iterated over, and for each observation a number of nearby observations (lying no further than :code:`search_radius`) are identified as its buddies. The size and "diversity" of the list of buddy pairs can be controlled with the :code:`max_total_num_buddies`, :code:`max_num_buddies_from_single_band` and :code:`max_num_buddies_with_same_station_id` options. Subsequently, the PGEs of the observations forming each buddy pair are updated. Typically, the PGEs are decreased if the signs of the innovations agree and increased if they disagree. The magnitude of this change depends on the background error correlation between the two observation locations, the error estimates of the observations and background values, and the prior PGEs of the observations: the PGE change is the larger, the stronger the correlation between the background errors and the narrower the error margins. Once all buddy pairs have been processed, observations whose PGEs exceed the specified :code:`rejection_threshold` are flagged.
 
+History Check Filter
+--------------------
+
+This filter runs the Ship Track Check filter and/or the Stuck Check filter (depending on the
+observation type) on an auxiliary obs space. The auxiliary obs space is expected to be a superset of
+the original obs space, with an earlier start time than the assimilation window but the same end 
+time. The equivalent observations to those which were flagged in the auxiliary obs space are then
+flagged in the original obs space. This filter is motivated by the fact that the Ship Track Check
+and Stuck Check filters both rely on viewing observations within the context of their surrounding
+observations. Thus, this filter makes the underlying filters more reliable for observations early in
+the assimilation window. The filters are run independently: any observations within the assimilation
+window flagged by either of the sub-filters will be flagged by this filter.
+
+The following YAML parameters are supported:
+
+* :code:`input category`: Surface observation subtype which determines if the ship track check
+  and/or the stuck check filters should be run. Supported options are LNDSYN, SHPSYN, BUOY, MOBSYN,
+  OPENROAD, TEMP, BATHY, TESAC, BUOYPROF, LNDSYB, and SHPSYB. Required parameter.
+
+* :code:`time before start of window`: The duration of time before the start of the assimilation
+  window to collect for the history check. This required parameter must be entered in ISO 8601
+  duration format.
+
+* :code:`ship track check parameters`: The options for running the ship track check filter, should
+  the  subtype not be LNDSYN or LNDSYB. These must be filled in for the ship track check filter to
+  run. The particular sub-parameters to fill in are :code:`temporal resolution`,
+  :code:`spatial resolution (km)`, :code:`max speed (m/s)`, :code:`rejection threshold`, and
+  :code:`early break check`. Please refer to the Ship Track Check filter documentation for additional
+  details on how each of these sub-parameters works. Optional parameter.
+
+* :code:`stuck check parameters`: The options for running the stuck check filter, should the subtype
+  not be TEMP, BATHY, TESAC, or BUOYPROF. These must be filled in for the stuck check filter to run.
+  The particular sub-parameters to fill in are :code:`number stuck tolerance` and
+  :code:`time stuck tolerance`. Please refer to the Stuck Check Filter documentation for additional
+  details on how each of these sub-parameters works. Optional parameter.
+
+* :code:`obs space`: The options used to create the auxiliary obs space that is determined by the
+  observation subtype. A user needs to enter the following fields: name, simulated variables, and 
+  obsdatain.obsfile or generate. It additionally may be necessary to specify the distribution as
+  InefficientDistribution. This prevents the observations from distributing to different
+  processors between the original obs space and the auxiliary obs space, which could cause
+  in-window observations flagged in the auxiliary obs space to be left unflagged in the original
+  obs space.
+
+* :code:`station_id_variable`: Variable storing string- or integer-valued station IDs. Observations
+  taken by each station are checked separately. Applies to assimilation observation space.
+
+  If not set and observations were grouped into records when the observation space was
+  constructed, each record is assumed to consist of observations taken by a separate
+  station. If not set and observations were not grouped into records, all observations are
+  assumed to have been taken by a single station.
+
+Example:
+^^^^^^^^
+
+With the following parameters, the history check filter will be run on the obs space explicitly
+simulated, using the generated air temperature values for the stuck check and the lat-lon-dt values
+for the ship track check. :code:`time before start of window` set as 3 hours will cause the
+filters to run from 3 hours before the start of the assimilation window (regardless of the time
+range present in the auxiliary obs space).
+
+
+.. code-block:: yaml
+
+   - filter: History Check
+     input category: 'SHPSYN'
+     time before start of window: PT3H
+     filter variables: [air_temperature]
+     stuck check parameters:
+       number stuck tolerance: 2
+       time stuck tolerance: PT2H
+     ship track check parameters:
+       temporal resolution: PT1S
+       spatial resolution (km): 0.001
+       max speed (m/s): 0.01
+       rejection threshold: 0.5
+       early break check: false
+     station_id_variable:
+       name: station_id@MetaData
+     obs space:
+       name: Ship
+       distribution: InefficientDistribution
+       simulated variables: [air_temperature]
+       generate:
+         list:
+           lats: [-37.1, -37.2, -37.3]
+           lons: [82.5, 82.5, 82.5]
+           datetimes: [ '2010-01-01T00:00Z', '2010-01-01T01:30Z', '2010-01-01T03:00Z']
+         obs errors: [1.0]
 
 Variable Assignment Filter
 --------------------------
