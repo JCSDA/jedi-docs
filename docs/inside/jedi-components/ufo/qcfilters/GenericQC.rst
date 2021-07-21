@@ -1209,7 +1209,7 @@ Example:
       - name: brightness_temperature
         channels: 1-22
       qtotal: true
-    
+
 ModelOb Threshold Filter
 ----------------------------------------
       
@@ -1309,3 +1309,41 @@ Example:
         name: air_pressure_levels@MetaData
       RH threshold: 50
       maximum pressure: 96000
+
+Model Best Fit Pressure Filter
+----------------------------------------
+
+This filter calculates the model best-fit pressure and flags cases where this estimate is poorly constrained. Optionally, it can output the best-fit eastward and northward wind vectors, which are the model background winds interpolated to the model best-fit pressure.
+
+The model best-fit pressure is defined as the model pressure (Pa) with the smallest vector difference between the AMV and model background wind, but additionally is not allowed to be lower than the threshold specified in the top pressure parameter. Vertical interpolation is performed between model levels to find the minimum vector difference.
+
+Checking if the pressure is well-constrained:
+
+* Remove any winds where the minimum vector difference between the AMV u (eastward_wind) and v (northward_wind) and the background column u and v is greater than the threshold specified in the upper vector diff parameter. This check aims to remove cases where there is no good agreement between the AMV and the winds at any level in the background wind column.
+* Remove any winds where the vector difference is less than the lower vector diff anywhere outside the band of width 2 * pressure band half-width centered around the best-fit pressure level. This aims to catch cases where there are secondary minima or very broad minima. In both cases the best-fit pressure is not well constrained.
+
+This filter accepts the following YAML parameters:
+
+* :code:`observation pressure`: Name of the observation pressure variable to correct. Required parameter.
+* :code:`top pressure`: Minimum allowed pressure region. Default: :code:`10000.` Pa.
+* :code:`pressure band half-width`: Pressure band, for calculating constraint. Default: :code:`10000.` Pa.
+* :code:`upper vector diff`: Max vector difference allowed, for calculating constraint. Default: :code:`4.` m/s.
+* :code:`lower vector diff`: Min vector difference allowed, for calculating constraint. Default: :code:`2.` m/s.
+* :code:`tolerance vector diff`: Tolerance for vec_diff comparison. Default: :code:`1.0e-8` m/s.
+* :code:`tolerance pressure`: Tolerance for pressure comparison. Default: :code:`0.01` Pa.
+* :code:`calculate bestfit winds`: To calculate best-fit winds by linear interpolation. Output stored in "model_bestfit_eastward_wind@DerivedValue" and "model_bestfit_northward_wind@DerivedValue". Default: :code:`false`
+
+Example
+
+.. code:: yaml
+
+    - filter: Model Best Fit Pressure
+    observation pressure:
+      name: air_pressure_levels@MetaData
+    top pressure: 10000
+    pressure band half-width: 10000
+    upper vector diff: 4
+    lower vector diff: 2
+    tolerance vector diff: 1.0e-8
+    tolerance pressure: 0.01
+    calculate bestfit winds: true
