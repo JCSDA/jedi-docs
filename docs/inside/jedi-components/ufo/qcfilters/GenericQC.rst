@@ -101,9 +101,9 @@ There is an option for the background check filter checks for distance between o
     - name: brightness_temperature
       channels: 1-24
     absolute threshold: 3.5
-    bias correction parameter: 1.0 
+    bias correction parameter: 1.0
     action:
-      name: reject  
+      name: reject
 
 This filter would flag temperature observations where abs(y-H(x)) > min ( absolute_threshold, threshold * sigma_o), and
 then the flagged data are rejected due to filter action is set to reject.
@@ -181,7 +181,7 @@ Here the filter is configured to inflate errors of all observations from the Sou
 
 .. code-block:: yaml
 
-   - filter: Perform Action 
+   - filter: Perform Action
      action:
        name: inflate error
        inflation: 2.0
@@ -202,7 +202,7 @@ The filter configured in this way behaves like :code:`RejectList`:
 
 .. code-block:: yaml
 
-   - filter: Perform Action 
+   - filter: Perform Action
      action:
        name: reject
 
@@ -213,7 +213,7 @@ The filter configured in this way behaves like :code:`AcceptList`:
 
 .. code-block:: yaml
 
-   - filter: Perform Action 
+   - filter: Perform Action
      action:
        name: accept
 
@@ -546,7 +546,7 @@ Stuck Check Filter
 
 This filter thins observations by iterating over them by station and flagging each observation that
 is part of a "streak" of sequential observations. The first condition for a "streak" is that the
-observational values are the same over a certain count of sequential observations. The second 
+observational values are the same over a certain count of sequential observations. The second
 condition is either (a) that this set of observations is longer than a user-defined duration or (b)
 that it covers the full trajectory of a station.
 The observational values which are used for evaluation of whether a "streak" exists are the
@@ -768,12 +768,12 @@ Example:
      max_speed_interpolation_points: {"0": 1000, "20000": 400, "110000": 200} # Pa: m/s
      rejection_threshold: 0.5
      station_id_variable: station_id@MetaData
-  
+
 Ship Track Check Filter
 -----------------------
 
-This filter checks tracks of mobile weather stations, rejecting observations inconsistent with the 
-rest of the track. It differs from :code:`Track Check Filter` in that it only considers 
+This filter checks tracks of mobile weather stations, rejecting observations inconsistent with the
+rest of the track. It differs from :code:`Track Check Filter` in that it only considers
 inconsistencies in the lat-lon and time dimensions of each observation.
 
 Each track is checked separately. The algorithm starts by performing the following calculations
@@ -791,8 +791,8 @@ Various track statistics will be calculated:
 3. The average speed of all track segments which do not fall into categories (1) and (2).
 4. The number of track angles which are greater than or equal to 90 degrees.
 
-If (1), (2), and (4) exceed a percentage of the total observations and the user-defined 
-:code:`early break check` setting is enabled, then the track is skipped over, with all 
+If (1), (2), and (4) exceed a percentage of the total observations and the user-defined
+:code:`early break check` setting is enabled, then the track is skipped over, with all
 observations left unflagged.
 
 If the filter proceeds, observations are flagged iteratively by removing one of the two
@@ -969,7 +969,7 @@ History Check Filter
 
 This filter runs the Ship Track Check filter and/or the Stuck Check filter (depending on the
 observation type) on an auxiliary obs space. The auxiliary obs space is expected to be a superset of
-the original obs space, with an earlier start time than the assimilation window but the same end 
+the original obs space, with an earlier start time than the assimilation window but the same end
 time. The equivalent observations to those which were flagged in the auxiliary obs space are then
 flagged in the original obs space. This filter is motivated by the fact that the Ship Track Check
 and Stuck Check filters both rely on viewing observations within the context of their surrounding
@@ -1001,7 +1001,7 @@ The following YAML parameters are supported:
   details on how each of these sub-parameters works. Optional parameter.
 
 * :code:`obs space`: The options used to create the auxiliary obs space that is determined by the
-  observation subtype. A user needs to enter the following fields: name, simulated variables, and 
+  observation subtype. A user needs to enter the following fields: name, simulated variables, and
   obsdatain.obsfile or generate. It additionally may be necessary to specify the distribution as
   InefficientDistribution. This prevents the observations from distributing to different
   processors between the original obs space and the auxiliary obs space, which could cause
@@ -1085,12 +1085,12 @@ YAML file. Each element of this list can contain the following options:
 
 Example 1
 ^^^^^^^^^
-    
+
 Create new variables :code:`air_temperature@GrossErrorProbability` and
 :code:`relative_humidity@GrossErrorProbability` and set them to 0.1 at all locations.
 
 .. code:: yaml
-    
+
     - filter: Variable Assignment
       assignments:
       - name: air_temperature@GrossErrorProbability
@@ -1099,14 +1099,14 @@ Create new variables :code:`air_temperature@GrossErrorProbability` and
       - name: relative_humidity@GrossErrorProbability
         type: float
         value: 0.1
-    
+
 Example 2
 ^^^^^^^^^
 
 Set :code:`air_temperature@GrossErrorProbability` to 0.05 at all locations in the tropics.
 
 .. code:: yaml
-    
+
     - filter: Variable Assignment
       where:
       - variable:
@@ -1116,7 +1116,7 @@ Set :code:`air_temperature@GrossErrorProbability` to 0.05 at all locations in th
       assignments:
       - name: air_temperature@GrossErrorProbability
         value: 0.05
-    
+
 Example 3
 ^^^^^^^^^
 
@@ -1125,7 +1125,7 @@ Set :code:`relative_humidity@GrossErrorProbability` to values computed by an Obs
 transition in between).
 
 .. code:: yaml
-    
+
     - filter: Variable Assignment
       assignments:
       - name: relative_humidity@GrossErrorProbability
@@ -1138,7 +1138,8 @@ transition in between).
             x1: [30]
             err0: [0.1]
             err1: [0.05]
-    
+
+
 RTTOV 1D-Var Check (RTTOVOneDVar) Filter
 ----------------------------------------
 
@@ -1184,7 +1185,7 @@ The following are optional YAML parameters with appropriate defaults:
 Example:
 
 .. code:: yaml
-    
+
     - filter: RTTOV OneDVar Check
       BMatrix: ../resources/bmatrix/rttov/atms_bmatrix_70_test.dat
       RMatrix: ../resources/rmatrix/rttov/atms_noaa_20_rmatrix_test.nc4
@@ -1212,10 +1213,10 @@ Example:
 
 ModelOb Threshold Filter
 ----------------------------------------
-      
-This filter applies a threshold to a model profile interpolated to the observation 
+
+This filter applies a threshold to a model profile interpolated to the observation
 height.
-   
+
 The specified model profile variable is linearly (vertical) interpolated
 to the observation height using the specified model vertical coordinate variable.
 This is referred to as the "ModelOb". Note that the ModelOb is not necessarily
@@ -1258,10 +1259,10 @@ Example
       thresholds: [50,50,40,30]
       coordinate values: [100000,80000,50000,20000]
       threshold type: min
- 
+
 Satwind Inversion Filter
 ----------------------------------------
-   
+
 This filter is a processing step which modifies the assigned pressure of AMV observations if a
 temperature inversion is detected in the model profile and defined criteria
 are met.
@@ -1303,12 +1304,53 @@ The following are optional YAML parameters with appropriate defaults:
 Example:
 
 .. code:: yaml
-    
+
     - filter: Satwind Inversion Correction
       observation pressure:
         name: air_pressure_levels@MetaData
       RH threshold: 50
       maximum pressure: 96000
+
+GNSS-RO 1D-Var Check (GNSSROOneDVar) Filter
+-------------------------------------------
+
+This filter performs a 1-dimensional variational assimilation (1D-Var) that acts as a quality-control check for GNSS-RO profile data.  It finds the optimal set of bending angles based on the background departures from the observations.  If these optimal values are too far from the observation, or the minimisation does not converge within a given number of iterations, then the full profile of observations is rejected.  Other, smaller, tests are also included.
+
+The bending angle observations are normally stored individually, rather than being kept as a profile.  Therefore the profile is constructed using the record number as an identifier for which observations belong to a given profile.  These observations are sorted according to their impact parameter (smallest first) and the GeoVaL for the first observation is used to represent the model background values for the whole profile.  This filter is currently tied to the Met Office's bending angle operator for GNSS-RO and thus requires the appropriate inputs for that operator.
+
+This filter requires the following parameters to be set in the yaml:
+
+* :code:`bmatrix_filename`: The file-name of the background-error covariance used.
+* :code:`capsupersat`: If true calculate saturation vapour pressure with respect to water and ice (below zero degrees), else calculate it with respect to water everywhere.
+* :code:`cost_funct_test`: The profile is rejected if the final cost-function is larger than :code:`cost_funct_test` times the number of observations.
+* :code:`Delta_ct2`: The minimisation is considered to have converged if the absolute value of the change in the solution for an iteration, divided by the gradient in the cost-function is less than :code:`Delta_ct2` times the number of observations in the profile, divided by 200.
+* :code:`Delta_factor`: The minimisation is considered to have converged if the absolute change in the cost-function at this iteration is less than :code:`Delta_factor` times either the previous value of the cost-function or the number of observations (whichever is the smaller).  That is, the minimisation has converged if: :code:`ABS(J_new - J_old) < Delta_factor * min(J_old, nObs)`
+* :code:`min_temp_grad`: Threshold for the minimum temperature gradient before a profile is considered isothermal (units: K per model level).  Only applies if pseudo-levels are being used.
+* :code:`n_iteration_test`: The maximum number of iterations - the profile is rejected if it does not converge in time.
+* :code:`OB_test`: If the RMS difference between the observations and the background bending angle is greater than :code:`OB_test` then the whole profile is rejected.
+* :code:`pseudo_ops`: Whether to use pseudo-levels to reduce interpolation errors in the forward model.
+* :code:`vert_interp_ops`: If true use linear interpolation in ln(pressure), otherwise use linear interpolation in exner.
+* :code:`y_test`: If an observation is more than :code:`y_test` times the observation error away from the solution bending angle, then the observation (not the whole profile) is rejected.
+
+Example
+
+.. code::yaml
+
+  - filter: GNSS-RO 1DVar Check
+    bmatrix_filename: ../resources/bmatrix/gnssro/gnssro_bmatrix.txt
+    capsupersat: false
+    cost_funct_test: 2
+    defer to post: true
+    Delta_ct2: 1
+    Delta_factor: 0.01
+    filter variables:
+    - name: bending_angle
+    min_temp_grad: 1.0e-6
+    n_iteration_test: 20
+    OB_test: 2.5
+    pseudo_ops: true
+    vert_interp_ops: true
+    y_test: 5
 
 Model Best Fit Pressure Filter
 ----------------------------------------
