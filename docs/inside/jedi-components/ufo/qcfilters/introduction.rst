@@ -54,3 +54,52 @@ Most filters are written once and used with many observation types; several such
       - name: brightness_temperature
         channels: 1-15
       threshold: 3.0
+
+.. _Derived-Variables:
+
+Derived Variables
+-----------------
+
+Some filters need to create new or modify existing ObsSpace variables. For example, the Variable
+Transforms filter may create new variables representing wind velocity components computed from
+measurements of the wind speed and direction. Other filters may want to correct measurements or
+metadata loaded from the input file.
+
+It is important to note that filters should never modify variables from the :code:`ObsValue` group
+or add new variables to that group: otherwise initial and postprocessed measurements could not be
+distinguished, which would harm traceability. Instead, filters may create or modify variables from
+the :code:`DerivedObsValue` group. The ObsSpace treats all groups with the :code:`Derived` prefix
+in a special way. Each member function used to access existing variables, such as
+:code:`get_db(group, name, ...)`, checks first if a variable :code:`name` exists in the group
+:code:`"Derived" + group` and if so, it retrieves that variable; if not, the function looks for the
+variable :code:`name` in the group :code:`group`. As a result, variables from groups with the
+:code:`Derived` prefix effectively "overshadow" corresponding variables from groups without that
+prefix. In the rare cases where it is important to access the original variables rather than their
+derived counterparts, :code:`ObsSpace` member functions should be called with the
+:code:`skipDerived` argument set to :code:`true`.
+
+There is no strict rule forbidding modifications to variables from other groups such as
+:code:`MetaData`. However, for clarity, it may be a good idea to avoid modifying metadata loaded
+from the input file and instead store any corrected versions in variables from the
+:code:`DerivedMetaData` group.
+
+Note that to any variables from the :code:`DerivedObsValue` group that need to be assimilated must
+be included in the :code:`obs space.derived simulated variables` list rather than :code:`obs
+space.simulated variables` (see :ref:`observations`). If these variables do not exist by the time
+the last filter finishes execution, an exception is thrown. (In contrast, variables from the
+:code:`obs space.simulated variables` must exist already when the first filter starts execution.)
+
+Observation Errors
+------------------
+
+Use the following variable groups to refer to estimates of observation errors of simulated
+variables valid at specific stages in the execution of a JEDI application:
+
+* :code:`ObsError`: initial values loaded from the input :code:`ioda` file.
+
+* :code:`ObsErrorData`: up-to-date values (set by one of the preceding filters).
+
+* :code:`EffectiveError`: final values obtained after execution of all filters. This group does
+  not exist while filters are running, but is present in the output :code:`ioda` file.
+
+All these values represent standard deviations (square roots of variances).

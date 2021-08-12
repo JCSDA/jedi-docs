@@ -42,6 +42,8 @@ initial condition
 
 This is used to define the initial condition of a forecast or DA cycle.  It often includes references to restart files and Fortran namelists to be used by the model upon startup.  Alternatively, it may specify one of several idealized analytic states that can be used to initialize models.  JEDI currently provides several options for analytic initialization based on the idealized benchmarks defined by the multi-institutional 2012 `Dynamical Core Intercomparison Project <https://earthsystemcog.org/projects/dcmip-2012>`_ sponsored by NOAA, NSF, DOE, NCAR, and the University of Michigan.  Other analytic models may be added in the future.
 
+.. _observations:
+
 observations
 ^^^^^^^^^^^^
 
@@ -52,7 +54,8 @@ Often the largest section of the configuration file, this describes one or more 
   * **name**: descriptive name, used in logs (required)
   * **obsdatain.obsfile**: input filename (this or **generate** section is required)
   * **obsdataout.obsfile**: output filename (optional)
-  * **simulated variables**: list of variables that need to be simulated by the observation operator (required).
+  * **simulated variables**: list of variables that need to be simulated by the observation operator and whose observed values are present in the input file (required, though may be an empty list).
+  * **derived simulated variables**: list of variables that need to be simulated by the observation operator, but whose observed values cannot be loaded from the input file and need to be created by a filter (optional).
 
 Example:
 
@@ -73,14 +76,22 @@ Example:
        obsfile: Data/amsua_n19_obs_2018041500_out.nc4
      simulated variables: [brightness_temperature]
      channels: 1-10,15
-
+   # Example 3: derived variables. Suppose the input file contains wind speeds and directions,
+   # but we want to assimilate the eastward and northward wind velocity components (which could
+   # be derived from the speeds and directions using the Variable Transforms filter)
+   obs space:
+     name: Radiosonde
+     obsdatain:
+       obsfile: Data/sondes_obs_2018041500.nc4
+     simulated variables: [air_temperature]
+     derived simulated variables: [eastward_wind, northward_wind]
 
 * **obs operator**: describes observation operator and its options (required)
 
   * **name**: name in the ObsOperator and LinearObsOperator factory, defined in the C++ code (required)
   * other options depend on observation operators (see :doc:`description of existing obs operators</inside/jedi-components/ufo/obsops>`).
 
-* **obs error**: Provides information and specifications for computing the observation error covariance matrix (required for DA applications). The first item in this section is often the key **covariance model**, which identifies the method by which observation error covariances are constructed. The only option supported currently is **diagonal** for diagonal observation error covariances.
+* **obs error**: Provides information and specifications for computing the observation error covariance matrix (required for DA applications). The first item in this section is often the key **covariance model**, which identifies the method by which observation error covariances are constructed. The only option supported currently is **diagonal** for diagonal observation error covariances. This is also the default used when the **obs error** section is not present. The initial estimates of the standard deviations (square roots of variances) of observation errors of simulated variables are loaded from ObsSpace variables from the :code:`ObsError` group, if they exist. The observation errors of any simulated variables without a counterpart in the :code:`ObsError` group are initialized to missing value indicators; it is then the user's responsibility to provide valid error estimates using an observation filter (typically performing the :code:`assign error` action; see :ref:`filter-actions`) by the time they are needed. After the last filter has been executed, any observations that still have no valid error estimates are rejected.
 * **obs filters**: Used to define QC filters (optional, see :doc:`description of existing QC filters</inside/jedi-components/ufo/qcfilters/index>`)
 * **obs bias**: Used to specify the bias correction (optional)
 * **geovals**: Identifies simulated ufo output files and other parameters that are used for testing (optional, only used for UFO tests)
