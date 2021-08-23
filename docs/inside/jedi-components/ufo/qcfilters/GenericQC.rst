@@ -1429,3 +1429,52 @@ Example
     tolerance vector diff: 1.0e-8
     tolerance pressure: 0.01
     calculate bestfit winds: true
+
+Process AMV QI
+--------------
+
+This "filter" (it is not a true filter; rather, a "processing step") converts AMV Quality Index (QI) values stored in the 3-10-077 BUFR template into variables with names corresponding to the wind generating application number.
+
+If not present, new QI variables are created. Created QI variables depend on "wind_generating_application_<number>" and fills them with the values found in "percent_confidence_<number>".
+
+The wind generating application numbers are associated as below:
+
+.. list-table:: Wind generating application variables
+   :widths: 20 20 20
+   :header-rows: 1
+
+   * - Wind generating application number
+     - QI type
+     - Variable name
+   * - 1
+     - Full weighted mixture of individual quality tests
+     - QI_full_weighted_mixture
+   * - 2
+     - Weighted mixture of individual tests, but excluding forecast comparison
+     - QI_weighted_mixture_exc_forecast_comparison
+   * - 3
+     - Recursive filter function
+     - QI_recursive_filter_function
+   * - 4
+     - Common quality index (QI) without forecast
+     - QI_common
+   * - 5
+     - QI without forecast
+     - QI_without_forecast
+   * - 6
+     - QI with forecast
+     - QI_with_forecast
+   * - 7
+     - Estimated Error (EE) in m/s converted to a percent confidence
+     - QI_estimated_error
+
+This filter accepts the following YAML parameters:
+
+* :code:`number of generating apps`: How many generating application variables to search for. Required parameter.
+
+Example
+
+.. code:: yaml
+
+    - filter: Process AMV QI
+      number of generating apps: 4
