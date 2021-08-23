@@ -60,7 +60,7 @@ If there is only one entry in the :code:`test variables` list, the same criterio
 Background Check Filter
 -----------------------
 
-This filter checks for bias corrected distance between observation value and model simulated value (:math:`y-H(x)`) and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * sigma_o when the filter action is set to :code:`reject`. This filter can also adjust observation error through a constant inflation factor when the filter action is set to :code:`inflate error`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
+This filter checks for bias corrected distance between observation value and model simulated value (:math:`y-H(x)`) and rejects obs where the absolute difference is larger than :code:`absolute threshold`, or :code:`threshold` * :math:`{\sigma}_o`, or :code:`threshold` * :math:`{\sigma}_b`, where :math:`{\sigma}_o` is observation error and :math:`{\sigma}_b` is background error. This filter can also adjust observation error through a constant inflation factor when the filter action is set to :code:`inflate error`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
 
 .. code-block:: yaml
 
@@ -84,15 +84,23 @@ This filter checks for bias corrected distance between observation value and mod
      action:
        name: inflate error
        inflation: 2.0
+   - filter: Background Check
+     filter variables:
+     - name: sea_surface_height
+     threshold wrt background error: true
+     threshold: 2.0
+      
 
-The first filter would flag temperature observations where abs((y+bias)-H(x)) > min ( absolute_threshold, threshold * sigma_o), and
-then the flagged data are rejected due to filter action is set to reject.
+The first filter would flag temperature observations where :math:`|y-(H(x)+bias)| > \min (` :code:`absolute_threshold`, :code:`threshold` * :math:`{\sigma}_o)`, and
+then the flagged data are rejected due to the filter action being set to :code:`reject`.
 
-The second filter would flag wind component observations where abs((y+bias)-H(x)) > threshold * sigma_o and latitude of the observation location are within 60 degree. The flagged data will then be inflated with a factor 2.0.
+The second filter would flag wind component observations where :math:`|y-(H(x)+bias)| >` :code:`threshold` * :math:`{\sigma}_o` and latitude of the observation location are within 60 degree. The flagged data will then be inflated with a factor 2.0.
+
+The third filter compares the departure against the background error rather than the observation error. It would flag sea surface height observations where :math:`|y-(H(x)+bias)| >` :code:`threshold` * :math:`{\sigma}_b`, and reject the flagged observations as no filter action is specified. If :code:`threshold wrt background error` is set to :code:`true`, then :code:`threshold` must be set and :code:`absolute threshold` must not.
 
 Please see the :ref:`Filter Actions <filter-actions>` section for more detail.
 
-There is an option for the background check filter checks for distance between observation value and model simulated value without bias correction (:math:`y-H(x)`) when the additional parameter bias correction parameter is set to 1.0 and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * sigma_o when the filter action is set to :code:`reject`.If no action section is included in the yaml, the filter is set to reject the flagged observations.
+There is an option for the background check filter to check for distance between observation value and model simulated value without bias correction (:math:`y-H(x)`) when the additional parameter :code:`bias correction parameter` is set to 1.0 and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * :math:`{\sigma}_o` when the filter action is set to :code:`reject`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
 
 .. code-block:: yaml
 
@@ -105,8 +113,7 @@ There is an option for the background check filter checks for distance between o
     action:
       name: reject
 
-This filter would flag temperature observations where abs(y-H(x)) > min ( absolute_threshold, threshold * sigma_o), and
-then the flagged data are rejected due to filter action is set to reject.
+This filter would flag temperature observations where :math:`|y-H(x)| > \min (` :code:`absolute_threshold`, :code:`threshold` * :math:`{\sigma}_o)`, and then the flagged data are rejected due to filter action is set to reject.
 
 Domain Check Filter
 -------------------
