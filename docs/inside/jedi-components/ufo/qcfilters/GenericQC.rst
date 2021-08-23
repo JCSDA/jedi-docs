@@ -275,7 +275,10 @@ The following YAML parameters are supported:
     cell width in the zonal direction is as close as possible to that in the meridional direction.
     False to set the number of zonal bands so that the band width is as small as possible, but
     no smaller than :code:`horizontal_mesh`, and the cell width in the zonal direction is as small as
-    possible, but no smaller than in the meridional direction. Default: :code:`false`.
+    possible, but no smaller than in the meridional direction.
+
+    Defaults to :code:`false` unless the :code:`ops_compatibility_mode` option is enabled, in which
+    case it's set to :code:`true`.
 
 - Vertical grid:
 
@@ -326,7 +329,34 @@ The following YAML parameters are supported:
       system of coordinates in which the cell is a unit cube (all dimensions along which thinning
       is enabled are taken into account).
 
-    Default: :code:`geodesic`.
+    Defaults to :code:`geodesic` unless the :code:`ops_compatibility_mode` option is enabled, in
+    which case it's set to :code:`maximum`.
+
+  * :code:`ops_compatibility_mode`: Set this option to :code:`true` to make the filter produce
+    identical results as the :code:`Ops_Thinning` subroutine from the Met Office OPS system when
+    both are run serially (on a single process).
+
+    This modifies the filter behavior in the following ways:
+
+    - The :code:`round_horizontal_bin_count_to_nearest` option is set to :code:`true`.
+
+    - The :code:`distance_norm` option is set to :code:`maximum`.
+
+    - Bin indices are calculated by rounding values away from rather towards zero. This can alter
+      the bin indices assigned to observations lying at bin boundaries.
+
+    - The bin lattice is assumed to cover the whole real axis (for times and pressures) or the
+      [-360, 720] degrees interval (for longitudes) rather than just the intervals
+      [:code:`time_min`, :code:`time_max`], [:code:`pressure_min`, :code:`pressure_max`] and
+      [0, 360] degrees, respectively. This may cause observations lying at the boundaries of the
+      latter intervals to be put in bins of their own, which is normally undesirable.
+
+    - A different (non-stable) sorting algorithm is used to order observations before inspection.
+      This can alter the set of retained observations if some bins contain multiple equally good
+      observations (with the same priority and distance to the cell center measured with the
+      selected norm). If this happens for a significant fraction of bins, it may be a sign the
+      criteria used to rank observations (the priority and the distance norm) are not specific
+      enough.
 
 Example 1 (thinning by the horizontal position only):
 
