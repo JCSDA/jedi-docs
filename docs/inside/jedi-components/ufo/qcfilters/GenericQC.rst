@@ -241,7 +241,7 @@ Gaussian Thinning Filter
 This filter thins observations by preserving only one observation in each cell of a grid. Cell assignment can be based on an arbitrary combination of:
 
 - horizontal position
-- vertical position (in terms of air pressure)
+- vertical position (in terms of height or pressure)
 - time
 - category (arbitrary integer associated with each observation).
 
@@ -272,16 +272,19 @@ The following YAML parameters are supported:
 
 - Vertical grid:
 
-  * :code:`vertical_mesh`: Cell size (in Pa) in the vertical direction.
+  * :code:`vertical_mesh`: Cell size in the vertical direction.
     Thinning in the vertical direction is disabled
     if this parameter is not specified or negative.
 
-  * :code:`vertical_min`: Lower bound of the pressure interval split into cells of size
-    :code:`vertical_mesh`. Default: 100 Pa.
+  * :code:`vertical_min`: Lower bound of the vertical coordinate interval split into cells of size
+    :code:`vertical_mesh`. Default: 100 (Pa).
 
-  * :code:`vertical_max`: Upper bound of the pressure interval split into cells of size
+  * :code:`vertical_max`: Upper bound of the vertical coordinate interval split into cells of size
     :code:`vertical_mesh`. This parameter is rounded upwards to the nearest multiple of
-    :code:`vertical_mesh` starting from :code:`vertical_min`. Default: 110,000 Pa.
+    :code:`vertical_mesh` starting from :code:`vertical_min`. Default: 110,000 (Pa).
+  
+  * :code:`vertical_coordinate`: Name of the observation vertical coordinate. 
+    Default: :code:`air_pressure`.
 
 - Temporal grid:
 
@@ -310,7 +313,7 @@ The following YAML parameters are supported:
     is retained. Allowed values:
 
     + :code:`geodesic`: retain the observation closest to the cell center in the horizontal direction
-      (air pressure and time are ignored when selecting the observation to retain)
+      (the vertical coordinate and time are ignored when selecting the observation to retain)
 
     + :code:`maximum`: retain the observation lying furthest from the cell's bounding box in the
       system of coordinates in which the cell is a unit cube (all dimensions along which thinning
