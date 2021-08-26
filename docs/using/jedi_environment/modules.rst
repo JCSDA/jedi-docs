@@ -234,8 +234,8 @@ Cheyenne
 .. code-block:: bash
 
    module purge
-   export OPT=/glade/work/miesch/modules
-   module use $OPT/modulefiles/core
+   export JEDI_OPT=/glade/work/jedipara/cheyenne/opt/modules
+   module use $JEDI_OPT/modulefiles/core
 
 Current options for setting up the JEDI environment include (choose only one)
 
@@ -244,14 +244,14 @@ Current options for setting up the JEDI environment include (choose only one)
    module load jedi/gnu-openmpi # GNU compiler suite and openmpi
    module load jedi/intel-impi # Intel 19.0.5 compiler suite and Intel mpi
 
-Because of space limitations on your home directory, it's a good idea to locate your build directory on glade:
+Because of space limitations on your home directory, it's a good idea to locate your build directory on the `glade <https://www2.cisl.ucar.edu/resources/storage-and-file-systems/glade-file-spaces>`_ filesystems:
 
 .. code-block:: bash
 
     cd /glade/work/<username>
     mkdir jedi/build; cd jedi/build
 
-If you choose the :code:`jedi/gnu-openmpi` module, you can proceed run ecbuild as you would on most other systems:
+If you choose the :code:`jedi/gnu-openmpi` module, you can proceed run :code:`ecbuild` as you would on most other systems:
 
 .. code-block:: bash
 
@@ -263,9 +263,9 @@ If you choose the :code:`jedi/gnu-openmpi` module, you can proceed run ecbuild a
 
    Please do not use too many threads to speed up the compilation, Cheyenne system administrator might terminate your login node.
 
-However, if you choose to compile with the `jedi/intel-impi` module you must use a toolchain.  This is required in order enable C++14 and to link to the proper supporting libraries.
+However, if you choose to compile with the :code:`jedi/intel-impi` module you must use a toolchain.  This is required in order enable C++14 and to link to the proper supporting libraries.
 
-So, first clone the :code:`jedi-cmake` repository:
+First clone the :code:`jedi-cmake` repository:
 
 .. code-block:: bash
 
@@ -281,7 +281,7 @@ Then pass this toolchain to :code:`ecbuild`:
 
    If you cloned the ``jedi-cmake`` repository as part of building a jedi bundle, then the name of the repository may be ``jedicmake`` instead of ``jedi-cmake``.
 
-The system configuration on Cheyenne will not allow you to run mpi jobs from the login node.  So, if you try to run :code:`ctest` from here, the mpi tests will fail.  So, to run the jedi unit tests you will have to either submit a batch job or request an interactive session with :code:`qsub -I`.  The following is a sample batch script to run the unit tests for ufo-bundle.  Note that some ctests require up to 6 MPI tasks so requesting 6 cores should be sufficient.
+The system configuration on Cheyenne will not allow you to run mpi jobs from the login node.  If you try to run :code:`ctest` from here, the mpi tests will fail.  To run the jedi unit tests you will have to either submit a batch job or request an interactive session with :code:`qsub -I`.  The following is a sample batch script to run the unit tests for ``ufo-bundle``.  Note that some ctests require up to 6 MPI tasks so requesting 6 cores should be sufficient.
 
 .. code-block:: bash
 
@@ -292,13 +292,14 @@ The system configuration on Cheyenne will not allow you to run mpi jobs from the
     #PBS -l select=1:ncpus=6:mpiprocs=6
     #PBS -q regular
     #PBS -j oe
+    #PBS -k eod
     #PBS -m abe
     #PBS -M <your-email>
 
-    source /glade/u/apps/ch/opt/lmod/8.1.7/lmod/lmod/init/bash
+    source source /etc/profile.d/modules.sh
     module purge
-    export OPT=/glade/work/miesch/modules
-    module use $OPT/modulefiles/core
+    export JEDI_OPT=/glade/work/jedipara/cheyenne/opt/modules
+    module use $JEDI_OPT/modulefiles/core
     module load jedi/gnu-openmpi
     module list
 
@@ -310,6 +311,92 @@ The system configuration on Cheyenne will not allow you to run mpi jobs from the
     # now run ctest
     ctest -E get_
 
+Casper
+------
+
+The `Casper <https://www2.cisl.ucar.edu/resources/computational-systems/casper>`_ cluster is a heterogeneous system of specialized data analysis and visualization resources, large-memory, multi-GPU nodes, and high-throughput computing nodes. On Casper, users can access the installed jedi modules by first entering
+
+.. code-block:: bash
+
+   module purge
+   export JEDI_OPT=/glade/work/jedipara/casper/opt/modules
+   module use $JEDI_OPT/modulefiles/core
+
+Current options for setting up the JEDI environment include (choose only one)
+
+.. code-block:: bash
+
+   module load jedi/gnu-openmpi # GNU compiler suite and openmpi
+   module load jedi/intel-impi # Intel 19.0.5 compiler suite and Intel mpi
+
+Because of space limitations on your home directory, it's a good idea to locate your build directory on the `glade <https://www2.cisl.ucar.edu/resources/storage-and-file-systems/glade-file-spaces>`_ filesystems:
+
+.. code-block:: bash
+
+    cd /glade/work/<username>
+    mkdir jedi/build; cd jedi/build
+
+If you choose the :code:`jedi/gnu-openmpi` module, you can proceed run :code:`ecbuild` as you would on most other systems:
+
+.. code-block:: bash
+
+   ecbuild <path-to-bundle>
+   make update
+   make -j4
+
+.. warning::
+
+   Please do not use too many threads to speed up the compilation, Casper system administrator might terminate your login node.
+
+However, if you choose to compile with the :code:`jedi/intel-impi` module you must use a toolchain.  This is required in order enable C++14 and to link to the proper supporting libraries.
+
+First clone the :code:`jedi-cmake` repository:
+
+.. code-block:: bash
+
+   git clone git@github.com:jcsda/jedi-cmake.git
+
+Then pass this toolchain to :code:`ecbuild`:
+
+.. code-block:: bash
+
+   ecbuild --toolchain=<path-to-jedi-cmake>/jedi-cmake/cmake/Toolchains/jcsda-Casper-Intel.cmake <path-to-bundle>
+
+.. note::
+
+   If you cloned the ``jedi-cmake`` repository as part of building a jedi bundle, then the name of the repository may be ``jedicmake`` instead of ``jedi-cmake``.
+
+The system configuration on Casper will not allow you to run mpi jobs from the login node.  If you try to run :code:`ctest` from here, the mpi tests will fail.  To run the jedi unit tests you will have to either submit a batch job or request an interactive session with :code:`execcasper`. Invoking it without an argument will start an interactive shell on the *first available HTC node*. The default wall-clock time is 6 hours. To use another type of node, include a `select` statement specifying the resources you need. The :code:`execcasper` command accepts all ``PBS`` flags and resource specifications as detailed by ``man qsub``.
+
+The following is a sample batch script to run the unit tests for ``ufo-bundle``.  Note that some ctests require up to 6 MPI tasks so requesting 6 cores should be sufficient.
+
+.. code-block:: bash
+
+    #!/bin/bash
+    #PBS -N ctest-ufo-gnu
+    #PBS -A <project-code>
+    #PBS -l walltime=00:20:00
+    #PBS -l select=1:ncpus=6:mpiprocs=6
+    #PBS -q casper
+    #PBS -j oe
+    #PBS -k eod
+    #PBS -m abe
+    #PBS -M <your-email>
+
+    source source /etc/profile.d/modules.sh
+    module purge
+    export JEDI_OPT=/glade/work/jedipara/casper/opt/modules
+    module use $JEDI_OPT/modulefiles/core
+    module load jedi/gnu-openmpi
+    module list
+
+    # cd to your build directory.  Make sure that these binaries were built
+    # with the same module that is loaded above, in this case jedi/intel-impi
+
+    cd <build-directory>
+
+    # now run ctest
+    ctest -E get_
 
 Discover
 --------
