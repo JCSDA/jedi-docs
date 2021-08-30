@@ -27,7 +27,7 @@ module use $JEDI_OPT/modulefiles/core
 ### Install JEDI stack
 
 ```bash
-git clone https://github.com/JCSDA/jedi-stack.git
+git clone https://github.com/jcsda-internal/jedi-stack.git
 ```
 
 (Note that in what follows only gfortran is used from the `brew`-installed `gcc` package.)
