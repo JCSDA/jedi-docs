@@ -5,39 +5,42 @@ Diagnostics
 
 The purpose of this package is to help developers and users evaluate MPAS-JEDI performance, and
 diagnose potential errors in the system. The package includes scripts for plotting the cost
-function, the norm of the gradient, observation distribution, and analysis increment. It also
-includes observation- and model-space verification tools for tracking the performance of cycling
+function, the norm of the gradient, observation distribution, and analysis increment.
+To support testing of EDA with MPAS-JEDI, the package includes probabilistic evaluations of the ensemble of
+background forecasts. It also includes observation- and model-space verification tools for tracking the performance of cycling
 experiments. Those tools evaluate traditional statistical measures (Mean, RMS, STD, etc...) for
 surface and upper air variables. Additionally there is some capability for determining confidence
 intervals for those verification measures. Both the model- and observation-space components provide
 a means to store intermediate statistical measures and then visualize verification statistics. 
 
+Cartopy, matplotlib, numpy, h5py, and netCDF4 Python packages are required to perform the diagnostics.
+
 Analysis Increments
 -------------------
 A plot of analysis increments can help users to understand how the model analysis has adjusted to
 assimilated observations. You can calculate the analysis increment and make figures for different
-analysis fields by using :code:`mpas-jedi/test/graphics/plot_inc.py`. The following example is for
-visualizing the analysis increment of the meridional component of reconstructed horizontal velocity.
+analysis fields by using :code:`mpas-bundle/mpas-jedi/graphics/plot_inc.py`. The following example is for
+visualizing the analysis increment of the Zonal component of reconstructed horizontal velocity.
 
 .. code-block:: bash
 
-   python $GRAPHICS_DIR/plot_inc.py $DATE 3denvar uReconstructMeridional 29 True $GFSANA_DIR
+   python $GRAPHICS_DIR/plot_inc.py $DATE 3denvar uReconstructZonal 1 False
 
-The argument :code:`True` means the MPAS analysis will also be compared with corresponding GFS
-analysis.
+The argument :code:`1` means the analysis increment will be plotted by each level, and
+the argument :code:`False` means the MPAS analysis will not be compared with corresponding GFS analysis.
 
 .. _u-inc:
 .. figure:: images/u_inc.png
-   :height: 200px
+   :height: 400px
    :align: center
 
-   Figure 1. Meridional wind increment at 0000 UTC 15 Apr 2018 on the 29th model level.
+   Figure 1. Zonal wind increment at 0000 UTC 15 Apr 2018 on the 29th model level.
 
 Observation-space verification
 ------------------------------
 
 All scripts discussed in this section are located in :code:`GRAPHICS_DIR/cycling`, where
-:code:`GRAPHICS_DIR = mpas-jedi/test/graphics`.
+:code:`GRAPHICS_DIR = mpas-bundle/mpas-jedi/graphics`.
 
 MPAS-JEDI utilizes the IODA and UFO file writing mechanisms to generate observation-space feedback
 files from hofx and variational applications. That includes the standard IODA ObsSpace as well as
@@ -90,7 +93,7 @@ Model-space verification
 Model-space verification can be used to verify a forecast against gridded fields (e.g., GFS analyses).
 Users can use a shell script to control model-space verification,
 and the modelsp_utils.py includes variables needed when you setup environment variables in the shell script,
-such as :code:`expLongNames`, :code:`initDate`, :code:`endDate1`, :code:`intervalHours`, :code:`fcHours`, etc.
+such as :code:`expLongNames`, :code:`initDate`, :code:`endDate`, :code:`intervalHours`, :code:`fcHours`, etc.
 
 The sample shell script for write diagnostics and visualize verification statistics looks like:
 
