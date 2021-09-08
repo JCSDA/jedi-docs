@@ -11,11 +11,11 @@ of the Model for Prediction Across Scales (MPAS).  The MPAS computational framew
 by Los Alamos National Laboratory and the National Center for Atmospheric Research (NCAR), and NCAR has
 lead responsibility for the atmospheric component.
 
-.. Add links for MPAS, MPAS-A?
+The user is referred to documentation for `MPAS <https://mpas-dev.github.io/>`_ and `MPAS-Atmosphere <https://mpas-dev.github.io/atmosphere/atmosphere.html>`_ for user guides and other information about those model components.
 
-As well as all the source code needed to implement JEDI for the MPAS mesh and model variables, MPAS-JEDI also
-provides a suite of tests that can be run automatically as part of continuous integration, and configurations
-for those tests and other low-resolution examples.
+MPAS-JEDI provides the source code needed to implement JEDI for the MPAS mesh and atmospheric model variables,
+as well as a suite of tests that can be run automatically as part of continuous integration, configurations
+for those tests, and other coarse mesh-spacing examples.
 
 
 Applications currently possible with MPAS-JEDI
@@ -27,13 +27,15 @@ Applications currently possible with MPAS-JEDI
 - EDA
 
 Each of these applications can be configured to use MPAS variable-resolution or regional meshes, in addition
-to global, quasi-uniform meshes like those in the test suite and tutorial examples.  MPAS-JEDI application can
-also be configured to employ analysis increments and ensemble-forecast input at a different, lower resolution
-than the background forecast and analysis.
-MPAS-JEDI includes python-based diagnostics and plotting utilities and cylc-based workflow, both of
-which are planned to merge with shared JEDI capabilities as those capabilities mature.
+to global, quasi-uniform meshes like those in the test suite and tutorial examples.  MPAS-JEDI's DA applications can
+also be configured to employ analysis increments and ensemble-forecast input at a different, coarser
+mesh-spacing than the background forecast and analysis. MPAS-JEDI is distributed with python-based
+diagnostic and plotting utilities. There is an additional cylc-based workflow repository
+(`MPAS-Workflow <https://github.com/NCAR/MPAS-Workflow>`_) available, which has only been used on NCAR's Cheyenne HPC.
+Eventually those independent post-processing and workflow tools will be merged with or replaced by shared JEDI
+capabilities as those capabilities mature.
 
 MPAS-JEDI and MPAS-A
 ---------------------------------------------
 
-MPAS-JEDI utilizes a variety of computational infrastructure directly from MPAS-A, including mesh definitions and decompositions, and data structures plus the utilities to construct and manipulate them. Together with the MPAS-A development team at NCAR, we often enhance MPAS-A to facilitate its use for data assimilation and within JEDI.  These enhancements reside in a fork of MPAS-Dev/MPAS-Model until they can be merged there.
+Important elements of MPAS-JEDI are adopted directly from MPAS-A, including mesh definitions and decompositions, in-memory data structures, and the utilities to construct and manipulate them. Together with the MPAS-A development team at NCAR, we often enhance MPAS-A to facilitate its use for data assimilation and within JEDI.  These enhancements reside in a fork of MPAS-Dev/MPAS-Model until they can be merged there.
