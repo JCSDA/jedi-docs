@@ -111,12 +111,12 @@ A few steps are necessary to access the installed jedi modules.  The following b
 
 .. code-block:: bash
 
-   export JEDI_OPT=/work/noaa/da/grubin/opt/modules
+   export JEDI_OPT=/work/noaa/da/jedipara/opt/modules
    module use $JEDI_OPT/modulefiles/core
 
 Currently there are two sets of compiler / MPI module suites available to load (choose only one):
 
-Intel Parallel Studio version 20.0.166 (which contains version 19.1.0.166 of the compiler suite):
+Intel Parallel Studio version 2020 update 2 (which contains version 20.2.254 of the compiler suite):
 
 .. code-block:: bash
 
@@ -174,11 +174,12 @@ Here is a sample `slurm <https://slurm.schedmd.com/>`_ batch script for running 
 
    source /etc/bashrc
    module purge
-   export JEDI_OPT=/work/noaa/da/grubin/opt/modules
+   export JEDI_OPT=/work/noaa/da/jedipara/opt/modules
    module use $JEDI_OPT/modulefiles/core
    module load jedi/intel-impi
    module list
    ulimit -s unlimited
+   ulimit -v unlimited
 
    export SLURM_EXPORT_ENV=ALL
    export HDF5_USE_FILE_LOCKING=FALSE
@@ -201,11 +202,12 @@ Note that the options specified with ``#SBATCH`` include the number of nodes but
 
    source /etc/bashrc
    module purge
-   export JEDI_OPT=/work/noaa/da/grubin/opt/modules
+   export JEDI_OPT=/work/noaa/da/jedipara/opt/modules
    module use $JEDI_OPT/modulefiles/core
-   module load jedi/intel-impi
+   module load jedi/gnu-openmpi
    module list
    ulimit -s unlimited
+   ulimit -v unlimited
 
    export SLURM_EXPORT_ENV=ALL
    export HDF5_USE_FILE_LOCKING=FALSE
