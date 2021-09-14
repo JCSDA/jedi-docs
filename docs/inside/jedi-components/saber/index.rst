@@ -9,7 +9,7 @@ It provides generic software utilities for computing and working with the backgr
 These documents give a high-level overview of the SABER code repository.  A low-level description of the classes, functions, and subroutines is also available, produced by means of the `Doxygen document generator <https://www.doxygen.nl/index.html>`_.
 
 +-----------------------------------------------------------------------------------------+
-| `Doxygen Documentation <http://data.jcsda.org/doxygen/Release/1.1.0/saber/index.html>`_ |
+| `Doxygen Documentation <http://data.jcsda.org/doxygen/Release/saber/1.2.0/index.html>`_ |
 +-----------------------------------------------------------------------------------------+
 
 
