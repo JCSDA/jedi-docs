@@ -92,6 +92,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`SCATRetMW <SCATRetMW>`
   Retrieve Grody et al. scattering index from bias-adjusted channels over water surfaces
 
+:ref:`SetSurfaceType <SetSurfaceType>`
+  Determine and output surface type for use with observation operator
+
 :ref:`TropopauseEstimate <TropopauseEstimate>`
   First-guess extimate of tropopause pressure from climatology
 
@@ -131,6 +134,7 @@ filters into separate parts would have an obfuscating effect.
    SatWindsLNVDCheck
    SatWindsSPDBCheck
    SCATRetMW
+   SetSurfaceType
    TropopauseEstimate
    WindDirAngleDiff
 
