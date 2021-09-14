@@ -463,11 +463,11 @@ S4 is the **Satellite Simulations and Data Assimilation Studies** supercomputer 
 
 The S4 system currently only supports intel compilers.  Furthermore, S4 uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs.  Though some slurm implementations allow you to use the usual mpi job scripts :code:`mpirun` or :code:`mpiexec`, these may not function properly on S4.  Instead, you are advised to use the slurm run script :code:`srun`.
 
-So, to load the JEDI intel module you can use the following commands (as on other systems, you can put the first two lines in your :code:`~/.bashrc` file for convenience):
+To load the JEDI intel module you can use the following commands (as on other systems, you can put the first two lines in your :code:`~/.bashrc` file for convenience):
 
 .. code-block:: bash
 
-   export JEDI_OPT=/data/users/mmiesch/modules
+   export JEDI_OPT=/data/prod/jedi/opt/modules
    module use $JEDI_OPT/modulefiles/core
    module load jedi/intel-impi
 
@@ -509,7 +509,7 @@ Here is a sample slurm batch script for running ctest.
 
    source /etc/bashrc
    module purge
-   export JEDI_OPT=/data/users/mmiesch/modules
+   export JEDI_OPT=/data/prod/jedi/opt/modules
    module use $JEDI_OPT/modulefiles/core
    module load jedi/intel-impi
    module list
@@ -536,7 +536,7 @@ Note that the options specified with ``#SBATCH`` include the number of nodes but
 
    source /etc/bashrc
    module purge
-   export JEDI_OPT=/data/users/mmiesch/modules
+   export JEDI_OPT=/data/prod/jedi/opt/modules
    module use $JEDI_OPT/modulefiles/core
    module load jedi/intel-impi
    module list
