@@ -44,7 +44,24 @@ All scripts discussed in this section are located in :code:`GRAPHICS_DIR/cycling
 
 MPAS-JEDI utilizes the IODA and UFO file writing mechanisms to generate observation-space feedback
 files from hofx and variational applications. That includes the standard IODA ObsSpace as well as
-optional GeoVaLs and ObsDiagnostics. Those database files feed into a robust observation-space
+optional GeoVaLs and ObsDiagnostics. The standard IODA ObsSpace is written using the :code:`ObsSpace::save` method in IODA,
+while GeoVaLs and ObsDiagnostics are written using the :code:`GeoVaLs::write` method in UFO.
+The sample yaml setting to output the feedback file for hofx is as follows:
+
+.. code:: yaml
+
+    obsdataout:
+      obsfile: dbOut/obsout_hofx_sondes.h5
+
+and for variational:
+
+.. code:: yaml
+
+    obsdataout:
+      obsfile: dbOut/obsout_variational_sondes.h5
+
+In the Variational application, ObsGroups associated with :code:`EffectiveQC`, :code:`EffectiveError`, :code:`hofx`, and :code:`ObsBias` are saved with iteration number, such as :code:`EffectiveQC0`, :code:`EffectiveQC1`, which is not the case for the HofX application.
+Those database files feed into a robust observation-space
 python-based verification tool. The first part of the tool diagnoses fits to observations, and
 writes binned statistics to intermediate NetCDF database files. If you perform verification on NCAR
 CISL's Cheyenne HPC, run the :code:`ncar_pylib` command first in order to load all of the required python
@@ -90,8 +107,8 @@ enabled on CISL's Cheyenne and Casper login nodes at this time.
 Model-space verification
 ------------------------
 
-Model-space verification can be used to verify a forecast against gridded fields (e.g., GFS analyses).
-Users can use a shell script to control model-space verification,
+Model-space verification can be used to verify an analysis or a forecast against gridded fields (e.g., GFS analyses).
+Input files are GFS analyses (or other source) in MPAS grid and MPAS analyses or forecasts. Users can use a shell script to control model-space verification,
 and the modelsp_utils.py includes variables needed when you setup environment variables in the shell script,
 such as :code:`expLongNames`, :code:`initDate`, :code:`endDate`, :code:`intervalHours`, :code:`fcHours`, etc.
 
