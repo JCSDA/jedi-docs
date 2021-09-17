@@ -96,9 +96,9 @@ then the flagged data are rejected due to the filter action being set to :code:`
 
 The second filter would flag wind component observations where :math:`|y-(H(x)+bias)| >` :code:`threshold` * :math:`{\sigma}_o` and latitude of the observation location are within 60 degree. The flagged data will then be inflated with a factor 2.0.
 
-The third filter compares the departure against the background error rather than the observation error. It would flag sea surface height observations where :math:`|y-(H(x)+bias)| >` :code:`threshold` * :math:`{\sigma}_b`, and reject the flagged observations as no filter action is specified. If :code:`threshold wrt background error` is set to :code:`true`, then :code:`threshold` must be set and :code:`absolute threshold` must not.
-
 Please see the :ref:`Filter Actions <filter-actions>` section for more detail.
+
+The third filter compares the departure against the background error rather than the observation error. It would flag sea surface height observations where :math:`|y-(H(x)+bias)| >` :code:`threshold` * :math:`{\sigma}_b`, and reject the flagged observations as no filter action is specified. If :code:`threshold wrt background error` is set to :code:`true`, then :code:`threshold` must be set and :code:`absolute threshold` must not.
 
 There is an option for the background check filter to check for distance between observation value and model simulated value without bias correction (:math:`y-H(x)`) when the additional parameter :code:`bias correction parameter` is set to 1.0 and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * :math:`{\sigma}_o` when the filter action is set to :code:`reject`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
 
@@ -114,6 +114,67 @@ There is an option for the background check filter to check for distance between
       name: reject
 
 This filter would flag temperature observations where :math:`|y-H(x)| > \min (` :code:`absolute_threshold`, :code:`threshold` * :math:`{\sigma}_o)`, and then the flagged data are rejected due to filter action is set to reject.
+
+
+Bayesian Background Check Filter
+--------------------------------
+
+Similar to the standard Background Check filter, which rejects observations based on the difference between observation value and model simulated value (:math:`y-H(x)`), the Bayesian Background Check also takes into account the probability that an observation is "bad", i.e. "in gross error".
+
+The .yaml file requires the following filter parameters:
+
+- prob density bad obs (:code:`PdBad`): the value of the prior uniform probability distribution for the observation to be bad (e.g. 0.1/K for a domain 273-283 K for some temperature observation);
+
+- initial prob gross error (:code:`PGE`): the weight given to the uniform ("bad") probability distribution - while :code:`(1-PGE)` is the weight given to the "good" distribution (a Gaussian in :math:`[y-H(x)]`, with variance :math:`{\sigma}^2` given by the sum of background uncertainty and observation uncertainty variances).
+
+The initial :code:`PGE` divided by the combined probability distribution, gives the conditional probability that the observation is in gross error. This conditional probability value is the after-check PGE, :code:`PGEBd`. It is saved in the ObsSpace for optional later use in the buddy check.
+
+The .yaml file can also contain optional filter parameters, which override the default values in ufo/utils/ProbabilityOfGrossErrorParameters.h:
+
+- PGE threshold (:code:`PGECrit`, default 0.1): if the adjusted (after-check) PGE exceeds this value, the observation is rejected;
+
+- obs minus BG threshold (:code:`SDiffCrit`, default 100.0): if the observation-background normalised square-difference :math:`[y-H(x)]^2/{\sigma}^2` exceeds this value, the observation is rejected;
+
+- max exponent (:code:`ExpArgMax`, default 80.0): maximum allowed value of the exponent in the "good" probability distribution;
+
+- obs error multiplier (:code:`ObErrMult`, default 1.0): weight of observation error in the combined error variance;
+
+- BG error multiplier (:code:`BkgErrMult`, default 1.0): weight of background error in the combined error variance.
+
+.. code-block:: yaml
+
+     - filter: Bayesian Background Check
+       filter variables:
+       - name: ice_area_fraction 
+       prob density bad obs: 1.0
+       initial prob gross error: 0.04
+       PGE threshold: 0.07
+       obs minus BG threshold: 100.0
+
+
+Note that this filter requires the background value (HofX) and background uncertainty. The latter is accessed from the obs diagnostics - as an interim measure, supplied in a separate .nc4 file (see .yaml snippet below), with variable name e.g. :code:`ice_area_fraction_background_error` (no @ group name) to go with :code:`ice_area_fraction`.
+
+.. code-block:: yaml
+
+     HofX: HofX
+     obs diagnostics:
+       filename: Data/ufo/testinput_tier_1/background_errors_for_bayesianbgcheck_test.nc4
+
+
+By default, a filter variable is treated as scalar. But for vectors, such as wind, the two components must be specified one after the other in the .yaml, and the first must have the option :code:`first_component_of_two` set to true.
+
+.. code-block:: yaml
+
+     - filter: Bayesian Background Check
+       filter variables:
+       - name: eastward_wind
+         options:
+             first_component_of_two: true
+       - name: northward_wind
+
+
+Bayesian Background check currently only works for single-level observations, not profiles.
+
 
 Domain Check Filter
 -------------------
