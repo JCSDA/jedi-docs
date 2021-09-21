@@ -31,7 +31,7 @@ and using BUMP utilities for spatial interpolation of models fields.
 an unstructured interpolation with barycentric weights, which is available from OOPS repository.
 
 :code:`3denvar_2stream_bumploc_unsinterp.yaml` is the same as :code:`3denvar_bumploc_bumpinterp.yaml`, except for using
-the two-stream state initialization method. Please find more information on the two-stream IO in :ref:`refer_two-stream_class.rst` .
+the two-stream state initialization method. More information about two-stream state initialization is available in the :ref:`geometry-mpas` class documentation.
 
 :code:`3denvar_dual_resolution.yaml` is an example of pure 3DEnVar with a finer resolution state (at 384 km) and
 coarse resolution increment (at 480 km).

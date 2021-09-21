@@ -15,6 +15,8 @@ a means to store intermediate statistical measures and then visualize verificati
 
 Cartopy, matplotlib, numpy, h5py, and netCDF4 Python packages are required to perform the diagnostics.
 
+.. _analysis-inc-diag-mpas:
+
 Analysis Increments
 -------------------
 A plot of analysis increments can help users to understand how the model analysis has adjusted to

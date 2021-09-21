@@ -12,12 +12,11 @@ Learning Goals:
 Prerequisites:
  - :doc:`Build and test JEDI-MPAS <dev-container_mpas_jedi>`
 
-.. _hofxmpas-overview:
-
 Notes:
  - This tutorial is modeled after the separate :doc:`Simulating Observations with UFO <../level1/hofx_nrt>`
    tutorial, with some specific content related to JEDI-MPAS
 
+.. _hofxmpas-overview:
 
 Overview
 --------

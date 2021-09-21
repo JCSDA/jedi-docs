@@ -7,11 +7,11 @@ Learning Goals:
  - Perform EnVar data assimilation with the JEDI-MPAS Variational application from a JEDI-MPAS build
 
 Prerequisites:
- - :doc:`Build and test JEDI-MPAS <mpas_jedi_bt>`
+ - :doc:`Build and test JEDI-MPAS <dev-container_mpas_jedi>`
 
 Notes:
  - There are many common preparations in configuring the JEDI-MPAS application between
-:doc:`Tutorial: Simulating Observations with a JEDI-MPAS Application <hofx-mpas>` and this tutorial.
+   :doc:`Tutorial: Simulating Observations with a JEDI-MPAS Application <hofx-mpas>` and this tutorial.
 
 Overview
 --------
@@ -196,7 +196,7 @@ Now execute the script with python.
 
 This will generate plots of the background forecast (with suffix ``MPASBAK``), the analysis (with suffix ``MPASANA``),
 and the analysis increment (with suffix ``MPASAMB``) for the variable ``uReconstructZonal``, which is the zonal component of
-horizontal velocity at the center of MPAS mesh cells. Please see `Analysis Increments`_ for further information on the ``plot_inc.py`` script.
+horizontal velocity at the center of MPAS mesh cells. Please see the :ref:`analysis-inc-diag-mpas` section of the mpas-jedi :doc:`Diagnostics <../../../inside/jedi-components/mpas-jedi/diagnostics>` documentation for further information on the ``plot_inc.py`` script.
 
 If you are using a Vagrant container, then you can view the files on your local system under the ``vagrant_data`` directory.
 
@@ -297,7 +297,7 @@ Like 3DEnVar and 4DEnVar, comment out the top lines of ``parameters_bumploc.yaml
 
 ``parameters_bumploc.yaml`` specifies that the localization length will be estimated based on 5 ensemble members, then writes out
 the localization files in NetCDF format. The important configurations are set under ``bump`` yaml key, and please see
-`Operators generation`_ section in the SABER documentation for further information. Note that the current yaml file requests
+``Operators generation`` section of the the SABER :doc:`Getting started <../../../inside/jedi-components/saber/getting_started>` documentation for further information. Note that the current yaml file requests
 estimates only for the horizontal localization length scale and specifies no vertical localization
 because the 480 km test data has only six vertical levels. Let's issue the ``mpiexec`` command as follows.
 
