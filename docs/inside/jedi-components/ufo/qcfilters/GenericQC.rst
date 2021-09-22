@@ -1382,7 +1382,7 @@ Example
       model vertical coordinate:
         name: air_pressure@GeoVaLs
       observation height:
-        name: air_pressure_levels@MetaData
+        name: air_pressure@MetaData
       thresholds: [50,50,40,30]
       coordinate values: [100000,80000,50000,20000]
       threshold type: min
@@ -1434,7 +1434,7 @@ Example:
 
     - filter: Satwind Inversion Correction
       observation pressure:
-        name: air_pressure_levels@MetaData
+        name: air_pressure@MetaData
       RH threshold: 50
       maximum pressure: 96000
 
@@ -1493,7 +1493,8 @@ Checking if the pressure is well-constrained:
 
 This filter accepts the following YAML parameters:
 
-* :code:`observation pressure`: Name of the observation pressure variable to correct. Required parameter.
+* :code:`observation pressure`: Name of the observation pressure variable. Required parameter.
+* :code:`model pressure`: Name of the model pressure variable. Required parameter.
 * :code:`top pressure`: Minimum allowed pressure region. Default: :code:`10000.` Pa.
 * :code:`pressure band half-width`: Pressure band, for calculating constraint. Default: :code:`10000.` Pa.
 * :code:`upper vector diff`: Max vector difference allowed, for calculating constraint. Default: :code:`4.` m/s.
@@ -1508,7 +1509,9 @@ Example
 
     - filter: Model Best Fit Pressure
     observation pressure:
-      name: air_pressure_levels@MetaData
+      name: air_pressure@MetaData
+    model pressure:
+      name: air_pressure_levels@GeoVaLs
     top pressure: 10000
     pressure band half-width: 10000
     upper vector diff: 4
