@@ -120,12 +120,12 @@ nml_file and streams_file
 The :code:`nml_file` and :code:`streams_file` specify the `namelist.atmosphere` and
 `streams.atmosphere` files, respectively, which are used to initialize the MPAS-A mesh and
 additional model fields that are used to initialize MPAS-A physical quantities.  Some of those physical
-quantities may not be be needed for MPAS-JEDI applications, which will be discussed later in the context
+quantities may not be needed for MPAS-JEDI applications, which will be discussed later in the context
 of the :code:`deallocate non-da fields` option.  For most MPAS-JEDI applications, it suffices to use the
 default namelist and streams file names, again `namelist.atmosphere` and `streams.atmosphere`,
 respectively.  One specific case where the default names cannot be used is a dual-mesh ``Variational`` application.
 
-For ``Variational`` applications, the :code:`geometry` configuration is provied in two places, under
+For ``Variational`` applications, the :code:`geometry` configuration is provided in two places, under
 :code:`cost function` and within each of the :code:`iterations` vector members under
 :code:`variational`. The :code:`cost function.geometry` configuration specifies the fine mesh used
 for background and analysis states, and the :code:`variational.iterations[:].geometry`
@@ -180,7 +180,7 @@ to settings that are mesh-specific.  For example, :code:`config_block_decomp_fil
 desribed earlier in this section of the documentation.
 
 Although the above discussion shows how to handle restart files in an MPAS-JEDI application, using
-full restart files, uses significant disk space in cycling workflows.  For such
+full restart files uses significant disk space in cycling workflows.  For such
 purposes, there is another model initialization approach we call "2-stream" that is available in both
 MPAS-JEDI and MPAS-Model, as distributed with mpas-bundle.  For purposes of definition, it is important
 to understand that MPAS-Model uses the term "stream" to define the flow of data in and out of the model
@@ -216,7 +216,7 @@ example,
 
 The "input" input stream is used to read the forecast initial state in MPAS-Model (above) and the
 fields needed to initialize the MPAS-JEDI :code:`Geometry` in all MPAS-JEDI applications.
-Hoever, it is important to note that the fields intialized in the :code:`Geometry` object are not the
+However, it is important to note that the fields intialized in the :code:`Geometry` object are not the
 same as the background :code:`State` object that feeds ``Variational`` and ``HofX`` applications.
 The fields in the :code:`Geometry` object are only placeholders or templates for the fields that will
 eventually be read in the :code:`State::read` method.  The :code:`State::read` and :code:`State::write`
@@ -279,7 +279,7 @@ deallocate non-da fields
 The :code:`geometry.deallocate non-da fields` option is used to reduce physical memory usage in 3D
 JEDI applications that do not require time-integration of the MPAS-Model, i.e., applications that
 do not utilize the :code:`Model` class. This setting controls deallocation of those unused fields,
-which are allocated in a the :code:`domain_type` object that is created in :code:`mpas_init`. Refer
+which are allocated in the :code:`domain_type` object that is created in :code:`mpas_init`. Refer
 to the fortran-level :code:`Geometry` class source code for detailed information about which fields
 are deallocated.
 
@@ -288,7 +288,7 @@ interpolation type
 
 The :code:`geometry.interpolation type` setting is optional, and allows flexibilty in dual-mesh
 applications, where interpolation is performed between the two meshes. Valid settings are
-:code:`bump` or :code:`unstructured`, which refer to two different interpolation implementations
+:code:`bump`(the default, if this option is not specified) or :code:`unstructured`, which refer to two different interpolation implementations
 in saber and oops, respectively.
 
 
@@ -339,7 +339,7 @@ object.  All fields that are needed by the applicable portion of a generic appli
 listed here.
 
 Although the user specifies which :code:`state variables` are created and operated on within
-an mpas-jedi application using the yaml file, the fields for which IO is conducted are specified in
+an MPAS-JEDI application using the yaml file, the fields for which IO is conducted are specified in
 :code:`stream_list.atmosphere.output`.  The list of variables there does not need to exactly match
 the list in the yaml. However, the user should be aware that :code:`State::read` and
 :code:`State::write` will attempt to read and write all fields listed in
@@ -437,7 +437,7 @@ A YAML example for this linear variable change can be found in CTest :code:`mpas
 
 Analysis to Model Variable Change
 """""""""""""""""""""""""""""""""
-After getting the analysis increment for :code:`[uReconstructZonal, uReconstructMeridional, temperature, spechum, surface_pressure]` from the minimization of cost function, the full field analysis state is calculated in :code:`+=` (add increment) method of :code:`State` class. In this method, the MPAS model variables :code:`[index_qv, pressure, theta, rho, u]` are also updated. The full-field pressure :code:`pressure` is obtained by integrating the hydrostatic equation from the surface. The dry potential temperature :code:`theta` is then calculated from :code:`temperature` and :code:`pressure`, and dry air density :code:`rho` is derived using the equation of state. The edge normal wind :code:`u` is incrementally updated by using :code:`subroutine uv_cell_to_edges`, originally from MPAS DART.
+After getting the analysis increment for :code:`[uReconstructZonal, uReconstructMeridional, temperature, spechum, surface_pressure]` from the minimization of cost function, the full field analysis state is calculated in :code:`+=` (add increment) method of :code:`State` class. In this method, the MPAS model variables :code:`[qv, pressure, theta, rho, u]` are also updated. The full-field pressure :code:`pressure` is obtained by integrating the hydrostatic equation from the surface. The dry potential temperature :code:`theta` is then calculated from :code:`temperature` and :code:`pressure`, and dry air density :code:`rho` is derived using the equation of state. The edge normal wind :code:`u` is incrementally updated by using :code:`subroutine uv_cell_to_edges`, originally from MPAS DART.
 
 
 Variable Change from Reading MPAS file to Analysis Variable
@@ -489,7 +489,7 @@ After the model variable fields are converted to ``GeoVars``, the
 :code:`GetValues` and :code:`LinearGetValues` classes are responsible for interpolating the
 `GeoVars` from the MPAS unstructured Voronoi mesh to the observation locations requested by the UFO
 observation operators. Currently OOPS instructs :code:`GetValues` and :code:`LinearGetValues` to
-carry out interpolation for each observation opterator independently, in a serial loop.  The
+carry out interpolation for each observation operator independently, in a serial loop.  The
 interpolation weights are calculated only once for each observation operator in an ``HofX``
 application and only once per outer iteration in a ``Variational`` application.
 
@@ -525,6 +525,6 @@ Somewhat different interpolation methods are used depending upon the data-type o
 Barycentric weights (`unstructured`) or mesh triangulation (`bump`) are used for scalar real
 fields, while a form of nearest neighbor interpolation is used for integer fields.  Integer fields
 are which are primarily associated with surface quantities, such as vegetation and soil types.
-MPAS-JEDI has two ctests that exercsie the OOPS interfaces of the GetValues and LinearGetValues
+MPAS-JEDI has two ctests that exercise the OOPS interfaces of the GetValues and LinearGetValues
 classes. The two tests are configured with the :code:`getvalues.yaml` and
 :code:`lineargetvalues.yaml` YAML files.

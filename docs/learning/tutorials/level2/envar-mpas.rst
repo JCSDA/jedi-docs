@@ -262,7 +262,7 @@ As in step 3, users can plot the horizontal distribution of analysis increment f
     python plot_inc.py 2018041503 4denvar_bump uReconstructZonal 1 False
 
 
-Step 5: Generate the localization file (optional)
+Step 5: Generate a localization file (optional)
 -------------------------------------------------
 
 We have used a pre-generated localization file when running the 3DEnVar and 4DEnVar applications above. In this optional tutorial,
