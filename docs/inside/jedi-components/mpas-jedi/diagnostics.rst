@@ -8,7 +8,7 @@ diagnose potential errors in the system. The package includes scripts for plotti
 function, the norm of the gradient, observation distribution, and analysis increment.
 To support testing of EDA with MPAS-JEDI, the package includes probabilistic evaluations of the ensemble of
 background forecasts. It also includes observation- and model-space verification tools for tracking the performance of cycling
-experiments. Those tools evaluate traditional statistical measures (Mean, RMS, STD, etc...) for
+experiments. Those tools evaluate traditional statistical measures (Mean, RMS, standard deviation, etc...) for
 surface and upper air variables. Additionally there is some capability for determining confidence
 intervals for those verification measures. Both the model- and observation-space components provide
 a means to store intermediate statistical measures and then visualize verification statistics. 
@@ -22,7 +22,7 @@ Analysis Increments
 A plot of analysis increments can help users to understand how the model analysis has adjusted to
 assimilated observations. You can calculate the analysis increment and make figures for different
 analysis fields by using :code:`mpas-bundle/mpas-jedi/graphics/plot_inc.py`. The following example is for
-visualizing the analysis increment of the Zonal component of reconstructed horizontal velocity.
+visualizing the analysis increment of the zonal component of reconstructed horizontal velocity.
 
 .. code-block:: bash
 
@@ -30,13 +30,9 @@ visualizing the analysis increment of the Zonal component of reconstructed horiz
 
 The argument :code:`1` means the analysis increment will be plotted by each level, and
 the argument :code:`False` means the MPAS analysis will not be compared with corresponding GFS analysis.
+The following figure shows zonal wind increment at 0000 UTC 15 Apr 2018 on the 29th model level.
 
-.. _u-inc:
-.. figure:: images/u_inc.png
-   :height: 400px
-   :align: center
-
-   Figure 1. Zonal wind increment at 0000 UTC 15 Apr 2018 on the 29th model level.
+.. image:: images/u_inc.png
 
 Observation-space verification
 ------------------------------
