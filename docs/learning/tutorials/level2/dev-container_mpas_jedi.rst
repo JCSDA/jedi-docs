@@ -14,8 +14,9 @@ Prerequisites:
 Overview:  Use *Development Container* for JEDI-MPAS
 ----------------------------------------------------
 
-In the :doc:`Run JEDI in a Container <../level1/run-jedi>` tutorial we used a version of an
-:doc:`application container <../../../using/jedi_environment/index>`.  This means that the  container includes the compiled source code, ready to use.  The ``jedi-tutorial``  container comes pre-packaged with JEDI!
+The :doc:`Run JEDI-FV3 in a Container <../level1/run-jedi>` tutorial used an
+:doc:`application container <../../../using/jedi_environment/index>` that includes the
+compiled source code, ready to use.
 
 But that's not the way most JEDI developers, and many users, use JEDI.  Instead, JEDI is set
 up so that users and developers have easy access to a version of the source code that they
