@@ -12,9 +12,9 @@ General B Design
 
 
 The multivariate background error covariance :math:`\mathbf{B}` is designed primarily to follow that of
-the Weather Research and Forecasting (WRF) model Data Assimilation system (`WRFDA <https://www2.mmm.ucar.edu/wrf/users/wrfda/>`)
-and the Gridpoint Statistical Interpolation (`GSI <https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi>`).
-It uses both a generic component from the :doc:`SABER <../saber/index.html>` repository and a model-specific compoment from the
+the Weather Research and Forecasting (WRF) model Data Assimilation system (`WRFDA <https://www2.mmm.ucar.edu/wrf/users/wrfda/>`_)
+and the Gridpoint Statistical Interpolation (`GSI <https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi>`_).
+It uses both a generic component from the :doc:`SABER <../saber/index>` repository and a model-specific compoment from the
 MPAS-JEDI repository. It is implemented as a set of linear variable changes to a block-diagonal
 correlation matrix :math:`\mathbf{C}`.
 
