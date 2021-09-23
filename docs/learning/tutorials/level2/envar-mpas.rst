@@ -26,8 +26,8 @@ step 5, which describes how to generate the file specifying the covariance local
 Step 1: Setup
 -------------
 
-Let's define the following directories. We will link or copy the necessary files from ``CODE``
-or ``BUILD`` directories to following ``RUN`` directory to configure the EnVar application. 
+Let's define the following directories. We will link or copy the necessary files from the ``CODE``
+and ``BUILD`` directories to the ``RUN`` directory to configure the EnVar application.
 
 .. code-block:: bash
 
@@ -40,7 +40,7 @@ If you are using a Vagrant container, it is convenient to work in a directory th
 
     export RUN=$HOME/vagrant_data/tutorials/envar-mpas
 
-Otherwise, you might elect to simply use 
+Otherwise, you might elect to simply use
 
 .. code-block:: bash
 
@@ -62,7 +62,7 @@ Let's create ``RUN`` directory and collect the necessary files.
     ln -sf $BUILD/mpas-jedi/test/Data/UFOCoeff ./
 
     # Link the background state and ensemble files.
-    mkdir 480km
+    mkdir -p 480km
     cd 480km
     ln -sf $BUILD/mpas-jedi/test/Data/480km/bg ./
     cd .. # return to Data directory
@@ -79,10 +79,10 @@ Let's create ``RUN`` directory and collect the necessary files.
     cd .. # return to RUN directory
     cp $CODE/mpas-jedi/test/testinput/namelists/stream_list.atmosphere.output ./
     cp $CODE/mpas-jedi/test/testinput/namelists/stream_list.atmosphere.diagnostics ./
-    cp $CODE/mpas-jedi/test/testinput/namelists/stream_list.atmosphere.surface ./  
+    cp $CODE/mpas-jedi/test/testinput/namelists/stream_list.atmosphere.surface ./
 
 As we follow the EnVar example from ctest, we also follow its directory structure. For a user's own experiments,
-that structure can be simplified as desired. 
+that structure can be simplified as desired.
 
 .. code-block:: bash
 
@@ -174,7 +174,7 @@ Let's create the graphics working directory, then link the script that we will b
 .. code-block:: bash
 
     # while in RUN directory
-    mkdir graphics
+    mkdir -p graphics
     ln -sf $CODE/mpas-jedi/graphics/plot_inc.py ./graphics
 
 Although ``plot_inc.py`` is written in a generic way, it still assumes a specific directory structure. For this, let's link
@@ -198,7 +198,7 @@ This will generate plots of the background forecast (with suffix ``MPASBAK``), t
 and the analysis increment (with suffix ``MPASAMB``) for the variable ``uReconstructZonal``, which is the zonal component of
 horizontal velocity at the center of MPAS mesh cells. Please see the :ref:`analysis-inc-diag-mpas` section of the mpas-jedi :doc:`Diagnostics <../../../inside/jedi-components/mpas-jedi/diagnostics>` documentation for further information on the ``plot_inc.py`` script.
 
-If you are using a Vagrant container, then you can view the files on your local system under the ``vagrant_data`` directory.
+If you are using a Vagrant container, then you can view the files on your local system under the ``vagrant_data`` directory.  Or, you can view the files from within the container using the linux ``feh`` program, provided your ``DISPLAY`` environment variable is set up correctly (see comments in Step 4 of the :doc:`Run JEDI-FV3 in a Container<../level1/run-jedi>` tutorial).
 
 Users may want to try plotting other variables, such as ``uReconstructMeridional``, ``theta``, ``qv``, or ``surface_pressure``.
 
@@ -313,4 +313,3 @@ because the 480 km test data has only six vertical levels. Let's issue the ``mpi
     mpiexec -n 1 mpasjedi_parameters.x parameters_bumploc.yaml >& run.log
 
 Users can find the NetCDF outputs under ``Data/bump`` directory.
-

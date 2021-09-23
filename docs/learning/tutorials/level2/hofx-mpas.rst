@@ -49,15 +49,15 @@ First we define a few base directories that we use throughout the tutorial.  For
     export CODE=$HOME/jedi/mpas-bundle
     export BUILD=$HOME/jedi/mpas-build
 
-The ``mpas-bundle`` ``BUILD`` and ``CODE`` directories can be thought of as resources to be used for prototyping a new use-case for JEDI applications, but not as a place to add new use-cases.  Therefore, you'll need to copy the files used in this tutorial over to a new directory that is dedicated to running the examples. 
- 
+The ``mpas-bundle`` ``BUILD`` and ``CODE`` directories can be thought of as resources to be used for prototyping a new use-case for JEDI applications, but not as a place to add new use-cases.  Therefore, you'll need to copy the files used in this tutorial over to a new directory that is dedicated to running the examples.
+
 You have some freedom in setting the ``RUN`` directory where we will run this tutorial example.  If you are working in Vagrant, it is convenient to work in a directory that is accesible from outside the container, e.g.,
 
 .. code-block:: bash
 
     export RUN=$HOME/vagrant_data/tutorials/hofx-mpas
 
-Otherwise, you might elect to simply use 
+Otherwise, you might elect to simply use
 
 .. code-block:: bash
 
@@ -131,7 +131,7 @@ Next we need to copy over files associated with configuring either MPAS-Model or
     cp $CODE/mpas-jedi/test/testinput/namelists/geovars.yaml ./
     cp $CODE/mpas-jedi/test/testinput/namelists/stream_list.atmosphere.output ./
     cp $CODE/mpas-jedi/test/testinput/namelists/stream_list.atmosphere.diagnostics ./
-    cp $CODE/mpas-jedi/test/testinput/namelists/stream_list.atmosphere.surface ./  
+    cp $CODE/mpas-jedi/test/testinput/namelists/stream_list.atmosphere.surface ./
     cp $CODE/mpas-jedi/test/testinput/hofx3d.yaml ./
 
 As you can see in the above line, we are repurposing the yaml from the ``hofx3d`` ctest. That yaml has several peculiarities specific to the ctest that we need to handle.
@@ -182,7 +182,7 @@ The mpas-jedi interface code benefits from re-using model state initialization s
 :math:`H`, executable and environment
 """""""""""""""""""""""""""""""""""""
 
-As stated already, this tutorial uses the mpas-jedi ``hofx3d`` application.  In other words, it uses the :code:`mpasjedi_hofx3d` excutable, which is a model-specific implementation of the OOPS generic :code:`HofX3D application<../../../inside/jedi-components/oops/applications/hofx>`. Let's link the executable from the build directory.
+As stated already, this tutorial uses the mpas-jedi ``hofx3d`` application.  In other words, it uses the :code:`mpasjedi_hofx3d` excutable, which is a model-specific implementation of the OOPS generic :doc:`HofX3D application<../../../inside/jedi-components/oops/applications/hofx>`. Let's link the executable from the build directory.
 
 .. code-block:: bash
 
@@ -223,7 +223,7 @@ Or you may redirect the entire stdout and stderr streams to a file instead of ha
 
 When the log is specified as the second argument to the JEDI executable, each processor will write its own log file with a suffix indicating the processor number.  The exception is for the root processor, for which the log file name does not have a suffix.
 
-If you are interested to run on multiple processors, you will need the MPAS-Model graph partition file that corresponds to the number of processors and mesh.  There are multiple such files available for the 480km mesh at ``$CODE/mpas-jedi/test/testinput/namelists/480km/x1.2562.graph.info.part.N``, where ``N`` is the number of processors. Simply link the applicable partition file into the ``RUN`` directory, then use ``-n N`` as the flag for ``mpiexec``.  You will need to choose ``N`` to be less than the number of virtual processors available in your container.  For example, the default maximum is ``vb.cpus = "12"`` in the ``Vagrantfile`` provided in the :doc:`Vagrant documentation <../../../using/jedi_environment/vagrant>`. Each platform has its own limits.
+If you are interested to run on multiple processors, you will need the MPAS-Model graph partition file that corresponds to the number of processors and mesh.  There are multiple such files available for the 480km mesh at ``$CODE/mpas-jedi/test/testinput/namelists/480km/x1.2562.graph.info.part.N``, where ``N`` is the number of processors. Simply link the applicable partition file into the ``RUN`` directory, then use ``-n N`` as the flag for ``mpiexec``.  If you are using a virtual machine application like :doc:`vagrant<../../../using/jedi_environment/vagrant>` then you will need to choose ``N`` to be less than the number of virtual processors available in your container.  For example, the default maximum is ``vb.cpus = "12"`` in the ``Vagrantfile`` provided in the :doc:`Vagrant documentation <../../../using/jedi_environment/vagrant>`. Each platform has its own limits.
 
 If you follow through with that modification, you will see that the ``OOPS_STATS`` section at the end of the log output now provides timing statistics for multiple MPI tasks instead of only 1 MPI task.  The ``OOPS_STATS`` output is very useful for high-level computational profiling.
 
@@ -309,13 +309,13 @@ Now, rerun the application and the plotting script
     cd graphics
     python plot_diag.py
 
-If you want to save time in the plotting step, only the `amsua_n19--nohydro` observation type and the `radiance_group` need to be selected in :code:`plot_diag.py`.  You can comment out other lines by preceeding them with a `#`.
+If you want to save time in the plotting step, only the `amsua_n19--nohydro` observation type and the `radiance_group` need to be selected in :code:`plot_diag.py`.  You can comment out other lines by preceding them with a ``#``.
 
-Continue to browse the figures as you like.  The vertical profile figures for aircraft, sondes, gnssroref, and satwind are useful.  However, it will become clear that we are only working with a small observation set.  Entire vertical extents are missing in the GNSSRO refractivity statistics (`*_hofx3d_gnssroref_refractivity.png`).  That is because we are working with the ctest data set, which often has fewer than 100 locations.  For example, explore the aircraft file we are using with `ncdump` or `h5dump`,
+Continue to browse the figures as you like.  The vertical profile figures for aircraft, sondes, gnssroref, and satwind are useful.  However, it will become clear that we are only working with a small observation set.  Entire vertical extents are missing in the GNSSRO refractivity statistics (``*_hofx3d_gnssroref_refractivity.png``).  That is because we are working with the ctest data set, which often has fewer than 100 locations.  For example, explore the aircraft file we are using with ``ncdump`` or ``h5dump``,
 
 .. code-block:: bash
 
-    ncdump -h ../Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4 | less 
+    ncdump -h ../Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4 | less
 
 Now you are ready to learn how to process or download larger observation data sets and conduct your own observation simulation experiments!
 
@@ -329,11 +329,11 @@ Up until this point we have been using an MPAS-Model restart file to provide the
 
 Some UFO operators and the conversion from model prognostic variables to background state variables requires the availability of fields that are not available by default in the defauly MPAS-Model output stream.  Using full restart files is an easy solution, but also an expensive one, requiring storing a restart file to disk whenever an mpas-jedi application needs information about the MPAS state.  In addition to background states, that includes extended forecasts for the purpose of verification.  To see why that might be a problem, consider how many fields are in a restart file, and compare it to the number of fields needed for mpas-jedi.
 
-A first-order appoximation of the storage requirement of a model state is the number of floating-point 3D fields.  A quck way to check the number of floating-point 3D fields in an MPAS state file is through an ncdump command like the following:
+A first-order approximation of the storage requirement of a model state is the number of floating-point 3D fields.  A quick way to check the number of floating-point 3D fields in an MPAS state file is through an ncdump command like the following:
 
 .. code-block:: bash
 
-    ncdump -h Data/480km/bg/restart.2018-04-15_00.00.00.nc | grep 'double.*nCells.*nVertLevels' | wc
+    ncdump -h $RUN/Data/480km/bg/restart.2018-04-15_00.00.00.nc | grep 'double.*nCells.*nVertLevels' | wc
 
 Of the three output values, 54, 266, and 2419, the first one, 54, is the number of floating-point 3D fields.  Now have a look at ``stream_list.atmosphere.output`` in the ``RUN`` directory.  Those are all of the fields, 2D, 3D, and 4D (scalars is the 4D one in that list) that are read in the mpas-jedi :code:`State::read` method in order to derive the fields required for the ``hofx3d`` application.  Some additional time-variant fields are used to initialize MPAS-A model fields, and other time-invariant quantities are used to intialize the model mesh. Time-invariant or "static" fields need not be included in every mpas-jedi background state file.
 
@@ -341,7 +341,7 @@ The alternative solution, 2-stream I/O, writes only essential fields and separat
 
 .. code-block:: bash
 
-    # while in RUN directory 
+    # while in RUN directory
     mkdir Data/480km_2stream
     cd Data/480km_2stream
     ln -sf $BUILD/mpas-jedi/test/Data/480km_2stream/mpasout.2018-04-15_00.00.00.nc ./
