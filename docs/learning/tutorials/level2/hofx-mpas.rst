@@ -4,10 +4,7 @@ Tutorial: Simulating Observations with a JEDI-MPAS Application
 =======================================================================
 
 Learning Goals:
- - Create simulated observations with the mpas-jedi HofX application from a JEDI-MPAS build
-
-..
- - Acquaint yourself with the rich variety of observation operators now available in :doc:`UFO <../../../inside/jedi-components/ufo/index>`
+ - Create simulated observations with the MPAS-JEDI HofX application from a JEDI-MPAS build
 
 Prerequisites:
  - :doc:`Build and test JEDI-MPAS <dev-container_mpas_jedi>`
@@ -21,13 +18,13 @@ Notes:
 Overview
 --------
 
-The comparison between observations and forecasts is an essential component of any data assimilation (DA) system and is critical for accurate Earth System Prediction.  It is common practice to do this comparison in observation space.  In JEDI, this is achieved through the Unified Forward Operator (:doc:`UFO <../../../inside/jedi-components/ufo/index>`).  The principle job of UFO is to start from a model background state and to then simulate what that state would look like from the perspective of different observational instruments and measurements.
+The comparison between observations and forecasts is an essential component of any data assimilation (DA) system and is critical for accurate Earth System Prediction.  It is common practice to do this comparison in observation space.  In JEDI, this is achieved through the Unified Forward Operator (:doc:`UFO </inside/jedi-components/ufo/index>`).  The principle job of UFO is to start from a model background state and to then simulate what that state would look like from the perspective of different observational instruments and measurements.
 
 In the data assimilation literature, this procedure is often represented by the expression :math:`H({\bf x})`.  Here :math:`{\bf x}` represents prognostic variables -- plus dependent diagnostic variables -- on the model grid, typically obtained from a forecast, and :math:`H` represents the *observation operator* that generates simulated observations from that model state.  The sophistication of observation operators varies widely, from in situ measurements where it may just involve interpolation and possibly a change of variables (e.g. radiosondes), to remote sensing measurements that require physical modeling to produce a meaningful result (e.g. radiance, GNSSRO).
 
-In this tutorial we will run an application called :math:`H({\bf x})`, which is often denoted in program and function names as ``HofX``.  This tutorial will highlight some of the capabilities of JEDI's Unified Forward Operator (:doc:`UFO <../../../inside/jedi-components/ufo/index>`) in the context of the MPAS interface to JEDI, :doc:`mpas-jedi <../../../inside/jedi-components/mpas-jedi/index>`.
+In this tutorial we will run an application called :math:`H({\bf x})`, which is often denoted in program and function names as ``HofX``.  This tutorial will highlight some of the capabilities of JEDI's :doc:`Unified Forward Operator </inside/jedi-components/ufo/index>`) in the context of the MPAS interface to JEDI, :doc:`MPAS-JEDI </inside/jedi-components/mpas-jedi/index>`.
 
-With that aim, we will repurpose the description of mpas-jedi's ``hofx3d`` ctest that was executed in the :doc:`Build and test JEDI-MPAS <dev-container_mpas_jedi>` tutorial.  We will use the quasi-uniform MPAS-Model 480km global mesh and the same observations as were simulated in that ctest.  After completion of the simulation, we will analyze the observation-space results using post-processing tools available in the mpas-jedi repository.
+With that aim, we will repurpose the description of MPAS-JEDI's ``hofx3d`` ctest that was executed in the :doc:`Build and test JEDI-MPAS <dev-container_mpas_jedi>` tutorial.  We will use the quasi-uniform MPAS-Model 480km global mesh and the same observations as were simulated in that ctest.  After completion of the simulation, we will analyze the observation-space results using post-processing tools available in the MPAS-JEDI repository.
 
 
 Step 1: Setup
@@ -100,7 +97,7 @@ The example observations used in this tutorial include:
 * CRIS-NPP
 * AIRS-AQUA
 
-Additional observation test files are available in the ufo-data repository, which is now linked to ``ufo`` in your ``Data`` directory. See the :doc:`UFO documentation <../../../inside/jedi-components/ufo/index>` or the `JCSDA NRT website <http://nrt.jcsda.org>`_ for an explanation of acronyms and of additional observation types that can be handled in UFO.
+Additional observation test files are available in the ufo-data repository, which is now linked to ``ufo`` in your ``Data`` directory. See the :doc:`UFO documentation </inside/jedi-components/ufo/index>` or the `JCSDA NRT website <http://nrt.jcsda.org>`_ for an explanation of acronyms and of additional observation types that can be handled in UFO.
 
 
 :math:`{\bf x}`, background state
@@ -120,7 +117,7 @@ Link the background state directory, which includes the single 480km global back
 :math:`H`, model and application configurations
 """""""""""""""""""""""""""""""""""""""""""""""
 
-Next we need to copy over files associated with configuring either MPAS-Model or the ``hofx3d`` application. The ``hofx3d.yaml`` file contains many observation space components that are described in the UFO sections of :doc:`yaml <../../../inside/jedi-components/configuration/configuration>`.  There are also sections that are specific to mpas-jedi.  The MPAS-Model configuration files, including fortran namelists and xml-based streams.atmosphere are described in the `MPAS-Atmosphere <https://mpas-dev.github.io/atmosphere/atmosphere_download.html>`_ documentation.  There are some entries in those files that are specific either to JEDI-MPAS applications or to this tutorial, such as directory structures.  Here we make brand new copies of all relevant files, because we will modify some of them in later parts of the tutorial, and we do not want to modify the settings that are carefully set up for the ctests.
+Next we need to copy over files associated with configuring either MPAS-Model or the ``hofx3d`` application. The ``hofx3d.yaml`` file contains many observation space components that are described in the UFO sections of :doc:`yaml </inside/jedi-components/configuration/configuration>`.  There are also sections that are specific to :doc:`MPAS-JEDI </inside/jedi-components/mpas-jedi/index>`.  The MPAS-Model configuration files, including fortran namelists and xml-based ``streams.atmosphere`` are described in the `MPAS-Atmosphere <https://mpas-dev.github.io/atmosphere/atmosphere_download.html>`_ documentation, and further contextual information is given in the MPAS-JEDI :ref:`top-mpas-jedi-classes` documentation.  There are some entries in those configuration files that are specific either to JEDI-MPAS applications or to this tutorial, such as directory structures.  Here we make brand new copies of all relevant files, because we will modify some of them in later parts of the tutorial, and we do not want to modify the settings that are carefully set up for the ctests.
 
 .. code-block:: bash
 
@@ -158,7 +155,7 @@ As you can see in the above line, we are repurposing the yaml from the ``hofx3d`
 :math:`H`, static lookup tables
 """""""""""""""""""""""""""""""
 
-The mpas-jedi interface code benefits from re-using model state initialization subroutines contained in the MPAS-Model code.  As such, mpas-jedi also re-uses the MPAS-Model static lookup tables to populate namelist-dependent constants.  Although not all of the static lookup tables are needed for each application, we link all of them to be sure:
+The MPAS-JEDI interface code benefits from re-using model state initialization subroutines contained in the MPAS-Model code.  As such, MPAS-JEDI also re-uses the MPAS-Model static lookup tables to populate namelist-dependent constants.  Although not all of the static lookup tables are needed for each application, we link all of them to be sure:
 
 .. code-block:: bash
 
@@ -182,7 +179,7 @@ The mpas-jedi interface code benefits from re-using model state initialization s
 :math:`H`, executable and environment
 """""""""""""""""""""""""""""""""""""
 
-As stated already, this tutorial uses the mpas-jedi ``hofx3d`` application.  In other words, it uses the :code:`mpasjedi_hofx3d` excutable, which is a model-specific implementation of the OOPS generic :doc:`HofX3D application<../../../inside/jedi-components/oops/applications/hofx>`. Let's link the executable from the build directory.
+As stated already, this tutorial uses the MPAS-JEDI ``hofx3d`` application.  In other words, it uses the :code:`mpasjedi_hofx3d` excutable, which is a model-specific implementation of the OOPS generic :doc:`HofX3D application</inside/jedi-components/oops/applications/hofx>`. Let's link the executable from the build directory.
 
 .. code-block:: bash
 
@@ -200,7 +197,7 @@ Finally we set some environment variables to ensure the application will run suc
 Step 2: Run the HofX application
 --------------------------------
 
-Now we are ready to run the :code:`mpasjedi_hofx3d` executable in the same way it is exercised for the ``hofx3d`` ctest.  Issue the ``mpiexec`` command as follows
+Now we are ready to run the :code:`mpasjedi_hofx3d` executable in the same way it is exercised for the ``hofx3d`` ctest.  Issue the code:`mpiexec` command, including a :code:`-n 1` flag to select a single processor,
 
 .. code-block:: bash
 
@@ -223,7 +220,7 @@ Or you may redirect the entire stdout and stderr streams to a file instead of ha
 
 When the log is specified as the second argument to the JEDI executable, each processor will write its own log file with a suffix indicating the processor number.  The exception is for the root processor, for which the log file name does not have a suffix.
 
-If you are interested to run on multiple processors, you will need the MPAS-Model graph partition file that corresponds to the number of processors and mesh.  There are multiple such files available for the 480km mesh at ``$CODE/mpas-jedi/test/testinput/namelists/480km/x1.2562.graph.info.part.N``, where ``N`` is the number of processors. Simply link the applicable partition file into the ``RUN`` directory, then use ``-n N`` as the flag for ``mpiexec``.  If you are using a virtual machine application like :doc:`vagrant<../../../using/jedi_environment/vagrant>` then you will need to choose ``N`` to be less than the number of virtual processors available in your container.  For example, the default maximum is ``vb.cpus = "12"`` in the ``Vagrantfile`` provided in the :doc:`Vagrant documentation <../../../using/jedi_environment/vagrant>`. Each platform has its own limits.
+If you are interested to run on multiple processors, you will need the MPAS-Model graph partition file that corresponds to the number of processors and mesh.  There are multiple such files available for the 480km mesh at ``$CODE/mpas-jedi/test/testinput/namelists/480km/x1.2562.graph.info.part.N``, where ``N`` is the number of processors. Simply link the applicable partition file into the ``RUN`` directory, then use ``-n N`` as the flag for :code:`mpiexec`.  If you are using a virtual machine application like :doc:`vagrant</using/jedi_environment/vagrant>` then you will need to choose ``N`` to be less than the number of virtual processors available in your container.  For example, the default maximum is ``vb.cpus = "12"`` in the ``Vagrantfile`` provided in the :doc:`Vagrant documentation </using/jedi_environment/vagrant>`. Each platform has its own limits.
 
 If you follow through with that modification, you will see that the ``OOPS_STATS`` section at the end of the log output now provides timing statistics for multiple MPI tasks instead of only 1 MPI task.  The ``OOPS_STATS`` output is very useful for high-level computational profiling.
 
@@ -240,7 +237,7 @@ The ``OOPS_TRACE`` option enables notifications upon entering and exiting some c
 Step 3: View the Simulated Observations
 ---------------------------------------
 
-Next, let us analyze the results using one of the graphics scripts provided with mpas-jedi.  First, let's create a graphics working directory, then link the script that we will be using.
+Next, let us analyze the results using one of the graphics scripts provided with MPAS-JEDI.  First, let's create a graphics working directory, then link the script that we will be using.
 
 .. code-block:: bash
 
@@ -249,18 +246,18 @@ Next, let us analyze the results using one of the graphics scripts provided with
     cd graphics
     ln -sf $CODE/mpas-jedi/graphics/plot_diag.py ./
 
-Now execute the script with python.
+Before running the script, enable 2D map plotting by setting :code:`makeDistributionPlots` to :Code:`True` in :code:`plot_diag.py`.  That feature generates a lot of extra figures, which can be skipped if only aggregated results are of interest.  Now execute the script with python.
 
 .. code-block:: bash
 
     # while in graphics directory
     python plot_diag.py
 
-There will be a stream of prints telling you the kinds of observations being processed and also the names of the figures generated. This plotting program was originally designed to analyze the output from an OOPS :doc:`Variational application<../../../inside/jedi-components/oops/applications/variational>`, which is why you will see quantities like observation-minus-background (OMB) and observation-minus-analysis (OMA).  There is no analysis state from an ``HofX`` application; thus, the plotting script uses identical simulated observation values for the background and analysis.
+There will be a stream of prints telling you the kinds of observations being processed and also the names of the figures generated. This plotting program was originally designed to analyze the output from an OOPS :doc:`Variational application</inside/jedi-components/oops/applications/variational>`, which is why you will see quantities like observation-minus-background (OMB) and observation-minus-analysis (OMA).  There is no analysis state from an ``HofX`` application; thus, the plotting script uses identical simulated observation values for the background and analysis.
 
 Now you can explore some of the figures. If you are using a Vagrant container, then you can view the files on your local system under the ``vagrant_data`` directory.  Otherwise, you can use ``feh`` to view the png files.
 
-You may wish to display 2D maps of differences between simulated and observed conventional observation quantities, e.g.,
+If you previously engaged the :code:`makeDistributionPlots` option, as described above, you may wish to display 2D maps of differences between simulated and observed conventional observation quantities, e.g.,
 
 .. code-block:: bash
 
@@ -276,7 +273,7 @@ or background, observed, and `omb` for clear-sky AMSU-A radiances,
     feh distri_BT9_hofx3d_amsua_n19--nohydro_bkg.png
     feh distri_BT9_hofx3d_amsua_n19--nohydro_omb.png
 
-Next, let's look at scatter plots of :math:`h({\bf x})` versus :math:`y` for the temperature-sounding channels of AMSU-A, which are simulated with the clear-sky CRTM operator.
+Next, let's look at scatter plots of :math:`H({\bf x})` versus :math:`y` for the temperature-sounding channels of AMSU-A, which are simulated with the clear-sky CRTM operator.
 
 .. code-block:: bash
 
@@ -323,11 +320,11 @@ Now you are ready to learn how to process or download larger observation data se
 Step 4: Introduction to 2-stream I/O
 ------------------------------------
 
-This part of the tutorial is a bonus.  It will be useful to refer to the :doc:`MPAS-JEDI Classes documentation <../../../inside/jedi-components/mpas-jedi/classes>` for relevant terminology definitions.
+This part of the tutorial is a bonus.  It will be useful to refer to the :doc:`MPAS-JEDI Classes documentation </inside/jedi-components/mpas-jedi/classes>` for relevant terminology definitions.
 
-Up until this point we have been using an MPAS-Model restart file to provide the 2D and 3D model background fields to mpas-jedi. It turns out that this is a resource intensive solution in terms of writing those files and storing them on an HPC, especially as the model grid-spacing is reduced. Here we will illustrate an alternative solution, tailored for mpas-jedi, called 2-stream I/O.
+Up until this point we have been using an MPAS-Model restart file to provide the 2D and 3D model background fields to MPAS-JEDI. It turns out that this is a resource intensive solution in terms of writing those files and storing them on an HPC, especially as the model grid-spacing is reduced. Here we will illustrate an alternative solution, tailored for MPAS-JEDI, called 2-stream I/O.
 
-Some UFO operators and the conversion from model prognostic variables to background state variables requires the availability of fields that are not available by default in the defauly MPAS-Model output stream.  Using full restart files is an easy solution, but also an expensive one, requiring storing a restart file to disk whenever an mpas-jedi application needs information about the MPAS state.  In addition to background states, that includes extended forecasts for the purpose of verification.  To see why that might be a problem, consider how many fields are in a restart file, and compare it to the number of fields needed for mpas-jedi.
+Some UFO operators and the conversion from model prognostic variables to background state variables requires the availability of fields that are not available by default in the typical MPAS-Model history or input streams.  Using full restart files is an easy solution, but also an expensive one, requiring storing a restart file to disk whenever an MPAS-JEDI application needs information about the MPAS state.  In addition to background states, that includes extended forecasts for the purpose of verification.  To see why that might be a problem, consider how many fields are in a restart file, and compare it to the number of fields needed for MPAS-JEDI.
 
 A first-order approximation of the storage requirement of a model state is the number of floating-point 3D fields.  A quick way to check the number of floating-point 3D fields in an MPAS state file is through an ncdump command like the following:
 
@@ -335,9 +332,9 @@ A first-order approximation of the storage requirement of a model state is the n
 
     ncdump -h $RUN/Data/480km/bg/restart.2018-04-15_00.00.00.nc | grep 'double.*nCells.*nVertLevels' | wc
 
-Of the three output values, 54, 266, and 2419, the first one, 54, is the number of floating-point 3D fields.  Now have a look at ``stream_list.atmosphere.output`` in the ``RUN`` directory.  Those are all of the fields, 2D, 3D, and 4D (scalars is the 4D one in that list) that are read in the mpas-jedi :code:`State::read` method in order to derive the fields required for the ``hofx3d`` application.  Some additional time-variant fields are used to initialize MPAS-A model fields, and other time-invariant quantities are used to intialize the model mesh. Time-invariant or "static" fields need not be included in every mpas-jedi background state file.
+Of the three output values, 54, 266, and 2419, the first one, 54, is the number of floating-point 3D fields.  Now have a look at ``stream_list.atmosphere.output`` in the ``RUN`` directory.  Those are all of the fields, 2D, 3D, and 4D (scalars is the 4D one in that list) that are read in the MPAS-JEDI :code:`State::read` method in order to derive the fields required for the ``hofx3d`` application.  Some additional time-variant fields are used to initialize MPAS-A model fields, and other time-invariant quantities are used to intialize the model mesh. Time-invariant or "static" fields need not be included in every MPAS-JEDI background state file.
 
-The alternative solution, 2-stream I/O, writes only essential fields and separates the static and dynmically evolving fields into two separate input streams.  An example of 2-stream I/O is encoded in the mpas-jedi ctest, ``3denvar_2stream_bumploc_unsinterp``, which uses the :code:`mpasjedi_variational` excutable.  Here we will borrow some of the pieces of that ctest in order to accomplish the same goal with the :code:`mpasjedi_hofx3d` executable.  First, let's create a directory at ``Data/480km_2stream`` where we can store the files that are unique to this part of the tutorial.  Then we will link can copy the data and configuration files, respectively, just like we did in Step 2 of the tutorial.
+The alternative solution, 2-stream I/O, writes only essential fields and separates the static and dynmically evolving fields into two separate input streams.  An example of 2-stream I/O is encoded in the MPAS-JEDI ctest, ``3denvar_2stream_bumploc_unsinterp``, which uses the :code:`mpasjedi_variational` excutable.  Here we will borrow some of the pieces of that ctest in order to accomplish the same goal with the :code:`mpasjedi_hofx3d` executable.  First, let's create a directory at ``Data/480km_2stream`` where we can store the files that are unique to this part of the tutorial.  Then we will link and copy the data and configuration files, respectively, just like we did in Step 2 of the tutorial.
 
 .. code-block:: bash
 
@@ -350,13 +347,13 @@ The alternative solution, 2-stream I/O, writes only essential fields and separat
     cp $CODE/mpas-jedi/test/testinput/namelists/480km_2stream/streams.atmosphere ./
     cd ../../ # return to RUN directory
 
-You can see that we now have new input files and MPAS-Model configurations in the form of namelist and xml streams.atmosphere files.  Let's re-run the same ncdump command as before on the mpasout file:
+You can see that we now have new input files and MPAS-Model configurations in the form of namelist and xml ``streams.atmosphere`` files.  Let's re-run the same ncdump command as before on the mpasout file:
 
 .. code-block:: bash
 
     ncdump -h Data/480km_2stream/mpasout.2018-04-15_00.00.00.nc | grep 'double.*nCells.*nVertLevels' | wc
 
-Now there are only 20 floating-point 3D fields.  If you follow the links all the way back to the source data, you will find that file sizes differ by a factor of 10, even better than the 54 to 20 ratio of 3D fields for this coarse mesh with only 6 vertical levels.  For larger meshes with more vertical levels, the gains are somewhat less (e.g., roughly a factor of 5-6 for the 120km mesh and 55 vertical levels), but still substantial. You can also inspect the ``streams.atmosphere`` and ``namelist.atmosphere`` files to see the new settings.  ``streams.atmosphere`` is now using an extra static stream.  In the namelist, the restart option is turned off.
+Now there are only 20 floating-point 3D fields.  If you follow the links all the way back to the source data, you will find that file sizes differ by a factor of 10, much better than the 54 to 20 ratio of 3D fields for this coarse mesh with only 6 vertical levels.  For larger meshes with more vertical levels, the gains are somewhat less (e.g., roughly a factor of 5-6 for the 120km mesh and 55 vertical levels), but still substantial. You can also inspect the ``streams.atmosphere`` and ``namelist.atmosphere`` files to see the new settings.  ``streams.atmosphere`` is now using an extra static stream.  In the namelist, the restart option is turned off.
 
 In order to use the new model stream settings in the application, we need to modify ``hofx3d.yaml``.  Under the ``geometry`` section of the yaml, change the directory for the ``nml_file`` and ``streams_file`` as follows.
 
@@ -365,13 +362,13 @@ In order to use the new model stream settings in the application, we need to mod
   nml_file: "./Data/480km_2stream/namelist.atmosphere_2018041500"
   streams_file: "./Data/480km_2stream/streams.atmosphere"
 
-Additionally, change the background state file from the 480km restart file,
+Additionally, change the background state file from the ``480km`` restart file,
 
 .. code-block:: yaml
 
   filename: "./Data/480km/bg/restart.2018-04-15_00.00.00.nc"
 
-to the new 480km_2stream mpasout file,
+to the new ``480km_2stream`` mpasout file,
 
 .. code-block:: yaml
 
