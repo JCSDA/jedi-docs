@@ -44,7 +44,7 @@ experiments.
 All the ctesting in MPAS-JEDI is controlled through :code:`mpas-jedi/test/CMakeLists.txt`.
 A ctest may be either a unit test, which exercises an individual method in a given class, or
 an application test that executes a generic application.  Benchmark results are provided
-accompanying the ctests. A unit ctest contains results in a referene log file based
+accompanying the ctests. A unit ctest contains results in a reference log file based
 on analytical solutions or accurate numerical studies. Each application ctest has an
 associated reference based on a previous execution of the same test.  To determine the pass
 or failure for a ctest, the actual output is compared against the reference log file within
