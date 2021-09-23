@@ -70,7 +70,7 @@ Let's create ``RUN`` directory and collect the necessary files.
     # Copy the pre-generated localization file.
     mkdir -p bump
     cd bump
-    cp $BUILD/mpas-jedi/test/Data/bump/mpas_parametersbump_loc_nicas* ./
+    cp $BUILD/mpas-jedi/test/Data/bump/mpas_parametersbump_loc_nicas_local_000001-000001.nc ./
     cd .. # return to Data directory
 
     # Link the configuration files for MPAS Model.
@@ -151,7 +151,7 @@ Finally we set some environment variables to ensure the application will run suc
 Step 2: Run the 3DEnVar application
 -----------------------------------
 
-Now we are ready to run the ``mpasjedi_variational.x`` executable. Issue the ``mpiexec`` command as follows
+Now we are ready to run the :code:`mpasjedi_variational.x` executable. Issue the :code:`mpiexec` command as follows
 
 .. code-block:: bash
 
@@ -167,36 +167,36 @@ Now we are ready to run the ``mpasjedi_variational.x`` executable. Issue the ``m
 Step 3: View the analysis increment fields
 ------------------------------------------
 
-We will plot the horizontal distribution of analysis increment fields using the mpas-jedi diagnostic package.
+We will plot the horizontal distribution of analysis increment fields using the MPAS-JEDI diagnostic package.
 
 Let's create the graphics working directory, then link the script that we will be using.
 
 .. code-block:: bash
 
     # while in RUN directory
-    mkdir -p graphics
-    ln -sf $CODE/mpas-jedi/graphics/plot_inc.py ./graphics
+    mkdir -p graphics_3denvar
+    ln -sf $CODE/mpas-jedi/graphics/plot_inc.py ./graphics_3denvar
 
-Although ``plot_inc.py`` is written in a generic way, it still assumes a specific directory structure. For this, let's link
+Although :code:`plot_inc.py` is written in a generic way, it still assumes a specific directory structure. For this, let's link
 the background file and the analysis file into ``RUN`` directory.
 
 .. code-block:: bash
 
     # while in RUN directory
     ln -sf Data/480km/bg/restart.2018-04-15_00.00.00.nc ./
-    ln -sf Data/states/mpas.3denvar_bump.2018-04-15_00.00.00.nc ./
+    ln -sf Data/states/mpas.3denvar_bumploc_bump.2018-04-15_00.00.00.nc ./
 
 Now execute the script with python.
 
 .. code-block:: bash
 
     # while in RUN directory
-    cd graphics
-    python plot_inc.py 2018041500 3denvar_bump uReconstructZonal 1 False
+    cd graphics_3denvar
+    python plot_inc.py 2018041500 3denvar_bumploc_bump uReconstructZonal 1 False
 
 This will generate plots of the background forecast (with suffix ``MPASBAK``), the analysis (with suffix ``MPASANA``),
 and the analysis increment (with suffix ``MPASAMB``) for the variable ``uReconstructZonal``, which is the zonal component of
-horizontal velocity at the center of MPAS mesh cells. Please see the :ref:`analysis-inc-diag-mpas` section of the mpas-jedi :doc:`Diagnostics <../../../inside/jedi-components/mpas-jedi/diagnostics>` documentation for further information on the ``plot_inc.py`` script.
+horizontal velocity at the center of MPAS mesh cells. Please see the :ref:`analysis-inc-diag-mpas` section of the MPAS-JEDI :doc:`Diagnostics <../../../inside/jedi-components/mpas-jedi/diagnostics>` documentation for further information on the :code:`plot_inc.py` script.
 
 If you are using a Vagrant container, then you can view the files on your local system under the ``vagrant_data`` directory.  Or, you can view the files from within the container using the linux ``feh`` program, provided your ``DISPLAY`` environment variable is set up correctly (see comments in Step 4 of the :doc:`Run JEDI-FV3 in a Container<../level1/run-jedi>` tutorial).
 
@@ -229,7 +229,7 @@ beginning of each line as follows.
 
 ``4denvar_bumploc.yaml`` contains three 3-hour time slots centered at [-3, 0, +3 hr] relative to the analysis time. As
 OOPS parallelizes the time dimension of the 4DEnVar application, the total number of processors should be a multiple of the number of time slots.
-Here, ``3`` processors are used with ``mpiexec`` command as follows.
+Here, ``3`` processors are used with :code:`mpiexec` command as follows.
 
 .. code-block:: bash
 
@@ -247,11 +247,13 @@ As in step 3, users can plot the horizontal distribution of analysis increment f
 .. code-block:: bash
 
     # while in RUN directory
+    mkdir -p graphics_4denvar
+    ln -sf $CODE/mpas-jedi/graphics/plot_inc.py ./graphics_4denvar
     ln -sf Data/480km/bg/restart.2018-04-*.nc ./
     ln -sf Data/states/mpas.4denvar_bump.2018-04-*.nc ./
 
     # move into the graphics directory and execute the python script
-    cd graphics
+    cd graphics_4denvar
 
     python plot_inc.py 2018041421 4denvar_bump uReconstructZonal 1 False
 
@@ -261,12 +263,13 @@ As in step 3, users can plot the horizontal distribution of analysis increment f
     # Or
     python plot_inc.py 2018041503 4denvar_bump uReconstructZonal 1 False
 
+Users can also compare the analysis increment plots from 3DEnVar (:code:`graphics_3denvar`) and 4DEnVar (:code:`graphics_4denvar`).
 
 Step 5: Generate a localization file (optional)
 -------------------------------------------------
 
 We have used a pre-generated localization file when running the 3DEnVar and 4DEnVar applications above. In this optional tutorial,
-we will explore how the localization files are generated with executable ``mpasjedi_parameters.x``, which estimates various
+we will explore how the localization files are generated with executable :code:`mpasjedi_parameters.x`, which estimates various
 background error statistics using ``SABER`` repository.
 
 
@@ -275,7 +278,7 @@ In the ``RUN`` directory, remove the existing localization files.
 .. code-block:: bash
 
     cd $RUN
-    rm Data/bump/mpas_parametersbump_loc_nicas*.nc # remove the existing bumploc files.
+    rm Data/bump/mpas_parametersbump_loc_nicas_local_000001-000001.nc # remove the existing bumploc file.
 
 Then, copy the ``parameters_bumploc.yaml`` file from ``CODE`` and link the executable from ``BUILD`` directory.
 
@@ -283,6 +286,13 @@ Then, copy the ``parameters_bumploc.yaml`` file from ``CODE`` and link the execu
 
     cp $CODE/mpas-jedi/test/testinput/parameters_bumploc.yaml ./
     ln -sf $BUILD/bin/mpasjedi_parameters.x ./
+
+``parameters_bumploc.yaml`` specifies that the localization length will be estimated based on 5 ensemble members, then writes out
+the localization files in NetCDF format. The important configurations are set under ``bump`` yaml key, and please see
+``Operators generation`` section of the SABER :doc:`Getting started <../../../inside/jedi-components/saber/getting_started>` documentation
+for further information. Note that the current yaml file requests
+estimates only for the horizontal localization length scale and specifies no vertical localization
+because the 480 km test data has only six vertical levels.
 
 Like 3DEnVar and 4DEnVar, comment out the top lines of ``parameters_bumploc.yaml`` to prevent the comparisons normally performed by ctests.
 
@@ -295,11 +305,28 @@ Like 3DEnVar and 4DEnVar, comment out the top lines of ``parameters_bumploc.yaml
     #  log output filename: testoutput/parameters_bumploc.run
     #  test output filename: testoutput/parameters_bumploc.run.ref
 
-``parameters_bumploc.yaml`` specifies that the localization length will be estimated based on 5 ensemble members, then writes out
-the localization files in NetCDF format. The important configurations are set under ``bump`` yaml key, and please see
-``Operators generation`` section of the the SABER :doc:`Getting started <../../../inside/jedi-components/saber/getting_started>` documentation for further information. Note that the current yaml file requests
-estimates only for the horizontal localization length scale and specifies no vertical localization
-because the 480 km test data has only six vertical levels. Let's issue the ``mpiexec`` command as follows.
+With ``output`` yaml key in ``parameters_bumploc.yaml``, the executable can write out the diagnosed parameters
+using the MPAS-JEDI's write interface. These files are not the actual localization files, which are required for 3DEnVar or 4DEnVar.
+The actual localization files are written with ``write_nicas_local: 1`` or ``write_nicas_global: 1`` under ``bump`` yaml key.
+To reduce confusion, users can comment out the ``output`` section as follows.
+
+.. code-block:: bash
+
+    #output:
+    #- parameter: loc_coef
+    #  filename: Data/bump/mpas.hyb_loc_coef.$Y-$M-$D_$h.$m.$s.nc
+    #  date: *date
+    #- parameter: loc_rh
+    #  filename: Data/bump/mpas.hyb_loc_rh.$Y-$M-$D_$h.$m.$s.nc
+    #  date: *date
+    #- parameter: loc_rv
+    #  filename: Data/bump/mpas.hyb_loc_rv.$Y-$M-$D_$h.$m.$s.nc
+    #  date: *date
+    #- parameter: hyb_coef
+    #  filename: Data/bump/mpas.hyb_sta_coef.$Y-$M-$D_$h.$m.$s.nc
+    #  date: *date
+
+Let's issue the ``mpiexec`` command as follows.
 
 .. code-block:: bash
 
@@ -312,4 +339,10 @@ because the 480 km test data has only six vertical levels. Let's issue the ``mpi
     # Or
     mpiexec -n 1 mpasjedi_parameters.x parameters_bumploc.yaml >& run.log
 
-Users can find the NetCDF outputs under ``Data/bump`` directory.
+Users can find the NetCDF outputs under the ``Data/bump`` directory. The generated bump file should be the same as the one copied
+from ``BUILD`` directory in ``Step 1``. This can be confirmed with :code:`nccmp` command as follows.
+
+.. code-block:: bash
+
+    # while in RUN directory
+    nccmp -d Data/bump/mpas_parametersbump_loc_nicas_local_000001-000001.nc $BUILD/mpas-jedi/test/Data/bump/mpas_parametersbump_loc_nicas_local_000001-000001.nc
