@@ -7,10 +7,10 @@ Test files
 
 This section describes the configuration and data files that accompany the repository. The configuration files
 can be found in :code:`mpas-bundle/mpas-jedi/test/testinput` and :code:`mpas-bundle/mpas-jedi/test/testinput/namelists`.
-The actual data files are downloaded from each test data repository (:code:`mpas-jedi-data` and :code:`ufo-data`) 
-when :code:`mpas-bundle` is built or from UCAR DASH (for CRTM coefficients through :code:`mpas_get_crtm_test_data` test).
-:code:`mpas_get_ufo_test_data` and :code:`mpas_get_mpas-jedi_test_data` tests also check if the necessary test data is
-in place.
+The actual data files for JEDI-MPAS 1.0.0 release are downloaded from UCAR Digital Asset Services Hub (`DASH <https://dashrepo.ucar.edu/dataset/147b_jcsda.html>`).
+They include the CRTM coefficient files and test files for IODA, UFO, SABER, and MPAS-JEDI.
+:code:`mpas_get_ufo_test_data`, :code:`mpas_get_crtm_test_data`, and :code:`mpas_get_mpas-jedi_test_data` tests
+also check if the necessary test data is in place for MPAS-JEDI ctest.
 
 .. _yaml_files:
 
@@ -25,13 +25,13 @@ for users to configure their own applications.
 
 :code:`3denvar_bumploc_bumpinterp.yaml` is an example of pure 3DEnVar with a 5-member ensemble background error
 covariance and diagnosed horizontal localization scales (see :code:`parameters_bumploc.yaml` below)
-and using BUMP utilities for spatial interpolation of models fields.
+and using BUMP utilities for spatial interpolation of model fields.
 
 :code:`3denvar_bumploc_unsinterp.yaml` is the same as :code:`3denvar_bumploc_bumpinterp.yaml`, except for using
 an unstructured interpolation with barycentric weights, which is available from OOPS repository.
 
 :code:`3denvar_2stream_bumploc_unsinterp.yaml` is the same as :code:`3denvar_bumploc_bumpinterp.yaml`, except for using
-the two-stream state initialization method. More information about two-stream state initialization is available in the :ref:`geometry-mpas` class documentation.
+the 2-stream state initialization method. More information about 2-stream state initialization is available in the :ref:`geometry-mpas` class documentation.
 
 :code:`3denvar_dual_resolution.yaml` is an example of pure 3DEnVar with a finer resolution state (at 384 km) and
 coarse resolution increment (at 480 km).
@@ -65,14 +65,14 @@ application could be used for verifying a model forecast against observations.
 
 :code:`hofx.yaml` includes the step of the model forecast.
 
-:code:`enshofx.yaml` and :code:`enshofx_1-5.yaml` are used to execute a 5-member ensemble of hofx applications.
+:code:`enshofx.yaml` and :code:`enshofx_1-5.yaml` are used to execute a 5-member ensemble of HofX applications.
 This test is currently disabled.
 
 **Estimate background error covariances and localization using BUMP**
 
 :code:`parameters_bumpcov.yaml` is for estimating the static background error covariance from 5-member ensemble samples.
 
-:code:`parameters_bumploc.yaml` is for estimating the ensemble localization lengthscales:from 5-member ensemble samples.
+:code:`parameters_bumploc.yaml` is for estimating the ensemble localization length scales from 5-member ensemble samples.
 
 **Unit Tests and Other Applications**
 
@@ -143,7 +143,7 @@ For most ctests, a single global MPAS restart file (:code:`480km/bg/restart.2018
 
 :code:`384km/init/x1.4002.init.2018-04-15_00.00.00.nc` is used as the fine resolution background state for dual-resolution test.
 
-To test the two-stream state initialization method, :code:`480km_2stream/mpasout.2018-04-15_00.00.00.nc` and
+To test the 2-stream state initialization method, :code:`480km_2stream/mpasout.2018-04-15_00.00.00.nc` and
 :code:`480km_2stream/x1.2562.init.2018-04-14_18.00.00.nc` are included to provide the time-dependent and time-independent
 variables, respectively.
 
@@ -161,9 +161,9 @@ Dynamic output files
 When the system runs it will produce several types of output files. Directories need to be created
 ahead of time in order to house this data.
 
-**hofx**
+**HofX**
 
-When running either hofx or data assimilation applications it will produce hofx output containing
+When running either HofX or data assimilation applications it will produce hofx output containing
 several quantities in observation space. An example of how this output is set is below. Note that in
 the testing the files go to :code:`~build/mpas-jedi/test/Data/os`. In practice
 users can specify the file name and select where they would like the data to be output.
@@ -171,9 +171,9 @@ users can specify the file name and select where they would like the data to be 
 .. code:: yaml
 
    obsdataout:
-     obsfile: Data/os/hofxnm_sondes.nc4
+     obsfile: Data/os/obsout_hofx3d_sondes.nc4
 
-**bump**
+**BUMP**
 
 When estimating the background error-related parameters with BUMP (:code:`parameters_bumpcov.yaml`
 or :code:`parameters_bumploc.yaml` above), it will write out the statistics to files under :code:`~build/mpas-jedi/test/Data/bump`. 
@@ -189,9 +189,9 @@ The yaml snippet below shows how the path and filenames for BUMP output are set.
 **analysis**
 
 When running a data assimilation application it will write out analysis file(s) to disk,
-which is in the same MPAS netcdf format. The code below shows how to set the analysis file name.
+which is in the same MPAS NetCDF format. The code below shows how to set the analysis file name.
 
 .. code:: yaml
 
   output:
-    filename: "Data/states/mpas.3denvar_bump.$Y-$M-$D_$h.$m.$s.nc"
+    filename: "Data/states/mpas.3denvar_bumploc_bump.$Y-$M-$D_$h.$m.$s.nc"
