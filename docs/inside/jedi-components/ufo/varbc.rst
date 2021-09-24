@@ -131,14 +131,11 @@ To use the bias correction in an observation operator, add the :code:`obs bias` 
         - name: constant
         - name: emissivity
         - name: scan_angle
-          options:
-            order: 4
+          order: 4
         - name: scan_angle
-          options:
-            order: 3
+          order: 3
         - name: scan_angle
-          options:
-            order: 2
+          order: 2
         - name: scan_angle
 
 Here is the detailed explanation:
@@ -154,14 +151,11 @@ Here is the detailed explanation:
         - name: constant
         - name: emissivity
         - name: scan_angle
-          options:
-            order: 4
+          order: 4
         - name: scan_angle
-          options:
-            order: 3
+          order: 3
         - name: scan_angle
-          options:
-            order: 2
+          order: 2
         - name: scan_angle
 
   2. Defines the input file for the bias coefficients prior (optional)
@@ -182,28 +176,25 @@ Static bias correction is handled very similarly to variational bias correction.
   static bc:
     predictors:
     - name: interpolate_data_from_file
-      options:
-        corrected variables:
-        - name: air_temperature
-          file: air_temperature_static_bc.csv
-          interpolation:
-          - name: station_id@MetaData
-            method: exact
-        - name: relative_humidity
-          file: relative_humidity_static_bc.csv
-          interpolation:
-          - name: station_id@MetaData
-            method: exact
-          - name: air_pressure@MetaData
-            method: least upper bound
+      corrected variables:
+      - name: air_temperature
+        file: air_temperature_static_bc.csv
+        interpolation:
+        - name: station_id@MetaData
+          method: exact
+      - name: relative_humidity
+        file: relative_humidity_static_bc.csv
+        interpolation:
+        - name: station_id@MetaData
+          method: exact
+        - name: air_pressure@MetaData
+          method: least upper bound
 
 See the :ref:`interpolate_data_from_file` section for more information about the predictor used
 above, which was written specifically with static bias correction in mind.
 
 Available Predictors
 ====================
-
-Unless specified otherwise, all configuration parameters of predictors are specified in the :code:`options` group in the YAML file.
 
 `cloud_liquid_water`
 ++++++++++++++++++++
@@ -222,15 +213,14 @@ Example
 .. code-block:: yaml
 
   name: cloud_liquid_water
-  options:
-    satellite: SSMIS
-    ch19h: 12
-    ch19v: 13
-    ch22v: 14
-    ch37h: 15
-    ch37v: 16
-    ch91v: 17
-    ch91h: 18
+  satellite: SSMIS
+  ch19h: 12
+  ch19v: 13
+  ch22v: 14
+  ch37h: 15
+  ch37v: 16
+  ch91v: 17
+  ch91h: 18
 
 `constant`
 ++++++++++
@@ -263,13 +253,12 @@ Consider a simple example first and suppose this predictor is configured as foll
 .. code-block:: yaml
 
   name: interpolate_data_from_file
-  options:
-    corrected variables:
-    - name: air_temperature
-      file: myfolder/example_1.csv
-      interpolation:
-      - name: station_id@MetaData
-        method: exact
+  corrected variables:
+  - name: air_temperature
+    file: myfolder/example_1.csv
+    interpolation:
+    - name: station_id@MetaData
+      method: exact
 
 and the :code:`example_1.csv` file looks like this:
 
@@ -426,15 +415,14 @@ To make the air-temperature bias correction depend not only on the station ID, b
 .. code-block:: yaml
 
   name: interpolate_data_from_file
-  options:
-    corrected variables:
-    - name: air_temperature
-      file: example_2.csv
-      interpolation:
-      - name: station_id@MetaData
-        method: exact
-      - name: air_pressure@MetaData
-        method: linear
+  corrected variables:
+  - name: air_temperature
+    file: example_2.csv
+    interpolation:
+    - name: station_id@MetaData
+      method: exact
+    - name: air_pressure@MetaData
+      method: linear
 
 and CSV file:
 
@@ -468,14 +456,13 @@ we could use the following YAML snippet
 .. code-block:: yaml
 
   name: interpolate_data_from_file
-  options:
-    corrected variables:
-    - name: brightness_temperature
-      channels: 1-2, 4-6
-      file: example_3.csv
-      interpolation:
-      - name: scan_position@MetaData
-        method: nearest
+  corrected variables:
+  - name: brightness_temperature
+    channels: 1-2, 4-6
+    file: example_3.csv
+    interpolation:
+    - name: scan_position@MetaData
+      method: nearest
 
 and CSV file:
 
@@ -508,15 +495,14 @@ and 0.0 to all other observations, we could use the following YAML snippet
 .. code-block:: yaml
 
   name: interpolate_data_from_file
-  options:
-    corrected variables:
-    - name: air_temperature
-      file: example_4.csv
-      interpolation:
-      - name: station_id@MetaData
-        method: exact
-      - name: latitude@MetaData
-        method: least upper bound
+  corrected variables:
+  - name: air_temperature
+    file: example_4.csv
+    interpolation:
+    - name: station_id@MetaData
+      method: exact
+    - name: latitude@MetaData
+      method: least upper bound
 
 and CSV file:
 
@@ -553,7 +539,7 @@ The Legendre polynomial :math:`P_n(x)` where `n` is the value of the :code:`orde
 
 The following options are supported:
 
-* :code:`number of scan positions` The number of scan positions. Note: this parameter should not be inside the :code:`options` group.
+* :code:`number of scan positions` The number of scan positions.
 * :code:`order` (Optional) Order of the Legendre polynomial. By default, 1.
 
 Example
@@ -563,8 +549,7 @@ Example
 
   name: Legendre
   number of scan positions: 32
-  options:
-    order: 2
+  order: 2
 
 `orbital_angle`
 +++++++++++++++
@@ -582,9 +567,8 @@ Example
 .. code-block:: yaml
 
   name: orbital_angle
-  options:
-    component: cos
-    order: 2
+  component: cos
+  order: 2
 
 `scan_angle`
 ++++++++++++
@@ -602,9 +586,8 @@ Example
 .. code-block:: yaml
 
   name: scan_angle
-  options:
-    var_name: scan_position
-    order: 2
+  var_name: scan_position
+  order: 2
 
 `sine_of_latitude`
 ++++++++++++++++++
@@ -629,8 +612,7 @@ Example
 .. code-block:: yaml
 
   name: thickness
-  options:
-    layer top: 30000
-    layer base: 85000
-    mean: 7.6
-    standard deviation: 0.4
+  layer top: 30000
+  layer base: 85000
+  mean: 7.6
+  standard deviation: 0.4

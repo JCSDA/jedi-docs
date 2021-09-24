@@ -60,7 +60,7 @@ If there is only one entry in the :code:`test variables` list, the same criterio
 Background Check Filter
 -----------------------
 
-This filter checks for bias corrected distance between observation value and model simulated value (:math:`y-H(x)`) and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * sigma_o when the filter action is set to :code:`reject`. This filter can also adjust observation error through a constant inflation factor when the filter action is set to :code:`inflate error`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
+This filter checks for bias corrected distance between observation value and model simulated value (:math:`y-H(x)`) and rejects obs where the absolute difference is larger than :code:`absolute threshold`, or :code:`threshold` * :math:`{\sigma}_o`, or :code:`threshold` * :math:`{\sigma}_b`, where :math:`{\sigma}_o` is observation error and :math:`{\sigma}_b` is background error. This filter can also adjust observation error through a constant inflation factor when the filter action is set to :code:`inflate error`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
 
 .. code-block:: yaml
 
@@ -84,15 +84,23 @@ This filter checks for bias corrected distance between observation value and mod
      action:
        name: inflate error
        inflation: 2.0
+   - filter: Background Check
+     filter variables:
+     - name: sea_surface_height
+     threshold wrt background error: true
+     threshold: 2.0
+      
 
-The first filter would flag temperature observations where abs((y+bias)-H(x)) > min ( absolute_threshold, threshold * sigma_o), and
-then the flagged data are rejected due to filter action is set to reject.
+The first filter would flag temperature observations where :math:`|y-(H(x)+bias)| > \min (` :code:`absolute_threshold`, :code:`threshold` * :math:`{\sigma}_o)`, and
+then the flagged data are rejected due to the filter action being set to :code:`reject`.
 
-The second filter would flag wind component observations where abs((y+bias)-H(x)) > threshold * sigma_o and latitude of the observation location are within 60 degree. The flagged data will then be inflated with a factor 2.0.
+The second filter would flag wind component observations where :math:`|y-(H(x)+bias)| >` :code:`threshold` * :math:`{\sigma}_o` and latitude of the observation location are within 60 degree. The flagged data will then be inflated with a factor 2.0.
 
 Please see the :ref:`Filter Actions <filter-actions>` section for more detail.
 
-There is an option for the background check filter checks for distance between observation value and model simulated value without bias correction (:math:`y-H(x)`) when the additional parameter bias correction parameter is set to 1.0 and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * sigma_o when the filter action is set to :code:`reject`.If no action section is included in the yaml, the filter is set to reject the flagged observations.
+The third filter compares the departure against the background error rather than the observation error. It would flag sea surface height observations where :math:`|y-(H(x)+bias)| >` :code:`threshold` * :math:`{\sigma}_b`, and reject the flagged observations as no filter action is specified. If :code:`threshold wrt background error` is set to :code:`true`, then :code:`threshold` must be set and :code:`absolute threshold` must not.
+
+There is an option for the background check filter to check for distance between observation value and model simulated value without bias correction (:math:`y-H(x)`) when the additional parameter :code:`bias correction parameter` is set to 1.0 and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * :math:`{\sigma}_o` when the filter action is set to :code:`reject`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
 
 .. code-block:: yaml
 
@@ -101,12 +109,72 @@ There is an option for the background check filter checks for distance between o
     - name: brightness_temperature
       channels: 1-24
     absolute threshold: 3.5
-    bias correction parameter: 1.0 
+    bias correction parameter: 1.0
     action:
-      name: reject  
+      name: reject
 
-This filter would flag temperature observations where abs(y-H(x)) > min ( absolute_threshold, threshold * sigma_o), and
-then the flagged data are rejected due to filter action is set to reject.
+This filter would flag temperature observations where :math:`|y-H(x)| > \min (` :code:`absolute_threshold`, :code:`threshold` * :math:`{\sigma}_o)`, and then the flagged data are rejected due to filter action is set to reject.
+
+
+Bayesian Background Check Filter
+--------------------------------
+
+Similar to the standard Background Check filter, which rejects observations based on the difference between observation value and model simulated value (:math:`y-H(x)`), the Bayesian Background Check also takes into account the probability that an observation is "bad", i.e. "in gross error".
+
+The .yaml file requires the following filter parameters:
+
+- prob density bad obs (:code:`PdBad`): the value of the prior uniform probability distribution for the observation to be bad (e.g. 0.1/K for a domain 273-283 K for some temperature observation);
+
+- initial prob gross error (:code:`PGE`): the weight given to the uniform ("bad") probability distribution - while :code:`(1-PGE)` is the weight given to the "good" distribution (a Gaussian in :math:`[y-H(x)]`, with variance :math:`{\sigma}^2` given by the sum of background uncertainty and observation uncertainty variances).
+
+The initial :code:`PGE` divided by the combined probability distribution, gives the conditional probability that the observation is in gross error. This conditional probability value is the after-check PGE, :code:`PGEBd`. It is saved in the ObsSpace for optional later use in the buddy check.
+
+The .yaml file can also contain optional filter parameters, which override the default values in ufo/utils/ProbabilityOfGrossErrorParameters.h:
+
+- PGE threshold (:code:`PGECrit`, default 0.1): if the adjusted (after-check) PGE exceeds this value, the observation is rejected;
+
+- obs minus BG threshold (:code:`SDiffCrit`, default 100.0): if the observation-background normalised square-difference :math:`[y-H(x)]^2/{\sigma}^2` exceeds this value, the observation is rejected;
+
+- max exponent (:code:`ExpArgMax`, default 80.0): maximum allowed value of the exponent in the "good" probability distribution;
+
+- obs error multiplier (:code:`ObErrMult`, default 1.0): weight of observation error in the combined error variance;
+
+- BG error multiplier (:code:`BkgErrMult`, default 1.0): weight of background error in the combined error variance.
+
+.. code-block:: yaml
+
+     - filter: Bayesian Background Check
+       filter variables:
+       - name: ice_area_fraction 
+       prob density bad obs: 1.0
+       initial prob gross error: 0.04
+       PGE threshold: 0.07
+       obs minus BG threshold: 100.0
+
+
+Note that this filter requires the background value (HofX) and background uncertainty. The latter is accessed from the obs diagnostics - as an interim measure, supplied in a separate .nc4 file (see .yaml snippet below), with variable name e.g. :code:`ice_area_fraction_background_error` (no @ group name) to go with :code:`ice_area_fraction`.
+
+.. code-block:: yaml
+
+     HofX: HofX
+     obs diagnostics:
+       filename: Data/ufo/testinput_tier_1/background_errors_for_bayesianbgcheck_test.nc4
+
+
+By default, a filter variable is treated as scalar. But for vectors, such as wind, the two components must be specified one after the other in the .yaml, and the first must have the option :code:`first_component_of_two` set to true.
+
+.. code-block:: yaml
+
+     - filter: Bayesian Background Check
+       filter variables:
+       - name: eastward_wind
+         options:
+             first_component_of_two: true
+       - name: northward_wind
+
+
+Bayesian Background check currently only works for single-level observations, not profiles.
+
 
 Domain Check Filter
 -------------------
@@ -181,7 +249,7 @@ Here the filter is configured to inflate errors of all observations from the Sou
 
 .. code-block:: yaml
 
-   - filter: Perform Action 
+   - filter: Perform Action
      action:
        name: inflate error
        inflation: 2.0
@@ -202,7 +270,7 @@ The filter configured in this way behaves like :code:`RejectList`:
 
 .. code-block:: yaml
 
-   - filter: Perform Action 
+   - filter: Perform Action
      action:
        name: reject
 
@@ -213,7 +281,7 @@ The filter configured in this way behaves like :code:`AcceptList`:
 
 .. code-block:: yaml
 
-   - filter: Perform Action 
+   - filter: Perform Action
      action:
        name: accept
 
@@ -241,7 +309,7 @@ Gaussian Thinning Filter
 This filter thins observations by preserving only one observation in each cell of a grid. Cell assignment can be based on an arbitrary combination of:
 
 - horizontal position
-- vertical position (in terms of air pressure)
+- vertical position (in terms of height or pressure)
 - time
 - category (arbitrary integer associated with each observation).
 
@@ -268,20 +336,26 @@ The following YAML parameters are supported:
     cell width in the zonal direction is as close as possible to that in the meridional direction.
     False to set the number of zonal bands so that the band width is as small as possible, but
     no smaller than :code:`horizontal_mesh`, and the cell width in the zonal direction is as small as
-    possible, but no smaller than in the meridional direction. Default: :code:`false`.
+    possible, but no smaller than in the meridional direction.
+
+    Defaults to :code:`false` unless the :code:`ops_compatibility_mode` option is enabled, in which
+    case it's set to :code:`true`.
 
 - Vertical grid:
 
-  * :code:`vertical_mesh`: Cell size (in Pa) in the vertical direction.
+  * :code:`vertical_mesh`: Cell size in the vertical direction.
     Thinning in the vertical direction is disabled
     if this parameter is not specified or negative.
 
-  * :code:`vertical_min`: Lower bound of the pressure interval split into cells of size
-    :code:`vertical_mesh`. Default: 100 Pa.
+  * :code:`vertical_min`: Lower bound of the vertical coordinate interval split into cells of size
+    :code:`vertical_mesh`. Default: 100 (Pa).
 
-  * :code:`vertical_max`: Upper bound of the pressure interval split into cells of size
+  * :code:`vertical_max`: Upper bound of the vertical coordinate interval split into cells of size
     :code:`vertical_mesh`. This parameter is rounded upwards to the nearest multiple of
-    :code:`vertical_mesh` starting from :code:`vertical_min`. Default: 110,000 Pa.
+    :code:`vertical_mesh` starting from :code:`vertical_min`. Default: 110,000 (Pa).
+  
+  * :code:`vertical_coordinate`: Name of the observation vertical coordinate. 
+    Default: :code:`air_pressure`.
 
 - Temporal grid:
 
@@ -310,13 +384,40 @@ The following YAML parameters are supported:
     is retained. Allowed values:
 
     + :code:`geodesic`: retain the observation closest to the cell center in the horizontal direction
-      (air pressure and time are ignored when selecting the observation to retain)
+      (the vertical coordinate and time are ignored when selecting the observation to retain)
 
     + :code:`maximum`: retain the observation lying furthest from the cell's bounding box in the
       system of coordinates in which the cell is a unit cube (all dimensions along which thinning
       is enabled are taken into account).
 
-    Default: :code:`geodesic`.
+    Defaults to :code:`geodesic` unless the :code:`ops_compatibility_mode` option is enabled, in
+    which case it's set to :code:`maximum`.
+
+  * :code:`ops_compatibility_mode`: Set this option to :code:`true` to make the filter produce
+    identical results as the :code:`Ops_Thinning` subroutine from the Met Office OPS system when
+    both are run serially (on a single process).
+
+    This modifies the filter behavior in the following ways:
+
+    - The :code:`round_horizontal_bin_count_to_nearest` option is set to :code:`true`.
+
+    - The :code:`distance_norm` option is set to :code:`maximum`.
+
+    - Bin indices are calculated by rounding values away from rather towards zero. This can alter
+      the bin indices assigned to observations lying at bin boundaries.
+
+    - The bin lattice is assumed to cover the whole real axis (for times and pressures) or the
+      [-360, 720] degrees interval (for longitudes) rather than just the intervals
+      [:code:`time_min`, :code:`time_max`], [:code:`pressure_min`, :code:`pressure_max`] and
+      [0, 360] degrees, respectively. This may cause observations lying at the boundaries of the
+      latter intervals to be put in bins of their own, which is normally undesirable.
+
+    - A different (non-stable) sorting algorithm is used to order observations before inspection.
+      This can alter the set of retained observations if some bins contain multiple equally good
+      observations (with the same priority and distance to the cell center measured with the
+      selected norm). If this happens for a significant fraction of bins, it may be a sign the
+      criteria used to rank observations (the priority and the distance norm) are not specific
+      enough.
 
 Example 1 (thinning by the horizontal position only):
 
@@ -541,6 +642,67 @@ position and time. The exclusion volumes are ellipsoidal. Shuffling is disabled.
       exclusion_volume_shape: ellipsoid
       shuffle: false
 
+Stuck Check Filter
+------------------
+
+This filter thins observations by iterating over them by station and flagging each observation that
+is part of a "streak" of sequential observations. The first condition for a "streak" is that the
+observational values are the same over a certain count of sequential observations. The second
+condition is either (a) that this set of observations is longer than a user-defined duration or (b)
+that it covers the full trajectory of a station.
+The observational values which are used for evaluation of whether a "streak" exists are the
+:code:`filter variables`. If multiple :code:`filter variables` are present, then each variable is
+considered independently. In other words the filter flags observations based on each variable,
+independent to the other variables.
+the original full track for each filter variable. Any observations that form streaks in at least one
+variable will be flagged.
+The following YAML parameters are supported:
+
+* :code:`filter variables`: the variables to use to classify observations as "stuck".
+  This required parameter must be entered as a string vector.
+
+* :code:`number stuck tolerance`: the maximum number of observations in a row with the same
+  observational value before its classification as a potential streak is made.
+  This required parameter must be entered as a non-negative integer.
+
+* :code:`time stuck tolerance`: the maximum time duration before a potential streak is rejected
+  This required parameter must be entered in ISO 8601 duration format. If
+  :code:`number stuck tolerance` is exceeded and all of the station's observations are part of the
+  same streak, :code:`time stuck tolerance` is ignored and all of the observations are rejected
+  regardless of the duration.
+
+Example 1
+^^^^^^^^^
+
+With the following parameters, a "streak" of observations is defined as sequential observations with
+identical air temperature measured values. All observations in the streak will be flagged if the
+streak (a) consists of more than 2 observations and (b) lasts longer than 2 hours or consists of the
+full set of observations from the station.
+
+.. code-block:: yaml
+
+  - filter: Stuck Check:
+    filter variables: [air_temperature]
+    number stuck tolerance: 2
+    time stuck tolerance: PT2H
+
+Example 2
+^^^^^^^^^
+
+With the following parameters, 2 types of streaks will be identified independently and the
+observations will be flagged accordingly if either of the following observed values are classified
+as "stuck": air temperature and air pressure.
+
+.. code-block:: yaml
+
+  - filter: Stuck Check:
+    filter variables: [air_temperature, air_pressure]
+    number stuck tolerance: 2
+    time stuck tolerance: PT2H
+
+Say we have 5 observations each taken an hour apart. Let the air temperature values equal: 274, 274
+274, 275, 275; and the air pressure values equal 4, 4, 5, 5, 5. In this case, all of the
+observations would be rejected.
 
 Difference Check Filter
 -----------------------
@@ -707,8 +869,76 @@ Example:
      max_speed_interpolation_points: {"0": 1000, "20000": 400, "110000": 200} # Pa: m/s
      rejection_threshold: 0.5
      station_id_variable: station_id@MetaData
-  
 
+Ship Track Check Filter
+-----------------------
+
+This filter checks tracks of mobile weather stations, rejecting observations inconsistent with the
+rest of the track. It differs from :code:`Track Check Filter` in that it only considers
+inconsistencies in the lat-lon and time dimensions of each observation.
+
+Each track is checked separately. The algorithm starts by performing the following calculations
+between consecutive observations:
+
+1. Distances between each observation
+2. The speed between each observation
+3. Angles of the track formed by each triplet of consecutive observations
+
+Various track statistics will be calculated:
+
+1. The number of track segments (tracks between two consecutive observations) with less than an
+   hour between the two observations.
+2. The number of track segments which exceed a user-defined maximum speed.
+3. The average speed of all track segments which do not fall into categories (1) and (2).
+4. The number of track angles which are greater than or equal to 90 degrees.
+
+If (1), (2), and (4) exceed a percentage of the total observations and the user-defined
+:code:`early break check` setting is enabled, then the track is skipped over, with all
+observations left unflagged.
+
+If the filter proceeds, observations are flagged iteratively by removing one of the two
+observations forming the fastest segment, until either (a) the segment with the fastest speed is
+less than a user-defined :code:`max speed (m/s)` and the angles formed by this segment with its
+adjacent segments are both less than 90 degrees or (b) the segment with the fastest speed is less
+than 80 percent of :code:`max speed (m/s)`.
+
+Numerous criteria are applied to choose which of the two observations forming the fastest track
+segment should be removed, and track statistic (3) is heavily used in this assessment.
+If the percentage of observations rejected rises greater than a
+user-defined :code:`rejection threshold` fraction, the full track is rejected.
+
+The following YAML parameters are supported:
+
+* :code:`temporal resolution`: Assumed temporal resolution of the observations (i.e. absolute
+  accuracy of the reported observation times), used for the speed calculations. Required parameter.
+
+* :code:`spatial resolution (km)`: Assumed spatial resolution of the observations (in km), i.e.
+  absolute accuracy of the reported positions. Required parameter.
+
+* :code:`max speed (m/s)`: The maximum speed (in m/s) between any two observations, above which
+  requires the rejection of one of the comprising observations. Required parameter.
+
+* :code:`rejection threshold`: The maximum fraction of track observations to be rejected, above
+  which causes the full track to be rejected. Required parameter.
+
+* :code:`early break check`: A boolean setting that determines if a track should be skipped
+  (unfiltered) if its count of track statistics (1), (2), and (4) are too large a percentage of the
+  total number of observations. Required parameter.
+
+* :code:`input category`: The type of input source. If a static source such as BUOY, track
+  statistic (1) will not be considered in deciding if a track should be skipped. Default: SHPSYN.
+  The supported sources are: LNDSYN, SHPSYN, BUOY, MOBSYN, OPENROAD, TEMP, BATHY, TESAC, BUOYPROF,
+  LNDSYB, and SHPSYB.
+
+Example:
+
+.. code-block:: yaml
+
+  - filter: Ship Track Check
+    temporal resolution: PT30S
+    spatial resolution (km): .1
+    max speed (m/s): 3.0
+    rejection threshold: 0.5
 
 Met Office Buddy Check Filter
 -----------------------------
@@ -835,6 +1065,95 @@ Implementation Notes
 
 The implementation of this filter consists of four steps: sorting, buddy pair identification, PGE update and observation flagging. Observations are grouped into zonal bands and sorted by (a) band index, (b) longitude, (c) latitude, in descending order, (d) pressure (if the :code:`sort_by_pressure` option is on), and (e) datetime. Observations are then iterated over, and for each observation a number of nearby observations (lying no further than :code:`search_radius`) are identified as its buddies. The size and "diversity" of the list of buddy pairs can be controlled with the :code:`max_total_num_buddies`, :code:`max_num_buddies_from_single_band` and :code:`max_num_buddies_with_same_station_id` options. Subsequently, the PGEs of the observations forming each buddy pair are updated. Typically, the PGEs are decreased if the signs of the innovations agree and increased if they disagree. The magnitude of this change depends on the background error correlation between the two observation locations, the error estimates of the observations and background values, and the prior PGEs of the observations: the PGE change is the larger, the stronger the correlation between the background errors and the narrower the error margins. Once all buddy pairs have been processed, observations whose PGEs exceed the specified :code:`rejection_threshold` are flagged.
 
+History Check Filter
+--------------------
+
+This filter runs the Ship Track Check filter and/or the Stuck Check filter (depending on the
+observation type) on an auxiliary obs space. The auxiliary obs space is expected to be a superset of
+the original obs space, with an earlier start time than the assimilation window but the same end
+time. The equivalent observations to those which were flagged in the auxiliary obs space are then
+flagged in the original obs space. This filter is motivated by the fact that the Ship Track Check
+and Stuck Check filters both rely on viewing observations within the context of their surrounding
+observations. Thus, this filter makes the underlying filters more reliable for observations early in
+the assimilation window. The filters are run independently: any observations within the assimilation
+window flagged by either of the sub-filters will be flagged by this filter.
+
+The following YAML parameters are supported:
+
+* :code:`input category`: Surface observation subtype which determines if the ship track check
+  and/or the stuck check filters should be run. Supported options are LNDSYN, SHPSYN, BUOY, MOBSYN,
+  OPENROAD, TEMP, BATHY, TESAC, BUOYPROF, LNDSYB, and SHPSYB. Required parameter.
+
+* :code:`time before start of window`: The duration of time before the start of the assimilation
+  window to collect for the history check. This required parameter must be entered in ISO 8601
+  duration format.
+
+* :code:`ship track check parameters`: The options for running the ship track check filter, should
+  the  subtype not be LNDSYN or LNDSYB. These must be filled in for the ship track check filter to
+  run. The particular sub-parameters to fill in are :code:`temporal resolution`,
+  :code:`spatial resolution (km)`, :code:`max speed (m/s)`, :code:`rejection threshold`, and
+  :code:`early break check`. Please refer to the Ship Track Check filter documentation for additional
+  details on how each of these sub-parameters works. Optional parameter.
+
+* :code:`stuck check parameters`: The options for running the stuck check filter, should the subtype
+  not be TEMP, BATHY, TESAC, or BUOYPROF. These must be filled in for the stuck check filter to run.
+  The particular sub-parameters to fill in are :code:`number stuck tolerance` and
+  :code:`time stuck tolerance`. Please refer to the Stuck Check Filter documentation for additional
+  details on how each of these sub-parameters works. Optional parameter.
+
+* :code:`obs space`: The options used to create the auxiliary obs space that is determined by the
+  observation subtype. A user needs to enter the following fields: name, simulated variables, and
+  obsdatain.obsfile or generate. It additionally may be necessary to specify the distribution as
+  InefficientDistribution. This prevents the observations from distributing to different
+  processors between the original obs space and the auxiliary obs space, which could cause
+  in-window observations flagged in the auxiliary obs space to be left unflagged in the original
+  obs space.
+
+* :code:`station_id_variable`: Variable storing string- or integer-valued station IDs. Observations
+  taken by each station are checked separately. Applies to assimilation observation space.
+
+  If not set and observations were grouped into records when the observation space was
+  constructed, each record is assumed to consist of observations taken by a separate
+  station. If not set and observations were not grouped into records, all observations are
+  assumed to have been taken by a single station.
+
+Example:
+^^^^^^^^
+
+With the following parameters, the history check filter will be run on the obs space explicitly
+simulated, using the generated air temperature values for the stuck check and the lat-lon-dt values
+for the ship track check. :code:`time before start of window` set as 3 hours will cause the
+filters to run from 3 hours before the start of the assimilation window (regardless of the time
+range present in the auxiliary obs space).
+
+
+.. code-block:: yaml
+
+   - filter: History Check
+     input category: 'SHPSYN'
+     time before start of window: PT3H
+     filter variables: [air_temperature]
+     stuck check parameters:
+       number stuck tolerance: 2
+       time stuck tolerance: PT2H
+     ship track check parameters:
+       temporal resolution: PT1S
+       spatial resolution (km): 0.001
+       max speed (m/s): 0.01
+       rejection threshold: 0.5
+       early break check: false
+     station_id_variable:
+       name: station_id@MetaData
+     obs space:
+       name: Ship
+       distribution: InefficientDistribution
+       simulated variables: [air_temperature]
+       generate:
+         list:
+           lats: [-37.1, -37.2, -37.3]
+           lons: [82.5, 82.5, 82.5]
+           datetimes: [ '2010-01-01T00:00Z', '2010-01-01T01:30Z', '2010-01-01T03:00Z']
+         obs errors: [1.0]
 
 Variable Assignment Filter
 --------------------------
@@ -843,36 +1162,50 @@ This "filter" (it is not a true filter; rather, a "processing step") assigns spe
 specified variables at locations selected by the :code:`where` statement, or at all locations if
 the :code:`where` keyword is not present.
 
-The values can be constants or vectors generated by ObsFunctions. If the variables don't exist
-yet, they are created; in this case locations not selected by the :code:`where` statement are
-initialized with missing-value markers.
+The assigned values can be constants, existing ObsSpace variables or vectors generated by
+ObsFunctions. If the variables don't exist yet, they are created; in this case locations not
+selected by the :code:`where` statement are initialized with missing-value markers.
 
 The values assigned to individual variables are specified in the :code:`assignments` list in the
 YAML file. Each element of this list can contain the following options:
 
-- :code:`name`: Name of the variable to which new values should be assigned.
+- :code:`name`: Name of the variable to which new values should be assigned. The variable can be
+  from any group except for :code:`ObsValue` (use :code:`DerivedObsValue` instead).
 
 - :code:`channels`: (Optional) Set of channels to which new values should be assigned.
 
-- :code:`value`: Value to be assigned to the specified variable. Either this option or
-  :code:`function` (but not both) must be present.
+- :code:`value`: Value to be assigned to the specified variable. Exactly one of the :code:`value`,
+  :code:`source variable` and :code:`function` options must be present.
 
-- :code:`function`: Variable (typically an ObsFunction) that should be evaluated and assigned to
-  the specified variable. Either this option or :code:`value` (but not both) must be present.
+- :code:`source variable`: Variable that should be copied into the destination variable (specified
+  in the :code:`name` option). Exactly one of the :code:`value`, :code:`source variable` and
+  :code:`function` options must be present.
+
+- :code:`function`: An ObsFunction that should be evaluated and assigned to the specified variable.
+  Exactly one of the :code:`value`, :code:`source variable` and :code:`function` options must be
+  present.
 
 - :code:`type`: Type (:code:`int`, :code:`float`, :code:`string` or :code:`datetime`) of the
   variable to which new values should be assigned. This option only needs to be provided if the
   variable doesn't exist yet. If this option is provided and the variable already exists, its type
   must match the value of this option, otherwise an exception is thrown.
 
+It is possible to assign variables or ObsFunctions of type :code:`int` to variables of type
+:code:`float` and vice versa. No other type conversions are supported.
+
+If the modified variable belongs to the :code:`DerivedObsValue` group and is a simulated variable,
+QC flags previously set to :code:`missing` are reset to :code:`pass` at locations where a valid
+observed value has been assigned. Conversely, QC flags previously set to :code:`pass` are reset to
+:code:`missing` at locations where the observed value has been set to missing.
+
 Example 1
 ^^^^^^^^^
-    
+
 Create new variables :code:`air_temperature@GrossErrorProbability` and
 :code:`relative_humidity@GrossErrorProbability` and set them to 0.1 at all locations.
 
 .. code:: yaml
-    
+
     - filter: Variable Assignment
       assignments:
       - name: air_temperature@GrossErrorProbability
@@ -881,14 +1214,14 @@ Create new variables :code:`air_temperature@GrossErrorProbability` and
       - name: relative_humidity@GrossErrorProbability
         type: float
         value: 0.1
-    
+
 Example 2
 ^^^^^^^^^
 
 Set :code:`air_temperature@GrossErrorProbability` to 0.05 at all locations in the tropics.
 
 .. code:: yaml
-    
+
     - filter: Variable Assignment
       where:
       - variable:
@@ -898,7 +1231,7 @@ Set :code:`air_temperature@GrossErrorProbability` to 0.05 at all locations in th
       assignments:
       - name: air_temperature@GrossErrorProbability
         value: 0.05
-    
+
 Example 3
 ^^^^^^^^^
 
@@ -907,7 +1240,7 @@ Set :code:`relative_humidity@GrossErrorProbability` to values computed by an Obs
 transition in between).
 
 .. code:: yaml
-    
+
     - filter: Variable Assignment
       assignments:
       - name: relative_humidity@GrossErrorProbability
@@ -920,7 +1253,20 @@ transition in between).
             x1: [30]
             err0: [0.1]
             err1: [0.05]
-    
+
+Example 4
+^^^^^^^^^
+
+Copy the variable :code:`height@MetaData` to :code:`geopotential_height@DerivedMetaData`.
+
+.. code:: yaml
+
+    - filter: Variable Assignment
+      assignments:
+      - name: geopotential_height@DerivedMetaData
+        type: float  # type must be specified if the variable doesn't already exist
+        source variable: height@MetaData
+
 RTTOV 1D-Var Check (RTTOVOneDVar) Filter
 ----------------------------------------
 
@@ -945,14 +1291,19 @@ The following are optional YAML parameters with appropriate defaults:
 
 * :code:`ModName`:  forward model name (only RTTOV at the moment). Default: :code:`RTTOV`.
 * :code:`qtotal`:  flag for total humidity (qt = q + qclw + qi). If this is true the b-matrix must include qt or the code will abort. If this is false then the b-matrix must not contain qt or the code will abort. Default: :code:`false`.
+* :code:`UseQtSplitRain`:  flag to choose if rain is included in the non-vapour part of qtotal when split. e.g. qnv = ql + qi + qr. Default: :code:`true`.
 * :code:`UseMLMinimization`:  flag to turn on Marquardt-Levenberg minimizer otherwise a Newton minimizer is used Default: :code:`false`.
 * :code:`UseJforConvergence`:  flag to use J for the measure of convergence. Default is comparison of the profile absolute differences to background error multiplied by :code:`ConvergenceFactor`. Default: :code:`false`.
 * :code:`UseRHwaterForQC`:  flag to use liquid water in the q saturation calculations. Default: :code:`true`.
+* :code:`UseColdSurfaceCheck`:  flag to reset low level temperatures over sea ice and cold low land. Default: :code:`false`.
+* :code:`Store1DVarLWP`:  flag to store the liquid water path to the observation database evaluated after convergence of the 1D-Var. Default: :code:`false`.
 * :code:`FullDiagnostics`:  flag to turn on full diagnostics. Default: :code:`false`.
 * :code:`Max1DVarIterations`:  maximum number of iterations. Default: :code:`7`.
 * :code:`JConvergenceOption`:  integer to select convergence option.  1 equals percentage change in cost tested between iterations.  Otherwise the absolute change in cost is tested between iterations. Default: :code:`1`.
 * :code:`IterNumForLWPCheck`:  choose which iteration to start checking the liquid water path. Default: :code:`2`.
 * :code:`MaxMLIterations`:  the maximum number of iterations for the internal Marquardt-Levenberg loop. Default: :code:`7`.
+* :code:`StartOb`:  the starting observation number for the main loop over all observations.  This has been added for testing to allow a subset of observations in an ObsSpace to be evaluated by the filter. Default: :code:`0`.
+* :code:`FinishOb`:  the finishing observation number for the main loop over all observations.  This has been added for testing to allow a subset of observations in an ObsSpace to be evaluated by the filter. Default: :code:`0`.
 * :code:`ConvergenceFactor`:  cost factor used when the absolute difference in the profile is used to determine convergence. Default: :code:`0.4`.
 * :code:`CostConvergenceFactor`:  the cost threshold used for convergence check when cost function value is used for convergence. Default: :code:`0.01`.
 * :code:`EmissLandDefault`:  the default emissivity value to use over land. Default: :code:`0.95`.
@@ -961,7 +1312,7 @@ The following are optional YAML parameters with appropriate defaults:
 Example:
 
 .. code:: yaml
-    
+
     - filter: RTTOV OneDVar Check
       BMatrix: ../resources/bmatrix/rttov/atms_bmatrix_70_test.dat
       RMatrix: ../resources/rmatrix/rttov/atms_noaa_20_rmatrix_test.nc4
@@ -986,13 +1337,13 @@ Example:
       - name: brightness_temperature
         channels: 1-22
       qtotal: true
-    
+
 ModelOb Threshold Filter
 ----------------------------------------
-      
-This filter applies a threshold to a model profile interpolated to the observation 
+
+This filter applies a threshold to a model profile interpolated to the observation
 height.
-   
+
 The specified model profile variable is linearly (vertical) interpolated
 to the observation height using the specified model vertical coordinate variable.
 This is referred to as the "ModelOb". Note that the ModelOb is not necessarily
@@ -1031,8 +1382,189 @@ Example
       model vertical coordinate:
         name: air_pressure@GeoVaLs
       observation height:
-        name: air_pressure_levels@MetaData
+        name: air_pressure@MetaData
       thresholds: [50,50,40,30]
       coordinate values: [100000,80000,50000,20000]
       threshold type: min
- 
+
+Satwind Inversion Filter
+----------------------------------------
+
+This filter is a processing step which modifies the assigned pressure of AMV observations if a
+temperature inversion is detected in the model profile and defined criteria
+are met.
+
+The model profile is searched for the presence of a temperature
+inversion. Where there are multiple temperature inversions, only the lowest one is found.
+This is intended only for use on low level AMVs, typically below 700 hPa height.
+
+The pressure of the AMV is corrected downwards in height if the following conditions are true:
+
+* Originally assigned pressure is greater than or equal to min_pressure (Pa).
+* AMV derived from IR and visible channels only.
+* Temperature inversion is present in the model profile for pressures less than or equal to
+  max_pressure (Pa).
+* In order to be considered significant, the temperature difference across the top and base of
+  the inversion must be greater than or equal to the inversion_temperature (K) value.
+* Relative humidity at the top of the inversion is less than the rh_threshold value.
+* AMV has been assigned above the height of the inversion base.
+
+The AMV is then re-assigned to the base of the inversion.
+
+Reference for initial implementation:
+
+Cotton, J., Forsythe, M., Warrick, F., (2016). Towards improved height assignment and
+quality control of AMVs in Met Office NWP. Proceedings for the 13th International Winds
+Workshop 27 June - 1 July 2016, Monterey, California, USA.
+
+This filter requires the following YAML parameters:
+
+* :code:`observation pressure`: name of the observation pressure variable to correct.
+* :code:`RH threshold`: relative humidity (%) threshold value.
+
+The following are optional YAML parameters with appropriate defaults:
+
+* :code:`minimum pressure`: minimum AMV pressure (Pa) to consider for correction. Default: :code:`70000.` Pa.
+* :code:`maximum pressure`: maximum model pressure (Pa) to consider. Default: :code:`105000.` Pa.
+* :code:`inversion temperature`: temperature difference (K) between the inversion base and top. Default: :code:`2.0` K.
+
+Example:
+
+.. code:: yaml
+
+    - filter: Satwind Inversion Correction
+      observation pressure:
+        name: air_pressure@MetaData
+      RH threshold: 50
+      maximum pressure: 96000
+
+GNSS-RO 1D-Var Check (GNSSROOneDVar) Filter
+-------------------------------------------
+
+This filter performs a 1-dimensional variational assimilation (1D-Var) that acts as a quality-control check for GNSS-RO profile data.  It finds the optimal set of bending angles based on the background departures from the observations.  If these optimal values are too far from the observation, or the minimisation does not converge within a given number of iterations, then the full profile of observations is rejected.  Other, smaller, tests are also included.
+
+The bending angle observations are normally stored individually, rather than being kept as a profile.  Therefore the profile is constructed using the record number as an identifier for which observations belong to a given profile.  These observations are sorted according to their impact parameter (smallest first) and the GeoVaL for the first observation is used to represent the model background values for the whole profile.  This filter is currently tied to the Met Office's bending angle operator for GNSS-RO and thus requires the appropriate inputs for that operator.
+
+This filter requires the following parameters to be set in the yaml:
+
+* :code:`bmatrix_filename`: The file-name of the background-error covariance used.
+* :code:`capsupersat`: If true calculate saturation vapour pressure with respect to water and ice (below zero degrees), else calculate it with respect to water everywhere.
+* :code:`cost_funct_test`: The profile is rejected if the final cost-function is larger than :code:`cost_funct_test` times the number of observations.
+* :code:`Delta_ct2`: The minimisation is considered to have converged if the absolute value of the change in the solution for an iteration, divided by the gradient in the cost-function is less than :code:`Delta_ct2` times the number of observations in the profile, divided by 200.
+* :code:`Delta_factor`: The minimisation is considered to have converged if the absolute change in the cost-function at this iteration is less than :code:`Delta_factor` times either the previous value of the cost-function or the number of observations (whichever is the smaller).  That is, the minimisation has converged if: :code:`ABS(J_new - J_old) < Delta_factor * min(J_old, nObs)`
+* :code:`min_temp_grad`: Threshold for the minimum temperature gradient before a profile is considered isothermal (units: K per model level).  Only applies if pseudo-levels are being used.
+* :code:`n_iteration_test`: The maximum number of iterations - the profile is rejected if it does not converge in time.
+* :code:`OB_test`: If the RMS difference between the observations and the background bending angle is greater than :code:`OB_test` then the whole profile is rejected.
+* :code:`pseudo_ops`: Whether to use pseudo-levels to reduce interpolation errors in the forward model.
+* :code:`vert_interp_ops`: If true use linear interpolation in ln(pressure), otherwise use linear interpolation in exner.
+* :code:`y_test`: If an observation is more than :code:`y_test` times the observation error away from the solution bending angle, then the observation (not the whole profile) is rejected.
+
+Example
+
+.. code::yaml
+
+  - filter: GNSS-RO 1DVar Check
+    bmatrix_filename: ../resources/bmatrix/gnssro/gnssro_bmatrix.txt
+    capsupersat: false
+    cost_funct_test: 2
+    defer to post: true
+    Delta_ct2: 1
+    Delta_factor: 0.01
+    filter variables:
+    - name: bending_angle
+    min_temp_grad: 1.0e-6
+    n_iteration_test: 20
+    OB_test: 2.5
+    pseudo_ops: true
+    vert_interp_ops: true
+    y_test: 5
+
+Model Best Fit Pressure Filter
+----------------------------------------
+
+This filter calculates the model best-fit pressure and flags cases where this estimate is poorly constrained. Optionally, it can output the best-fit eastward and northward wind vectors, which are the model background winds interpolated to the model best-fit pressure.
+
+The model best-fit pressure is defined as the model pressure (Pa) with the smallest vector difference between the AMV and model background wind, but additionally is not allowed to be lower than the threshold specified in the top pressure parameter. Vertical interpolation is performed between model levels to find the minimum vector difference.
+
+Checking if the pressure is well-constrained:
+
+* Remove any winds where the minimum vector difference between the AMV u (eastward_wind) and v (northward_wind) and the background column u and v is greater than the threshold specified in the upper vector diff parameter. This check aims to remove cases where there is no good agreement between the AMV and the winds at any level in the background wind column.
+* Remove any winds where the vector difference is less than the lower vector diff anywhere outside the band of width 2 * pressure band half-width centered around the best-fit pressure level. This aims to catch cases where there are secondary minima or very broad minima. In both cases the best-fit pressure is not well constrained.
+
+This filter accepts the following YAML parameters:
+
+* :code:`observation pressure`: Name of the observation pressure variable. Required parameter.
+* :code:`model pressure`: Name of the model pressure variable. Required parameter.
+* :code:`top pressure`: Minimum allowed pressure region. Default: :code:`10000.` Pa.
+* :code:`pressure band half-width`: Pressure band, for calculating constraint. Default: :code:`10000.` Pa.
+* :code:`upper vector diff`: Max vector difference allowed, for calculating constraint. Default: :code:`4.` m/s.
+* :code:`lower vector diff`: Min vector difference allowed, for calculating constraint. Default: :code:`2.` m/s.
+* :code:`tolerance vector diff`: Tolerance for vec_diff comparison. Default: :code:`1.0e-8` m/s.
+* :code:`tolerance pressure`: Tolerance for pressure comparison. Default: :code:`0.01` Pa.
+* :code:`calculate bestfit winds`: To calculate best-fit winds by linear interpolation. Output stored in "model_bestfit_eastward_wind@DerivedValue" and "model_bestfit_northward_wind@DerivedValue". Default: :code:`false`
+
+Example
+
+.. code:: yaml
+
+    - filter: Model Best Fit Pressure
+    observation pressure:
+      name: air_pressure@MetaData
+    model pressure:
+      name: air_pressure_levels@GeoVaLs
+    top pressure: 10000
+    pressure band half-width: 10000
+    upper vector diff: 4
+    lower vector diff: 2
+    tolerance vector diff: 1.0e-8
+    tolerance pressure: 0.01
+    calculate bestfit winds: true
+
+Process AMV QI
+--------------
+
+This "filter" (it is not a true filter; rather, a "processing step") converts AMV Quality Index (QI) values stored in the 3-10-077 BUFR template into variables with names corresponding to the wind generating application number.
+
+If not present, new QI variables are created. Created QI variables depend on "wind_generating_application_<number>" and fills them with the values found in "percent_confidence_<number>".
+
+The wind generating application numbers are associated as below:
+
+.. list-table:: Wind generating application variables
+   :widths: 20 20 20
+   :header-rows: 1
+
+   * - Wind generating application number
+     - QI type
+     - Variable name
+   * - 1
+     - Full weighted mixture of individual quality tests
+     - QI_full_weighted_mixture
+   * - 2
+     - Weighted mixture of individual tests, but excluding forecast comparison
+     - QI_weighted_mixture_exc_forecast_comparison
+   * - 3
+     - Recursive filter function
+     - QI_recursive_filter_function
+   * - 4
+     - Common quality index (QI) without forecast
+     - QI_common
+   * - 5
+     - QI without forecast
+     - QI_without_forecast
+   * - 6
+     - QI with forecast
+     - QI_with_forecast
+   * - 7
+     - Estimated Error (EE) in m/s converted to a percent confidence
+     - QI_estimated_error
+
+This filter accepts the following YAML parameters:
+
+* :code:`number of generating apps`: How many generating application variables to search for. Required parameter.
+
+Example
+
+.. code:: yaml
+
+    - filter: Process AMV QI
+      number of generating apps: 4

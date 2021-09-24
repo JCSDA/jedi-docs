@@ -54,18 +54,20 @@ Example of OOPS implementation of classes defined in traits
 
    Class diagram for Geometry-related classes
 
-Here :code:`MODEL::Geometry` implementation (an implementation of :code:`Geometry` specified in the :code:`MODEL` traits, e.g. Geometry implemented in Lorenz95 model, or fv3-jedi model, or mpas-jedi model) has to implement the interface defined in :code:`interface::Geometry<MODEL>`. :code:`interface::Geometry<MODEL>` holds a pointer to :code:`MODEL::Geometry` implementation; each of the methods in :code:`interface::Geometry<MODEL>` calls a corresponding method in :code:`MODEL::Geometry` (with added tracing and timing). If any of the :code:`interface::Geometry<MODEL>` methods took :code:`SomeClass<MODEL>` on input, :code:`MODEL::SomeClass` would be passed during the call to the :code:`MODEL::Geometry` implementation of the method.
+Here :code:`MODEL::Geometry` implementation (an implementation of :code:`Geometry` specified in the :code:`MODEL` traits, e.g. Geometry implemented in Lorenz95 model, or fv3-jedi model, or mpas-jedi model) has to implement the interface defined in :code:`interface::Geometry<MODEL>` class (in the :code:`interface` directory in oops). :code:`interface::Geometry<MODEL>` holds a pointer to :code:`MODEL::Geometry` implementation; each of the methods in :code:`interface::Geometry<MODEL>` calls a corresponding method in :code:`MODEL::Geometry` (with added tracing and timing). If any of the :code:`interface::Geometry<MODEL>` methods took :code:`SomeClass<MODEL>` on input, :code:`MODEL::SomeClass` would be passed during the call to the :code:`MODEL::Geometry` implementation of the method.
 
-:code:`Geometry<MODEL>` is a class that is used in oops classes interacting with geometries. It is a subclass of :code:`interface::Geometry<MODEL>` that has additional functionality that is implemented at oops level (and doesn’t have to be implemented in :code:`MODEL` implementations).
+:code:`Geometry<MODEL>` (in the :code:`base` directory in oops) is a class that is used in oops classes interacting with geometries. It is a subclass of :code:`interface::Geometry<MODEL>` that has additional functionality that is implemented at oops level (and doesn’t have to be implemented in :code:`MODEL` implementations).
 
 .. note:: Not all the interface classes are implemented with :code:`interface::Class` and :code:`Class` distinction yet.
+
+.. note:: For the interface classes that do not need additional functionality implemented at oops level (e.g :code:`ObsOperator`, :code:`GetValues`), there is no need for :code:`interface::Class` and :code:`Class` distinction. In this case :code:`Class` interface class is located in :code:`interface` directory.
 
 Interface classes chosen at runtime
 ===================================
 
 For classes in this category, there could be multiple implementations of the class, both *generic* and *specific*. *Generic* implementations are templated on the :code:`MODEL` and/or :code:`OBS` trait and can be instantiated for any (or at least multiple) implementations of these traits. :code:`MODEL`- and :code:`OBS`-*specific* implementations are not templated on :code:`MODEL` or :code:`OBS` -- they are tied to a specific implementation of these traits. The classes in this category are typically not defined in :code:`OBS` or :code:`MODEL` traits, and the class used in each particular case is decided at runtime, based on provided configuration file.
 
-Some of the classes that are currently this category: :code:`Model`, :code:`VariableChange`, :code:`ObsError`, :code:`ObsFilter`.
+Some of the classes that are currently in this category: :code:`Model`, :code:`ObsError`, :code:`ObsFilter`.
 
 :numref:`oops-model-classdiagram` shows class diagram for the :code:`Model` class.
 
@@ -75,10 +77,10 @@ Some of the classes that are currently this category: :code:`Model`, :code:`Vari
 
    Class diagram for Model-related classes
 
-:code:`GenericModelBase<MODEL>` methods have templated parameters (e.g. :code:`State<MODEL>` in the example). Its subclasses, *generic* implementations of :code:`Model`, can operate on multiple implementations of :code:`MODEL` traits (e.g. :code:`PseudoModel<MODEL>` which "propagates" model by reading precomputed states from files).
+:code:`ModelBase<MODEL>` class methods have templated parameters (e.g. :code:`State<MODEL>` in the example). Its subclasses, *generic* implementations of :code:`Model`, can operate on multiple implementations of :code:`MODEL` traits (e.g. :code:`PseudoModel<MODEL>` which "propagates" model by reading precomputed states from files). Both :code:`ModelBase<MODEL>` and *generic* implementations of :code:`Model` reside in :code:`generic` directory in oops.
 
-:code:`ModelBase<MODEL>` is a subclass of :code:`GenericModelBase<MODEL>` that overrides all methods that take templated parameters with calls to the abstract methods that take parameters tied to a specific implementation of the traits (e.g. :code:`MODEL::State` in the example). Subclasses of :code:`ModelBase<MODEL>` are not templated on :code:`MODEL` and are tied to specific implementations of :code:`MODEL` trait (e.g. Lorenz95 prognostic model, FV3-GEOS, FV3-GFS, etc).
+:code:`interface::ModelBase<MODEL>` (in the :code:`interface` directory) is a subclass of :code:`ModelBase<MODEL>` that overrides all methods that take templated parameters with calls to the abstract methods that take parameters tied to a specific implementation of the traits (e.g. :code:`MODEL::State` in the example). Subclasses of :code:`interface::ModelBase<MODEL>` are not templated on :code:`MODEL` and are tied to specific implementations of :code:`MODEL` trait (e.g. Lorenz95 prognostic model, FV3-GEOS, FV3-GFS, etc).
 
-:code:`Model<MODEL>` holds a pointer to :code:`GenericModelBase<MODEL>`. It has methods that correspond to all the methods in :code:`GenericModelBase<MODEL>`; each of those methods calls a corresponding method in :code:`GenericModelBase<MODEL>` (with added tracing and timing). There is also additional functionality in :code:`Model<MODEL>` that is included at oops level (and doesn’t have to be included in the implementations), e.g. :code:`forecast` method.
+:code:`Model<MODEL>` (in the :code:`base` directory) holds a pointer to :code:`ModelBase<MODEL>`. It has methods that correspond to all the methods in :code:`ModelBase<MODEL>`; each of those methods calls a corresponding method in :code:`ModelBase<MODEL>` (with added tracing and timing). There is also additional functionality in :code:`Model<MODEL>` that is included at oops level (and doesn’t have to be included in the implementations), e.g. :code:`forecast` method.
 
 .. note:: Not all the interface classes in this category are implemented according to the above class diagram yet, but the intention is to implement all of them in a similar way.

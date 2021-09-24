@@ -46,11 +46,14 @@ The :code:`Variable Transforms` filter has the following available yaml settings
       **not** applied to observations that have a :code:`QCflag` equal to either
       :code:`missing` or  :code:`bounds`.
 
-The new variable derived by the filter is then stored in the observation space 
-with the :code:`@DerivedValue` tag.
- 
-.. warning:: Each variable transforms requerest a specific set of variable 
-   (as specify in the documentation). If any compulsory variable is missig, the code will raise
+The new variable derived by the filter is then stored in the observation space within the
+:code:`DerivedObsValue` group. Since variables in groups with the :code:`Derived` prefix
+"overshadow" variables from corresponding groups without that prefix (see
+:ref:`Derived-Variables`), these variables can normally be accessed as if they were in the
+:code:`ObsValue` group.
+
+.. warning:: Each variable transform requires a specific set of variables
+   (as specified in the documentation). If any compulsory variable is missing, the code will raise
    an exception and stop.
 
 .. _available-variable-transforms:

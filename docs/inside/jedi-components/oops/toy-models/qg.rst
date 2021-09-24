@@ -117,8 +117,8 @@ The time-stepping algorithm is designed for speed rather than accuracy, and is a
   * For each gridpoint, :math:`(x_{ij} ,y_{ij})`, the departure point is calculated as:
 
     .. math::
-       x^D_{ij} = x_{ij} - \frac{\Delta t}{\Delta x} u^t_{ij} \\
-       y^D_{ij} = y_{ij} - \frac{\Delta t}{\Delta y} v^t_{ij}
+       x^D_{ij} = x_{ij} - \Delta t u^t_{ij} \\
+       y^D_{ij} = y_{ij} - \Delta t v^t_{ij}
 
   * The potential vorticity field at the end of the timestep is calculated by interpolating to the departure point:
 

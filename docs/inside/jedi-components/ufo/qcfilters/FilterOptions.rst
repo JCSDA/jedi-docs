@@ -62,7 +62,9 @@ The list passed to the :code:`where` keyword can contain more than one item, eac
 - :code:`is_defined`: filter applied only to observations for which the condition variable has a valid value (not a missing data indicator).
 - :code:`is_not_defined`: filter applied only to observations for which the condition variable is set to a missing data indicator.
 - :code:`is_in`: filter applied only to observations for which the condition variable is set to a value belonging to the given whitelist.
+- :code:`is_close_to_any_of`: filter applied only to observations for which the condition variable (a float) is close to any of the variables in the given reference list.  Two variables are defined as close if they differ by less than a provided tolerance.  The tolerance must be provided and can either be absolute (:code:`absolute_tolerance`) or relative (:code:`relative_tolerance`).
 - :code:`is_not_in`: filter applied only to observations for which the condition variable is set to a value not belonging to the given blacklist.
+- :code:`is_not_close_to_any_of`: filter applied only to observations for which the condition variable (a float) is not close to any of the variables in the given reference list.  Two variables are defined as close if they differ by less than a provided tolerance.  The tolerance must be provided and can either be absolute (:code:`absolute_tolerance`) or relative (:code:`relative_tolerance`).
 - :code:`any_bit_set_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices set.
 - :code:`any_bit_unset_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices unset (i.e. zero).
 - :code:`matches_regex`: filter applied only to observations for which the condition variable is a string that matches the specified regular expression or an integer whose decimal representation matches that expression. The regular expression should conform to the ECMAScript syntax described at http://www.cplusplus.com/reference/regex/ECMAScript.
@@ -182,6 +184,31 @@ Example 7
     
 In this example, assuming that :code:`observation_type@MetaData` is an integer variable, the filter will be applied only to observations whose types have decimal representations starting with :code:`102` or :code:`103`.
 
+Example 8
+^^^^^^^^^
+
+.. code-block:: yaml
+    
+    where:
+    - variable:
+        name: model_elevation@GeoVaLs
+      is_close_to_any_of: [0.0, 1.0]
+      absolute_tolerance: 1.0e-12
+    
+In this example, assuming that :code:`model_elevation@GeoVaLs` is a float variable, the filter will be applied only to observations whose :code:`model_elevation` is within :code:`1.0e-12` of either :code:`0.0` or :code:`1.0`.
+
+Example 9
+^^^^^^^^^
+
+.. code-block:: yaml
+    
+    where:
+    - variable:
+        name: model_elevation@GeoVaLs
+      is_not_close_to_any_of: [100.0, 200.0]
+      relative_tolerance: 0.1
+    
+In this example, assuming that :code:`model_elevation@GeoVaLs` is a float variable, the filter will be applied only to observations whose :code:`model_elevation` is not within 10 % of either :code:`100.0` or :code:`200.0`.
 
 
 .. _obs-function-and-obs-diagnostic-suffixes:
