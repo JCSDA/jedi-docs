@@ -1,2 +1,4 @@
 ### Required python packages for our documentation ###
 sphinxcontrib-bibtex
+sphinx_rtd_theme==0.5.2
+docutils==0.16
