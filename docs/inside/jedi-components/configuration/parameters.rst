@@ -15,7 +15,7 @@ Traditionally, code retrieving the values of options controlling the behavior of
     geometry:
       num lats: 5
       num lons: 10
-      level altitudes in km: {0.5, 1, 2, 4, 8, 16}
+      level altitudes in km: [0.5, 1, 2, 4, 8, 16]
 
 and the implementation of the OOPS :code:`Geometry` interface for that model could retrieve the values of these options as follows:
 
