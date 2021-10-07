@@ -77,6 +77,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ObsErrorModelStepwiseLinear <ObsErrorModelStepwiseLinear>`
   GSI variant of ObsErrorModelRamp
 
+:ref:`ObsFunctionLinearCombination <ObsFunctionLinearCombination>`
+  Compute linear combination of given variables weighted by given coefficients.
+
 :ref:`ObsFunctionVelocity <ObsFunctionVelocity>`
   Compute wind speed from u- and v- components
 
@@ -136,6 +139,7 @@ filters into separate parts would have an obfuscating effect.
    ObsErrorFactorWavenumIR
    ObsErrorModelRamp
    ObsErrorModelStepwiseLinear
+   ObsFunctionLinearCombination
    ObsFunctionVelocity
    ROobserrInflation
    SatWindsLNVDCheck
