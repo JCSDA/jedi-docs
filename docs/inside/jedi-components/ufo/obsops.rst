@@ -296,6 +296,171 @@ Examples of yaml:
       EndianType: little_endian
       CoefficientPath: Data/
 
+RTTOV
+-----------------------------------------
+
+Description:
+^^^^^^^^^^^^
+
+Interface to the RTTOV observation operator.
+
+Inputs:
+^^^^^^^^^^^^^^^^^^^^^
+RTTOV requires the following GeoVaLs for clear-sky radiance calculation. The variable name for use with ufo is given in parentheses () and the expected units in square brackets []: 
+
+* :code:`air_pressure` (:code:`var_prs`) [Pa]
+* :code:`air_temperature` (:code:`var_ts`) [K]
+* :code:`specific_humidity` (:code:`var_q`) [kg/kg]
+* :code:`surface_temperature` (:code:`var_sfc_t2m`) [K]
+* :code:`uwind_at_10m` (:code:`var_sfc_u10`) [m/s]
+* :code:`vwind_at_10m` (:code:`var_sfc_v10`) [m/s]
+* :code:`air_pressure_at_two_meters_above_surface` (:code:`var_sfc_p2m`) [Pa]
+* :code:`specific_humidity_at_two_meters_above_surface` (:code:`var_sfc_q2m`) [kg/kg]
+* :code:`skin_temperature` (:code:`var_sfc_tskin`) [K]
+
+Additionally, for calculation of MW cloud-affected radiances using RTTOV-SCATT the following GeoVaLs are also required:
+
+* :code:`air_pressure_levels` (:code:`var_prsi`) [Pa]
+* :code:`mass_content_of_cloud_liquid_water_in_atmosphere_layer` (:code:`var_qcl`) [kg/kg]
+* :code:`mass_content_of_cloud_ice_in_atmosphere_layer` (:code:`var_qci`) [kg/kg]
+* :code:`cloud_area_fraction_in_atmosphere_layer`  (:code:`var_cloud_layer`) [dimensionless]
+
+The geographic location of the observation, the satellite zenith angle and the RTTOV surface type are also required from the ObsSpace:
+
+* At least one (in order of priority) from :code:`MetaData/elevation`, :code:`MetaData/surface_height`, :code:`MetaData/model_orography` or the :code:`surface_altitude` geoval [m]
+* :code:`MetaData/latitude` [degrees]
+* :code:`MetaData/longitude` [degrees, -180--180 or 0--360] 
+* :code:`MetaData/sensor_zenith_angle` [degrees]
+* :code:`MetaData/surface_type` [0-2]
+  
+  :code:`MetaData/surface_type` is used to specify whether RTTOV should treat an observation as having a land (0), sea (1) or sea-ice (2) surface. The :code:`SetSurfaceType` ObsFunction, may be called via the :code:`VariableAssignment` ObsFilter to generate this data according to rules used in operational processing at the Met Office.
+
+Optionally, the satellite azimuth angle and the solar zenith/azimuth angles may be supplied:
+
+* :code:`MetaData/sensor_azimuth_angle` (optional) [degrees] 
+* :code:`MetaData/solar_zenith_angle` (optional) [degrees]
+* :code:`MetaData/solar_azimuth_angle` (optional) [degrees] 
+
+Outputs:
+^^^^^^^^^^^^^^^^^^^^^
+
+| The interface returns brightness temperatures for any channels requested using the :code:`obs space.channels` YAML configuration key. The brightness temperature fields shall have a suffix to denote the channel and shall be stored in a one-dimensional dataset in the :code:`HofX` group in the output observation database (e.g. :code:`/HofX/brightness_temperature_5`.
+
+| The interface optionally returns observation diagnostics including those requiring the calculation of jacobians, through the :code:`obs diagnostics.variables` YAML configuration key . Specifically:
+
+* :code:`optical_thickness_of_atmosphere_layer`
+* :code:`transmittances_of_atmosphere_layer`
+* :code:`weightingfunction_of_atmosphere_layer`
+* :code:`toa_outgoing_radiance_per_unit_wavenumber`
+* :code:`brightness_temperature_assuming_clear_sky`
+* :code:`pressure_level_at_peak_of_weightingfunction`
+* :code:`toa_total_transmittance`
+* :code:`surface_emissivity`
+* :code:`brightness_temperature_jacobian_${any_active_variable}`
+
+Where an observation diagnostic is requested that is not recognised by the interface, **no error is returned**, but memory is still allocated for the named observation diagnostic and the array is initialised to :code:`missing`. This is to facilitate the subsequent creation of bias correction predictors using output from the observation operator.
+
+Generic Obs Operator configuration options:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The configurable options for the RTTOV observation operator interface are:
+
+* :code:`name` (string, required): Must be set to :code:`RTTOV` in order to invoke this RTTOV observation operator.
+
+* :code:`Debug` (boolean, optional, default false): Print additional debugging statements.
+
+* :code:`Absorbers` (string list, optional): *Additional* atmospheric absorber species that will be requested from geovals. Names must correspond to those specified in :code:`gas_name` array in the |rttov_const module|.
+
+  * :code:`Water_vapour` (the internal RTTOV name for water vapour, c.f. :code:`H2O` in CRTM) is mandatory and maps to :code:`specific_humidity` and it is not necessary to list it here explicitly.
+
+  * :code:`CLW` (cloud liquid water) is optional for clear-sky MW calculation but mandatory for MW scattering calculations and maps to :code:`mass_content_of_cloud_liquid_water_in_atmosphere_layer`.
+
+  * :code:`CIW` (cloud ice water) is not used for clear-sky MW calculation but mandatory for MW scattering calculations and maps to :code:`mass_content_of_cloud_ice_in_atmosphere_layer`.
+
+  * :code:`Ozone`, :code:`CO2`, :code:`CO`, :code:`N2O`, :code:`CH4`, :code:`SO2` are due to be implemented.
+
+  | **N.B.**
+  
+  | Where the optional trace gas profiles are not present in the geovals, RTTOV reference profiles stored in the RTTOV coefficients will be used to determine their concentration if a compatible RTTOV coefficient is being used. 
+
+  | The contribution to optical depth from absorbing species for which there are no coefficients present in the RTTOV coefficient file will usually have been included with a fixed profile during the training process. See |RTTOV_12.3_user_guide| for details. 
+ 
+  | There are no reference profiles for :code:`CLW` and :code:`CIW`. If either absorber is required, because it is mandatory or by user request, then the requisite datasets must be present in the geovals.
+
+.. todo:: 
+  
+  hyperspectral IR support (specifically add code to read RTTOV supported gases)
+
+.. * :code:`linear model absorbers` (optional) : used to indicate a different set of active variables for the Tangent Linear (TL) and Adjoint (AD) operators from the configuration used for the non-linear operator. The same profile is used in the RTTOV Forward and TL/AD calculations.
+
+  * :code:`linear model absorbers` (string list, optional) : controls which of the selected absorbers will be active during the Jacobian calculation.
+  Omit :code:`linear model` in order to use the same absorbers as for the TL and AD operators as for the non-linear forward model.
+
+RTTOV interface specific configuration options (:code:`obs options`):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The :code:`obs options` section configures the options that can be used to change the behaviour of the RTTOV interface.
+
+Required
+~~~~~~~~~~~~
+
+Three options are required to uniquely specify the RTTOV coefficient file to be used to process observations. 
+The coefficient filename will be :code:`rtcoef_${Platform_Name}_${Sat_ID}_${Instrument_Name}` with the extension automatically discovered by RTTOV. The order of preference will be :code:`.bin` (platform-specific unformatted binary), :code:`.dat` (ASCII format), :code:`.H5` (HDF5 format).
+Scattering coefficients will be automatically read when requested according to the other :code:`obs options`. Their absence when required shall result in an error.
+
+* :code:`obs options.Platform_Name` (string): Corresponds to an
+  element of the :code:`platform_name` array in the |rttov_const
+  module|, e.g. 'NOAA', 'Metop'. Note that this is case-insensitive, 
+  as user input is automatically converted to lower case.
+* :code:`obs options.Sat_ID` (integer): Corresponds to the satellite ID.
+* :code:`obs options.Instrument_Name` (string): Corresponds to an
+  element of the :code:`instrument_name` array in  |rttov_const
+  module|, e.g. 'ATMS', 'IASI'. Note that this is case-insensitive as,
+  as user input is automatically converted to lower case.
+* :code:`obs options.CoefficientPath` (string): Relative or absolute path to all coefficient files to be read.
+
+.. |rttov_const module| raw:: html
+
+   <a href="https://github.com/JCSDA-internal/rttov/blob/develop/src/rttov/main/rttov_const.F90#L137" target="_blank">rttov_const module</a>
+
+
+Optional
+~~~~~~~~
+* :code:`obs options.RTTOV_default_opts` (string, default :code:`default`): These are set first and may be overridden by setting individual options. Valid options are :code:`UKMO_PS43`, :code:`UKMO_PS44`, :code:`UKMO_PS45` and correspond to options pertaining to RTTOV used operationally at the Met Office.
+* :code:`obs options.Do_MW_Scatt` (boolean, default :code:`false`): Call RTTOV-SCATT to simulate MW radiances affected by cloud and precipitation. 
+* :code:`obs options.RTTOV_GasUnitConv` (integer, default :code:`false`): Convert absorber concentration from mass concentration [kg/kg] to volume concentration [ppmv dry] for use with RTTOV.
+* :code:`obs options.InspectProfileNumber` (integer list, default 0): Print RTTOV profile(s) with indices corresponding to the order in which the geovals are processed. Intended for use with debugging. 
+* :code:`obs options.SatRad_compatibility` (boolean, default :code:`true`): Sets internal options to replicate Met Office OPS processing.
+* :code:`obs options.UseRHWaterForQC` (boolean, default :code:`true`): Use liquid water only in the saturation calculation (requires :code:`SatRad_compatibility` to be true).
+* :code:`obs options.UseColdSurfaceCheck` (boolean, default :code:`false`): Reset surface temperature over land and sea-ice where it is below 271.4 K. This is a legacy option for replicating OPS results prior to PS45 (requires :code:`SatRad_compatibility` to be true).
+
+Additionally, each option that may be modified within the RTTOV options structure may be accessed by prefixing :code:`RTTOV_` ahead of the option name, regardless of where it resides within the RTTOV option structure. 
+For example, :code:`RTTOV_addrefrac: true` will enable the option within RTTOV to account for atmospheric refraction during the optical depth calculation. 
+All options are set to the defaults specified in the |RTTOV_12.3_user_guide|.
+
+.. |RTTOV_12.3_user_guide| raw:: html
+
+   <a href="https://www.nwpsaf.eu/site/download/documentation/rtm/docs_rttov12/users_guide_rttov12_v1.3.pdf" target="_blank">RTTOV 12.3 user guide</a>
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  obs operator:
+    name: RTTOV
+    Absorbers: &rttov_absorbers [Water_vapour, CLW, CIW]
+    linear model absorbers: [Water_vapour]
+    obs options: &rttov_options
+      RTTOV_default_opts: UKMO_PS45
+      SatRad_compatibility: true
+      RTTOV_GasUnitConv: true
+      UseRHwaterForQC: &UseRHwaterForQC true # default
+      UseColdSurfaceCheck: &UseColdSurfaceCheck false # default
+      Do_MW_Scatt: &RTTOVMWScattSwitch false
+      Platform_Name: &platform_name NOAA
+      Sat_ID: &sat_id 20
+      Instrument_Name: &inst_name ATMS
+      CoefficientPath: &coef_path /Data
+
 Aerosol Optical Depth (AOD)
 ----------------------------
 
