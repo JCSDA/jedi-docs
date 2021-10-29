@@ -11,4 +11,5 @@ JEDI Components
    ufo/index.rst
    fv3-jedi/index.rst
    mpas-jedi/index.rst
+   soca/index.rst
    configuration/index.rst

@@ -920,9 +920,9 @@ Scatterometer neutral wind (Met Office)
 
 Description:
 ^^^^^^^^^^^^
-Met Office observation operator for treating scatterometer wind data 
-as a "neutral" 10m wind, i.e. where the effects of atmospheric stability are neglected. 
-For each observation we calculate the momentum roughness length using the Charnock relation. 
+Met Office observation operator for treating scatterometer wind data
+as a "neutral" 10m wind, i.e. where the effects of atmospheric stability are neglected.
+For each observation we calculate the momentum roughness length using the Charnock relation.
 We then calculate the Monin-Obukhov stability function for momentum, integrated to the model's lowest wind level.
 The calculations are dependant upon on whether we have stable or unstable conditions
 according to the Obukhov Length. The neutral 10m wind components are then calculated
@@ -954,7 +954,7 @@ Examples of yaml:
 References:
 ^^^^^^^^^^^^^^^^^^^^^^
 Cotton, J., 2018. Update on surface wind activities at the Met Office.
-Proceedings for the 14 th International Winds Workshop, 23-27 April 2018, Jeju City, South Korea. 
+Proceedings for the 14 th International Winds Workshop, 23-27 April 2018, Jeju City, South Korea.
 Available from http://cimss.ssec.wisc.edu/iwwg/iww14/program/index.html.
 
 Background Error Vertical Interpolation
@@ -1038,3 +1038,8 @@ Example
 
 See the listing in the :ref:`Background Error Vertical Interpolation Example` section of the
 documentation of the Background Error Vertical Interpolation operator.
+
+..
+   Link to the marine ufo
+
+.. include:: marineufo.rst
