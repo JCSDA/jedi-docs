@@ -14,7 +14,7 @@ Linear combination formulation
 
   .. math::
 
-    \vec{y} = H(\vec{x}) + \sum_{i=0}^{N} \beta_i p_i(\vec{x}) + \tilde{\vec{e}_o} 
+    \vec{y} = H(\vec{x}) + \sum_{i=0}^{N} \beta_i p_i(\vec{x}) + \tilde{\vec{e}_o}
 
   with scalar coefficients :math:`\beta_i, i = 0, . . . ,N` . The selection of predictors :math:`p_i(\vec{x}), i = 1, . . . ,N`  is flexible and depends on the instrument and channel.
 
@@ -46,14 +46,14 @@ Adjoint of the bias model
   In the incremental formulation of the variational analysis, nonlinear observation operators are linearized about the latest outer-loop estimate :math:`\overline{\vec{x}}` of :math:`\vec{x}` . Similarly, for the modified operator we use
 
     .. math::
-      
+
         H(\vec{x}, \beta) \approx H(\overline{\vec{x}}, \beta) & = H(\overline{\vec{x}}) + \sum_{i=0}^{N} \beta_i p_i(\overline{\vec{x}}) \\
         & = H(\overline{\vec{x}}) + \mathcal{P}(\overline{\vec{x}}) \cdot \vec{\beta}
 
   where :math:`\mathcal{P}(\overline{\vec{x}})` is a :math:`m × n` predictor matrix consisting of :math:`n` predictors evaluated on :math:`m` observation locations.
 
-  The modification to :math:`H(\vec{x})` is therefore additive and linear in the bias parameters, and its adjoint with respect to these additional control parameters is trivial to implement. 
-  
+  The modification to :math:`H(\vec{x})` is therefore additive and linear in the bias parameters, and its adjoint with respect to these additional control parameters is trivial to implement.
+
   For the linear predictor model :eq:`Hop`, the derivatives with respect to the parameters are simply the values of the predictors at the observation locations
 
     .. math::
@@ -95,14 +95,14 @@ Background error covariance
 
   .. note::
 
-    - For example, taking :math:`N_j = 10,000` for all parameters, the system will adapt quickly to changes in the bias for a clean channel generating thousands of radiances per analysis cycle. 
-    - On the other hand, it will respond slowly to a cloudy channel that generates only a few hundreds of data per cycle. 
+    - For example, taking :math:`N_j = 10,000` for all parameters, the system will adapt quickly to changes in the bias for a clean channel generating thousands of radiances per analysis cycle.
+    - On the other hand, it will respond slowly to a cloudy channel that generates only a few hundreds of data per cycle.
 
 
   .. note::
 
-    - When the :math:`N_j` are sufficiently large (say, :math:`N_j >> 100` ), the effect of neglecting off-diagonal elements of the parameter background error covariance matrix should be insignificant. This is because :math:`\mathcal{O}(N_j)` observations are used to estimate just a few bias parameters; the estimation errors will be small even when the estimation is suboptimal. 
-    - The situation is, of course, very different for the state estimation, which can be extremely sensitive to the specification of the background error covariances, especially in data-sparse areas. 
+    - When the :math:`N_j` are sufficiently large (say, :math:`N_j >> 100` ), the effect of neglecting off-diagonal elements of the parameter background error covariance matrix should be insignificant. This is because :math:`\mathcal{O}(N_j)` observations are used to estimate just a few bias parameters; the estimation errors will be small even when the estimation is suboptimal.
+    - The situation is, of course, very different for the state estimation, which can be extremely sensitive to the specification of the background error covariances, especially in data-sparse areas.
 
 VarBC example
 +++++++++++++++++++++++++
@@ -141,7 +141,7 @@ To use the bias correction in an observation operator, add the :code:`obs bias` 
 Here is the detailed explanation:
 
   1. Defines the predictors (required)
-  
+
     Here, we defined 6 predictors to be used for VarBC, which are :code:`constant`, :code:`emissivity`, and 1st, 2nd, 3rd, 4th order :code:`scan_angle`, respectively. To find what predictor functions are available, please refer to directory :code:`ufo/src/ufo/predictors/`.
 
     .. code-block:: yaml
@@ -292,118 +292,15 @@ a particular bias-corrected variable and should have the following attributes:
 
 * :code:`name`: Name of a bias-corrected variable.
 * :code:`channels`: (Optional) List of channel numbers of the bias-corrected variable.
-* :code:`file`: Path to an input NetCDF or CSV file. The input file formats are described in more detail below.
-* :code:`interpolation` A list of one or more elements indicating how to map specific ObsSpace variables to slices of arrays loaded from the input file. This list is described in more detail below.
+* :code:`file`: Path to an input NetCDF or CSV file.  See :ref:`here <DataExtractorInputFileFormats>`
+  for supported file formats.  However, note that unlike :ref:`DrawValueFromFile`,
+  we don't specify the group name corresponding to our payload array.  We expect it to be ``ObsBias``.
+* :code:`interpolation`: A list of one or more elements indicating how to map specific
+  ObsSpace variables to slices of arrays loaded from the input file.  See
+  :ref:`here <DrawValueFromFileInterpolation>` for further details.
 
 The predictor produces zeros for all bias-corrected variables missing from the :code:`corrected
 variables` list.
-
-Input file formats
-..................
-
-CSV
-!!!
-
-An input CSV file should have the following structure:
-
-* First line: comma-separated column names in ioda-v1 style (:code:`var@Group`) or ioda-v2 style
-  (:code:`Group/var`)
-* Second line: comma-separated column data types (datetime, float, int or string)
-* Further lines: comma-separated data entries.
-
-The number of entries in each line should be the same. The column order does not matter. One of the
-columns should belong to the :code:`ObsBias` group and contain the bias corrections to use in
-specific circumstances. Its data type should be either :code:`float` or :code:`int`. The values
-from the other columns (sometimes called `coordinates` below) are compared against ObsSpace
-variables with the same names to determine the row or rows from which the bias correction is
-extracted at each location. The details of this comparison (e.g. whether an exact match is
-required, the nearest match is used, or piecewise linear interpolation is performed) depend on the
-:code:`interpolation` option described below.
-
-Notes:
-
-* A column containing channel numbers (which aren't stored in a separate ObsSpace variable)
-  should be labelled :code:`channel_number@MetaData` or :code:`MetaData/channel_number`, as shown
-  in :ref:`interpolate example 3` below.
-
-* Single underscores serve as placeholders for missing values; for example, the following row
-
-  .. code-block::
-
-     ABC,_,_
-
-  contains missing values in the second and third columns.
-
-NetCDF
-!!!!!!
-
-ioda-v1 and ioda-v2-style NetCDF files are supported. ioda-v1-style files should have the
-following structure:
-
-* They should contain exactly one 1D or 2D array of type :code:`float` with a name ending with
-  :code:`@ObsBias` and containing bias corrections.
-
-* Each dimension of this array should be indexed by at least one 1D coordinate array. Coordinates
-  can be of type :code:`float`, :code:`int` or :code:`string`. Datetimes should be represented as
-  ISO-8601 strings. Coordinate names should correspond to names of ObsSpace variables. Use the name
-  :code:`channel_number@MetaData` for channel numbers (for which there is no dedicated ObsSpace
-  variable).
-
-ioda-v2-style files are similar except that
-
-* Bias corrections should be stored in an array placed in the :code:`ObsBias` group (rather than
-  with a :code:`@ObsBias` suffix).
-* Coordinate variables should be placed in appropriate groups, e.g. :code:`MetaData`. Because
-  of the limitations of the NetCDF file format, these variables can only be used as auxiliary
-  coordinates of the payload variable (listed in its :code:`coordinates` attribute).
-
-The :code:`interpolation` option
-................................
-
-This list indicates which ObsSpace variables, and in which order, will be used as criteria determining the value produced by the predictor.
-
-Each element of this list should have the following attributes:
-
-* :code:`name`: Name of an ObsSpace variable (and of a coordinate present in the input CSV or NetCDF
-  file).
-* :code:`method`: Method used to map values of this variable at individual location to matching slices
-  of the bias correction array loaded from the input file. This can be one of:
-
-  - :code:`exact`: Selects slices where the coordinate matches exactly the value of the specified
-    ObsSpace variable.
-
-    If no match is found, an error is reported unless there are slices where the indexing
-    coordinate is set to the missing value placeholder; in this case these slices are selected
-    instead. This can be used to define a fallback value (used if there is no exact match), as shown
-    in :ref:`interpolate example 4` below.
-
-    This is the only method that can be used for variables of type :code:`string`.
-
-  - :code:`nearest`: Selects slices where the coordinate is closest to the value of the
-    specified ObsSpace variable.
-
-    In case of a tie (e.g. if the value of the ObsSpace variable is 3 and the coordinate contains
-    values 2 and 4, but not 3), the smaller of the candidate coordinate values is used (in this
-    example, 2).
-
-  - :code:`least upper bound`: Select slices corresponding to the least value of the coordinate
-    greater than or equal to the value of the specified ObsSpace variable.
-
-  - :code:`greatest upper bound`: Select slices corresponding to the greatest value of the coordinate
-    less than or equal to the value of the specified ObsSpace variable.
-
-  - :code:`linear`: Performs a piecewise linear interpolation along the dimension indexed by the
-    specified ObsSpace variable.
-
-    This method can only be used in the last element of the :code:`interpolation` list.
-
-At each location the criterion variables specified in the :code:`interpolation` list are inspected
-in order, successively restricting the range of selected slices. An error is reported if the end
-result is an empty range of slices or (unless linear interpolation is used for the last criterion
-variable) a range containing more than one slice.
-
-Note: If the :code:`channels` option has been specified, the channel number is implicitly used as the
-first criterion variable and needs to match exactly a value from the :code:`channel_number@MetaData` coordinate.
 
 The following examples illustrate more advanced applications of this predictor.
 

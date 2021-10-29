@@ -402,6 +402,12 @@ The test channel output and the reference file are compared line-by-line, and mu
 
    relative_difference = |reference - test|/(0.5*(reference + test))
 
+You may choose to use :code:`float absolute tolerance` if you prefer, and in this case the comparison will be done using the absolute difference instead of relative for all the float numbers in the test. This can be useful when comparing very small numbers too close to zero. If you specify both :code:`float relative tolerance` and :code:`float absolute tolerance` in the yaml file, the absolute comparison will be used and a warning will be generated.
+
+.. code:: bash
+
+   absolute_difference = |reference - test|
+
 If the test channel fails to match the reference file, an exception from a sub-class of :code:`oops::TestReferenceError` containing relevant information about the cause of the mismatch is thrown.
 
 Additional options for the :code:`test:` YAML sub-section:
