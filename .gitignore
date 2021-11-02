@@ -1,4 +1,5 @@
 docs/_build
+jedi-edu/_build
 _status
 _templates
 docs/_static
