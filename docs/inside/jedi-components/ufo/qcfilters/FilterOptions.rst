@@ -65,6 +65,8 @@ The list passed to the :code:`where` keyword can contain more than one item, eac
 - :code:`is_close_to_any_of`: filter applied only to observations for which the condition variable (a float) is close to any of the variables in the given reference list.  Two variables are defined as close if they differ by less than a provided tolerance.  The tolerance must be provided and can either be absolute (:code:`absolute_tolerance`) or relative (:code:`relative_tolerance`).
 - :code:`is_not_in`: filter applied only to observations for which the condition variable is set to a value not belonging to the given blacklist.
 - :code:`is_not_close_to_any_of`: filter applied only to observations for which the condition variable (a float) is not close to any of the variables in the given reference list.  Two variables are defined as close if they differ by less than a provided tolerance.  The tolerance must be provided and can either be absolute (:code:`absolute_tolerance`) or relative (:code:`relative_tolerance`).
+- :code:`is_true`: filter applied only to observations for which the condition variable (normally a diagnostic flag) is set to :code:`true`.
+- :code:`is_false`: filter applied only to observations for which the condition variable (normally a diagnostic flag) is set to :code:`false`.
 - :code:`any_bit_set_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices set.
 - :code:`any_bit_unset_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices unset (i.e. zero).
 - :code:`matches_regex`: filter applied only to observations for which the condition variable is a string that matches the specified regular expression or an integer whose decimal representation matches that expression. The regular expression should conform to the ECMAScript syntax described at http://www.cplusplus.com/reference/regex/ECMAScript.
@@ -119,7 +121,7 @@ Example 2
       minvalue: "****-**-**T09:00:00Z"
       maxvalue: "****-**-**T18:00:00Z"
     
-    In this example, the filter will be applied only to observations taken between 09:00:00 and 18:00:00, between 1st January and 25th May of every year (end inclusive).  Note that datetime components are not yet 'loop aware'.  That is, a where clause between May and February for example would require two filters: one covering the Jan-Feb period and a second to cover the May-Dec period.
+In this example, the filter will be applied only to observations taken between 09:00:00 and 18:00:00, between 1st January and 25th May of every year (end inclusive).  Note that datetime components are not yet 'loop aware'.  That is, a where clause between May and February for example would require two filters: one covering the Jan-Feb period and a second to cover the May-Dec period.
 
 Example 3
 ^^^^^^^^^
@@ -131,7 +133,7 @@ Example 3
         name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
       any_bit_set_of: 0, 1
     
-    In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 0 and/or position 1. (Position 0 denotes the least significant bit -- in other words, bits are numbered "from right to left".)
+In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 0 and/or position 1. (Position 0 denotes the least significant bit -- in other words, bits are numbered "from right to left".)
     
 Example 4
 ^^^^^^^^^
@@ -146,7 +148,7 @@ Example 4
         name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
       any_bit_unset_of: 10-12
     
-    In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 4 and a 0 at any of positions 10 to 12.
+In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 4 and a 0 at any of positions 10 to 12.
     
 Example 5
 ^^^^^^^^^
@@ -158,7 +160,7 @@ Example 5
         name: station_id@MetaData
       matches_regex: 'EUR[A-Z]*'
     
-    In this example, the filter will be applied only to observations taken by stations whose IDs match the regular expression :code:`EUR[A-Z]*`, i.e. consist of the string :code:`EUR` followed by any number of capital letters.
+In this example, the filter will be applied only to observations taken by stations whose IDs match the regular expression :code:`EUR[A-Z]*`, i.e. consist of the string :code:`EUR` followed by any number of capital letters.
     
 Example 6
 ^^^^^^^^^
@@ -170,7 +172,7 @@ Example 6
         name: station_id@MetaData
       matches_wildcard: 'EUR??TEST*'
     
-    In this example, the filter will be applied only to observations taken by stations whose IDs match the wildcard pattern :code:`EUR??TEST*`, i.e. consist of the string :code:`EUR` followed by two arbitrary characters, the string :code:`TEST` and any number of arbitrary characters.
+In this example, the filter will be applied only to observations taken by stations whose IDs match the wildcard pattern :code:`EUR??TEST*`, i.e. consist of the string :code:`EUR` followed by two arbitrary characters, the string :code:`TEST` and any number of arbitrary characters.
     
 Example 7
 ^^^^^^^^^
@@ -210,6 +212,20 @@ Example 9
     
 In this example, assuming that :code:`model_elevation@GeoVaLs` is a float variable, the filter will be applied only to observations whose :code:`model_elevation` is not within 10 % of either :code:`100.0` or :code:`200.0`.
 
+Example 10
+^^^^^^^^^^
+
+.. code-block:: yaml
+
+    where:
+    - variable:
+        name: DiagnosticFlags/ExtremeValue/air_temperature
+      is_true:
+    - variable:
+        name: DiagnosticFlags/ExtremeValue/relative_humidity
+      is_false:
+
+In this example, the filter will be applied only to observations with the :code:`ExtremeValue` diagnostic flag set for the air temperature, but not for the relative humidity.
 
 .. _obs-function-and-obs-diagnostic-suffixes:
 

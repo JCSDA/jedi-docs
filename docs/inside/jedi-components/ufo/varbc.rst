@@ -111,7 +111,7 @@ To use the bias correction in an observation operator, add the :code:`obs bias` 
 
 .. code-block:: yaml
   :linenos:
-  :emphasize-lines: 12-27
+  :emphasize-lines: 12-24
 
   observations:
   - obs space:

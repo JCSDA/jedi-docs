@@ -1267,6 +1267,50 @@ Copy the variable :code:`height@MetaData` to :code:`geopotential_height@DerivedM
         type: float  # type must be specified if the variable doesn't already exist
         source variable: height@MetaData
 
+Create Diagnostic Flags Filter
+------------------------------
+
+This "filter" (it is not a true filter; rather, a "processing step") makes it possible to define new diagnostic flags and to reinitialize existing ones.
+
+Diagnostic flags are stored in Boolean ObsSpace variables. A diagnostic flag *Flag* associated with a simulated variable *var* is stored in the variable :code:`DiagnosticFlags/Flag/var`.
+
+The diagnostic flags to create or reinitialize are specified in the :code:`flags` list in the
+YAML file. Each element of this list can contain the following keys:
+
+- :code:`name` (required): The flag name. Conventionally, flag names follow the CamelCase naming convention (like group names).
+- :code:`initial value`: Initial value for the flag (either :code:`true` or :code:`false`). If not specified, defaults to :code:`false`.
+- :code:`force reinitialization`: Determines what happens if the flag already exists. By default, the flag is not reinitialized, i.e. its current value is preserved. Set :code:`force reinitialization` to :code:`true` to reset the flag to :code:`initial value`.
+
+In addition, the filter recognizes the standard filter options :code:`filter variables` and :code:`defer to post`, but not :code:`where` or :code:`action`.
+
+Example 1
+^^^^^^^^^
+
+The following YAML snippet creates diagnostic flags :code:`Duplicate` and :code:`ExtremeValue` for all simulated variables and initializes them to :code:`false` unless they already exist, in which cause their current values are preserved.
+
+.. code:: yaml
+
+  - filter: Create Diagnostic Flags
+    flags:
+    - name: Duplicate
+    - name: ExtremeValue
+
+For instance, if the list of simulated variables in the ObsSpace is :code:`[air_temperature, relative_humidity]`, the filter will create the following Boolean variables: :code:`DiagnosticFlags/Duplicate/air_temperature`, :code:`DiagnosticFlags/Duplicate/relative_humidity`, :code:`DiagnosticFlags/ExtremeValue/air_temperature` and :code:`DiagnosticFlags/ExtremeValue/relative_humidity`.
+
+Example 2
+^^^^^^^^^
+
+The following YAML snippet creates a diagnostic flag :code:`OriginallyMeasuredInMmHg` for the simulated variable :code:`surface_pressure` and initializes it to :code:`true`, overwriting any current values if this flag already exists:
+
+.. code:: yaml
+
+  - filter: Create Diagnostic Flags
+    filter variables: [surface_pressure]
+    flags:
+    - name: OriginallyMeasuredInMmHg
+      initial value: true
+      force reinitialization: true
+
 RTTOV 1D-Var Check (RTTOVOneDVar) Filter
 ----------------------------------------
 
