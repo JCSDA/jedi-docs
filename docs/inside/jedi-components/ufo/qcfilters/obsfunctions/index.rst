@@ -77,6 +77,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ObsErrorModelStepwiseLinear <ObsErrorModelStepwiseLinear>`
   GSI variant of ObsErrorModelRamp
 
+:ref:`ObsFunctionExponential <ObsFunctionExponential>`
+  Compute exponential function of a variable
+  
 :ref:`ObsFunctionLinearCombination <ObsFunctionLinearCombination>`
   Compute linear combination of given variables weighted by given coefficients.
 
@@ -139,6 +142,7 @@ filters into separate parts would have an obfuscating effect.
    ObsErrorFactorWavenumIR
    ObsErrorModelRamp
    ObsErrorModelStepwiseLinear
+   ObsFunctionExponential
    ObsFunctionLinearCombination
    ObsFunctionVelocity
    ROobserrInflation
