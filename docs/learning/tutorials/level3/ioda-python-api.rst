@@ -60,7 +60,7 @@ Here we will focus on the python API.  In order to work with the ioda python mod
 .. code-block:: bash
 
    export LD_LIBRARY_PATH=/opt/jedi/build/lib:$LD_LIBRARY_PATH:/usr/local/miniconda3/lib
-   export PYTHONPATH=/opt/jedi/build/lib/python3.8:$PYTHONPATH
+   export PYTHONPATH=/opt/jedi/build/lib/python3.9:$PYTHONPATH
 
 Now, since some of these programs create output files, we will not be able to run them in the ``/opt`` directory, which is read-only.  So, for convenience, we will define an environment variable called ``PYIODA`` that points to the location of these examples.  And, we can use that to run the examples in a different directory.  For example:
 
@@ -124,7 +124,7 @@ This is the focus of the sixth example of the python IODA API.  We have included
 
 .. code-block:: bash
 
-   export IODA_DATA_DIR=/opt/jedi/fv3-bundle/test-data-release/ioda/2.0.0/testinput_tier_1/
+   export IODA_DATA_DIR=/opt/jedi/fv3-bundle/test-data-release/ioda/2.0.2/testinput_tier_1/
    python $PYIODA/06-ReadIodaOutputFile.py $IODA_DATA_DIR/sample_hofx_output_amsua_n19.nc4
 
 As before, you can use ``h5dump`` and ``ncdump`` commands to see what is in the file:
