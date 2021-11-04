@@ -393,6 +393,10 @@ The following YAML parameters are supported:
     Defaults to :code:`geodesic` unless the :code:`ops_compatibility_mode` option is enabled, in
     which case it's set to :code:`maximum`.
 
+  * :code:`tiebreaker_pick_latest`: Set this option to :code:`true` to make the filter select the
+    observation with the later time within a cell, when the distance to the centre of
+    the cell is equal between the observations being compared and the observations have equal priorities.  
+
   * :code:`ops_compatibility_mode`: Set this option to :code:`true` to make the filter produce
     identical results as the :code:`Ops_Thinning` subroutine from the Met Office OPS system when
     both are run serially (on a single process).
