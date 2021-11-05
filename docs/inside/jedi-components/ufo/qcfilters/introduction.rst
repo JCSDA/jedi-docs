@@ -55,6 +55,29 @@ Most filters are written once and used with many observation types; several such
         channels: 1-15
       threshold: 3.0
 
+Order of Filter Application
+---------------------------
+
+By default, all filters that do not require access to GeoVaLs, ObsDiagnostics or the HofX vector are run first, in the order they are listed in the :code:`obs filters` section in the YAML file. Subsequently, GeoVaLs are calculated and all filters that require access to GeoVaLs (so-called prior filters) are run. Finally, the observation operator is applied, producing the HofX vector and possibly some ObsDiagnostics, and all filters that require access to these quantities (so-called post filters) are run.
+
+It is possible to force a filter to be treated as a post filter and thus defer its execution until after the application of the observation operator by setting the :code:`defer to post` option to :code:`true`.
+
+Example
+^^^^^^^
+
+In the following example, the Thinning filter will be run after the Background Check because its :code:`defer to post` option is set to :code:`true`. If that was not the case, the Thinning filter would be executed before the Background Check, since the former does not need access to the HofX vector, whereas the latter does.
+
+.. code-block:: yaml
+
+    obs filters:
+    - filter: Background Check
+      filter variables:
+      - name: air_temperature
+      absolute threshold: 2.0
+    - filter: Thinning
+      amount: 0.5
+      defer to post: true
+
 .. _Derived-Variables:
 
 Derived Variables
