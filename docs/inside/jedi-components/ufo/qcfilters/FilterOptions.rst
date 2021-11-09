@@ -266,17 +266,24 @@ Warning: ObsFunctions are evaluated for all observations, including those that h
 
 Filter Actions
 --------------
-The action taken on observations flagged by the filter can be adjusted using the :code:`action` option recognized by each filter.  So far, four actions have been implemented:
+The action taken on observations flagged by the filter can be adjusted using the :code:`action` option recognized by each filter.  The following actions are available:
 
 * :code:`reject`: observations flagged by the filter are marked as rejected.
-* :code:`accept`: observations flagged by the filter are marked as accepted if they have previously been rejected for any reason other than missing data, a pre-processing flag indicating rejection, or failure of the ObsOperator.
+* :code:`accept`: observations flagged by the filter are marked as accepted if they have previously been rejected for any reason other than missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator.
+* :code:`passivate`: observations flagged by the filter are marked as passive.
 * :code:`inflate error`: the error estimates of observations flagged by the filter are multiplied by a factor. This can be either a constant (specified using the :code:`inflation factor` option) or a variable (specified using the :code:`inflation variable` option).
-* :code:`assign error`: the error estimates of observations flagged by the filter are set to a specified value. Again. this can be either a constant (specified using the :code:`error parameter` option) or a variable (specified using the :code:`error function` option).
+* :code:`assign error`: the error estimates of observations flagged by the filter are set to a specified value. Again, this can be either a constant (specified using the :code:`error parameter` option) or a variable (specified using the :code:`error function` option).
+* :code:`set` and :code:`unset`: the diagnostic flag indicated by the :code:`flag` option will be set to :code:`true` or :code:`false`, respectively, at observations flagged by the filter. These actions recognize a further optional keyword :code:`ignore`, which can be set to:
 
-The default action for almost all filters (taken when the :code:`action` keyword is omitted) is :code:`reject`. There are two exceptions: the default action of the :code:`AcceptList` filter is :code:`accept` and the :code:`Perform Action` filter has no default action (it requires the :code:`action` keyword to be present).
+  - :code:`rejected observations` if the diagnostic flag should not be changed at observations that have previously been rejected or
+  - :code:`defective observations` if the diagnostic flag should not be changed at observations that have previously been rejected because of a missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator.
 
-Example 1
-^^^^^^^^^
+To perform multiple actions, replace the :code:`action` option, which takes a single action, by :code:`actions`, which takes a list of actions. This list may contain at most one action altering quality control flags, namely :code:`reject`, :code:`accept` and :code:`passivate`; if present, such an action must be the last in the list. The :code:`action` and :code:`actions` options are mutually exclusive.
+
+The default action for almost all filters (taken when both the :code:`action` and :code:`actions` keywords are omitted) is :code:`reject`. There are two exceptions: the default action of the :code:`AcceptList` filter is :code:`accept` and the :code:`Perform Action` filter has no default action (either the :code:`action` or :code:`actions` keyword must be present).
+
+Example 1 - rejection, error inflation and assignment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: yaml
     
@@ -293,7 +300,7 @@ Example 1
       - name: northward_wind
       threshold: 2.0
       where:
-      - variable: latitude
+      - variable: latitude@MetaData
         minvalue: -60.0
         maxvalue: 60.0
       action:
@@ -330,13 +337,13 @@ Example 1
                     0.400,  0.550,  0.800,  3.000, 18.000]
 
 
-Example 2 - DrawObsErrorFromFile@ObsFunction
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Example 2 - error assignment using :code:`DrawObsErrorFromFile@ObsFunction`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Next we demonstrate deriving the observation error from a NetCDF file which defines the variance/covariance:
 
 .. code-block:: yaml
 
-    - Filter: Perform Action
+    - filter: Perform Action
       filter variables:
       - name: air_temperature
       action:
@@ -353,6 +360,84 @@ Next we demonstrate deriving the observation error from a NetCDF file which defi
             - name: air_pressure@MetaData
               method: linear
 
+
+Example 3 - setting and unsetting a diagnostic flag
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+    - filter: Bounds Check
+      filter variables:
+      - name: air_temperature
+      min value: 250
+      max value: 350
+      # Set the ExtremeValue diagnostic flag at particularly
+      # hot and cold observations, but do not reject them
+      action:
+        name: set
+        flag: ExtremeValue
+    - filter: Perform Action
+      filter variables:
+      - name: air_temperature
+      where:
+      - variable:
+          name: latitude@MetaData
+        maxvalue: -60
+      - variable:
+          name: air_temperature@ObsValue
+        maxvalue: 250
+      # Unset the ExtremeValue diagnostic flag at cold observations
+      # in the Antarctic
+      action:
+        name: unset
+        flag: ExtremeValue
+
+
+Example 4 - setting a diagnostic flag at observations rejected by a filter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this example, a Domain Check filter rejecting observations outside the 60°S--60°N zonal band is followed by a Bounds Check filter rejecting temperature readings above 350 K and below 250 K. The observations rejected by the Bounds Check filter are additionally marked with the :code:`ExtremeCheck` diagnostic flag. The :code:`ignore: rejected observations` option passed to the :code:`set` action ensures that observations that fail the criteria of the Bounds Check filter, but have already been rejected by the Domain Check filter, are not marked with the :code:`ExtremeCheck` flag.
+
+.. code-block:: yaml
+
+    - filter: Domain Check
+      where:
+      - variable:
+          name: latitude@MetaData
+        minvalue: -60
+        maxvalue:  60
+    - filter: Bounds Check
+      filter variables:
+      - name: air_temperature
+      min value: 250
+      max value: 350
+      # Reject particularly hot and cold observations
+      # and mark them with the ExtremeValue diagnostic flag
+      actions:
+      - name: set
+        flag: ExtremeCheck
+        ignore: rejected observations
+      - name: reject
+
+
+Example 5 - setting a diagnostic flag at observations accepted by a filter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this example, observations taken in the zonal band 30°S--30°N that have previously been rejected for a reason other a missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator are re-accepted and additionally marked with the :code:`Tropics` diagnostic flag. The :code:`ignore: defective observations` option passed to the :code:`set` action ensures that the diagnostic flag is not assigned to observations that are not accepted because of their previous rejection for one of the reasons listed above.
+
+.. code-block:: yaml
+
+    - filter: AcceptList
+      where:
+      - variable:
+          name: latitude@MetaData
+        minvalue: -30
+        maxvalue: 30
+      actions:
+      - name: set
+        flag: Tropics
+        ignore: defective observations
+      - name: accept
 
 Outer Loop Iterations
 ---------------------

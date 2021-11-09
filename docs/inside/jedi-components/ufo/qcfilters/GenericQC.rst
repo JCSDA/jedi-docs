@@ -1295,6 +1295,8 @@ YAML file. Each element of this list can contain the following keys:
 
 In addition, the filter recognizes the standard filter options :code:`filter variables` and :code:`defer to post`, but not :code:`where` or :code:`action`.
 
+Setting and unsetting of diagnostic flags is normally performed using actions on a given filter; examples can be seen in :ref:`Filter Actions <filter-actions>`.
+
 Example 1
 ^^^^^^^^^
 
