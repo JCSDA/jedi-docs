@@ -110,6 +110,7 @@ VarBC example
 To use the bias correction in an observation operator, add the :code:`obs bias` section as shown in the highlighted lines below.
 
 .. code-block:: yaml
+
   :linenos:
   :emphasize-lines: 12-24
 

@@ -142,3 +142,63 @@ JEDI test files, many of which are in NetCDF format, are not stored directly on 
    git lfs install
 
 You can run this command from anywhere, though ``git`` might give you a warning if you are not in a git repository.  It sets up global filters which you can see by running ``cat ~/.gitconfig`` or ``git config --list``.  So, you only need to do it once.  But, after enabling it, we recommend that you delete your bundle source directory, re-clone it from GitHub, and rebuild the bundle.
+
+My test/application is running very slowly
+------------------------------------------
+
+If your test or application is running more slowly than you expect, you might try setting this environment variable to disable OpenMP threading (this is ``bash`` syntax; use ``setenv`` instead if you use ``tcsh``):
+
+.. code-block:: bash
+
+   export OMP_NUM_THREADS=1
+
+This is because, on some systems, ``OpenMP`` will probe the hardware and set the number of threads equal to the number of cores.  However, currently for most JEDI applications and tests, we often wish to assign one MPI task to a core.  Redundant parallelization over both MPI tasks and OpenMP threads can lead to excessive overhead that can slow down your application.  So, this sets the number of threads to one.  In the future we will make more use of OpenMP threading but until then, setting this environment variable can speed up applications in some circumstances.
+
+I get warnings when running ``ecbuild`` and the python tests fail
+-----------------------------------------------------------------
+
+This question is relevant if you see warnings like the following when running ``ecbuild``:
+
+.. code-block:: bash
+
+    runtime library [libz.so.1] in /usr/local/lib may be hidden by files in:
+      /usr/local/miniconda3/lib
+    runtime library [libgomp.so.1] in /usr/lib/gcc/x86_64-linux-gnu/9 may be hidden by files in:
+      /usr/local/miniconda3/lib
+
+This is often accompanied by failure of the python tests in ``ioda``.  A likely cause of this is the use of ``anaconda`` or ``miniconda3`` for python package management.
+
+Conda installs its own packages like ``hdf5``, ``NetCDF``, and ``openssl`` that can conflict with libraries installed via the `jedi-stack <https://github.com/jcsda/jedi-stack.git>`_. This applies in particular to the `IODA Python API <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/develop/learning/tutorials/level3/ioda-python-api.html>`_, which is now enabled by default in ``ioda``.
+
+These conflicts are not easily addressed since the dependencies are built into ``conda`` through `rpaths <https://en.wikipedia.org/wiki/Rpath>`_.  At this time we recommend that you avoid using conda if possible when building and running JEDI applications.  If you still wish to use conda for other stages of your workflow such as diagnostics, we recommend that you configure your conda virtual environment so it can be readily activated and deactivated as needed.
+
+We are working on unifying the JEDI python dependencies in a portable distribution strategy but this has not yet been implemented.
+
+Git LFS Smudge error when running ``ecbuild``
+---------------------------------------------
+
+On some systems with older versions of ``git lfs``, you might see a message like this when building the develop branch of a bundle with ``ecbuild``:
+
+.. code-block:: bash
+
+   Error downloading object:
+   <usually-a-netcdf-file>
+   ...Smudge error: Error downloading
+   ...
+   bash response: Rate limit exceeded
+
+This only happens on the ``develop`` branches because this is when ``ecbuild`` downloads the :doc:`lfs-enabled <../inside/developer_tools/gitlfs>` git data repositories like ``ioda-data``, ``ufo-data``, ``saber-data``, ``fv3-data``, and ``mpas-data``.
+
+The solution is to ``cd`` to the source directory in question.  This is usually located in the bundle source directory, e.g. ``fv3-bundle/saber-data``.  Then manually enter
+
+.. code-block:: bash
+
+    git lfs pull
+
+You might have to do this several times until the command runs without giving warnings.  At that point, you may notice that ``git`` shows changes to the local files in the repo.  So, to abandon all local changes, enter:
+
+.. code-block:: bash
+
+   git reset --hard
+
+You should only have to do this with your bundle once, when the data repositories are cloned for the first time.  Subsequent updates with ``make update`` should involve fewer files and are less likely to trigger that error.

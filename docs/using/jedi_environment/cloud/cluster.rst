@@ -133,7 +133,13 @@ Now you can choose which compiler/mpi combination you with to use and load the a
     module load jedi/gnu-openmpi # choose only one
     module load jedi/intel-impi  # choose only one
 
-If you switch from one to the other you should first run :code:`module purge`.  You can disregard any error messages you see about being unable to locate modulefiles.
+If you switch from one to the other you should first run :code:`module purge`.
+
+The intel OneAPI environment should be initialized automatically.  So, to avoid confusion when using the gnu modules, you may have to tell ``ecbuild`` which ``mpirun`` executable to use, e.g.
+
+.. code-block:: bash
+
+   ecbuild -DMPIEXEC_EXECUTABLE=`which mpirun` ../fv3-bundle/
 
 Now you are ready to :doc:`build your preferred JEDI bundle </using/building_and_running/building_jedi>`.  You can run :code:`ctest` as usual but it will only run on one node.  To run across multiple nodes, read on.
 
