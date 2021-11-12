@@ -14,37 +14,226 @@ The Lorenz95 model is an application of the Lorenz (1996) chaotic dynamics. This
 
 where :math:`i = 1, 2, \ldots, I`, with cyclic boundary conditions, and the constant :math:`F` is independent of :math:`i`. The variables of this model may be thought of as values of some atmospheric quantity in :math:`I` locations of a latitude circle. The so-called 40-variable version of this model assumes :math:`I=40`, with :math:`i = 1, 2, \ldots, 40`, which implies to the cyclic boundary conditions being defined as: :math:`x_{0} = x_{40}`; :math:`x_{-1} = x_{39}`; and, :math:`x_{41} = x_{1}`.
 
-YAML parameters
----------------
 
-The configurable Lorenz95 model parameters are as follows:
+Lorenz95 model-related classes and their configuration
+------------------------------------------------------
 
-* :code:`geometry`: define grid parameters
+Geometry
+^^^^^^^^
 
-  * :code:`resol`: define the number of variables :math:`I`
+The L95 model geometry is configured with a parameter :code:`resol` which defines the number of variables :math:`I` in :math:numref:`eq:toy-model_l95`.
 
-* :code:`model`: define model parameters
+For example, the geometry for the 40-variable version of the model can be configured as:
 
-  * :code:`f`: define the constant :math:`F`
-  * :code:`name`: define the model
-  * :code:`tstep`: define the time step
+.. code-block:: yaml
 
-* :code:`forecast length`: define the length of the forecast
-* :code:`initial condition`: define initial condition parameters
+  geometry:
+    resol: 40
 
-  * :code:`date`: define the initial date to issue a forecast
-  * :code:`filename`: define the name of the file to be used as initial condition
+Model
+^^^^^
 
-* :code:`output`: define output parameters
+The L95 model can be configured to specify the constant :math:`F` and the time resolution of the model (for L95 this is both the model time step and the time resolution that data assimilation algorithms will observe model states with).
 
-  * :code:`datadir`: define the directory to save files
-  * :code:`date`: define the output date
-  * :code:`exp`: define an experiment identification
-  * :code:`frequency`: define the frequency to save output files
-  * :code:`type`: define the type of output file
+For example, the L95 model with :math:`F=8.0` can be configured as:
+
+.. code-block:: yaml
+
+  model:
+    name: L95       # required to identify that Lorenz95 model will be run
+    f: 8.0
+    tstep: PT1H30M
 
 .. note::
-  Although the YAML parameters are defined using real time quantities for dates and time intervals (e.g., :code:`date`, :code:`tstep`, :code:`forecast length`, :code:`frequency`), the actual equivalence between real time and the time considered for this model is defined as a combination of the number of variables :math:`I` and the constant :math:`F`. See details in Lorenz (1996) and Lorenz and Emanuel (1998).
+  The equivalence between real time and the time considered for Lorenz95 is defined as a combination of the number of variables :math:`I` and the constant :math:`F`. For the parameters listed above (:math:`I=40` and :math:`F=8.0`), the scaling applied makes the model time unit equal to 5 days. See details in Lorenz (1996) and Lorenz and Emanuel (1998).
+
+It is also possible to use a *PseudoModel* with L95 (as well as with any other model interfaced with JEDI). *PseudoModel* propagates model states forward in time by reading precomputed states from files instead of running a forecast model.
+
+For example, a PseudoModel for L95 can be configured as:
+
+.. code-block:: yaml
+
+  model:
+    name: PseudoModel       # required to identify that PseudoModel will be used
+    state variables: ['x']  # required to specify which variables need to be read from files (always ['x'] for L95)
+    tstep: PT12H            # time resolution between the states read from files
+    states:                 # list of the states to read
+    - date: 2010-01-01T12:00:00Z
+      filename: Data/test.fc.2010-01-01T00:00:00Z.PT12H
+    - date: 2010-01-02T00:00:00Z
+      filename: Data/test.fc.2010-01-01T00:00:00Z.P1D
+
+State
+^^^^^
+
+Reading and initializing L95 States
+"""""""""""""""""""""""""""""""""""
+
+To read an L95 model state from an existing file, one needs to specify an input file to read the state from, and the valid date of the state.
+
+For example:
+
+.. code-block:: yaml
+
+  state:                         # or "initial condition", or "background", depending on the application
+    date: 2010-01-01T00:00:00Z   # valid date
+    filename: Data/truth.an.2010-01-01T00:00:00Z.l95  # input file name
+
+To initialize an L95 state with artificially generated values, the :code:`analytic init` option can be used. In this case the state is generated as :math:`x_{i} = a + b \times sin(2 \pi (i-1) / I)`.
+
+.. code-block:: yaml
+
+  state:                         # or "initial condition", or "background", depending on the application
+    date: 2010-01-01T00:00:00Z   # valid date
+    analytic init:
+      mean:  2.0   # constant "a" in the formula above; if omitted, 0.0
+      sinus: 1.0   # constant "b" in the formula above; if omitted, 0.0
+
+Writing L95 States
+""""""""""""""""""
+
+To configure writing out L95 model state output (for example, forecast output or analysis output), several configuration options need to be specified: :code:`datadir` (output directory), :code:`exp` (name of the experiment), and :code:`type` (type of the output, valid types are: :code:`fc` (forecast), :code:`an` (analysis), :code:`ens` (ensemble output)). The output file names are generated using those options.
+
+For the :code:`fc` type, filenames for output files are :code:`${datadir}/${exp}.${type}.${initial condition date}.${forecast duration}`. For the :code:`ens` type, filenames include ensemble member index: :code:`${datadir}/${exp}.${type}.${ensemble member}.${initial condition date}.${forecast duration}`. For the :code:`an` type, filenames for output files are: :code:`${datadir}/${exp}.${type}.${analysis time}`.
+
+For example, for the following configuration of the forecast output:
+
+.. code-block:: yaml
+
+  output:
+    datadir: Data
+    exp: truth
+    type: fc
+    date: 2010-01-01T00:00:00Z   # option used for all models: initial condition date
+    frequency: PT3H              # option used for all models: frequency of output
+
+states will be saved in the following files:
+
+* :code:`Data/truth.fc.2010-01-01T00:00:00Z.PT0S` ("forecast" at initial time),
+* :code:`Data/truth.fc.2010-01-01T00:00:00Z.PT3H`,
+* :code:`Data/truth.fc.2010-01-01T00:00:00Z.PT6H`,
+* etc up to the end of the forecast length.
+
+For the following configuration of the ensemble output:
+
+.. code-block:: yaml
+
+  output:
+    datadir: Data
+    exp: test
+    type: ens
+    date: 2010-01-01T00:00:00Z
+    frequency: PT1H30M
+
+states will be saved in the following files:
+
+* :code:`Data/test.ens.1.2010-01-01T00:00:00Z.PT0S` ("forecast" at initial time for member 1),
+* :code:`Data/test.ens.2.2010-01-01T00:00:00Z.PT0S` ("forecast" at initial time for member 2),
+* :code:`Data/test.ens.1.2010-01-01T00:00:00Z.PT1H30M`,
+* :code:`Data/test.ens.2.2010-01-01T00:00:00Z.PT1H30M`, etc.
+
+For the following configuration of the analysis output:
+
+.. code-block:: yaml
+
+  output:
+    datadir: Data
+    exp: test
+    type: an
+    frequency: PT6H
+
+the analysis will be saved in :code:`Data/test.an.2010-01-01T06:00:00Z` if the analysis is computed for :code:`2010-01-01T06:00:00Z`.
+
+Background error covariance
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The background error covariance for the L95 model has a Gaussian structure: :math:`B(i,j) = \sigma_b^2 * exp(-\frac{1}{2} \frac{dist(i,j)}{lengthscale})`, where :math:`dist(i,j) = min(|i-j|, I - |i-j|)`, i.e. lengthscale is specified in units of gridpoints. The covariance lengthscale and standard deviations of background errors can be configured as:
+
+.. code-block:: yaml
+
+  background error:
+    covariance model: L95Error  # required to identify that L95 covariance model will be used
+    date: 2010-01-02T00:00:00Z  # required, should be the same date as the background date
+    length_scale: 1.0           # lengthscale in the formula above
+    standard_deviation: 0.6     # sigma_b in the formula above
+
+Ensemble background error covariance localization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The localization matrix for L95 ensemble background error covariances follows the same Gaussian structure as the background error covariances above: :math:`L(i,j) = exp(-\frac{1}{2} \frac{dist(i,j)}{lengthscale})`. The localization lengthscale can be configured as:
+
+.. code-block:: yaml
+
+  localization:
+    localization method: L95  # required to identify that L95 localization model will be used
+    length_scale: 1.0         # lengthscale in the formula above
+
+Lorenz95 observation-related classes and their configuration
+------------------------------------------------------------
+
+The observations are always observing the state :math:`x` at the specified grid locations.
+
+Obs space
+^^^^^^^^^
+
+Observations for L95 can be read from the file, or generated using the :code:`make obs` option of the :doc:`HofX applications <../applications/hofx>`. In all applications, only observations within :code:`(window_begin, window_begin + window_length]` time window are used (note the :code:`window_begin` is not included, while :code:`window_begin + window_length` is).
+
+Generating new obs space
+""""""""""""""""""""""""
+
+For generating new observations with the :code:`make obs` option of the HofX applications, the :code:`generate` configuration option can be used. The following suboptions need to be specified:
+
+* :code:`obs_frequency`: time frequency for simulating observations,
+* :code:`obs_density`: number of observations to generate in each time slot (the observations would be regularly distributed at grid point locations, e.g., for :math:`I = 40` (:code:`geometry.resol: 40`), if :code:`obs_density` is set to 20, observations would be generated at every other grid point,
+* :code:`obs_error`: observation error standard deviation, the same value will be assigned to all of the observations, and used in the future experiments in the observation error covariances, and for observations perturbations.
+
+For example, to generate observations at every other gridpoint, and every 3 hours, the following configuration can be used:
+
+.. code-block:: yaml
+
+  obs space:
+    generate:
+      obs_frequency: PT3H
+      obs_density: 20
+      obs_error: 0.5
+    obsdataout: Data/test_observations.obt   # optional, output file name
+
+.. note::
+  Since in all of the applications only observations within :code:`(window_begin, window_begin + window_length]` time window are used, observations are generated for the following times: :code:`window_begin + obs_frequency`, :code:`window_begin + 2 * obs_frequency`, ... up to :code:`window_begin + window_length`.
+
+Reading observations from an existing file
+""""""""""""""""""""""""""""""""""""""""""
+
+To read observations from an existing observations file, the :code:`obsdatain` option needs to be specified for the input observation file name. If the :code:`obsdataout` option is specified, the observations, metadata, and additional diagnostics would also be output into the specified file. The output file will include everything from the input file, and everything computed and saved during the application run (e.g., :code:`oman` values for some data assimilation experiments).
+
+For example, the configuration for reading observations from a file generated in the previous example may look like:
+
+.. code-block:: yaml
+
+  obs space:
+    obsdatain: Data/test_observations.obt
+    obsdataout: Data/test_observations_and_diags.obt
+
+Observation operator
+^^^^^^^^^^^^^^^^^^^^
+
+The only kind of observations supported for the L95 model is direct observations of the state. Thus, the observation operator does not need any configuration options, and is typically configured as empty:
+
+.. code-block:: yaml
+
+  obs operator: {}
+
+Observation error covariance
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Currently, only diagonal observation error covariances are supported. Observation error standard deviations for the diagonal :math:`R` are read from the input observation file as the :code:`ObsError` field. If observations were generated using the :code:`obs space.generate` options described above, the value of :code:`obs space.generate.obs_error` will be used as observation error standard deviations.
+
+The observation error for L95 experiments can be configured as:
+
+.. code-block:: yaml
+
+  obs error:
+    covariance model: diagonal  # required to identify that the diagonal R is used
 
 References
 ----------
