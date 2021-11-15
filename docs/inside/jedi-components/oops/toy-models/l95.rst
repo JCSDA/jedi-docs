@@ -14,6 +14,8 @@ The Lorenz95 model is an application of the Lorenz (1996) chaotic dynamics. This
 
 where :math:`i = 1, 2, \ldots, I`, with cyclic boundary conditions, and the constant :math:`F` is independent of :math:`i`. The variables of this model may be thought of as values of some atmospheric quantity in :math:`I` locations of a latitude circle. The so-called 40-variable version of this model assumes :math:`I=40`, with :math:`i = 1, 2, \ldots, 40`, which implies to the cyclic boundary conditions being defined as: :math:`x_{0} = x_{40}`; :math:`x_{-1} = x_{39}`; and, :math:`x_{41} = x_{1}`.
 
+.. note::
+  This model was first presented at a Seminar on Predictability at ECMWF in 1995, with the seminar paper published in 1996. The model is also often referred to as the Lorenz96 model (for the year of publication).
 
 Lorenz95 model-related classes and their configuration
 ------------------------------------------------------
