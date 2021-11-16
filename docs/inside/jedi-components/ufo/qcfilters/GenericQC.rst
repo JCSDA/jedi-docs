@@ -176,6 +176,62 @@ By default, a filter variable is treated as scalar. But for vectors, such as win
 Bayesian Background check currently only works for single-level observations, not profiles.
 
 
+Bayesian Whole Report Filter
+----------------------------
+
+Synoptic stations typically provide reports at regular intervals. A report is a combination of variables observed by different sensors at a single location. Reports may include some, but not necessarily all, of pressure, temperature, dew point and wind speed and direction.
+
+This filter calculates the probability that a whole report is affected by gross error, through the Bayesian combination of the probability of gross error of individual observations. This is based on the logic that if multiple observations within a report appear dubious based on a Bayesian Background check, it is likely that the whole report is affected by, for example, location error. This filter should be called after the Bayesian Background Check. The probability that whole report is affected by gross error is calculated from all the gross error probability of all the variables in the :code:`filter variables` list, except where the :code:`not_used_in_whole_report` option is specified for a given variable.
+
+Once the probability that whole report is affected by gross error has
+been calculated, it is used to update the probability of gross error
+for each variable in the :code:`filter variables` list. Where this
+updated probability of gross error exceeds the :code:`PGE threshold`,
+the observation is flagged. :code:`PGE threshold` is an optional yaml parameter
+which applies to the whole filter, and has a default value of :code:`0.1`.
+
+Variables can be either scalar or vector (with two Cartesian components, such as the eastward and northward wind components). In
+the latter case the two components need to be specified one after the other in the :code:`filter variables` list, with the second component having the :code:`second_component_of_two option` set to true.
+
+For each variable, the optional parameter :code:`probability_density_bad` (default value :code:`0.1`) is used
+to set the prior probability density of that variable being
+"bad". The filter can also apply a specific prior probability density of bad observations for the following observation types, identified by the integer ID :code:`ObsType@MetaData`:
+
+* Bogus :code:`bogus_probability_density_bad`
+* Synop (SynopManual, SynopAuto, MetarManual, MetarAuto, SynopMob,
+  SynopBufr, WOW) :code:`synop_probability_density_bad`
+
+These are both optional parameters. If they are not specified,
+:code:`probability_density_bad` is used in their place, as for all other observation types.
+  
+Example:
+
+.. code-block:: yaml
+
+   - filter: Bayesian Whole Report
+     filter variables:
+     - name: pressure_at_model_surface
+       options:
+         probability_density_bad: 0.1
+         bogus_probability_density_bad: 0.1
+     - name: air_temperature_at_2m
+       options:
+         probability_density_bad: 0.1
+     - name: eastward_wind
+       options:
+         probability_density_bad: 0.1
+         synop_probability_density_bad: 0.1
+         bogus_probability_density_bad: 0.1
+     - name: northward_wind
+       options:
+         not_used_in_whole_report: true
+         second_component_of_two: true
+     - name: relative_humidity_at_2m
+       options:
+         not_used_in_whole_report: true
+         probability_density_bad: 0.1
+     PGE threshold: 0.15
+
 Domain Check Filter
 -------------------
 
