@@ -228,7 +228,7 @@ The only kind of observations supported for the L95 model is direct observations
 Observation error covariance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Currently, only diagonal observation error covariances are supported. Observation error standard deviations for the diagonal :math:`R` are read from the input observation file as the :code:`ObsError` field. If observations were generated using the :code:`obs space.generate` options described above, the value of :code:`obs space.generate.obs_error` will be used as observation error standard deviations.
+Currently, only :doc:`diagonal observation error covariances implemented in OOPS <../generic-implementations/obserror>` are supported. Observation error standard deviations for the diagonal :math:`R` are read from the input observation file as the :code:`ObsError` field. If observations were generated using the :code:`obs space.generate` options described above, the value of :code:`obs space.generate.obs_error` will be used as observation error standard deviations.
 
 The observation error for L95 experiments can be configured as:
 
