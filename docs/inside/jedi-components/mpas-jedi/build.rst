@@ -110,7 +110,7 @@ we give short synopses of a few specific MPAS-JEDI implementations.
      interface.  There is more overhead than when running the non-JEDI exectuable, and this
      requires a YAML file in addition to the standard :code:`namelist.atmosphere` used to configure
      :code:`mpas_atmosphere`.
-   - :code:`mpasjedi_gen_ens_pert_B.x` (:code:`oops::GenEnsPertB`)
+   - :code:`mpasjedi_gen_ens_pert_B.x` (:doc:`oops::GenEnsPertB <../oops/applications/genenspertb>`)
    - :code:`mpasjedi_hofx.x` (:code:`oops::HofX4D`)
    - :code:`mpasjedi_hofx3d.x` (:code:`oops::HofX3D`)
    - :code:`mpasjedi_parameters.x` (:code:`saber::EstimateParams`): used to estimate static

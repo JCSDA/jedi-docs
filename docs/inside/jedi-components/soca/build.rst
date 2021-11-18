@@ -82,7 +82,7 @@ we give short synopses of a few specific SOCA implementations.
    - :code:`soca_dirac.x` (:code:`oops::Dirac`)
    - :code:`soca_forecast.x` (:code:`oops::Forecast`): similar to the
      :code:`mom6.x` executable, but through the JEDI generic framework via the SOCA interface.
-   - :code:`soca_enspert.x` (:code:`oops::GenEnsPertB`)
+   - :code:`soca_enspert.x` (:doc:`oops::GenEnsPertB <../oops/applications/genenspertb>`)
    - :code:`soca_ensrecenter.x` (:code:`oops::EnsRecenter`)
    - :code:`soca_ensvariance` (:code:`oops::EnsVariance`)
    - :code:`soca_hofx.x` (:code:`oops::HofX4D`)
