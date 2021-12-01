@@ -89,7 +89,7 @@ This filter checks for bias corrected distance between observation value and mod
      - name: sea_surface_height
      threshold wrt background error: true
      threshold: 2.0
-      
+
 
 The first filter would flag temperature observations where :math:`|y-(H(x)+bias)| > \min (` :code:`absolute_threshold`, :code:`threshold` * :math:`{\sigma}_o)`, and
 then the flagged data are rejected due to the filter action being set to :code:`reject`.
@@ -145,7 +145,7 @@ The .yaml file can also contain optional filter parameters, which override the d
 
      - filter: Bayesian Background Check
        filter variables:
-       - name: ice_area_fraction 
+       - name: ice_area_fraction
        prob density bad obs: 1.0
        initial prob gross error: 0.04
        PGE threshold: 0.07
@@ -203,7 +203,7 @@ to set the prior probability density of that variable being
 
 These are both optional parameters. If they are not specified,
 :code:`probability_density_bad` is used in their place, as for all other observation types.
-  
+
 Example:
 
 .. code-block:: yaml
@@ -397,6 +397,26 @@ The following YAML parameters are supported:
     Defaults to :code:`false` unless the :code:`ops_compatibility_mode` option is enabled, in which
     case it's set to :code:`true`.
 
+  * :code:`partition_longitude_bins_using_mesh`:
+    True to calculate partioning of longitude bins explicitly using horizontal mesh distance.
+    By default this option is set to :code:`false` and calculating the number
+    of longitude bins per latitude bin index involves the integer number of latitude
+    bins. Setting this option to :code:`true` adopts the Met Office OPS method whereby the
+    integer number of latitude bins is replaced, in the calculation of longitude bins, by the
+    Earth half-circumference divided by the horizontal mesh distance.
+
+    Defaults to :code:`false` unless the :code:`ops_compatibility_mode` option is enabled, in which
+    case it's set to :code:`true`.
+
+  * :code:`define_meridian_20000_km`:
+    True to define horizontalMesh with respect to a value for the Earth's meridian distance
+    (half Earth circumference) of exactly 20000.0 km. By default this option is set to :code:`false`
+    and the Earth's meridian is defined for the purposes of calculating thinning boxes as
+    :code:`pi*Constants::mean_earth_rad` ~ 20015.087 km.
+
+    Defaults to :code:`false` unless the :code:`ops_compatibility_mode` option is enabled, in which
+    case it's set to :code:`true`.
+
 - Vertical grid:
 
   * :code:`vertical_mesh`: Cell size in the vertical direction.
@@ -409,8 +429,8 @@ The following YAML parameters are supported:
   * :code:`vertical_max`: Upper bound of the vertical coordinate interval split into cells of size
     :code:`vertical_mesh`. This parameter is rounded upwards to the nearest multiple of
     :code:`vertical_mesh` starting from :code:`vertical_min`. Default: 110,000 (Pa).
-  
-  * :code:`vertical_coordinate`: Name of the observation vertical coordinate. 
+
+  * :code:`vertical_coordinate`: Name of the observation vertical coordinate.
     Default: :code:`air_pressure`.
 
 - Temporal grid:
@@ -429,6 +449,22 @@ The following YAML parameters are supported:
 
   * :code:`category_variable`: Variable storing integer-valued IDs associated with observations.
     Observations belonging to different categories are thinned separately.
+
+- Selection of observations to consider for thinning:
+
+  * :code:`retain_only_if_all_filter_variables_are_valid`: Determines how to treat observations where
+    multiple filter variables are present and their QC flags may differ (for example, a satellite
+    observation with multiple channels).
+
+    + :code:`true`: include an observation in the set of locations to be thinned only if all filter
+      variables have passed QC. For invalid observation locations (selected by a where clause but
+      where one or more filter variables have failed QC) any remaining unflagged filter variables
+      are rejected.
+
+    + :code:`false`: include an observation in the set of locations to be thinned if any filter
+      variable has passed QC.
+
+    Default: :code:`false`.
 
 - Selection of observations to retain:
 
@@ -451,7 +487,7 @@ The following YAML parameters are supported:
 
   * :code:`tiebreaker_pick_latest`: Set this option to :code:`true` to make the filter select the
     observation with the later time within a cell, when the distance to the centre of
-    the cell is equal between the observations being compared and the observations have equal priorities.  
+    the cell is equal between the observations being compared and the observations have equal priorities.
 
   * :code:`ops_compatibility_mode`: Set this option to :code:`true` to make the filter produce
     identical results as the :code:`Ops_Thinning` subroutine from the Met Office OPS system when
@@ -462,6 +498,10 @@ The following YAML parameters are supported:
     - The :code:`round_horizontal_bin_count_to_nearest` option is set to :code:`true`.
 
     - The :code:`distance_norm` option is set to :code:`maximum`.
+
+    - The :code:`partition_longitude_bins_using_mesh` option is set to :code:`true`.
+
+    - The :code:`define_meridian_2000_km` option is set to :code:`true`.
 
     - Bin indices are calculated by rounding values away from rather towards zero. This can alter
       the bin indices assigned to observations lying at bin boundaries.
