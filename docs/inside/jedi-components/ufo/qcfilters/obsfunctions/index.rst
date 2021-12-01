@@ -5,8 +5,14 @@ Observation Functions are more advanced filtering routines that are encapsulated
 a unit. They usually combine several complicated logic operations, and decomposing these
 filters into separate parts would have an obfuscating effect.
 
+:ref:`BennartzScatIndex <BennartzScatIndex>`
+  Compute Bennartz scattering index from microwave channels
+
 :ref:`ChannelUseflagCheckRad <ChannelUseflagCheckRad>`
   Channel usage flag check for radiances
+
+:ref:`CloudCostFunction <CloudCostFunction>`
+  Bayesian cost function for detecting cloud-affected radiances
 
 :ref:`CloudDetectMinResidualAVHRR <CloudDetectMinResidualAVHRR>`
   Cloud detection using Minimum Residual Method for AVHRR
@@ -79,7 +85,7 @@ filters into separate parts would have an obfuscating effect.
 
 :ref:`ObsFunctionExponential <ObsFunctionExponential>`
   Compute exponential function of a variable
-  
+
 :ref:`ObsFunctionLinearCombination <ObsFunctionLinearCombination>`
   Compute linear combination of given variables weighted by given coefficients.
 
@@ -116,7 +122,9 @@ filters into separate parts would have an obfuscating effect.
 .. toctree::
    :hidden:
 
+   BennartzScatIndex
    ChannelUseflagCheckRad
+   CloudCostFunction
    CloudDetectMinResidualAVHRR
    CloudDetectMinResidualIR
    CLWMatchIndexMW
