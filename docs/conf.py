@@ -34,7 +34,8 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.todo',
     'sphinx.ext.autodoc',
-    'sphinxcontrib.bibtex'
+    'sphinxcontrib.bibtex',
+    'myst_parser'
 ]
 bibtex_bibfiles = ['ref/refs.bib']
 
@@ -44,8 +45,8 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+# source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
