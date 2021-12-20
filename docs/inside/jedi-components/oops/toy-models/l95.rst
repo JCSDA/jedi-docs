@@ -198,7 +198,8 @@ For example, to generate observations at every other gridpoint, and every 3 hour
       obs_frequency: PT3H
       obs_density: 20
       obs_error: 0.5
-    obsdataout: Data/test_observations.obt   # optional, output file name
+    obsdataout:
+      obsfile:  Data/test_observations.obt   # optional, output file name
 
 .. note::
   Since in all of the applications only observations within :code:`(window_begin, window_begin + window_length]` time window are used, observations are generated for the following times: :code:`window_begin + obs_frequency`, :code:`window_begin + 2 * obs_frequency`, ... up to :code:`window_begin + window_length`.
@@ -213,8 +214,10 @@ For example, the configuration for reading observations from a file generated in
 .. code-block:: yaml
 
   obs space:
-    obsdatain: Data/test_observations.obt
-    obsdataout: Data/test_observations_and_diags.obt
+    obsdatain:
+      obsfile:  Data/test_observations.obt
+    obsdataout:
+      obsfile:  Data/test_observations_and_diags.obt
 
 Observation operator
 ^^^^^^^^^^^^^^^^^^^^
