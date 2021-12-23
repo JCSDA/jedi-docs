@@ -17,11 +17,10 @@ The full observation error covariance matrix is :math:`R = D^{1/2} * C * D^{1/2}
 
 This type of observation error covariance is set up using the following options:
 
-* :code:`input file`: filename for the input file containing cross-variable correlations or covariances.
-* :code:`compute correlations from covariances`: default is :code:`false`. If set to :code:`true`, correlations will be computed from the input file with covariances.
+* :code:`input file`: filename for the input file containing cross-variable correlations or covariances (the file has to contain only one of those).
 
 .. important::
-  Input files are always used to set up correlations, and not covariances. If the input file contains covariances, and :code:`compute correlations from covariances` is not set to :code:`true`, the application will throw an exception.
+  Input files are always used to set up correlations, and not covariances. If the input file contains covariances, they would be converted to correlations.
 
 .. code-block:: yaml
 
@@ -36,7 +35,7 @@ The input file for the observation error correlations must have the following di
 
 * :code:`nvars` or :code:`nchannels` dimension -- number of variables or channels
 * :code:`variables` (string, size :code:`nvars`) or :code:`channels` (int, size :code:`nchannels`) variable: variable names, or channels numbers.
-* :code:`obserror_correlations` (float, size :code:`nvars, nvars`, or :code:`nchannels, nchannels`) variable: cross-variable or cross-channel correlations.
+* :code:`obserror_correlations` or :code:`obserror_covariances` (float, size :code:`nvars, nvars`, or :code:`nchannels, nchannels`) variable: cross-variable or cross-channel correlations or covariances. The file has to contain only one of these variables.  Covariances will be converted to correlations.
 
 If a particular assimilated variable or channel is missing from the input correlations file, its correlation with other variables or channels will be set to zero.
 
