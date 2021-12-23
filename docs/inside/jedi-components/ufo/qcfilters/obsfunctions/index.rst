@@ -95,6 +95,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`RONBAMErrInflate <RONBAMErrInflate>`
   Observation error inflation factor for GnssroBndNBAM
 
+:ref:`SatwindIndivErrors <SatwindIndivErrors>`
+  Compute individual u- or v- component observation errors for Satwinds
+
 :ref:`SatWindsLNVDCheck <SatWindsLNVDCheck>`
   log-normal vector difference (LNVD) between observed and model winds
 
@@ -154,6 +157,7 @@ filters into separate parts would have an obfuscating effect.
    ObsFunctionLinearCombination
    ObsFunctionVelocity
    ROobserrInflation
+   SatwindIndivErrors
    SatWindsLNVDCheck
    SatWindsSPDBCheck
    SCATRetMW
