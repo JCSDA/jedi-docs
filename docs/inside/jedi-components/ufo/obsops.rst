@@ -893,6 +893,52 @@ In the example above, the `Identity` operator is used to simulate all ObsSpace v
 
 In the example above, the `Identity` operator is used to simulate only the surface pressure; the wind components are simulated using the `VertInterp` operator.
 
+In situ particulate matter (PM) operator
+----------------------------------------
+
+Description:
+^^^^^^^^^^^^
+
+This operator calculates modeled particulate matter (PM) at monitoring stations, such as the U.S. AirNow sites that provide PM2.5 & PM10 data. With few/no code changes, it can also be applied to calculate total or/and speciated PM for applications related to other networks/datasets.
+
+Unit conversion is included in the calculations.
+
+The users are allowed to select a vertical interpolation approach to: 1) match model height (above sea level, asl = height above ground level + surface height) to station elevation (also asl) which is required for the AirNow application; or 2) match model log(air_pressure) to observation log(air_pressure), likely suitable for use with other types of observational datasets that contain pressure information, e.g. aircraft, sonde, tower...
+
+Currently this tool mainly supports the calculation from the NOAA FV3-CMAQ aerosol fields (user-defined, up to 70 individual species). Based on the user definition, the calculation can involve the usage of the model-based scaling factors for three modes of Aitken, accumulation, and coarse.
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`simulated variables`: variables to be simulated, total or speciated PM. [Note: This operator currently works well with one "simulated variable", e.g., PM25 or total PM. With slight modifications it can be used to simulate multiple speciated PM variables]
+* :code:`vertical_coordinate`: character, vertical interpolation approach chosen. As described above, height_asl (default) and log_pressure are currently supported. If neither option is chosen, the application will stop with an error msg. 
+* :code:`model` [required]: character, model name. This operator currently mainly supports CMAQ. If the model name is not CMAQ, the application will stop with an error msg.
+* :code:`tracer_geovals` [required]: character, a list of names of model aerosol species needed to calculate the "simulated variables"
+* :code:`use_scalefac_cmaq`: logical, false by default, indicating whether scaling factors will be applied to execute PM2.5 or total PM related steps
+* :code:`tracer_modes_cmaq` [optional]: a list of integers indicating CMAQ aerosol modes (1-Aitken; 2-accumulation; 3-coarse). This option should only be set if the model name is CMAQ and "use_scalefac_cmaq" is set to "true". The sizes of tracer_modes_cmaq and tracer_geovals must be consistent. 
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+    simulated variables: [pm25]
+  obs operator:
+    name: InsituPM
+    tracer_geovals: [aso4i,ano3i,anh4i,anai,acli,aeci,aothri,alvpo1i,asvpo1i,asvpo2i,alvoo1i,alvoo2i,asvoo1i,asvoo2i,
+                        aso4j,ano3j,anh4j,anaj,aclj,aecj,aothrj,afej,asij,atij,acaj,amgj,amnj,aalj,akj,
+                        alvpo1j,asvpo1j,asvpo2j,asvpo3j,aivpo1j,axyl1j,axyl2j,axyl3j,atol1j,atol2j,atol3j,
+                        abnz1j,abnz2j,abnz3j,aiso1j,aiso2j,aiso3j,atrp1j,atrp2j,asqtj,aalk1j,aalk2j,apah1j,
+                        apah2j,apah3j,aorgcj,aolgbj,aolgaj,alvoo1j,alvoo2j,asvoo1j,asvoo2j,asvoo3j,apcsoj,
+                        aso4k,asoil,acors,aseacat,aclk,ano3k,anh4k]     
+    vertical_coordinate: height_asl
+    model: CMAQ
+    use_scalefac_cmaq: true      
+    tracer_modes_cmaq: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+                        2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3]
+
+In the example above, this `InsituPM` operator calculates modeled (CMAQ) PM2.5 at selected U.S. AirNow monitoring stations. This calculation is based on 70 CMAQ aerosol species (defined in "tracer_geovals") in three modes (defined in "tracer_modes_cmaq"), with mode-specific scaling factors applied (use_scalefac_cmaq: true). Vertical interpolation is conducted to match the model height (asl) with the monitoring station elevation (vertical_coordinate: height_asl).
+
 Radar Radial Velocity
 --------------------------
 
