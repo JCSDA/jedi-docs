@@ -32,6 +32,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`CLWRetSymmetricMW <CLWRetSymmetricMW>`
   Estimates the actual Cloud Liquid Water (CLW) content from both model background and observed content
 
+:ref:`Conditional <Conditional>`
+  Create an array of ints, floats, strings or date times using a series of where clauses.
+
 :ref:`HydrometeorCheckAMSUA <HydrometeorCheckAMSUA>`
   AMSU-A cloud and precipitation checks
 
@@ -134,6 +137,7 @@ filters into separate parts would have an obfuscating effect.
    CLWRetMW
    CLWRetMW_SSMIS
    CLWRetSymmetricMW
+   Conditional
    DrawObsErrorFromFile
    DrawValueFromFile
    HydrometeorCheckAMSUA

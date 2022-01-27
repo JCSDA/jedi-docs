@@ -1269,6 +1269,8 @@ range present in the auxiliary obs space).
            datetimes: [ '2010-01-01T00:00Z', '2010-01-01T01:30Z', '2010-01-01T03:00Z']
          obs errors: [1.0]
 
+.. _VariableAssignmentFilter:
+
 Variable Assignment Filter
 --------------------------
 
