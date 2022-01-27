@@ -485,6 +485,12 @@ The following YAML parameters are supported:
     Defaults to :code:`geodesic` unless the :code:`ops_compatibility_mode` option is enabled, in
     which case it's set to :code:`maximum`.
 
+  * :code:`records_are_single_obs`: When set to :code:`true`, thinning is performed on whole records (profiles), rather than treating every observation in every record as an individual observation. (See :ref:`here <radiosonde_example_yaml>` for an example of using the :code:`obs space.obsdatain.obsgrouping` YAML option to group observations into records.) Thus if a record (specifically the earliest non-missing observation in a record) is deemed to be thinned, or accepted, every observation in that record is respectively thinned or accepted. This option does nothing if observations are not grouped into records. Can be used in combination with other options, such as :code:`priority_variable` - except if :code:`category_variable` is given while :code:`records_are_single_obs: true`, an exception will be thrown.
+
+  * :code:`select_median`: When set to :code:`true`, retain the observation whose :code:`ObsValue` (or :code:`DerivedObsValue` - the latest modified valid type) is closest to the median value of all observations in the cell. (Cells containing no observations are ignored; option not tested with :code:`priority_variable` or :code:`category_variable` set.)
+  
+  * :code:`min_num_obs_per_bin`: Set to an integer to retain observations only from cells with greater than or equal to this number of observations in the cell. All observations in cells with less than this many observations are rejected. If set to <= :math:`1`, accept the single observation in any cell with only one observation. (Only applies when :code:`select_median: true`; otherwise this option does nothing; if :code:`min_num_obs_per_bin` is not set when :code:`select_median: true`, the default value is :math:`5`.)
+
   * :code:`tiebreaker_pick_latest`: Set this option to :code:`true` to make the filter select the
     observation with the later time within a cell, when the distance to the centre of
     the cell is equal between the observations being compared and the observations have equal priorities.
@@ -954,7 +960,7 @@ The following YAML parameters are supported:
   assumed to have been taken by a single station.
 
   Note: the variable used to group observations into records can be set with the
-  :code:`ObsSpace.ObsDataIn.obsgrouping.group_variable` YAML option.
+  :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option.
 
 Example:
 
