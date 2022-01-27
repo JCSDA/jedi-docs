@@ -220,6 +220,31 @@ Examples of yaml:
   obs operator:
     name: AtmVertInterpLay
 
+Averaging Kernel Operator
+-------------------------
+
+Description:
+^^^^^^^^^^^^
+
+Observation operator for satellite retrievals with averaging kernel functions. Using the retrieval equation: :math:`\mathbf{x}_{retrieval} = \mathbf{A}\mathbf{x}_{truth} + (\mathbf{I}-\mathbf{A})\mathbf{x}_{apriori}`
+The operator uses :code:`AtmVertInterpLay` to interpolate the :code:`tropospheric column` or :code:`total column` to the averaging kernel levels :code:`AvgKernelVar` function using pressure coordinates :code:`PresLevVar`.
+The vertical profile is then summed vertically using the averaging kernel coefficients values as weights.
+
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  obs operator:
+    name: AvgKernel
+    nlayers_kernel: 34
+    AvgKernelVar: averaging_kernel_level
+    PresLevVar: pressure_level
+    tracer variables: [no2]
+    tropospheric column: true
+    total column: false
+
 Community Radiative Transfer Model (CRTM)
 -----------------------------------------
 
@@ -306,7 +331,7 @@ Interface to the RTTOV observation operator.
 
 Inputs:
 ^^^^^^^^^^^^^^^^^^^^^
-RTTOV requires the following GeoVaLs for clear-sky radiance calculation. The variable name for use with ufo is given in parentheses () and the expected units in square brackets []: 
+RTTOV requires the following GeoVaLs for clear-sky radiance calculation. The variable name for use with ufo is given in parentheses () and the expected units in square brackets []:
 
 * :code:`air_pressure` (:code:`var_prs`) [Pa]
 * :code:`air_temperature` (:code:`var_ts`) [K]
@@ -329,17 +354,17 @@ The geographic location of the observation, the satellite zenith angle and the R
 
 * At least one (in order of priority) from :code:`MetaData/elevation`, :code:`MetaData/surface_height`, :code:`MetaData/model_orography` or the :code:`surface_altitude` geoval [m]
 * :code:`MetaData/latitude` [degrees]
-* :code:`MetaData/longitude` [degrees, -180--180 or 0--360] 
+* :code:`MetaData/longitude` [degrees, -180--180 or 0--360]
 * :code:`MetaData/sensor_zenith_angle` [degrees]
 * :code:`MetaData/surface_type` [0-2]
-  
+
   :code:`MetaData/surface_type` is used to specify whether RTTOV should treat an observation as having a land (0), sea (1) or sea-ice (2) surface. The :code:`SetSurfaceType` ObsFunction, may be called via the :code:`VariableAssignment` ObsFilter to generate this data according to rules used in operational processing at the Met Office.
 
 Optionally, the satellite azimuth angle and the solar zenith/azimuth angles may be supplied:
 
-* :code:`MetaData/sensor_azimuth_angle` (optional) [degrees] 
+* :code:`MetaData/sensor_azimuth_angle` (optional) [degrees]
 * :code:`MetaData/solar_zenith_angle` (optional) [degrees]
-* :code:`MetaData/solar_azimuth_angle` (optional) [degrees] 
+* :code:`MetaData/solar_azimuth_angle` (optional) [degrees]
 
 Outputs:
 ^^^^^^^^^^^^^^^^^^^^^
@@ -379,15 +404,15 @@ The configurable options for the RTTOV observation operator interface are:
   * :code:`Ozone`, :code:`CO2`, :code:`CO`, :code:`N2O`, :code:`CH4`, :code:`SO2` are due to be implemented.
 
   | **N.B.**
-  
-  | Where the optional trace gas profiles are not present in the geovals, RTTOV reference profiles stored in the RTTOV coefficients will be used to determine their concentration if a compatible RTTOV coefficient is being used. 
 
-  | The contribution to optical depth from absorbing species for which there are no coefficients present in the RTTOV coefficient file will usually have been included with a fixed profile during the training process. See |RTTOV_12.3_user_guide| for details. 
- 
+  | Where the optional trace gas profiles are not present in the geovals, RTTOV reference profiles stored in the RTTOV coefficients will be used to determine their concentration if a compatible RTTOV coefficient is being used.
+
+  | The contribution to optical depth from absorbing species for which there are no coefficients present in the RTTOV coefficient file will usually have been included with a fixed profile during the training process. See |RTTOV_12.3_user_guide| for details.
+
   | There are no reference profiles for :code:`CLW` and :code:`CIW`. If either absorber is required, because it is mandatory or by user request, then the requisite datasets must be present in the geovals.
 
-.. todo:: 
-  
+.. todo::
+
   hyperspectral IR support (specifically add code to read RTTOV supported gases)
 
 .. * :code:`linear model absorbers` (optional) : used to indicate a different set of active variables for the Tangent Linear (TL) and Adjoint (AD) operators from the configuration used for the non-linear operator. The same profile is used in the RTTOV Forward and TL/AD calculations.
@@ -402,13 +427,13 @@ The :code:`obs options` section configures the options that can be used to chang
 Required
 ~~~~~~~~~~~~
 
-Three options are required to uniquely specify the RTTOV coefficient file to be used to process observations. 
+Three options are required to uniquely specify the RTTOV coefficient file to be used to process observations.
 The coefficient filename will be :code:`rtcoef_${Platform_Name}_${Sat_ID}_${Instrument_Name}` with the extension automatically discovered by RTTOV. The order of preference will be :code:`.bin` (platform-specific unformatted binary), :code:`.dat` (ASCII format), :code:`.H5` (HDF5 format).
 Scattering coefficients will be automatically read when requested according to the other :code:`obs options`. Their absence when required shall result in an error.
 
 * :code:`obs options.Platform_Name` (string): Corresponds to an
   element of the :code:`platform_name` array in the |rttov_const
-  module|, e.g. 'NOAA', 'Metop'. Note that this is case-insensitive, 
+  module|, e.g. 'NOAA', 'Metop'. Note that this is case-insensitive,
   as user input is automatically converted to lower case.
 * :code:`obs options.Sat_ID` (integer): Corresponds to the satellite ID.
 * :code:`obs options.Instrument_Name` (string): Corresponds to an
@@ -425,15 +450,15 @@ Scattering coefficients will be automatically read when requested according to t
 Optional
 ~~~~~~~~
 * :code:`obs options.RTTOV_default_opts` (string, default :code:`default`): These are set first and may be overridden by setting individual options. Valid options are :code:`UKMO_PS43`, :code:`UKMO_PS44`, :code:`UKMO_PS45` and correspond to options pertaining to RTTOV used operationally at the Met Office.
-* :code:`obs options.Do_MW_Scatt` (boolean, default :code:`false`): Call RTTOV-SCATT to simulate MW radiances affected by cloud and precipitation. 
+* :code:`obs options.Do_MW_Scatt` (boolean, default :code:`false`): Call RTTOV-SCATT to simulate MW radiances affected by cloud and precipitation.
 * :code:`obs options.RTTOV_GasUnitConv` (integer, default :code:`false`): Convert absorber concentration from mass concentration [kg/kg] to volume concentration [ppmv dry] for use with RTTOV.
-* :code:`obs options.InspectProfileNumber` (integer list, default 0): Print RTTOV profile(s) with indices corresponding to the order in which the geovals are processed. Intended for use with debugging. 
+* :code:`obs options.InspectProfileNumber` (integer list, default 0): Print RTTOV profile(s) with indices corresponding to the order in which the geovals are processed. Intended for use with debugging.
 * :code:`obs options.SatRad_compatibility` (boolean, default :code:`true`): Sets internal options to replicate Met Office OPS processing.
 * :code:`obs options.UseRHWaterForQC` (boolean, default :code:`true`): Use liquid water only in the saturation calculation (requires :code:`SatRad_compatibility` to be true).
 * :code:`obs options.UseColdSurfaceCheck` (boolean, default :code:`false`): Reset surface temperature over land and sea-ice where it is below 271.4 K. This is a legacy option for replicating OPS results prior to PS45 (requires :code:`SatRad_compatibility` to be true).
 
-Additionally, each option that may be modified within the RTTOV options structure may be accessed by prefixing :code:`RTTOV_` ahead of the option name, regardless of where it resides within the RTTOV option structure. 
-For example, :code:`RTTOV_addrefrac: true` will enable the option within RTTOV to account for atmospheric refraction during the optical depth calculation. 
+Additionally, each option that may be modified within the RTTOV options structure may be accessed by prefixing :code:`RTTOV_` ahead of the option name, regardless of where it resides within the RTTOV option structure.
+For example, :code:`RTTOV_addrefrac: true` will enable the option within RTTOV to account for atmospheric refraction during the optical depth calculation.
 All options are set to the defaults specified in the |RTTOV_12.3_user_guide|.
 
 .. |RTTOV_12.3_user_guide| raw:: html
@@ -911,11 +936,11 @@ Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
 
 * :code:`simulated variables`: variables to be simulated, total or speciated PM. [Note: This operator currently works well with one "simulated variable", e.g., PM25 or total PM. With slight modifications it can be used to simulate multiple speciated PM variables]
-* :code:`vertical_coordinate`: character, vertical interpolation approach chosen. As described above, height_asl (default) and log_pressure are currently supported. If neither option is chosen, the application will stop with an error msg. 
+* :code:`vertical_coordinate`: character, vertical interpolation approach chosen. As described above, height_asl (default) and log_pressure are currently supported. If neither option is chosen, the application will stop with an error msg.
 * :code:`model` [required]: character, model name. This operator currently mainly supports CMAQ. If the model name is not CMAQ, the application will stop with an error msg.
 * :code:`tracer_geovals` [required]: character, a list of names of model aerosol species needed to calculate the "simulated variables"
 * :code:`use_scalefac_cmaq`: logical, false by default, indicating whether scaling factors will be applied to execute PM2.5 or total PM related steps
-* :code:`tracer_modes_cmaq` [optional]: a list of integers indicating CMAQ aerosol modes (1-Aitken; 2-accumulation; 3-coarse). This option should only be set if the model name is CMAQ and "use_scalefac_cmaq" is set to "true". The sizes of tracer_modes_cmaq and tracer_geovals must be consistent. 
+* :code:`tracer_modes_cmaq` [optional]: a list of integers indicating CMAQ aerosol modes (1-Aitken; 2-accumulation; 3-coarse). This option should only be set if the model name is CMAQ and "use_scalefac_cmaq" is set to "true". The sizes of tracer_modes_cmaq and tracer_geovals must be consistent.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -930,10 +955,10 @@ Examples of yaml:
                         alvpo1j,asvpo1j,asvpo2j,asvpo3j,aivpo1j,axyl1j,axyl2j,axyl3j,atol1j,atol2j,atol3j,
                         abnz1j,abnz2j,abnz3j,aiso1j,aiso2j,aiso3j,atrp1j,atrp2j,asqtj,aalk1j,aalk2j,apah1j,
                         apah2j,apah3j,aorgcj,aolgbj,aolgaj,alvoo1j,alvoo2j,asvoo1j,asvoo2j,asvoo3j,apcsoj,
-                        aso4k,asoil,acors,aseacat,aclk,ano3k,anh4k]     
+                        aso4k,asoil,acors,aseacat,aclk,ano3k,anh4k]
     vertical_coordinate: height_asl
     model: CMAQ
-    use_scalefac_cmaq: true      
+    use_scalefac_cmaq: true
     tracer_modes_cmaq: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
                         2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3]
 
