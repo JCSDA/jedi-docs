@@ -1730,3 +1730,95 @@ Example
 
     - filter: Process AMV QI
       number of generating apps: 4
+
+
+Satname Filter
+--------------
+
+This filter creates a string variable that makes it simpler to
+identify Satwind (AMV) observations by combining satellite and channel information. 
+This is useful for later processing where we want to apply filters to subsets of observations.
+
+To identify the type of motion that has been tracked, AMV BUFR observations
+are supplied with a channel central frequency (Hz) and a wind computation method
+as described in code table 002023 below:
+
+==== ================ =========================================================
+Num  Method           Description
+==== ================ =========================================================
+  0  Reserved         
+  1  Infrared         Motion observed in the infrared channel
+  2  Visible          Motion observed in the visible channel
+  3  Vapour cloud     Motion observed in the water vapour channel
+  4  Combination      Motion observed in a combination of spectral channels
+  5  Vapour clear     Motion observed in the water vapour channel in clear air
+  6  Ozone            Motion observed in the ozone channel
+  7  Vapour           Motion observed in water vapour channel (cloud or clear)
+  13 Root-mean-square 
+==== ================ =========================================================
+
+The most common use of the wind computation method is to distinguish between clear-sky and
+cloudy water vapour targets.
+
+This filter combines this channel information, together with the satellite name, to
+create a string ``MetaData/satwind_id`` that defines the satellite/channel combination of each observation.
+We also output a diagnostic variable ``Diag/satwind_id`` which provides information on unidentified
+satellites or channels.
+
+Required variables:
+
+* ``MetaData/sensor_central_frequency``
+* ``MetaData/satellite_identifier``
+* ``MetaData/wind_computation_method``
+
+Outputs variables:
+
+* ``MetaData/satwind_id``
+* ``Diag/satwind_id``
+
+This filter requires the following YAML parameters:
+
+* :code:`min WMO Satellite id`: Minimum WMO platform number to consider
+* :code:`max WMO Satellite id`: Maximum WMO platform number to consider
+* :code:`min frequency`: For each channel, the minimum central frequency (Hz) 
+* :code:`max frequency`: For each channel, the maximum central frequency (Hz) 
+* :code:`wind channel`: For each channel, the string name to call this channel
+* :code:`Sat ID`: For each satellite, the WMO identifier for each platform
+* :code:`Sat name`: For each satellite, the string name for this platform
+
+This following YAML parameter is optional:
+
+* :code:`satobchannel`: Wind computation method number, ignored if none.
+
+Example:
+
+.. code:: yaml
+
+  - filter: satname
+    SatName assignments:
+    - min WMO Satellite id: 1
+      max WMO Satellite id: 999
+      Satellite_comp:
+      - satobchannel: 1
+        min frequency: 2.6e+13
+        max frequency: 2.7e+13
+        wind channel: ir112
+      - satobchannel: 1
+        min frequency: 7.5e+13
+        max frequency: 8.2e+13
+        wind channel: ir38
+      Satellite_id:
+      - Sat ID: 270
+        Sat name: GOES16
+
+This yaml will attempt to identify two infrared channels with computation method
+value of 1 and central frequencies falling between the min and max frequency bounds.
+If observations are identified from GOES-16 (platform number 270) they are also labelled.
+This will fill ``MetaData/satwind_id`` with values of "GOES16ir112","GOES16ir38" if these are present
+in the observations.
+
+If either the satellite or channel are not identified, then ``MetaData/satwind_id`` is set to
+"\*** MISSING \***". To help track down why observations are set to missing, ``Diag/satwind_id``
+has the form ``id<satellite identifier>_comp<cloud motion method>_freq<central frequency>``.
+For example, if the satellite is identified but the channel is not "GOES16_comp3_freq0.484317e14",
+if the satellite is not identified but the channel is "id270ir112".
