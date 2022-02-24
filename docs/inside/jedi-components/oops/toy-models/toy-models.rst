@@ -49,6 +49,12 @@ Specific arguments:
 |             | :code:`fields` | :code:`filepath`     | NetCDF file path [.nc]                             |
 +             +                +----------------------+----------------------------------------------------+
 |             |                | :code:`basefilepath` | Base NetCDF file path for difference [.nc]         |
++             +                +----------------------+----------------------------------------------------+
+|             |                | :code:`-bg`          | Background file path (optional for plot) [.nc]     |
++             +                +----------------------+----------------------------------------------------+
+|             |                | :code:`-t`           | Truth file path (optional for plot) [.nc]          |
++             +                +----------------------+----------------------------------------------------+
+|             |                | :code:`-o`           | Observations file path (optional for plot) [.nc]   |
 +-------------+----------------+----------------------+----------------------------------------------------+
 | :code:`qg`  | :code:`cost`   | :code:`filepath`     | Log file path [.test or .log.out]                  |
 +             +----------------+----------------------+----------------------------------------------------+
@@ -66,7 +72,7 @@ Specific arguments:
 Examples
 ^^^^^^^^
 
-**L95 / cost** 
+**L95 / cost**
 
 Plot the cost function components for the 3DVar test of the L95 model:
  - red: :math:`J_b` term
@@ -96,7 +102,7 @@ Plot the analysis increment (analysis - background) for the 3DVar test of the L9
 
   ./plot.py l95 fields --output l95_fields \
                        [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
-                       [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95 
+                       [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95
   Parameters:
    - model: l95
    - diagnostic: fields
@@ -109,6 +115,35 @@ Plot the analysis increment (analysis - background) for the 3DVar test of the L9
 .. image:: l95_fields_incr.jpg
    :align: center
 
+
+Plot the analysis, background, truth and observations for the 3DVar test of the L95 model.
+
+.. code-block:: bash
+
+  ./plot.py l95 fields [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
+            -bg [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
+            -t [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
+            -o [build_bundle]/oops/l95/test/Data/truth3d.2010-01-02T00\:00\:00Z.obt
+
+  Parameters:
+   - model: l95
+   - diagnostic: fields
+   - filepath: [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00:00:00Z.l95
+   - bgfilepath: [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00:00:00Z.P1D.l95
+   - truthfilepath: [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00:00:00Z.P1D.l95
+   - obsfilepath: [build_bundle]/oops/l95/test/Data/truth3d.2010-01-02T00:00:00Z.obt
+   - output: None
+  Run script
+   -> plot produced: 3dvar.an.2010-01-02T00:00:00Z.jpg
+
+
+
+Since several observations are available at each location throughout the time window, you can see up to three observation points for each location on the following plot.
+
+.. image:: l95_fields_all_plots.jpg
+   :align: center
+
+
 **QG / fields**
 
 Plot the analysis for the 3DVar test of the QG model, with corresponding geostropic winds:
@@ -119,7 +154,7 @@ Plot the analysis for the 3DVar test of the QG model, with corresponding geostro
 
   ./plot.py qg fields --output qg_fields \
                       --plotwind \
-                      [build_bundle]/oops/qg/test/Data/3dvar.an.2010-01-01T12\:00\:00Z.nc 
+                      [build_bundle]/oops/qg/test/Data/3dvar.an.2010-01-01T12\:00\:00Z.nc
   Parameters:
    - model: qg
    - diagnostic: fields
@@ -225,4 +260,3 @@ File extract:
   [  79.31681614   59.17619073 5270.58105916] / [-1.33785214e+08] / [-1.33785214e+08]
   ...
   [  30.72931674   18.82485907 6153.04231877] / [56.26459124] / [56.26459124]
-
