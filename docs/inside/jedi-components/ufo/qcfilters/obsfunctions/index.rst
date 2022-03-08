@@ -95,6 +95,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ObsFunctionVelocity <ObsFunctionVelocity>`
   Compute wind speed from u- and v- components
 
+:ref:`OceanPressureToDepth <OceanPressureToDepth>`
+  Convert an ocean pressure variable (Pa) to depth below surface (m)
+
 :ref:`RONBAMErrInflate <RONBAMErrInflate>`
   Observation error inflation factor for GnssroBndNBAM
 
@@ -160,6 +163,7 @@ filters into separate parts would have an obfuscating effect.
    ObsFunctionExponential
    ObsFunctionLinearCombination
    ObsFunctionVelocity
+   OceanPressureToDepth
    ROobserrInflation
    SatwindIndivErrors
    SatWindsLNVDCheck
