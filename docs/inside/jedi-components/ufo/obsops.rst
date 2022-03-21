@@ -893,6 +893,8 @@ Configuration options:
 
 * :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator (see the example below). This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
 
+* :code:`level index 0 is closest to surface`: a boolean variable that specifies whether index 0 of a model column is closest to the Earth's surface. Default value: :code:`false`.
+
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 
