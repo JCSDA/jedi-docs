@@ -35,6 +35,15 @@ filters into separate parts would have an obfuscating effect.
 :ref:`Conditional <Conditional>`
   Create an array of ints, floats, strings or date times using a series of where clauses.
 
+:ref:`DrawObsErrorFromFile <DrawObsErrorFromFile>`
+    Derive observation error values by interpolating an array loaded from a file, representing the variance or covariance matrix (of which only the diagonal elements are taken into account), indexed by coordinates whose names correspond to ObsSpace variables.  This file can potentially contain a collection ("stack") of such matrices.
+
+:ref:`DrawValueFromFile <DrawValueFromFile>`
+    Derive values by interpolating an array loaded from a file, indexed by coordinates whose names correspond to ObsSpace variables
+
+:ref:`FillAveragedProfileData <FillAveragedProfileData>`
+   Copy values from an observed atmospheric profile to the same profile averaged onto model levels.
+
 :ref:`HydrometeorCheckAMSUA <HydrometeorCheckAMSUA>`
   AMSU-A cloud and precipitation checks
 
@@ -98,6 +107,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`OceanPressureToDepth <OceanPressureToDepth>`
   Convert an ocean pressure variable (Pa) to depth below surface (m)
 
+:ref:`ProfileAverageObsPressure <ProfileAverageObsPressure>`
+  Fill values of pressure in profiles that have been averaged onto model levels.
+
 :ref:`RONBAMErrInflate <RONBAMErrInflate>`
   Observation error inflation factor for GnssroBndNBAM
 
@@ -122,12 +134,6 @@ filters into separate parts would have an obfuscating effect.
 :ref:`WindDirAngleDiff <WindDirAngleDiff>`
   Compute wind direction angle different between observation and model
 
-:ref:`DrawValueFromFile <DrawValueFromFile>`
-    Derive values by interpolating an array loaded from a file, indexed by coordinates whose names correspond to ObsSpace variables
-
-:ref:`DrawObsErrorFromFile <DrawObsErrorFromFile>`
-    Derive observation error values by interpolating an array loaded from a file, representing the variance or covariance matrix (of which only the diagonal elements are taken into account), indexed by coordinates whose names correspond to ObsSpace variables.  This file can potentially contain a collection ("stack") of such matrices.
-
 .. toctree::
    :hidden:
 
@@ -143,6 +149,7 @@ filters into separate parts would have an obfuscating effect.
    Conditional
    DrawObsErrorFromFile
    DrawValueFromFile
+   FillAveragedProfileData
    HydrometeorCheckAMSUA
    HydrometeorCheckATMS
    InterChannelConsistencyCheck
@@ -164,6 +171,7 @@ filters into separate parts would have an obfuscating effect.
    ObsFunctionLinearCombination
    ObsFunctionVelocity
    OceanPressureToDepth
+   ProfileAverageObsPressure
    ROobserrInflation
    SatwindIndivErrors
    SatWindsLNVDCheck
