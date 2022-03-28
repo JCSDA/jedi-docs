@@ -1116,3 +1116,59 @@ documentation of the Background Error Vertical Interpolation operator.
    Link to the marine ufo
 
 .. include:: marineufo.rst
+
+Profile Average operator
+------------------------
+
+This observation operator produces H(x) vectors which correspond to vertically-averaged profiles. The algorithm determines the locations at which reported-level profiles
+intersect each model pressure level. The intersections are found by stepping through the observation locations from the lowest-altitude value upwards. For each model level,
+the location of the observation whose pressure is larger than, and closest to, the model pressure is recorded. The :code:`vertical coordinate` parameter controls the model pressure GeoVaLs that are used in this procedure. If there are no observations in a model level, which can occur for (e.g.) sondes reporting in low-frequency TAC format, the location corresponding to the last filled level is used. (If there are some model levels closer to the surface than the lowest-altitude observation, the location of the lowest observation is used for these levels.)
+
+This procedure is iterated multiple times in order to account for the fact that model pressures can be slanted close to the Earth's surface. The number of iterations is configured with the :code:`number of intersection iterations` parameter.
+
+Having obtained the profile boundaries, values of model pressure and any simulated variables are obtained as in the locations that were determined in the procedure above.
+This produces a single column of model values which are used as the H(x) variable.
+
+In order for this operator to work correctly the ObsSpace must have been extended as in the following yaml snippet:
+
+
+.. code-block:: yaml
+
+  - obs space:
+     extension:
+       average profiles onto model levels: 71
+
+
+(where 71 can be replaced by the length of the air_pressure_levels GeoVaL). The H(x) values are placed in the extended section of the ObsSpace. Note that, unlike what may be expected for an observation operator, averaging of the model values across each layer is not performed; a single model value is used in each case.
+
+A comparison with results obtained using the Met Office OPS system is performed if the option :code:`compare with OPS` is set to true. This checks values of the locations and pressure values associated with the slant path. All other comparisons are performed with the standard :code:`vector ref` option in the yaml file.
+
+This operator also accepts an optional :code:`variables` parameter, which controls which ObsSpace variables will be simulated. This option should only be set if this operator is used as a component of the Composite operator. If :code:`variables` is not set, the operator will simulate all ObsSpace variables. Please see the documentation of the Composite operator for further details.
+
+
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
+- :code:`variables`: List of variables to be used by this operator.
+
+- :code:`model vertical coordinate`: Name of model vertical coordinate.
+
+- :code:`number of intersection iterations`: Number of iterations that are used to find the intersection between the observed profile and each model level. Default: 3.
+
+- :code:`compare with OPS`: If true, perform comparisons of auxiliary variables with the Met Office OPS system. Default: false.
+
+- :code:`pressure coordinate`: Name of air pressure coordinate.
+
+- :code:`pressure group`: Name of air pressure group.
+
+
+Example
+^^^^^^^
+
+.. code-block:: yaml
+
+    # Operator used to calculate H(x) for averaged profiles
+    - name: ProfileAverage
+      model vertical coordinate: "air_pressure_levels"
+      pressure coordinate: air_pressure
+      pressure group: MetaData
