@@ -8,6 +8,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`BennartzScatIndex <BennartzScatIndex>`
   Compute Bennartz scattering index from microwave channels
 
+:ref:`BgdDepartureAnomaly <BgdDepartureAnomaly>`
+  Compute the background departure anomaly between two channels
+
 :ref:`ChannelUseflagCheckRad <ChannelUseflagCheckRad>`
   Channel usage flag check for radiances
 
@@ -138,6 +141,7 @@ filters into separate parts would have an obfuscating effect.
    :hidden:
 
    BennartzScatIndex
+   BgdDepartureAnomaly
    ChannelUseflagCheckRad
    CloudCostFunction
    CloudDetectMinResidualAVHRR
