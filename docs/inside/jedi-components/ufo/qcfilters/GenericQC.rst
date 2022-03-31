@@ -176,6 +176,36 @@ By default, a filter variable is treated as scalar. But for vectors, such as win
 Bayesian Background check currently only works for single-level observations, not profiles.
 
 
+Bayesian Background QC Flags filter
+-----------------------------------
+
+The Bayesian Background QC Flags filter sets Met Office OPS QC flags based on values of probability of gross error (PGE).
+This filter should be invoked after any other filters which modify PGE, such as the Bayesian background check and the buddy check, have been run.
+If the PGE is larger than a chosen threshold then the observation is rejected by setting flags at the observation location.
+Eventually the Met Office QC flags will be replaced with Diagnostic Flags, but the core functionality will remain the same.
+
+The following filter parameters can be set:
+
+- :code:`PGE threshold`: value of PGE above which an observation is rejected.
+
+- :code:`PGE variable name substitutions`: a list of pairs of variable names.
+  The PGE of the second variable in each pair is used to set the QC flags
+  of the first variable; by default this happens for wind u and v components.
+
+An example yaml section is as follows:
+
+.. code-block:: yaml
+
+     - filter: Bayesian Background QC Flags
+       filter variables: [air_temperature, eastward_wind, northward_wind]
+       PGE threshold: 0.8
+       PGE variable name substitutions: {"eastward_wind", "northward_wind"}
+
+Air temperature QC flags are set if the temperature PGE is greater than 0.8.
+Due to the use of the variable name substitutions, both eastward and northward wind flags are set if the northward wind PGE is greater than 0.8.
+This could be useful if the PGE of only one of the wind components has been modified by the QC filters.
+
+
 Bayesian Whole Report Filter
 ----------------------------
 
