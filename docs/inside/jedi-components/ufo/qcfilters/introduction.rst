@@ -55,17 +55,35 @@ Most filters are written once and used with many observation types; several such
         channels: 1-15
       threshold: 3.0
 
+An alternative to using :code:`obs filters` is to specify the sequence of filters explicitly using the :code:`obs pre filters`, :code:`obs prior filters`
+and :code:`obs post filters` options. Further information on that can be found in the following section.
+
 Order of Filter Application
 ---------------------------
 
-By default, all filters that do not require access to GeoVaLs, ObsDiagnostics or the HofX vector are run first, in the order they are listed in the :code:`obs filters` section in the YAML file. Subsequently, GeoVaLs are calculated and all filters that require access to GeoVaLs (so-called prior filters) are run. Finally, the observation operator is applied, producing the HofX vector and possibly some ObsDiagnostics, and all filters that require access to these quantities (so-called post filters) are run.
+The order in which filters are run can be specified in two ways:
 
-It is possible to force a filter to be treated as a post filter and thus defer its execution until after the application of the observation operator by setting the :code:`defer to post` option to :code:`true`.
+- Determine the ordering automatically based on the data required by each filter.
 
-Example
-^^^^^^^
+- Specify the ordering explicitly.
 
-In the following example, the Thinning filter will be run after the Background Check because its :code:`defer to post` option is set to :code:`true`. If that was not the case, the Thinning filter would be executed before the Background Check, since the former does not need access to the HofX vector, whereas the latter does.
+Automatic filter ordering is requested using the :code:`obs filters` option. By default, all filters that do not require access to GeoVaLs, ObsDiagnostics or the HofX vector are run first, in the order they are listed in the :code:`obs filters` section in the YAML file. Subsequently, GeoVaLs are calculated and all filters that require access to GeoVaLs (so-called prior filters) are run. Finally, the observation operator is applied, producing the HofX vector and possibly some ObsDiagnostics, and all filters that require access to these quantities (so-called post filters) are run. It is possible to force a filter to be treated as a post filter and thus defer its execution until after the application of the observation operator by setting the :code:`defer to post` option to :code:`true`.
+
+Explicit filter ordering is requested using the :code:`obs pre filters`, :code:`obs prior filters` and :code:`obs post filters` options.
+Filters that appear in the :code:`obs pre filters` section will be run before the GeoVaLs are requested; those in the :code:`obs prior filters`
+section will be run after the GeoVaLs have been requested and before HofX is produced; and those in the :code:`obs post filters`
+section will be run after HofX has been produced. To request explicit filter ordering, one or more of these sections must be specified.
+The filters in each section will be run in the order in which they are specified in that section.
+Checks are run on the filters to ensure they are not requesting data that are not available.
+For example, a filter in the :code:`obs pre filters` section cannot request HofX data. If such a request is made then an exception will be thrown.
+
+It is not possible to mix automatic and explicit ordering; an exception will be thrown in that case.
+
+
+Examples
+^^^^^^^^
+
+The first example uses the automatic determination of filter ordering. The Thinning filter will be run after the Background Check because its :code:`defer to post` option is set to :code:`true`. If that was not the case, the Thinning filter would be executed before the Background Check, since the former does not need access to the HofX vector, whereas the latter does.
 
 .. code-block:: yaml
 
@@ -77,6 +95,23 @@ In the following example, the Thinning filter will be run after the Background C
     - filter: Thinning
       amount: 0.5
       defer to post: true
+
+The second example uses explicit specification of filter ordering. As above, the Background Check and Thinning filters are run after HofX has been produced.
+There is also a Variable Transforms filter that runs at the pre-filter stage.
+
+.. code-block:: yaml
+
+    obs pre filters:
+    - filter: Variable Transforms
+      Transform: WindComponents
+    obs post filters:
+    - filter: Background Check
+      filter variables:
+      - name: air_temperature
+      absolute threshold: 2.0
+    - filter: Thinning
+      amount: 0.5
+
 
 .. _Derived-Variables:
 
