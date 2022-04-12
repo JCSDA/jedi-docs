@@ -38,6 +38,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`Conditional <Conditional>`
   Create an array of ints, floats, strings or date times using a series of where clauses.
 
+:ref:`DateTimeOffset <DateTimeOffset>`
+  Add an offset variable, with units of seconds, minutes or hours, to the :code:`MetaData/dateTime` variable.
+
 :ref:`DrawObsErrorFromFile <DrawObsErrorFromFile>`
     Derive observation error values by interpolating an array loaded from a file, representing the variance or covariance matrix (of which only the diagonal elements are taken into account), indexed by coordinates whose names correspond to ObsSpace variables.  This file can potentially contain a collection ("stack") of such matrices.
 
@@ -151,6 +154,7 @@ filters into separate parts would have an obfuscating effect.
    CLWRetMW_SSMIS
    CLWRetSymmetricMW
    Conditional
+   DateTimeOffset
    DrawObsErrorFromFile
    DrawValueFromFile
    FillAveragedProfileData
