@@ -388,6 +388,7 @@ For example, the :code:`test:` section in an application test's YAML file might 
   test:
     reference filename: testoutput/4dvar.obsbias.test
     #  Optional:
+    output precision: 6
     float relative tolerance: 0.0
     integer tolerance: 0
     log output filename: testoutput/4dvar.obsbias.log.out
@@ -395,6 +396,8 @@ For example, the :code:`test:` section in an application test's YAML file might 
 
 
 The :code:`reference filename` specifies the reference file name that will be used to compare with the test output channel.
+
+The floating-point formatting of the test output channel can be modified with :code:`output precision`. If this integer is set to a positive value, then it defines the :code:`precision` used with the :code:`scientific` formatting.
 
 The test channel output and the reference file are compared line-by-line, and must contain the same number of lines.  If there are no numeric elements in the lines, they must match exactly.  Lines that contain numeric elements are compared numerically.  Each line must have the same count of numeric elements, and each of the numeric elements must be within tolerance.  Tolerance values for integer and floating-point variables may optionally be specified but default to 0.  If numeric elements from the test and reference files parse as integers, the  :code:`integer tolerance` controls the acceptable tolerance.  Otherwise, numeric values are treated as floating point, and the :code:`float relative tolerance` controls the acceptable relative difference between floating-point values.
 
