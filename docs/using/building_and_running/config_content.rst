@@ -54,8 +54,9 @@ Often the largest section of the configuration file, this describes one or more 
   * **name**: descriptive name, used in logs (required)
   * **obsdatain.obsfile**: input filename (this or **generate** section is required)
   * **obsdataout.obsfile**: output filename (optional)
-  * **simulated variables**: list of variables that need to be simulated by the observation operator and whose observed values are present in the input file (required, though may be an empty list).
-  * **derived simulated variables**: list of variables that need to be simulated by the observation operator, but whose observed values cannot be loaded from the input file and need to be created by a filter (optional).
+  * **observed variables**: list of variables to be processed using ufo filters whose observed values can be loaded from the input file (optional, may be an empty list if derived variables present). If not specified all ObsValue variables in the input are used to populate this list; if **channels** has been specified then this list is used for both the **observed variables** and **simulated variables**.
+  * **derived variables**: list of variables to be processed using ufo filters whose observed values cannot be loaded from the input file and need to be created by a filter (optional).
+  * **simulated variables**: list of variables that need to be simulated by the observation operator (required, though may be an empty list).
 
 Example:
 
@@ -83,8 +84,18 @@ Example:
      name: Radiosonde
      obsdatain:
        obsfile: Data/sondes_obs_2018041500.nc4
-     simulated variables: [air_temperature]
-     derived simulated variables: [eastward_wind, northward_wind]
+     simulated variables: [air_temperature, eastward_wind, northward_wind]
+     derived variables: [eastward_wind, northward_wind]
+   # Example 4: observed and derived variables. Suppose the input file contains station_pressure  
+   # and mean_sea_level_pressure which need to be quality controlled before being used to derive 
+   # surface_pressure which is the variable to be assimialted. 
+   obs space:
+     name: Surface
+     obsdatain:
+       obsfile: Data/ufo/testinput_tier_1/PStar_obs_20210521T1200Z.nc4
+     observed variables: [station_pressure, mean_sea_level_pressure]
+     derived variables: [surface_pressure]
+     simulated variables: [surface_pressure]
 
 * **obs operator**: describes observation operator and its options (required)
 
