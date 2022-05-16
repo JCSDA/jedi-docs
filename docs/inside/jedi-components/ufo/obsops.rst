@@ -560,7 +560,7 @@ Configuration options:
 
   a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation.Default value is 50 km.
 
-  b. ROobserror: A RO specific filter. use generic filter class to apply observation error method.
+  b. ROobserror: A RO specific filter. use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
          options: NBAM, NRL,ECMWF, and more to come. (NBAM is default)
 
   c. Background Check: the background check for RO can use either the generic one (see the filter documents) or the  RO specific one based on the NBAM implementation in GSI.
@@ -631,7 +631,7 @@ Configuration options:
 
    a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
 
-   b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.
+   b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
          options: NBAM, NRL,ECMWF, and more to come. (NBAM is default, but not recommended for ROPP operators). One has to specific a error model.
 
    c. Background Check: can only use the generic one (see the filter documents).
@@ -704,7 +704,7 @@ Configuration options:
 
   a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
 
-  b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.
+  b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
 
     - options: NBAM, NRL,ECMWF, and more to come. (NBAM is default, but not recommended for ROPP operators). One has to specific a error model.
 
@@ -837,7 +837,7 @@ Configuration options:
 
   a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Recommended value is 30 km for GnssroRef.
 
-  b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.
+  b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
          options: Only NBAM (default) is implemented now.
 
   c. Background Check: can only use the generic one (see the filter documents).
