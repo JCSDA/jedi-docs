@@ -783,22 +783,25 @@ Stuck Check Filter
 
 This filter thins observations by iterating over them by station and flagging each observation that
 is part of a "streak" of sequential observations. The first condition for a "streak" is that the
-observational values are the same over a certain count of sequential observations. The second
+observation values are the same over a certain count of sequential observations. The second
 condition is either (a) that this set of observations is longer than a user-defined duration or (b)
 that it covers the full trajectory of a station.
-The observational values which are used for evaluation of whether a "streak" exists are the
+
+Alternatively, a percentage can be specified, where if observation values are the same over more than this percentage of all non-missing values in a record, they are flagged as a streak. See :ref:`here <radiosonde_example_yaml>` for an example of using the :code:`obs space.obsdatain.obsgrouping` YAML option to group observations into records. With no obsgrouping, the full set of valid observations counts as a single record.
+
+The observation values which are used for evaluation of whether a "streak" exists are the
 :code:`filter variables`. If multiple :code:`filter variables` are present, then each variable is
 considered independently. In other words the filter flags observations based on each variable,
-independent to the other variables.
-the original full track for each filter variable. Any observations that form streaks in at least one
+independent to the other variables. Any observations that form streaks in at least one
 variable will be flagged.
+
 The following YAML parameters are supported:
 
 * :code:`filter variables`: the variables to use to classify observations as "stuck".
   This required parameter must be entered as a string vector.
 
 * :code:`number stuck tolerance`: the maximum number of observations in a row with the same
-  observational value before its classification as a potential streak is made.
+  observation value before its classification as a potential streak is made.
   This required parameter must be entered as a non-negative integer.
 
 * :code:`time stuck tolerance`: the maximum time duration before a potential streak is rejected
@@ -806,6 +809,12 @@ The following YAML parameters are supported:
   :code:`number stuck tolerance` is exceeded and all of the station's observations are part of the
   same streak, :code:`time stuck tolerance` is ignored and all of the observations are rejected
   regardless of the duration.
+
+* :code:`percentage stuck tolerance`: the maximum percentage out of all non-missing values in each record, above which this many observations with the same value in a row are rejected as a streak. The percentage is first converted to a number for each record; if the number is less than 2, no observations are flagged in that record (otherwise every observation would be flagged as a streak of 1).
+
+If :code:`percentage stuck tolerance` is defined, :code:`number stuck tolerance` and :code:`time stuck tolerance` must NOT be defined.
+
+If :code:`number stuck tolerance` and :code:`time stuck tolerance` are defined, :code:`percentage stuck tolerance` must NOT be defined.
 
 Example 1
 ^^^^^^^^^
@@ -836,9 +845,24 @@ as "stuck": air temperature and air pressure.
     number stuck tolerance: 2
     time stuck tolerance: PT2H
 
-Say we have 5 observations each taken an hour apart. Let the air temperature values equal: 274, 274
+Say we have 5 observations each taken an hour apart. Let the air temperature values equal: 274, 274,
 274, 275, 275; and the air pressure values equal 4, 4, 5, 5, 5. In this case, all of the
 observations would be rejected.
+
+Example 3
+^^^^^^^^^
+
+With the following parameters, a "streak" of observations is defined as sequential observations with
+identical air temperature measured values. A streak is rejected if it is longer than 50 % of the record.
+
+.. code-block:: yaml
+
+  - filter: Stuck Check:
+    filter variables: [air_temperature]
+    percentage stuck tolerance: 50
+    
+Say we have 5 observations in one record: 274, 274, 274, 275, 275; and 4 in another: 274, 274, 275, 275. The first 3 observations in the first record form a streak and are rejected (3 is greater than 50 % of 5). They are the only ones rejected. This is because the next record comprises 2 streaks each 2 observations long, and 2 is exactly 50 % of 4, not greater than 50 % of 4; therefore neither clear the threshold for rejection.
+
 
 Difference Check Filter
 -----------------------
