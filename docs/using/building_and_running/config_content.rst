@@ -97,6 +97,37 @@ Example:
      derived variables: [surface_pressure]
      simulated variables: [surface_pressure]
 
+If the observations have been divided into records then it is possible to extend the observation space such that a companion record is produced for each original record in the data set. The companion records are all produced with a (configurable) fixed number of levels. This can be invoked as follows in the configuration file:
+
+.. code-block:: YAML
+
+  observations:
+  - obs space:
+      name: Sonde
+      obsdatain:
+        obsfile: sonde.odb
+        obsgrouping:
+          group variables: [ "station_id" ]
+      extension:
+        allocate companion records with length: 10
+        variables filled with non-missing values:
+        - "latitude"
+        - "longitude"
+        - "dateTime"
+        - "air_pressure"
+        - "air_pressure_levels"
+        - "station_id"
+
+The number of locations allocated to each companion profile is governed by the :code:`allocate companion records with length` option. In the example this is set to 10, but any integer value greater than zero can be used. If an invalid number is selected then the extension is not performed. The companion records are only produced if the option :code:`obsdatain.obsgrouping.group variables` has been set.
+
+Assume the original data set has :code:`nlocs` locations and :code:`nrecs` records and that we wish to add companion records with :code:`ncomplocs` locations each. The extension procedure will allocate space for the companion records by adding another :code:`ncomplocs` * :code:`nrecs` locations to the observation space. The companion records can be accessed in a predictable fashion in the C++ code; given an original record has index :code:`k`, the equivalent companion record will have index :code:`k + nrecs` on the same MPI processor as the original.
+
+A subset of variables are copied from the original profiles into the companion profiles; all other variables are filled with missing values. The value at the first entry in each profile is copied to all of the entries in the companion profile. For example, if the first value of :code:`MetaData/air_pressure` in an original profile is 1000 hPa then each of the 10 entries in the companion profile will be assigned values of 1000 hPa. It is expected that the user will refine these values as necessary (e.g. with the :code:`FillAveragedProfileData` or :code:`ProfileAverageObsPressure` ObsFunctions).
+The variables copied can be customised with the :code:`variables filled with non-missing values` option. All variables copied in this way must be in the :code:`MetaData` group.
+The values shown in the example above are the defaults.
+
+Extending the observation space automatically produces a variable called :code:`MetaData/extended_obs_space`. That variable is equal to 0 for the original data and 1 for the extended data and can be used to classify records with the :code:`where` statement.
+
 * **obs operator**: describes observation operator and its options (required)
 
   * **name**: name in the ObsOperator and LinearObsOperator factory, defined in the C++ code (required)
