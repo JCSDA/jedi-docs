@@ -41,45 +41,73 @@ Generic arguments:
 
 Specific arguments:
 
-+-------------+---------------------+----------------------+----------------------------------------------------+
-| $MODEL      | $DIAG               | $SPECIFIC_ARGS       | DESCRIPTION                                        +
-+=============+=====================+======================+====================================================+
-| :code:`l95` | :code:`cost`        | :code:`filepath`     | Log file path [.test or .log.out]                  |
-+             +---------------------+----------------------+----------------------------------------------------+
-|             | :code:`fields`      | :code:`filepath`     | NetCDF file path [.nc]                             |
-+             +                     +----------------------+----------------------------------------------------+
-|             |                     | :code:`basefilepath` | Base NetCDF file path for difference [.nc]         |
-+             +                     +----------------------+----------------------------------------------------+
-|             |                     | :code:`-bg`          | Background file path (optional for plot) [.nc]     |
-+             +                     +----------------------+----------------------------------------------------+
-|             |                     | :code:`-t`           | Truth file path (optional for plot) [.nc]          |
-+             +                     +----------------------+----------------------------------------------------+
-|             |                     | :code:`-o`           | Observations file path (optional for plot) [.nc]   |
-+             +---------------------+----------------------+----------------------------------------------------+
-|             | :code:`timeseries`  | :code:`filepath`     | NetCDF file path (with %id% template) [.nc]        |
-+             +                     +----------------------+----------------------------------------------------+
-|             |                     | :code:`truthfilepath`| Truth file path (with %id% template) [.nc]         |
-+             +                     +----------------------+----------------------------------------------------+
-|             |                     | :code:`times`        | Time series pattern values (used to replace %id%)  |
-+             +---------------------+----------------------+----------------------------------------------------+
-|             | :code:`errors`      | :code:`filepath`     | Analysis file path [.nc]                           |
-+             +                     +----------------------+----------------------------------------------------+
-|             |                     | :code:`truthfilepath`| Truth file path [.nc]                              |
-+             +                     +----------------------+----------------------------------------------------+
-|             |                     | :code:`-bg`          | Background file path (optional for plot) [.nc]     |
-+-------------+---------------------+----------------------+----------------------------------------------------+
-| :code:`qg`  | :code:`cost`        | :code:`filepath`     | Log file path [.test or .log.out]                  |
-+             +---------------------+----------------------+----------------------------------------------------+
-|             | :code:`fields`      | :code:`filepath`     | NetCDF file path [.nc]                             |
-+             +                     +----------------------+----------------------------------------------------+
-|             |                     | :code:`basefilepath` | Base NetCDF file path for difference [.nc]         |
-+             +                     +----------------------+----------------------------------------------------+
-|             |                     | :code:`--plotwind`   | Flag to plot the wind                              |
-+             +                     +----------------------+----------------------------------------------------+
-|             |                     | :code:`--gif`        | Pattern replacing %id% in filepath to create a gif |
-+             +---------------------+----------------------+----------------------------------------------------+
-|             | :code:`obs`         | :code:`filepath`     | NetCDF file path [.nc]                             |
-+-------------+---------------------+----------------------+----------------------------------------------------+
++-------------+---------------------+----------------------+--------------------------------------------------------+
+| $MODEL      | $DIAG               | $SPECIFIC_ARGS       | DESCRIPTION                                            |
++=============+=====================+======================+========================================================+
+| :code:`l95` | :code:`cost`        | :code:`filepath`     | Log file path [.test or .log.out]                      |
++             +---------------------+----------------------+--------------------------------------------------------+
+|             | :code:`fields`      | :code:`filepath`     | NetCDF file path [.nc]                                 |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`basefilepath` | Base NetCDF file path for difference [.nc]             |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`-bg`          | Background file path (optional for plot) [.nc]         |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`-t`           | Truth file path (optional for plot) [.nc]              |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`-o`           | Observations file path (optional for plot) [.nc]       |
++             +---------------------+----------------------+--------------------------------------------------------+
+|             | :code:`timeseries`  | :code:`filepath`     | NetCDF file path (with %id% template) [.nc]            |
++             +                     +----------------------+--------------------------------------------------------+ 
+|             |                     | :code:`-fKey`        | Legend key for data from 'filepath' file (optional)    |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`-f2`          | NetCDF file path (with %id% template) [.nc] (optional) |
++             +                     +----------------------+--------------------------------------------------------+ 
+|             |                     | :code:`-f2Key`       | Legend key for data from '-f2' file (optional)         |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`-f3`          | NetCDF file path (with %id% template) [.nc] (optional) |
++             +                     +----------------------+--------------------------------------------------------+ 
+|             |                     | :code:`-f3Key`       | Legend key for data from '-f3' file (optional)         |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`-f4`          | NetCDF file path (with %id% template) [.nc] (optional) |
++             +                     +----------------------+--------------------------------------------------------+ 
+|             |                     | :code:`-f4Key`       | Legend key for data from '-f4' file (optional)         |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`truthfilepath`| Truth file path (with %id% template) [.nc]             |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`times`        | Time series pattern values (used to replace %id%)      |
++             +---------------------+----------------------+--------------------------------------------------------+
+|             | :code:`errors`      | :code:`filepath`     | Analysis file path [.nc]                               |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`truthfilepath`| Truth file path [.nc]                                  |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`-bg`          | Background file path (optional for plot) [.nc]         |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`--recenter`   | Recenter plot around first and last variable (optional)|
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`--title`      | User specified title (optional)                        |
++             +---------------------+----------------------+--------------------------------------------------------+
+|             | :code:`increments`  | :code:`filepath`     | Analysis file path [.nc]                               |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`bgfilepath`   | Background file path [.nc]                             |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`-t`           | Truth file path (optional for plot) [.nc]              |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`--recenter`   | Recenter plot around first and last variable (optional)|
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`--title`      | User specified title (optional)                        |
++-------------+---------------------+----------------------+--------------------------------------------------------+
+| :code:`qg`  | :code:`cost`        | :code:`filepath`     | Log file path [.test or .log.out]                      |
++             +---------------------+----------------------+--------------------------------------------------------+
+|             | :code:`fields`      | :code:`filepath`     | NetCDF file path [.nc]                                 |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`basefilepath` | Base NetCDF file path for difference [.nc]             |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`--plotwind`   | Flag to plot the wind                                  |
++             +                     +----------------------+--------------------------------------------------------+
+|             |                     | :code:`--gif`        | Pattern replacing %id% in filepath to create a gif     |
++             +---------------------+----------------------+--------------------------------------------------------+
+|             | :code:`obs`         | :code:`filepath`     | NetCDF file path [.nc]                                 |
++-------------+---------------------+----------------------+--------------------------------------------------------+
 
 Examples
 ^^^^^^^^
@@ -140,7 +168,7 @@ Plot the analysis, background, truth and observations for the 3DVar test of the 
             -bg [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
             -t [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
             -o [build_bundle]/oops/l95/test/Data/truth3d.2010-01-02T00\:00\:00Z.obt
-
+            
   Parameters:
    - model: l95
    - diagnostic: fields
@@ -161,19 +189,33 @@ Since several observations are available at each location throughout the time wi
 
 **L95 / timeseries**
 
-Plot the time series of RMSE(field1 - field2) for the 3DVar test of the L95 model.
+Plot a time series of RMSE(field1 - field2) for DA tests using the L95 model. Optionally plot up to 3 more series with optional user specified legend keys. 
 
 .. code-block:: bash
-
-  ./plot.py l95 timeseries [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P%id%.l95 \
-                           [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P%id%.l95 \
-                           T3H,T6H,T9H,T12H,T18H,1D
+   
+   ./plot.py l95 timeseries [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P%id%.l95 \
+                            -fKey "Series 1" \
+                            -f2 [build_bundle]/oops/l95/test/Data/forecast.ens.1.2010-01-01T00\:00\:00Z.P%id%.l95  \
+                            -f2Key "Series 2" \
+                            -f3 [build_bundle]/oops/l95/test/Data/forecast.ens.2.2010-01-01T00\:00\:00Z.P%id%.l95 \
+                            -f3Key "Series 3" \
+                            -f4 [build_bundle]/oops/l95/test/Data/forecast.ens.3.2010-01-01T00\:00\:00Z.P%id%.l95 \
+                            -f4Key "Series 4" \
+                            [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P%id%.l95 \
+                            T3H,T6H,T9H,T12H,T18H,1D 
 
   Parameters:
    - model: l95
    - diagnostic: timeseries
-   - filepath: [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P%id%.l95
-   - truthfilepath: [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P%id%.l95
+   - filepath: [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00:00:00Z.P%id%.l95
+   - fileKey: Series 1
+   - filepath2: [build_bundle]/oops/l95/test/Data/forecast.ens.1.2010-01-01T00:00:00Z.P%id%.l95
+   - file2Key: Series 2
+   - filepath3: [build_bundle]/oops/l95/test/Data/forecast.ens.2.2010-01-01T00:00:00Z.P%id%.l95
+   - file3Key: Series 3
+   - filepath4: [build_bundle]/oops/l95/test/Data/forecast.ens.3.2010-01-01T00:00:00Z.P%id%.l95
+   - file4Key: Series 4
+   - truthfilepath: [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00:00:00Z.P%id%.l95
    - times: T3H,T6H,T9H,T12H,T18H,1D
    - output: None
   Run script
@@ -191,7 +233,8 @@ Plot the following errors for the L95 model: analysis - truth (always) and backg
 
   ./plot.py l95 errors [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
                        [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
-                       -bg [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95
+                       -bg [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
+                       --recenter --title "Errors Experiment I"
 
   Parameters:
    - model: l95
@@ -200,10 +243,39 @@ Plot the following errors for the L95 model: analysis - truth (always) and backg
    - truthfilepath: [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P1D.l95
    - bgfilepath: [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95
    - output: None
+   - recenter: True
+   - title Errors Experiment I 
   Run script
    -> plot produced: 3dvar.an.2010-01-02T00:00:00Z.jpg
 
 .. image:: l95_errors_an_bg.jpg
+   :align: center
+   
+**L95 / increments**
+
+Plot the following increments for the L95 model: increment analysis-background (always) and perfect increment truth - background (optionally).
+
+
+.. code-block:: bash
+
+  ./plot.py l95 increments [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
+                       [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
+                       -t [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
+                       --recenter --title "Increments Experiment I"
+
+  Parameters:
+   - model: l95
+   - diagnostic: increments
+   - filepath: [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00:00:00Z.l95
+   - bgfilepath: [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00:00:00Z.P1D.l95
+   - truthfilepath: [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00:00:00Z.P1D.l95
+   - output: None
+   - recenter: True
+   - title: Increments Experiment I
+  Run script
+   -> plot produced: 3dvar.an.2010-01-02T00:00:00Z.jpg
+
+.. image:: l95_increments.jpg
    :align: center
 
 
