@@ -1090,6 +1090,10 @@ The following YAML parameters are supported:
   The supported sources are: LNDSYN, SHPSYN, BUOY, MOBSYN, OPENROAD, TEMP, BATHY, TESAC, BUOYPROF,
   LNDSYB, and SHPSYB.
 
+* :code:`records_are_single_obs`: If true, then treat each record as a single location within the track - accept or reject entire records according to the above criteria. Default: false. If option set to true while observations are not grouped into records, an error will be thrown. Set grouping with the :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option. An example of its use can be found in the :ref:`Profile consistency checks <profconcheck_filtervars>` section.
+
+* :code:`station_id_variable`: The variable that defines the tracks - note that this may be different from the obs grouping variable(s) that define records (there may be multiple records per track). If not given and if :code:`records_are_single_obs: true` OR if not given while not grouped into records at all, then all the observations (records or individual) are treated as belonging to a single continuous track. However, if not given while grouped into records but :code:`records_are_single_obs: false`, then each record is treated as a separate track.
+
 Example:
 
 .. code-block:: yaml
@@ -1099,6 +1103,9 @@ Example:
     spatial resolution (km): .1
     max speed (m/s): 3.0
     rejection threshold: 0.5
+    station_id_variable:
+      name: station_id@MetaData
+    records_are_single_obs: true
 
 Met Office Buddy Check Filter
 -----------------------------
