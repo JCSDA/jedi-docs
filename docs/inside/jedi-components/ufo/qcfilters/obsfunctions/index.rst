@@ -95,6 +95,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ObsErrorFactorWavenumIR <ObsErrorFactorWavenumIR>`
   Observation error inflation for satellite infrared sensors
 
+:ref:`ObsErrorModelHumidity <ObsErrorModelHumidity>`
+  Variant of ObsErrorModelStepwiseLinear for humidity observation error assignment
+
 :ref:`ObsErrorModelRamp <ObsErrorModelRamp>`
   Parameterize observation error as a piecewise linear function
 
@@ -173,6 +176,7 @@ filters into separate parts would have an obfuscating effect.
    ObsErrorFactorTopoRad
    ObsErrorFactorTransmitTopRad
    ObsErrorFactorWavenumIR
+   ObsErrorModelHumidity
    ObsErrorModelRamp
    ObsErrorModelStepwiseLinear
    ObsFunctionExponential
