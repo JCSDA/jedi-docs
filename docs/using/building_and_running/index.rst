@@ -6,4 +6,5 @@ Building and Running JEDI
    :maxdepth: 2
 
    building_jedi.rst
+   running_jedi.rst
    config_content.rst
