@@ -37,6 +37,8 @@ Configuration options
 
 - :code:`where`: Conditions used to select locations where printing should be performed. If not specified, printing will be performed at all required locations.
 
+- :code:`where operator`: Logical operator used to combine conditions used in the :code:`where` statement. The possible values are :code:`and` (the default) and :code:`or`. Note that it is possible to use the :code:`where operator` option without the :code:`where` statement. The option has no impact in that case.
+
 - :code:`defer to post`: If set to :code:`true`, printing will occur after the obs operator has been invoked (even if the filter doesn't require any variables from the GeoVaLs or HofX groups).
 
 - :code:`skip derived`:  If this option is :code:`true`, retrieval of a particular group name from the filter data will only consider that group. If this option is :code:`false`, the retrieval will first check for the same group prefixed with "Derived"; if such a group is present then the data from that will be retrieved. If the Derived group is not present, data from the original group will then be retrieved. Default: :code:`true`.

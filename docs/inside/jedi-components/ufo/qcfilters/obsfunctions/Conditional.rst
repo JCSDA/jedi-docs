@@ -9,6 +9,9 @@ The obs function was designed to work with the :ref:`variable assignment filter 
 to simplify the assignment of more complicated variables.  However, the obs function can be used with any filter
 which takes an obs function as an argument.  Any functionality in the
 :ref:`Where <where-statement>` statements can be used with this obs function.
+The :code:`where operator` parameter can be used to specify the logical operator used to combine conditions
+used in the :code:`where` statement. The possible values are :code:`and` (the default) and :code:`or`.
+Note that it is possible to use the :code:`where operator` option without the :code:`where` statement. The option has no impact in that case.
 
 This is a templated function which can be used to produce different types of output arrays:
  * `Conditional@ObsFunction` produces floats

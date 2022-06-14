@@ -75,6 +75,8 @@ The list passed to the :code:`where` keyword can contain more than one item, eac
 
 The elements of both whitelists and blacklists can be strings, non-negative integers or ranges of non-negative integers. It is not necessary to put any value after the colon following :code:`is_defined` and :code:`is_not_defined`. Bits are numbered from zero starting from the least significant bit.
 
+By default, if multiple conditions are used in a :code:`where` statement then the logical :code:`and` of the results is used to determine which locations are selected by the statement. The logical operator used to combine the results can be chosen explicitly with the :code:`where operator` parameter; the permitted operators are :code:`and` and :code:`or`. The use of the :code:`or` operator is illustrated in :ref:`Example 11 <where-example-11>`. Note that it is possible to use the :code:`where operator` option without the :code:`where` statement. The option has no impact in that case.
+
 The following examples illustrate the use of these conditions.
 
 Example 1
@@ -226,6 +228,28 @@ Example 10
       is_false:
 
 In this example, the filter will be applied only to observations with the :code:`ExtremeValue` diagnostic flag set for the air temperature, but not for the relative humidity.
+
+.. _where-example-11:
+
+Example 11
+^^^^^^^^^^
+
+.. code-block:: yaml
+
+    where:
+    - variable:
+        name: latitude@MetaData
+      minvalue: 60.
+    - variable:
+        name: latitude@MetaData
+      maxvalue: -60.
+    where operator: or
+
+In this example, the filter will be applied only to observations for which either of the following criteria are met:
+
+- the latitude is further north than 60°N,
+- the latitude is further south than 60°S.
+
 
 .. _obs-function-and-obs-diagnostic-suffixes:
 

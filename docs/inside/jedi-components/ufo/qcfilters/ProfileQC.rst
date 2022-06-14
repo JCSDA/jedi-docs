@@ -1,3 +1,5 @@
+.. _profilespecificqc:
+
 Profile Specific QC Filters
 ===========================
 

@@ -119,6 +119,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ProfileAverageObsPressure <ProfileAverageObsPressure>`
   Fill values of pressure in profiles that have been averaged onto model levels.
 
+:ref:`ProfileLevelCount <ProfileLevelCount>`
+  Count the number of locations in each profile that satisfy a particular condition.
+
 :ref:`RONBAMErrInflate <RONBAMErrInflate>`
   Observation error inflation factor for GnssroBndNBAM
 
@@ -184,6 +187,7 @@ filters into separate parts would have an obfuscating effect.
    ObsFunctionVelocity
    OceanPressureToDepth
    ProfileAverageObsPressure
+   ProfileLevelCount
    ROobserrInflation
    SatwindIndivErrors
    SatWindsLNVDCheck

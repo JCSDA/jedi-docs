@@ -1,7 +1,7 @@
 .. _ObsErrorModelHumidity:
 
 ObsErrorModelHumidity
-==============
+=====================
 This routine was designed to mimic the way GSI observer code (i.e., setupq.f90)
 assigns observation error for specific humidity observations in two steps.
 The first step is to interpolate errors from GSI error table (i.e., :code:`prepobs_errtable.txt`)
