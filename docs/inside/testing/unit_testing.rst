@@ -388,28 +388,31 @@ For example, the :code:`test:` section in an application test's YAML file might 
   test:
     reference filename: testoutput/4dvar.obsbias.test
     #  Optional:
-    output precision: 6
-    float relative tolerance: 0.0
-    integer tolerance: 0
-    log output filename: testoutput/4dvar.obsbias.log.out
+    float relative tolerance: 1.0e-5       # default value of 1.0e-6
+    float absolute tolerance: 1.0e-5       # default value of 0
+    integer tolerance: 0                   # default value of 0
+    log output filename: testoutput/4dvar.obsbias.log.out  # writes out the content
     test output filename: testoutput/4dvar.obsbias.test.out
 
 
+The floating-point formatting of the test output channel is always displayed at full precision.
+
 The :code:`reference filename` specifies the reference file name that will be used to compare with the test output channel.
 
-The floating-point formatting of the test output channel can be modified with :code:`output precision`. If this integer is set to a positive value, then it defines the :code:`precision` used with the :code:`scientific` formatting.
+The test channel output and the reference file are compared line-by-line, and must contain the same number of lines.  If there are no numeric elements in the lines, they must match exactly.  Empty lines and trailing whitespaces are ignored.  Lines that contain numeric elements are compared numerically.  Each line must have the same count of numeric elements, and each of the numeric elements must be within tolerance.  Tolerance values for integer and floating-point variables may optionally be specified but default to 0 for :code:`float absolute tolerance` and :code:`integer tolerance`, and 1.0e-6 for :code:`float relative tolerance`.  If numeric elements from the test and reference files parse as integers, the  :code:`integer tolerance` controls the acceptable tolerance.  Otherwise, numeric values are treated as floating point. Floating-points values are considered acceptable if they meet the relative tolerance OR the absolute tolerance:
 
-The test channel output and the reference file are compared line-by-line, and must contain the same number of lines.  If there are no numeric elements in the lines, they must match exactly.  Lines that contain numeric elements are compared numerically.  Each line must have the same count of numeric elements, and each of the numeric elements must be within tolerance.  Tolerance values for integer and floating-point variables may optionally be specified but default to 0.  If numeric elements from the test and reference files parse as integers, the  :code:`integer tolerance` controls the acceptable tolerance.  Otherwise, numeric values are treated as floating point, and the :code:`float relative tolerance` controls the acceptable relative difference between floating-point values.
+Relative tolerance:
 
-.. code:: bash
+.. math::
 
-   relative_difference = |reference - test|/(0.5*(reference + test))
+   |test - reference| / (0.5*(reference + test))  < relative tolerance
 
-You may choose to use :code:`float absolute tolerance` if you prefer, and in this case the comparison will be done using the absolute difference instead of relative for all the float numbers in the test. This can be useful when comparing very small numbers too close to zero. If you specify both :code:`float relative tolerance` and :code:`float absolute tolerance` in the yaml file, the absolute comparison will be used and a warning will be generated.
+Absolute tolerance:
 
-.. code:: bash
+.. math::
 
-   absolute_difference = |reference - test|
+   |test - reference| < absolute tolerance
+
 
 If the test channel fails to match the reference file, an exception from a sub-class of :code:`oops::TestReferenceError` containing relevant information about the cause of the mismatch is thrown.
 
