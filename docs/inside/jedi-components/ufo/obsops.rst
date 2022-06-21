@@ -524,7 +524,7 @@ Example of a yaml:
        CoefficientPath: Data/
        AerosolOption: aerosols_gocart_default
 
-GNSS RO bending angle (NCEP)
+GNSS RO bending angle (NBAM)
 -----------------------------
 
 Description:
@@ -534,41 +534,43 @@ A one-dimensional observation operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO) bending
 angle data based on the  NBAM (NCEP's Bending Angle Method)
 
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
+Configuration options (ObsOperator):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. configurables in "ObsOperator" section:
+* :code:`vertlayer`: if air pressure and geopotential height are read on the interface layer or the middle layer
 
-  a. vertlayer: if air pressure and geopotential height are read on the interface layer or the middle layer
+  * options: :code:`mass` or :code:`full` (default is :code:`full`)
 
-    - options: "mass" or "full" (default is full)
+* :code:`super_ref_qc`: if use the "NBAM" or "ECMWF" method to do super refraction check.
 
-  b. super_ref_qc: if use the "NBAM" or "ECMWF" method to do super refraction check.
+  * options: :code:`NBAM` or :code:`ECMWF` (default is :code:`NBAM`)
 
-    - options: "NBAM" or "ECMWF" ("NBAM" is default)
+* :code:`sr_steps`: when using the "NBAM" suepr refraction, if apply one or two step QC.
 
-  c. sr_steps: when using the "NBAM" suepr refraction, if apply one or two step QC.
+  * options: :code:`1` or :code:`2` (default is :code:`2` following NBAM implementation in GSI)
 
-    - options: default is two-step QC following NBAM implementation in GSI.
+* :code:`use_compress`: compressibility factors in geopotential heights. Only for NBAM.
 
-  d. use_compress: compressibility factors in geopotential heights. Only for NBAM.
+  * options: :code:`1` to turn on; :code:`0` to turn off (Default is 1)
 
-    - options: 1 to turn on; 0 to turn off. Default is 1.
+Configuration options (ObsSpace):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2. configurables in "ObsSpace" section:
+* :code:`obsgrouping`: applying record_number as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
 
-  a. obsgrouping: applying record_number as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
+Configuration options (ObsFilters):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-3. configurables in "ObsFilters" section:
+* :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation.Default value is 50 km.
 
-  a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation.Default value is 50 km.
+* :code:`ROobserror`: A RO specific filter. use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
+ 
+  * options: :code:`NBAM`, :code:`NRL`, :code:`ECMWF`, and more to come (default is :code:`NBAM`)
 
-  b. ROobserror: A RO specific filter. use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
-         options: NBAM, NRL,ECMWF, and more to come. (NBAM is default)
+* :code:`Background Check`: the background check for RO can use either the generic one (see the filter documents) or the  RO specific one based on the NBAM implementation in GSI.
 
-  c. Background Check: the background check for RO can use either the generic one (see the filter documents) or the  RO specific one based on the NBAM implementation in GSI.
-        options: "Background Check" for the JEDI generic one or "Background Check RONBAM" for the NBAM method.
-
+  * options: :code:`Background Check` for the JEDI generic one or :code:`Background Check RONBAM` for NBAM method.
+ 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 :code:`ufo/test/testinput/gnssrobndnbam.yaml`
@@ -624,20 +626,21 @@ a one-dimensional observation operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO) bending
 angle data
 
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-1. configurables in "obs space" section:
+Configuration options (ObsSpace):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   a. obsgrouping: applying record_number as a group_variable can get RO profiles in ufo. Otherwise RO data would be  treated as single observations.
+* :code:`obsgrouping`: applying record_number as a group_variable can get RO profiles in ufo. Otherwise RO data would be  treated as single observations.
 
-2. configurables in "obs filters" section:
+Configuration options (ObsFilters):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
+* :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
 
-   b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
-         options: NBAM, NRL,ECMWF, and more to come. (NBAM is default, but not recommended for ROPP operators). One has to specific a error model.
+* :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
 
-   c. Background Check: can only use the generic one (see the filter documents).
+  * options: :code:`NBAM`, :code:`NRL`, :code:`ECMWF`, and more to come (default is :code:`NBAM`, but not recommended for ROPP operators). One has to specific a error model.
+
+* :code:`Background Check`: can only use the generic one (see the filter documents).
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -689,29 +692,29 @@ Navigation Satellite System (GNSS) Radio Occultation (RO) bending
 angle data
 
 
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-1. configurables in "obs operator" section:
+Configuration options (ObsOperator):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  a. n_horiz: The horizontal points the operator integrates along the 2d plane. Default is 31. Has to be a even number.
+* :code:`n_horiz`: the horizontal points the operator integrates along the 2d plane. Default is 31. Has to be a odd number.
 
-  b. res: The horizontal resolution of the 2d plance. Default is 40 km.
+* :code:`res`: The horizontal resolution of the 2d plance. Default is 40 km.
 
-  c. top_2d: the highest height to apply the 2d operator. Default is 20 km.
+* :code:`top_2d`: the highest height to apply the 2d operator. Default is 20 km.
 
-2. configurables in "obs space" section:
+Configuration options (ObsSpace):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  a. obsgrouping: applying record_number as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
+* :code:`obsgrouping`: applying record_number as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
 
-3. configurables in "obs filters" section:
+Configuration options (ObsFilter):
 
-  a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
+* :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
 
-  b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
+* :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
 
-    - options: NBAM, NRL,ECMWF, and more to come. (NBAM is default, but not recommended for ROPP operators). One has to specific a error model.
+  * options: :code:`NBAM`, :code:`NRL`, :code:`ECMWF`, and more to come (default is :code:`NBAM`, but not recommended for ROPP operators). One has to specific a error model.
 
-  c. Background Check: can only use the generic one (see the filter documents).
+* :code:`Background Check`: can only use the generic one (see the filter documents).
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -745,6 +748,7 @@ Examples of yaml:
        minvalue: 0
        maxvalue: 50000
    - filter: ROobserror
+     n_horiz: 31
      filter variables:
      - name: bending_angle
      errmodel: NRL
@@ -764,21 +768,22 @@ operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO) bending
 angle data
 
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-1. configurables in "obs operator" section:
+Configuration options (ObsOperator):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  a. none.
+:code:`none`.
 
-2. configurables in "obs space" section:
+Configuration options (ObsSpace):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  a. vert_interp_ops: if true, then use log(pressure) for vertical interpolation, if false then use exner function for vertical interpolation.
+:code:`vert_interp_ops`: if true, then use log(pressure) for vertical interpolation, if false then use exner function for vertical interpolation.
 
-  b. pseudo_ops: if true then calculate data on intermediate "pseudo" levels between model levels, to minimise interpolation artifacts.
+:code:`pseudo_ops`: if true then calculate data on intermediate "pseudo" levels between model levels, to minimise interpolation artifacts.
 
-3. configurables in "ObsFilters" section:
+Configuration options (ObsFilters):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  a. Background Check: not currently well configured.  More detail to follow.
+:code:`Background Check`: not currently well configured.  More detail to follow.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -812,13 +817,15 @@ References:
 The scientific configuration of this operator has been documented in a number of
 publications:
 
- - Buontempo C, Jupp A, Rennie M, 2008. Operational NWP assimilation of GPS
+*  Buontempo C, Jupp A, Rennie M, 2008. Operational NWP assimilation of GPS
    radio occultation data, *Atmospheric Science Letters*, **9**: 129--133.
    doi: http://dx.doi.org/10.1002/asl.173
- - Burrows CP, 2014. Accounting for the tangent point drift in the assimilation of
+
+*  Burrows CP, 2014. Accounting for the tangent point drift in the assimilation of
    gpsro data at the Met Office, *Satellite applications technical memo 14*, Met
    Office.
- - Burrows CP, Healy SB, Culverwell ID, 2014. Improving the bias
+
+*  Burrows CP, Healy SB, Culverwell ID, 2014. Improving the bias
    characteristics of the ROPP refractivity and bending angle operators,
    *Atmospheric Measurement Techniques*, **7**: 3445--3458.
    doi: http://dx.doi.org/10.5194/amt-7-3445-2014
@@ -833,17 +840,16 @@ A one-dimensional observation operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO)
 refractivity data.
 
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
+Configuration options (ObsFilters):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. configurables in "obs filters" section:
+* :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation. Recommended value is 30 km for GnssroRef.
 
-  a. Domain Check: a generic filter used to control the maximum height one wants to assimilate RO observation. Recommended value is 30 km for GnssroRef.
+* :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
 
-  b. ROobserror: A RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
-         options: Only NBAM (default) is implemented now.
-
-  c. Background Check: can only use the generic one (see the filter documents).
+  * options: Only :code:`NBAM` (default) is implemented now.
+ 
+* :code:`Background Check`: can only use the generic one (see the filter documents).
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
