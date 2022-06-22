@@ -126,7 +126,8 @@ metadata loaded from the input file.
 It is important to note that filters should never modify variables from the :code:`ObsValue` group
 or add new variables to that group: otherwise initial and postprocessed measurements could not be
 distinguished, which would harm traceability. Instead, filters may create or modify variables from
-the :code:`DerivedObsValue` group. The ObsSpace treats all groups with the :code:`Derived` prefix
+the :code:`DerivedObsValue` group; any such DerivedObsValue variable must be declared in the yaml 
+as described in :ref:`observations`. The ObsSpace treats all groups with the :code:`Derived` prefix
 in a special way. Each member function used to access existing variables, such as
 :code:`get_db(group, name, ...)`, checks first if a variable :code:`name` exists in the group
 :code:`"Derived" + group` and if so, it retrieves that variable; if not, the function looks for the
@@ -141,11 +142,11 @@ There is no strict rule forbidding modifications to variables from other groups 
 from the input file and instead store any corrected versions in variables from the
 :code:`DerivedMetaData` group.
 
-Note that to any variables from the :code:`DerivedObsValue` group that need to be assimilated must
-be included in the :code:`obs space.derived simulated variables` list rather than :code:`obs
-space.simulated variables` (see :ref:`observations`). If these variables do not exist by the time
+Note that any variables from the :code:`DerivedObsValue` group that are to be assimilated should
+be included in the :code:`obs space.simulated variables` list as well as the :code:`obs space.derived 
+variables` list (see :ref:`observations`). If these variables do not exist by the time
 the last filter finishes execution, an exception is thrown. (In contrast, variables from the
-:code:`obs space.simulated variables` must exist already when the first filter starts execution.)
+:code:`obs space.observed variables` must exist already when the first filter starts execution.)
 
 Observation Errors
 ------------------
