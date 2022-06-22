@@ -1121,6 +1121,29 @@ Example
 See the listing in the :ref:`Background Error Vertical Interpolation Example` section of the
 documentation of the Background Error Vertical Interpolation operator.
 
+Total column water vapour
+--------------------------
+
+Description:
+^^^^^^^^^^^^
+
+The operator (SatTCWV) to calculate total column water vapour (TCWV) or precipitable water from the 
+model specific humidity profiles. Clear air is assumed. On input, the operator requires surface 
+pressure (Pa), and pressure (Pa) and specific humidity (kg/sq.m) for each model layer. The model 
+levels input should be from the top of the atmosphere going down. Furthermore it is expected that 
+the model layer pressures and humidities are on staggered levels with respect to each other, i.e. 
+the humidity values are valid for heights between the pressure levels. This was written for use with
+the OLCI total column water vapour product but other possibilities are MODIS, ABI, FCI.
+
+
+Example of a yaml
+^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  - obs operator: 
+      name: SatTCWV
+
 ..
    Link to the marine ufo
 
