@@ -38,8 +38,13 @@ Configuration options
 * :code:`operator configurations`: the configuration of all observation operators whose output will be used to produce the final H(x) vector.
   If either the fallback operator or one of the categorised operators have not been configured, an exception will be thrown.
 
-Example
-^^^^^^^
+* :code:`operator labels`: This option must be used if there are at least two component operators of the same type.
+  The labels are associated with each component operator and can subsequently be used to differentiate between them.
+  The ordering of labels in this list must correspond to the ordering of operators in the :code:`operator configurations` parameter.
+  Every component operator (even if it is not duplicated) must be assigned a unique label.
+
+Example 1
+^^^^^^^^^
 
 In this example the Categorical operator uses :code:`station_id@MetaData` as the categorical variable.
 Both the :ref:`Identity <obsops_identity>` and :ref:`Composite <obsops_composite>` operators are used to produce H(x) vectors.
@@ -65,6 +70,51 @@ Otherwise, the H(x) produced by the fallback operator (i.e. Composite) is select
         variables:
         - name: northward_wind
         - name: eastward_wind
+
+Example 2
+^^^^^^^^^
+
+In this example the Categorical operator uses :code:`station_id@MetaData` as the categorical variable and has two
+:code:`Composite` operators and an :code:`Identity` operator. The fact that two operators are the same necessitates the use of the
+:code:`operator labels` section. The first :code:`Composite` operator is labelled :code:`Composite1`, and the second is labelled
+:code:`Composite2`. Note that the :code:`Identity` operator must also be labelled. There must be as many labels as there are operator
+configurations and the contents of the two sections must appear in the same order.
+
+At each location in the ObsSpace, if :code:`station_id@MetaData` is equal to 47418 or 54857 then the H(x) produced by :code:`Composite1` is used,
+and if :code:`station_id@MetaData` is equal to 94332 or 96935 then the H(x) produced by :code:`Composite2` is used.
+Otherwise, the H(x) produced by the fallback operator (i.e. :code:`Identity`) is selected.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Categorical
+    categorical variable: station_id
+    fallback operator: "Identity"
+    categorised operators: {"47418": "Composite1",
+    "54857": "Composite1",
+    "94332": "Composite2",
+    "96935": "Composite2"}
+    operator labels: ["Identity", "Composite1", "Composite2"]
+    operator configurations:
+    - name: Identity
+    - name: Composite
+      components:
+       - name: Identity
+         variables:
+         - name: air_temperature
+       - name: VertInterp
+         variables:
+         - name: northward_wind
+         - name: eastward_wind
+    - name: Composite
+      components:
+       - name: Identity
+         variables:
+         - name: air_temperature
+       - name: VertInterp
+         variables:
+         - name: northward_wind
+         - name: eastward_wind
 
 .. _obsops_composite:
 
