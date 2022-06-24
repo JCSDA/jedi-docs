@@ -1,3 +1,6 @@
+
+.. _adding-a-test:
+
 Adding a New Test
 =================
 
