@@ -933,6 +933,113 @@ The options for YAML include:
 A special case exists for when the independent variable is 'distance', meaning the dx is computed from the difference of latitude/longitude pairs converted to distance.
  Additionally, when the independent variable is 'datetime' and the dependent variable is set to 'distance', the derivative filter becomes a speed filter, removing moving observations when the horizontal speed is outside of some range.
 
+
+
+.. _spikeandstep-check-filter:
+
+Spike and Step Check Filter
+---------------------------
+
+This filter goes through each record and flags observations where the value of the dependent variable (as specified by the user) is classified as a spike or step relative to adjacent points along the (user-specified) independent variable, e.g. profiles of ocean temperature against depth. (Only tested for data grouped into records - set grouping with the :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option. An example of its use can be found in the :ref:`Profile consistency checks <profconcheck_filtervars>` section.)
+
+A spike is a point whose dependent variable value differs from the adjacent points on either side of it by more than a given tolerance. A step is when two adjacent points' dependent variable values differ from each other by more than the tolerance. The tolerance can vary along the independent variable (more below). Points only count as spikes or steps if they are isolated, and not part of a trend spanning multiple points. A spike results in the point in question being flagged; a step results in both points on either side of the step being flagged.
+
+Required parameters:
+
+- :code:`independent`: the independent (:math:`x`) variable, e.g. depth in ocean profiles. (Must be float type.)
+
+- :code:`dependent`: the dependent (:math:`y`) variable, e.g. temperature or salinity in ocean profiles. (Must be float type.) NB: only one of each must be given.
+
+- :code:`tolerance.nominal value`: the tolerance value where :math:`x = 0`. The tolerance is the value against which adjacent differences :math:`dy` in the dependent variable are compared, to determine whether points are spikes or steps.
+
+Optional parameters:
+
+- :code:`count spikes`: If false, do not count spikes. Default: true.
+
+- :code:`count steps`: If false, do not count steps. Default: true.
+
+- :code:`tolerance.threshold`: For checking conditions for a large spike or large consistent gradient. The smaller :code:`tolerance.threshold` is, the more symmetrical a spike must be to be considered a spike, and the more tightly the point must be aligned with the points on either side to be considered a consistent gradient (in which case the point would not be considered a spike). Default: :math:`0.5`.
+
+- :code:`tolerance.gradient`: :math:`dy/dx` tolerance. If a point doesn't meet the conditions for a large spike, it may yet count as a small spike if its gradient on either side exceeds the gradient tolerance (plus other conditions). Default: numeric maximum, i.e. nothing can exceed the gradient tolerance - small spikes are not counted if this option is left out.
+
+- :code:`tolerance.gradient x resolution`: precision of :math:`dx` when calculating :math:`dy/dx`. Default: epsilon, i.e. the smallest possible to avoid a divide by :math:`0` error.
+
+- :code:`tolerance.factors` and :code:`tolerance.x boundaries`: vector floats of respectively the multiplier factors and :math:`x`-points which when joined by straight line segments, determine the tolerance against :math:`x`: tolerance equals nominal tolerance multiplied by this line segment function thus defined. Either both :code:`factors` and :code:`x boundaries` must be given and of the same size, or neither given. :code:`x boundaries` must be given in order of increasing :math:`x` (and :code:`factors` must match up with them). Default: nominal tolerance applies across whole :math:`x` domain if neither are given.
+
+- :code:`boundary layer.x range`: a 2-element vector :code:`[min, max]` defining the :math:`x`-domain, :code:`min`:math:`\le x <`:code:`max`, such that within it, the tolerance is modified (see :code:`step tolerance range` below). Default: :code:`{0, 0}`.
+
+- :code:`boundary layer.step tolerance range`: if :math:`x` is within the boundary layer defined by :code:`boundary layer.x range`, then if the adjacent difference :math:`dy` is within the range defined by this 2-element vector :code:`step tolerance range`, it cannot count as a step. Default: :code:`{0, 0}`.
+
+- :code:`boundary layer.maximum x interval`: a 2-element vector [within, outside] such that if the spacing :math:`dx` between two points is greater than the first element (when :math:`x` within the :code:`boundary layer.x range`) or the second (when :math:`x` outside the :code:`boundary layer.x range`), then ignore the corresponding :math:`dy`; do not check if it is a spike or step. Default: {numeric max, numeric max}, i.e. check every observation.
+
+
+A call to Spike and Step Check MUST be preceded by creating Diagnostic Flags for the dependent variables in question, and the flags MUST be named "spike" and "step":
+
+.. code-block:: yaml
+
+  - filter: Create Diagnostic Flags
+    filter variables:
+      - name: ocean_temperature
+      - name: ocean_salinity
+    flags:
+    - name: spike
+      initial value: false
+    - name: step
+      initial value: false
+
+This is because the Spike and Step Check sets these flags separately within the code itself. The flags thus set can then be used in the YAML, e.g. to count how many spikes and steps are in each record, and reject entire records whose sum of spikes and steps exceeds a given threshold. An example of this can be found in `qc_spike_and_step_check.yaml <https://github.com/JCSDA-internal/ufo/blob/develop/test/testinput/qc_spike_and_step_check.yaml>`_
+
+An example of applying the Spike and Step Check filter:
+
+.. code-block:: yaml
+
+  - filter: Spike and Step Check
+    filter variables:
+      - name: ObsValue/ocean_temperature
+    dependent: ObsValue/ocean_temperature  # dy/
+    independent: MetaData/ocean_depth      # dx
+    count spikes: true
+    count steps: true
+    tolerance:
+      nominal value: 10  # K, in the case of temperature (not real value)
+      gradient: 0.1      # K/m - if dy/dx greater, could be a spike
+      gradient x resolution: 10       # m - can't know dx to better precision
+      factors: [1.0, 1.0, 0.5, 0.5, 0.1]        # multiply tolerance, for ranges bounded by...
+      x boundaries: [0, 200, 300, 600, 600] # ...these values of x (depth in m)
+    boundary layer:
+      x range: [0.0, 300.0]               # when bounded by these x values (depth in m)...
+      step tolerance range: [-1.0, -2.0]  # ...relax tolerance for steps in boundary layer...
+      maximum x interval: [50.0, 100.0]   # ...and ignore level if dx greater than this
+    action:
+      name: reject
+
+In this case, both spikes and steps are counted for :code:`ocean_temperature` profiles, and rejected for :code:`ocean_temperature` only, since that is the only :code:`filter variable` listed. If other filter variables were listed, they would all be rejected at locations where spikes and steps in :code:`ocean_temperature` (the dependent variable) are found. If looking for spikes and steps in other variables, the Spike and Step Check needs to be called again on each of them as the dependent variable separately.
+
+.. figure:: images/spikestepQC_img.png
+   :alt: The tolerance function specified by 'tolerance.factors' and 'tolerance.x boundaries': straight line segments joining (0, 1.0), (200, 1.0), (300, 0.5), (600, 0.5), (600, 0.1), and constant at 0.1 subsequently.
+
+   The tolerance function specified by :code:`tolerance.factors` and :code:`tolerance.x boundaries`: straight line segments joining :math:`(0, 1.0)`, :math:`(200, 1.0)`, :math:`(300, 0.5)`, :math:`(600, 0.5)`, :math:`(600, 0.1)`, and constant at :math:`0.1` subsequently.
+
+The tolerance value as a function of :math:`x`, is the :code:`nominal value` (:math:`10` K) multiplied by the tolerance factor function. In this example, the filter is more sensitive to spikes and steps the deeper you go. Note that tolerance function is constant at the last value in :code:`factors` when :math:`x` exceeds the last value in :code:`x boundaries`. For jumps in tolerance such as at :math:`x = 600` m, the value on the left hand side (smaller :math:`x`) is used.
+
+The temperature gradient (in K/m) is computed for each profile, and any point that does not count as a large spike but whose gradient on either side exceeds the gradient tolerance :math:`0.1` K/m (amongst other conditions), is counted as a small spike. (The flagging does not distinguish between large and small spikes, they are all spikes.) For any points separated by less than :math:`10` m (:code:`gradient x resolution`), the gradient is computed as the dependent variable adjacent difference :math:`dy` divided by :math:`10` m, preserving the sign of :math:`dx`.
+
+The boundary layer is defined by :code:`boundary layer.x range` to be :code:`0`:math:`\le x <`:code:`300` m. When :math:`x` is within the boundary layer, a step is unflagged if :math:`dy` is within the :code:`step tolerance range` multiplied by the tolerance function - as shown in the figure below:
+
+.. figure:: images/spikestepQC_img2.png
+   :alt: Adjacent points with dy exceeding the tolerance (positive or negative) are flagged as steps; but if x is within the boundary layer, the tolerance to steps is relaxed by the factors given in 'step tolerance range'.
+
+   Adjacent points with :math:`dy` exceeding the tolerance (positive or negative) are flagged as steps; but if :math:`x` is within the boundary layer, the tolerance to steps is relaxed by the factors given in :code:`step tolerance range`.
+
+If two adjacent points have :math:`y` value differing by more than the tolerance at their level :math:`x`, and if neither is a spike nor part of a large consistent gradient, they are flagged as a step (i.e. if :math:`dy` is in the dark grey region). However, the condition is more lenient within the boundary layer, :code:`0`:math:`\le x <`:code:`300` m: the points are accepted as not a step if their :math:`dy` falls within the light grey region, which is :math:`-1` to :math:`-2` times the tolerance (:code:`boundary layer.step tolerance range: [-1.0, -2.0]`).
+
+Additionally, if the spacing :math:`dx` between adjacent points is :math:`> 50` m while :math:`x` within the boundary layer, then the corresponding :math:`dy` is skipped when checking for spikes and steps. That is, points spaced too far apart cannot be confidently flagged as spikes or steps. Outside of the boundary layer, the condition is applied when :math:`dx > 100` m, as :code:`boundary layer.maximum x interval: [50.0, 100.0]`.
+
+The reason for the :code:`boundary layer` options section is to accomodate a thermocline or halocline in the ocean, where a large negative gradient is expected and is not cause to flag a step, unless very large indeed, or large and positive. There is no impact on spike flagging. If the section is left out, the rest of the code applies, there is no relaxation of tolerance conditions anywhere.
+
+Note that this filter does not currently support use of :ref:`"where" clauses <where-statement>`.
+
+
 Track Check Filter
 ------------------
 
