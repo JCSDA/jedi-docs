@@ -110,6 +110,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ObsFunctionLinearCombination <ObsFunctionLinearCombination>`
   Compute linear combination of given variables weighted by given coefficients.
 
+:ref:`ObsFunctionSelectStatistic <ObsFunctionSelectStatistic>`
+  Output all 0's, except for 1 in locations corresponding (or closest) to the minimum, maximum, median or mean of the input variable within each record.
+
 :ref:`ObsFunctionVelocity <ObsFunctionVelocity>`
   Compute wind speed from u- and v- components
 
@@ -184,6 +187,7 @@ filters into separate parts would have an obfuscating effect.
    ObsErrorModelStepwiseLinear
    ObsFunctionExponential
    ObsFunctionLinearCombination
+   ObsFunctionSelectStatistic
    ObsFunctionVelocity
    OceanPressureToDepth
    ProfileAverageObsPressure

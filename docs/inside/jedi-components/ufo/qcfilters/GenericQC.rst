@@ -389,6 +389,9 @@ Example:
     amount: 0.75
     random seed: 125
 
+
+.. _GaussianThinningFilter:
+
 Gaussian Thinning Filter
 ------------------------
 
