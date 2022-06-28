@@ -43,19 +43,19 @@ GNSS-RO observation uncertainties
 
 Observation uncertainties for GNSS-RO are set using a specific filter ``ROobserror``.  This filter encompases a handful of different methods to specify the uncertainties, and these will be described below.  Unusually for a filter, the code is kept in ``ufo/gnssro/QC`` rather than ``ufo/filters``.  Much of the functionality of this filter could be replaced with the above methods combined with a specially-created obs function.
 
-The main option for this filter is ``errmodel`` which defines the error-model to use when setting the uncertainties.  This may take the values ``NBAM``, ``ECMWF``, ``NRL`` or ``MetOffice`` for bending angles, and ``NBAM`` for refractivity.  Each of these models will be described in turn.
+The main option for this filter is ``errmodel`` which defines the error-model to use when setting the uncertainties.  This may take the values ``NBAM``, ``ECMWF``, ``NRL`` or ``MetOffice`` for bending angles, and ``NCEP`` for refractivity.  Each of these models will be described in turn.
 
 NBAM (bending angle)
 ********************
 
-This option adopts the bending angle uncertainties specified in the NCEP GSI data assimilation system. The error model 
-is specified for three sets of RO observations based on their processing centers/satellite missions:
+This option adopts the bending angle uncertainties specified in the NCEP Bending Angle Model (NBAM) from the NCEP Gridpoint Spectral Interpolation (GSI) data assimilation system. 
+
+The error model is specified for three sets of RO observations based on their processing centers/satellite missions:
 EUMETSAT processed RO data, UCAR/CDAAC processed RO data, and COSMIC-2 RO data (UCAR/CDAAC processed).
 The COSMIC-2 bending angle uncertainties were estimated during the COSMIC-2 implementation in 2019, while the other observation uncertainties were already in place prior to that. 
 
 The regression coefficients for the fitting function are predefined according to offline computations.
 The resulting bending angle uncertainty varies with missions (as described above), impact height, and latitude (observation uncertainties are split into two sets for observations between 40S and 40N and at higher latitudes). 
-
 
 
 ECMWF (bending angle)
@@ -131,10 +131,10 @@ av_temp (float, K)
     verbose output: true
     defer to post: true
 
-NBAM (refractivity)
+NCEP (refractivity)
 *******************
 
-Similar to the NBAM bending angle uncertainty model, the NBAM refractivity uncertainty model also uses predefined fitting functions, which vary with impact heights. However, there is no latitude or mission dependency considered for this refractivity uncertainty model.
+Similar to the NBAM bending angle uncertainty model, the NCEP refractivity uncertainty model also uses predefined fitting functions, which vary with altitude. However, there is no latitude or mission dependency considered for this refractivity uncertainty model.
 
 
 Observation error covariances in UFO

@@ -582,7 +582,7 @@ Description:
 
 A one-dimensional observation operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO) bending
-angle data based on the  NBAM (NCEP's Bending Angle Method)
+angle data based on the NBAM (NCEP's Bending Angle Method)
 
 Configuration options (ObsOperator):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -880,20 +880,23 @@ publications:
    *Atmospheric Measurement Techniques*, **7**: 3445--3458.
    doi: http://dx.doi.org/10.5194/amt-7-3445-2014
 
-GNSS RO refractivity
-----------------------
+GNSS RO refractivity (NCEP)
+---------------------------
 
 Description:
 ^^^^^^^^^^^^
 
 A one-dimensional observation operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO)
-refractivity data.
+refractivity data, based on the refractivity operator in the NCEP 
+GSI system. However, this operator is not an operational capability.
+Note it is not updated or validated through extensive tests. Please 
+use this operator with caution.
 
 Configuration options (ObsFilters):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation. Recommended value is 30 km for GnssroRef.
+* :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation. Suggested value is 30 km for GnssroRefNCEP.
 
 * :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
 
@@ -915,7 +918,7 @@ Examples of yaml:
        obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
      simulate variables: [refractivity]
    obs operator:
-     name: GnssroRef
+     name: GnssroRefNCEP
      obs options:
    obs filters:
    - filter: Domain Check
@@ -929,7 +932,7 @@ Examples of yaml:
    - filter: ROobserror
      filter variables:
      - name: refractivity
-     errmodel: NBAM
+     errmodel: NCEP
    - filter: Background Check
      filter variables:
      - name: [refractivity]
