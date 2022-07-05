@@ -1,4 +1,4 @@
-# IODA Files and Components
+# Files and Components
 
 IODA data is stored in a hierarchical structure that is quite similar to a filesystem. This filesystem starts at a root path (‘/’), and may contain groups (directories) and data (variables). Groups and data may be created, opened, closed, read, written, renamed, or deleted. Links and mounting are also possible.
 

@@ -1,4 +1,4 @@
-# IODA Objects and Layouts
+# Objects and Layouts
 
 This section describes how all of the fundamental IODA components interact and form a coherent structure. We first briefly describe the ObsGroup and ObsSpace structures, since these are throughout IODA, IODA-converter, and UFO development. Then, we discuss select concepts in greater detail.
 
@@ -14,16 +14,39 @@ The root group contains one level of child groups and several dimension scales. 
 
 ## Global attributes
 
-The root group has several global attributes that can help describe the data. For the full list of standardized global attributes, consult the “Global attributes” section of the conventions document. Additional attributes are also possible, but they are optional and are outside the scope of this standards document. Common attributes are summarized in this table:
+The root group has several global attributes that can help describe the data. For the full list of standardized global attributes, consult the “Global attributes” section of the conventions document. Additional attributes are also possible, but they are optional and are outside the scope of this standards document.
+
+Global attributes may be indexed by R2D2. R2D2-specific attributes are prefixed with "r2d2". Common attributes are summarized in this table:
 
 Table 2 &mdash; Common global attributes. For the full list, see convention tables.
 
-| Name | Type | Description |
-| --- | --- | --- |
-| ioda_object_type | Variable-length string | *Internal*: Denotes to IODA that this is an ObsGroup. |
-| ioda_object_version | 32-bit integer | *Internal*: The version of the ObsGroup format. |
-| platform | Variable-length string | The platform (satellite id or otherwise) that supports the sensor. See the “Platform Identifiers” table for valid values. |
-| sensor | Variable-length string | The instrument. See the “Instrument Identifiers” table for valid values. |
+| Name | Required | Data type | Description | Examples |
+| --- | --- | --- | --- | --- |
+| description | No | A description of this data. | This data set describes snow depth measurements in the Tri-Cities area of northeast Tennessee. |
+| geospatialLatLonExtent | No | Variable-length string | A single-dimensioned array of 4 values. Lat min, lat max, lon min, lon max. | Use the WTK specification at https://docs.opengeospatial.org/is/18-010r7/18-010r7.html#33 |
+| keywords | No | 1-D array of Variable-length strings | A one-dimentional array of keywords. Keywords may be more than one word. | \[snow depth, tennessee\] |
+| name | Yes | Variable-length string | A name for this data. | Snow Depth Measurements in Tennessee |
+| platforms | No | 1-D array of Variable-length strings | The platforms that supports the sensors. This attribute should be a string from the "Platform Identifiers" table. | GOES-16 |
+| providerFullName | No | Variable-length string | The full, legal name of r2d2Provider. | National Aeronautics and Space Administration |
+| r2d2ObsType | Yes | Variable-length string | Lowercase unique identifier for humans. | raob, atms\_n20, abi\_g16\_bt, metar, synop. |
+| r2d2SubObsType | No | Variable-length string | Lowercase unique identifier for humans. | |
+| r2d2Provider | Yes | Variable-length string | Lowercase provider / publisher of this observation. | noaa, ucar, nasa, planetiq |
+| r2d2ProcessingCenter | No | Lowercase unique identifier for humans identifying the distributor who has done processing on native data. | nesdis, nco |
+| r2d2Type | Yes | Variable-length string | Always "obs" for observation data. | obs |
+| r2d2WindowStart | Yes | Variable-length string | The beginning of the time window in ISO 8601 format. | 2020-12-16T03:00:00Z |
+| r2d2WindowLength | Yes | Variable-length string | The length of the time window in ISO 8601 format. | PT6H, P1D |
+| sensors | No | 1-D array of Variable-length strings | The instruments. This attribute should be a string from the "Instrument Identifiers" table. | ABI |
+| uri | No | Variable-length string | A URI pointer to the source of this data. May be a DOI. | |
+
+#### Global attributes added by R2D2 upon ingest
+
+| Name | Required by R2D2 | Data type | Description | Examples |
+| --- | --- | --- | --- | --- |
+| r2d2Database | Yes | Variable-length string | The common name of the R2D2 database containing this data. | |
+| r2d2DatabaseLocation | Yes | Variable-length string | The full path to the R2D2 database on disk containing this data or the AWS S3 bucket name | /work/noaa/da/jedipara/R2D2\_SHARED\_EWOK2 OR archive.jcsda |
+| r2d2Id | Yes | Variable-length string | The ID assigned by R2D2 for this data. | Unique ID assigned by database technology or algorithm to be selected |
+| r2d2IngestTime | Yes | Variable-length string | The date and time of R2D2 ingest for this data in ISO 8601 | 2022-02-18T07:31:15Z |
+| r2d2Platform | Yes | Variable-length string | The R2D2 site hosting this data |  |
 
 
 ## Group-based data organization
