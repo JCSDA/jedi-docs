@@ -5,10 +5,10 @@ Running JEDI applications
 
 There are several options when running JEDI applications executables:
 
-- Run in application mode (most commonly used). The example below would run a :code:`Variational` JEDI application with the FV3 model, passing :code:`myconfig.yaml` to configure the application.
+- Run in application mode (most commonly used). The example below would run a :code:`Variational` JEDI application with the FV3 model, passing :code:`myconfig.yaml` to configure the application. Depending on the system, replace ``mpiexec`` with the correct launcher command (e.g. ``srun -n``) and submit the job through a batch script or in an interactive session.
 
 .. code-block:: bash
-     
+
      [mpiexec -nN] fv3jedi-var.x myconfig.yaml [output-file]
 
 - Run in validate-only mode. The example below would verify that :code:`myconfig.yaml` is a valid configuration file for the :code:`Variational` JEDI application, but will not run the :code:`Variational` application.
