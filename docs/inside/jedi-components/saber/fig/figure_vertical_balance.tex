@@ -1,0 +1,66 @@
+\documentclass[11pt]{article}
+\usepackage{tikz}
+\usetikzlibrary{shadows,arrows,positioning}
+% Define the layers to draw the diagram
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+\pagenumbering{gobble}
+
+% Define block styles
+\tikzstyle{process} = [draw, fill=blue!20, text centered, text width=12em, minimum width=8em, minimum height=3em, rounded corners, drop shadow,font=\bfseries]
+\tikzstyle{inputdata} = [draw, fill=green!20, text centered, text width=12em, minimum width=8em, minimum height=3em, drop shadow,font=\bfseries]
+\tikzstyle{tmpdata} = [draw, fill=orange!20, text centered, text width=12em, minimum width=8em, minimum height=3em, drop shadow,font=\bfseries]
+\tikzstyle{outputdata} = [draw, fill=red!20, text centered, text width=12em, minimum width=8em, minimum height=3em, drop shadow,font=\bfseries]
+\tikzstyle{arrow} = [draw, ultra thick, color=black!50, -latex']
+\tikzstyle{line} = [draw, ultra thick, color=black!50, -latex']
+\tikzstyle{dash} = [dotted, draw, ultra thick, color=black!50, -latex']
+\tikzstyle{layer} = [draw, fill=blue!20, text centered, text width=\linewidth, minimum width=8em, minimum height=3em, rounded corners, drop shadow,font=\bfseries]
+
+% Define distances for bordering
+\newcommand{\blockdist}{1.3}
+\newcommand{\edgedist}{1.5}
+\newcommand{\inputdata}[2]{node (i#1) [inputdata] {#2}}
+\newcommand{\tmpdata}[2]{node (t#1) [tmpdata] {#2}}
+\newcommand{\outputdata}[2]{node (o#1) [outputdata] {#2}}
+\newcommand{\process}[2]{node (p#1) [process] {#2}}
+\newcommand{\layer}[2]{node (l#1) [layer] {#2}}
+
+
+% Draw background
+\newcommand{\background}[7]{%
+\begin{pgfonlayer}{background}
+% Left-top corner of the background rectangle
+\path (#1.west |- #2.north)+(-0.5,0.25) node (a1) {};
+% Right-bottom corner of the background rectanle
+\path (#3.east |- #4.south)+(+0.5,-0.25) node (a2) {};
+% Draw the background
+\path[fill=#6!20,rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
+\path (#3.east |- #2.north)+(0,0.25)--(#1.west |- #2.north) node[midway] (#5-n) {};
+\path (#3.east |- #2.south)+(0,-0.35)--(#1.west |- #2.south) node[midway] (#5-s) {};
+\path (#3.east |- #2.north)+(0.7,0)--(#3.east |- #4.south) node[midway] (#5-w) {};
+% Write test
+\node[below of=#4,node distance = 1.3cm, text centered, text width=12em, minimum width=8em, minimum height=3em,font=\bfseries] (tmp) {#7};
+\end{pgfonlayer}}
+
+\begin{document}
+\begin{tikzpicture}[scale=0.7,transform shape]
+\path \inputdata{1}{Ensemble of forecasts};
+\path (i1)+(7.0,2.0) \process{1}{Compute grid subsampling, halos and interpolations};
+\path (p1)+(0.0,-4.0) \process{2}{Compute sample\\ covariances};
+\path [arrow] ([xshift=0.5cm]p1.south) -- ([xshift=0.5cm]p2.north) node[] {};
+\path [arrow] (i1.east) -| ([xshift=-0.5cm]p2.north) node[] {};
+\path (p2)+(0.0,-2.0) \process{3}{Average covariances};
+\path [arrow] (p2.south) -- (p3.north) node[] {};
+\path (p3)+(0.0,-2.0) \process{4}{Compute regressions};
+\path [arrow] (p3.south) -- (p4.north) node[] {};
+\path (p4)+(-7.0,0.0) \tmpdata{1}{Unbalanced ensemble};
+\path [arrow] (p4.west) -- (t1.east) node[] {};
+\path [arrow] (t1.north) |- (p2.west) node[] {};
+\path (p4)+(7.0,0.0) \outputdata{1}{Vertical balance regression data};
+\path [arrow] (p4.east) -- (o1.west) node[] {};
+
+\background{p1}{p1}{p4}{p4}{bk1}{gray}{VBAL}
+\background{o1}{o1}{o1}{o1}{bk2}{yellow}{Operator data}
+\end{tikzpicture}
+\end{document}

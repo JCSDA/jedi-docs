@@ -85,7 +85,7 @@ An input CSV file should have the following structure:
 
 The number of entries in each line should be the same. The column order does not matter. One of the
 columns should belong to the group specified in the :code:`group` option, indicating the payload array.
-Its data type should be either :code:`float` or :code:`int`.
+Its data type should be a :code:`float`, :code:`int`, or :code:`std::string`.
 The values from the other columns (sometimes called `coordinates` below) are compared against ObsSpace
 variables with the same names to determine the row or rows from which the payload is
 extracted at each location. The details of this comparison (e.g. whether an exact match is

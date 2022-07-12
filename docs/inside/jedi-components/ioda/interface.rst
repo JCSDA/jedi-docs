@@ -99,6 +99,8 @@ This specification is requesting that IODA group locations according the MetaDat
 All locations with the same unique station_id value will be grouped into an individual record
 before doing the MPI distribution step.
 The intent of this specification is to keep individual soundings intact during the MPI distribution step.
+It is possible to define more than one grouping variable if that is necessary to uniquely identify records in the data set.
+The observations will be grouped according to the first variable in the list, then each group will be divided further according to the second variable, etc.
 
 IODA has an additional feature that provides functions that denote the sorting of locations within each record.
 A MetaData variable and sort order is specified to enable and drive this feature.

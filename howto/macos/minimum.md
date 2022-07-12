@@ -7,12 +7,14 @@ Tested on *MacOS 10.15.7 (Catalina).*
 
 Use homebrew to install the basic required tools:
 ```
+coreutils
 boost
 cmake
 eigen
 gcc
 git
 git-lfs
+gpatch
 lmod
 openssl@1.1
 wget

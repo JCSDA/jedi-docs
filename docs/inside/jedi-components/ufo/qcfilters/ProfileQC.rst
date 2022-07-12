@@ -1,3 +1,5 @@
+.. _profilespecificqc:
+
 Profile Specific QC Filters
 ===========================
 
@@ -34,7 +36,7 @@ The user can specify two options in the yaml: :code:`absolute threshold` and :co
       
 Note: The :code:`obsgrouping: group variables` option is necessary to identify which observations belong to a given profile.  The :code:`sort variable` and :code:`sort order` options are optional.
 
-Note: This is separate from the background check in :ref:`profile consistency checks <profconcheck_background>`.
+Note: This is separate from the background check in :ref:`conventional profile processing  <profconcheck_background>`.
 
 .. _proffewobscheck:
 
@@ -108,8 +110,8 @@ This filter relies on the refractivity and model geopotential heights being save
         surface offset: 500
 
 
-Profile Consistency Checks
---------------------------
+Conventional Profile Processing
+-------------------------------
 
 .. _profconcheck_overview:
 
@@ -170,7 +172,10 @@ The following checks are available:
 - **Pressure**: This routine calculates profile pressures if they have not been measured (or were measured but are potentially inaccurate). This is achieved by vertical interpolation and extrapolation using the observed height and model values of height and pressure.
   :ref:`Click here for more details <profconcheck_pressure>`.
 
-This filter can apply more than one check in turn. Please note the following:
+- **AverageX**: These routines average observed variables onto model levels (**X** can be **Pressure**, **RelativeHumidity**, **Temperature** or **WindSpeed**).
+  :ref:`Click here for more details <profconcheck_average>`.
+
+The Conventional Profile Processing filter can apply more than one check in turn. Please note the following:
 
 - The total number of errors that have occurred is recorded as the filter proceeds through each check.
   If this number exceeds a threshold (set by defining the parameter :code:`nErrorsFail`) then the entire profile is rejected.
@@ -227,7 +232,7 @@ The second formulation could be used if the pressures have been sorted prior to 
 An ascending sort order is not valid; if this is selected the checks will throw an error.
 In both cases the station ID is used to discriminate between different sonde profiles.
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_generic:
 
@@ -247,7 +252,7 @@ The following yaml parameters can be used to configure the filter itself:
 
 - :code:`Comparison_Tol`: Tolerance for comparisons with OPS, enabling rounding errors to be accommodated (default 0.1).
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_standardlevels:
 
@@ -267,7 +272,7 @@ Each profile is checked for the presence of both standard and significant levels
 
 - :code:`StandardLevels`: list of standard levels (default [1000, 925, 850, 700, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10, 7, 3, 2, 1] hPa). These are internationally-agreed values and should usually not be changed.
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_basic:
 
@@ -294,7 +299,7 @@ Any profiles that do not meet these criteria are rejected.
 
 - :code:`BChecks_Skip`: Do not perform the basic checks (default false). Only set to true for unit tests in which the input sample consists of pressures that should not be sorted.
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_samepdifft:
 
@@ -310,7 +315,7 @@ The level with the larger absolute difference between the observed and model bac
 
 - :code:`SPDTCheck_TThresh`: Absolute temperature difference threshold (default 0.0 K).
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_sign:
 
@@ -339,7 +344,7 @@ The sign check for a particular level is failed in the following case:
 
 - :code:`SCheck_CorrectT`: Compute correction to temperature (default true).
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_unstablelayer:
 
@@ -361,7 +366,7 @@ This check is only applied to levels whose pressure is larger than a minimum thr
 
 - :code:`ULCheck_MinP`: Minimum pressure at which the checks are performed (default 0.0 Pa).
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_interpolation:
 
@@ -392,7 +397,7 @@ according to the list in :code:`ICheck_BigGaps`; the smallest big gap is defined
 
 - :code:`ICheck_BigGapInit`: Smallest value of 'big gap' (default 1000.0 Pa).
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_hydrostatic:
 
@@ -448,7 +453,7 @@ A decision-making algorithm is used to classify the levels as having height or t
 
   - :code:`HCheck_CorrMinThresh`: 1.0
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_uinterp:
 
@@ -487,7 +492,7 @@ behaves identically to the UInterp check. As such the UInterpAlternative check d
 
 - :code:`UICheck_BigGapLowP`: Minimum 'big gap' in pressure (default 500.0 Pa).
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_rh:
 
@@ -554,7 +559,7 @@ The following parameters are used in the high-altitude check:
 
 - :code:`RHCheck_TempThresh`: Minimum temperature threshold for accumulating an error counter (default 250.0 K).
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_time:
 
@@ -571,7 +576,7 @@ This check flags any observations whose time of measurement lies outside the ass
 
 - :code:`TimeCheck_SondeLaunchWindRej`: Observations are rejected if they differ from the surface pressure by less than this value. Assuming an ascent rate of 5 m/s, 10 hPa corresponds to around 20 s of flight time. Using a pressure difference enables all sonde reports to be dealt with. (Default: 0.0 hPa, i.e. no rejection is performed).
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_background:
 
@@ -633,7 +638,7 @@ The PGE update code is located in a UFO utility function, enabling it to be used
 
 - :code:`PGE_SDiffCrit`: Threshold for (squared observation minus background difference) / (error variance) (default 100.0). Observations with values larger than this threshold are flagged. This is only performed if the observations have been averaged onto model levels.
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_permrej:
 
@@ -648,7 +653,7 @@ This check permanently rejects observations that have previously been flagged as
 
 - :code:`ModelLevels`: Governs whether the observations have been averaged onto model levels.
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_sondeflags:
 
@@ -663,7 +668,7 @@ This check accounts for any QC flags that were assigned to the sonde data prior 
 
 There are no configurable parameters for this check.
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_winproflags:
 
@@ -678,7 +683,7 @@ This check accounts for any QC flags that were assigned to the wind profiler dat
 
 There are no configurable parameters for this check.
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
 
 .. _profconcheck_pressure:
 
@@ -701,7 +706,65 @@ The default values of these parameters are suitable for the UM.
 
 - :code:`etaRho`: Value of terrain-following height coordinate (eta) on rho levels.
 
-:ref:`Back to overview of profile consistency checks <profconcheck_overview>`
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
+
+.. _profconcheck_average:
+
+AverageX
+^^^^^^^^
+
+**Operation**
+
+The AverageX routines, where X is Pressure, RelativeHumidity, Temperature or WindSpeed, are used to average observed values of X onto model levels.
+
+In order for these routines to work correctly the ObsSpace must have been extended as in the following yaml snippet:
+
+.. code-block:: yaml
+
+  - obs space:
+     extension:
+       average profiles onto model levels: 71
+
+(where 71 can be replaced by the length of the air_pressure_levels GeoVaL).
+
+Furthermore, the AveragePressure routine must be run prior to any of the other AverageX routines; this calculates various transformed values of pressure which are used in the averaging.
+
+- The vertical processing of temperature is based on calculating the thickness of the model layers (rather than just averaging the temperatures). The potential temperature in each layer is converted to temperature by multiplying by the Exner pressure. When the model layer is not completely covered by observations, a potential temperature observation-minus-background increment is computed using linear interpolation of temperature between the layer boundaries. This increment is added to the background value to produce the averaged observation value.
+
+- The eastward and northward wind components are averaged separately over model layers defined by adjacent pressure levels, including the surface pressure.
+
+- By default, relative humidities are interpolated onto model layer boundaries rather than averaged across layers in order to avoid unwanted smoothing. This behaviour can be controlled with the :code:`AvgRH_Interp` option. The interpolated/averaged relative humidity values are rejected at any layer where the averaged temperature value is less than or equal to the threshold :code:`AvgRH_AvgTThreshold`. This threshold can be modified to an instrument-dependent value with the parameter :code:`AvgRH_InstrTThresholds`, which is a map between WMO sonde instrument codes and the associated temperature thresholds.
+
+The H(x) equivalents of the averaged observations are computed with the :code:`ProfileAverage` observation operator.
+
+**Summary of yaml parameters**
+
+- :code:`AvgP_SondeGapFactor`: Factor used to determine big gaps for sondes (dimensionless; multiplied by log(10)) (default: 1.0).
+
+- :code:`AvgP_WinProGapFactor`: Factor used to determine big gaps for wind profilers (dimensionless; multiplied by log(10)) (default: 1.0).
+
+- :code:`AvgP_GapLogPDiffMin`: Minimum value of denominator used when computing big gaps (dimensionless; equal to log (pressure threshold / hPa)) (default: log(5.0)).
+
+- :code:`AvgT_SondeDZFraction`: Minimum fraction of a model layer that must have been covered (in the vertical coordinate) by observed values in order for temperature to be averaged onto that layer (default: 0.5).
+
+- :code:`AvgT_PGEskip`: Probability of gross error threshold above which rejection flags are set in the temperature averaging routine (default: 0.9).
+
+- :code:`AvgU_SondeDZFraction`: Minimum fraction of a model layer that must have been covered (in the vertical coordinate) by observed values in order for wind speed to be averaged onto that layer (default: 0.5).
+
+- :code:`AvgU_PGEskip`: Probability of gross error threshold above which rejection flags are set in the wind speed averaging routine (default: 0.9).
+
+- :code:`AvgRH_PGEskip`: Probability of gross error threshold above which rejection flags are set in the relative humidity averaging routine (default: 0.9).
+
+- :code:`AvgRH_SondeDZFraction`: Minimum fraction of a model layer that must have been covered (in the vertical coordinate) by observed values in order for relative humidity to be averaged onto that layer (default: 0.5).
+
+- :code:`AvgRH_Interp`: Perform interpolation or averaging of relative humidity observations (default: true = interpolation).
+
+- :code:`AvgRH_AvgTThreshold`: Default average temperature threshold below which average relative humidity observations are rejected (degrees C) (default: -40.0).
+
+- :code:`AvgRH_InstrTThresholds`: Custom average temperature thresholds below which average relative humidity observations are rejected (degrees C). These thresholds are stored in a map with keys equal to the WMO codes for radiosonde instrument types and values equal to the custom thresholds. The full list of codes can be found in "WMO Manual on Codes - International Codes, Volume I.2, Annex II to the WMO Technical Regulations: Part C - Common Features to Binary and Alphanumeric Codes" (available at https://library.wmo.int/?lvl=notice_display&id=10684). See yaml file for defaults.
+
+:ref:`Back to overview of conventional profile processing <profconcheck_overview>`
+
 
 .. _profconcheck_example:
 
@@ -712,7 +775,7 @@ This example runs the basic checks on the input data:
 
 .. code-block:: yaml
 
-    - filter: Profile Consistency Checks
+    - filter: Conventional Profile Processing
       filter variables:
       - name: air_temperature
       - name: geopotential_height
@@ -722,12 +785,12 @@ This example runs the basic and SamePDiffT checks on the input data, using separ
 
 .. code-block:: yaml
 
-    - filter: Profile Consistency Checks
+    - filter: Conventional Profile Processing
       filter variables:
       - name: air_temperature
       - name: geopotential_height
       Checks: ["Basic"]
-    - filter: Profile Consistency Checks
+    - filter: Conventional Profile Processing
       filter variables:
       - name: air_temperature
       - name: geopotential_height
@@ -738,7 +801,7 @@ This example runs the basic and SamePDiffT checks on the input data, using the s
 
 .. code-block:: yaml
 
-    - filter: Profile Consistency Checks
+    - filter: Conventional Profile Processing
       filter variables:
       - name: air_temperature
       - name: geopotential_height

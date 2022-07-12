@@ -89,7 +89,7 @@ This filter checks for bias corrected distance between observation value and mod
      - name: sea_surface_height
      threshold wrt background error: true
      threshold: 2.0
-      
+
 
 The first filter would flag temperature observations where :math:`|y-(H(x)+bias)| > \min (` :code:`absolute_threshold`, :code:`threshold` * :math:`{\sigma}_o)`, and
 then the flagged data are rejected due to the filter action being set to :code:`reject`.
@@ -145,7 +145,7 @@ The .yaml file can also contain optional filter parameters, which override the d
 
      - filter: Bayesian Background Check
        filter variables:
-       - name: ice_area_fraction 
+       - name: ice_area_fraction
        prob density bad obs: 1.0
        initial prob gross error: 0.04
        PGE threshold: 0.07
@@ -175,6 +175,92 @@ By default, a filter variable is treated as scalar. But for vectors, such as win
 
 Bayesian Background check currently only works for single-level observations, not profiles.
 
+
+Bayesian Background QC Flags filter
+-----------------------------------
+
+The Bayesian Background QC Flags filter sets Met Office OPS QC flags based on values of probability of gross error (PGE).
+This filter should be invoked after any other filters which modify PGE, such as the Bayesian background check and the buddy check, have been run.
+If the PGE is larger than a chosen threshold then the observation is rejected by setting flags at the observation location.
+Eventually the Met Office QC flags will be replaced with Diagnostic Flags, but the core functionality will remain the same.
+
+The following filter parameters can be set:
+
+- :code:`PGE threshold`: value of PGE above which an observation is rejected.
+
+- :code:`PGE variable name substitutions`: a list of pairs of variable names.
+  The PGE of the second variable in each pair is used to set the QC flags
+  of the first variable; by default this happens for wind u and v components.
+
+An example yaml section is as follows:
+
+.. code-block:: yaml
+
+     - filter: Bayesian Background QC Flags
+       filter variables: [air_temperature, eastward_wind, northward_wind]
+       PGE threshold: 0.8
+       PGE variable name substitutions: {"eastward_wind", "northward_wind"}
+
+Air temperature QC flags are set if the temperature PGE is greater than 0.8.
+Due to the use of the variable name substitutions, both eastward and northward wind flags are set if the northward wind PGE is greater than 0.8.
+This could be useful if the PGE of only one of the wind components has been modified by the QC filters.
+
+
+Bayesian Whole Report Filter
+----------------------------
+
+Synoptic stations typically provide reports at regular intervals. A report is a combination of variables observed by different sensors at a single location. Reports may include some, but not necessarily all, of pressure, temperature, dew point and wind speed and direction.
+
+This filter calculates the probability that a whole report is affected by gross error, through the Bayesian combination of the probability of gross error of individual observations. This is based on the logic that if multiple observations within a report appear dubious based on a Bayesian Background check, it is likely that the whole report is affected by, for example, location error. This filter should be called after the Bayesian Background Check. The probability that whole report is affected by gross error is calculated from all the gross error probability of all the variables in the :code:`filter variables` list, except where the :code:`not_used_in_whole_report` option is specified for a given variable.
+
+Once the probability that whole report is affected by gross error has
+been calculated, it is used to update the probability of gross error
+for each variable in the :code:`filter variables` list. Where this
+updated probability of gross error exceeds the :code:`PGE threshold`,
+the observation is flagged. :code:`PGE threshold` is an optional yaml parameter
+which applies to the whole filter, and has a default value of :code:`0.1`.
+
+Variables can be either scalar or vector (with two Cartesian components, such as the eastward and northward wind components). In
+the latter case the two components need to be specified one after the other in the :code:`filter variables` list, with the second component having the :code:`second_component_of_two option` set to true.
+
+For each variable, the optional parameter :code:`probability_density_bad` (default value :code:`0.1`) is used
+to set the prior probability density of that variable being
+"bad". The filter can also apply a specific prior probability density of bad observations for the following observation types, identified by the integer ID :code:`ObsType@MetaData`:
+
+* Bogus :code:`bogus_probability_density_bad`
+* Synop (SynopManual, SynopAuto, MetarManual, MetarAuto, SynopMob,
+  SynopBufr, WOW) :code:`synop_probability_density_bad`
+
+These are both optional parameters. If they are not specified,
+:code:`probability_density_bad` is used in their place, as for all other observation types.
+
+Example:
+
+.. code-block:: yaml
+
+   - filter: Bayesian Whole Report
+     filter variables:
+     - name: pressure_at_model_surface
+       options:
+         probability_density_bad: 0.1
+         bogus_probability_density_bad: 0.1
+     - name: air_temperature_at_2m
+       options:
+         probability_density_bad: 0.1
+     - name: eastward_wind
+       options:
+         probability_density_bad: 0.1
+         synop_probability_density_bad: 0.1
+         bogus_probability_density_bad: 0.1
+     - name: northward_wind
+       options:
+         not_used_in_whole_report: true
+         second_component_of_two: true
+     - name: relative_humidity_at_2m
+       options:
+         not_used_in_whole_report: true
+         probability_density_bad: 0.1
+     PGE threshold: 0.15
 
 Domain Check Filter
 -------------------
@@ -303,6 +389,9 @@ Example:
     amount: 0.75
     random seed: 125
 
+
+.. _GaussianThinningFilter:
+
 Gaussian Thinning Filter
 ------------------------
 
@@ -341,6 +430,26 @@ The following YAML parameters are supported:
     Defaults to :code:`false` unless the :code:`ops_compatibility_mode` option is enabled, in which
     case it's set to :code:`true`.
 
+  * :code:`partition_longitude_bins_using_mesh`:
+    True to calculate partioning of longitude bins explicitly using horizontal mesh distance.
+    By default this option is set to :code:`false` and calculating the number
+    of longitude bins per latitude bin index involves the integer number of latitude
+    bins. Setting this option to :code:`true` adopts the Met Office OPS method whereby the
+    integer number of latitude bins is replaced, in the calculation of longitude bins, by the
+    Earth half-circumference divided by the horizontal mesh distance.
+
+    Defaults to :code:`false` unless the :code:`ops_compatibility_mode` option is enabled, in which
+    case it's set to :code:`true`.
+
+  * :code:`define_meridian_20000_km`:
+    True to define horizontalMesh with respect to a value for the Earth's meridian distance
+    (half Earth circumference) of exactly 20000.0 km. By default this option is set to :code:`false`
+    and the Earth's meridian is defined for the purposes of calculating thinning boxes as
+    :code:`pi*Constants::mean_earth_rad` ~ 20015.087 km.
+
+    Defaults to :code:`false` unless the :code:`ops_compatibility_mode` option is enabled, in which
+    case it's set to :code:`true`.
+
 - Vertical grid:
 
   * :code:`vertical_mesh`: Cell size in the vertical direction.
@@ -353,8 +462,8 @@ The following YAML parameters are supported:
   * :code:`vertical_max`: Upper bound of the vertical coordinate interval split into cells of size
     :code:`vertical_mesh`. This parameter is rounded upwards to the nearest multiple of
     :code:`vertical_mesh` starting from :code:`vertical_min`. Default: 110,000 (Pa).
-  
-  * :code:`vertical_coordinate`: Name of the observation vertical coordinate. 
+
+  * :code:`vertical_coordinate`: Name of the observation vertical coordinate.
     Default: :code:`air_pressure`.
 
 - Temporal grid:
@@ -373,6 +482,22 @@ The following YAML parameters are supported:
 
   * :code:`category_variable`: Variable storing integer-valued IDs associated with observations.
     Observations belonging to different categories are thinned separately.
+
+- Selection of observations to consider for thinning:
+
+  * :code:`retain_only_if_all_filter_variables_are_valid`: Determines how to treat observations where
+    multiple filter variables are present and their QC flags may differ (for example, a satellite
+    observation with multiple channels).
+
+    + :code:`true`: include an observation in the set of locations to be thinned only if all filter
+      variables have passed QC. For invalid observation locations (selected by a where clause but
+      where one or more filter variables have failed QC) any remaining unflagged filter variables
+      are rejected.
+
+    + :code:`false`: include an observation in the set of locations to be thinned if any filter
+      variable has passed QC.
+
+    Default: :code:`false`.
 
 - Selection of observations to retain:
 
@@ -393,6 +518,16 @@ The following YAML parameters are supported:
     Defaults to :code:`geodesic` unless the :code:`ops_compatibility_mode` option is enabled, in
     which case it's set to :code:`maximum`.
 
+  * :code:`records_are_single_obs`: When set to :code:`true`, thinning is performed on whole records (profiles), rather than treating every observation in every record as an individual observation. (See :ref:`here <radiosonde_example_yaml>` for an example of using the :code:`obs space.obsdatain.obsgrouping` YAML option to group observations into records.) Thus if a record (specifically the earliest non-missing observation in a record) is deemed to be thinned, or accepted, every observation in that record is respectively thinned or accepted. This option does nothing if observations are not grouped into records. Can be used in combination with other options, such as :code:`priority_variable` and :code:`category_variable`. If :code:`category_variable` is not empty and :code:`records_are_single_obs` is :code:`true`, an exception will be thrown if the elements in any profile lie in two or more categories.
+
+  * :code:`select_median`: When set to :code:`true`, retain the observation whose :code:`ObsValue` (or :code:`DerivedObsValue` - the latest modified valid type) is closest to the median value of all observations in the cell. (Cells containing no observations are ignored; option not tested with :code:`priority_variable` or :code:`category_variable` set.)
+  
+  * :code:`min_num_obs_per_bin`: Set to an integer to retain observations only from cells with greater than or equal to this number of observations in the cell. All observations in cells with less than this many observations are rejected. If set to <= :math:`1`, accept the single observation in any cell with only one observation. (Only applies when :code:`select_median: true`; otherwise this option does nothing; if :code:`min_num_obs_per_bin` is not set when :code:`select_median: true`, the default value is :math:`5`.)
+
+  * :code:`tiebreaker_pick_latest`: Set this option to :code:`true` to make the filter select the
+    observation with the later time within a cell, when the distance to the centre of
+    the cell is equal between the observations being compared and the observations have equal priorities.
+
   * :code:`ops_compatibility_mode`: Set this option to :code:`true` to make the filter produce
     identical results as the :code:`Ops_Thinning` subroutine from the Met Office OPS system when
     both are run serially (on a single process).
@@ -402,6 +537,10 @@ The following YAML parameters are supported:
     - The :code:`round_horizontal_bin_count_to_nearest` option is set to :code:`true`.
 
     - The :code:`distance_norm` option is set to :code:`maximum`.
+
+    - The :code:`partition_longitude_bins_using_mesh` option is set to :code:`true`.
+
+    - The :code:`define_meridian_2000_km` option is set to :code:`true`.
 
     - Bin indices are calculated by rounding values away from rather towards zero. This can alter
       the bin indices assigned to observations lying at bin boundaries.
@@ -647,22 +786,25 @@ Stuck Check Filter
 
 This filter thins observations by iterating over them by station and flagging each observation that
 is part of a "streak" of sequential observations. The first condition for a "streak" is that the
-observational values are the same over a certain count of sequential observations. The second
+observation values are the same over a certain count of sequential observations. The second
 condition is either (a) that this set of observations is longer than a user-defined duration or (b)
 that it covers the full trajectory of a station.
-The observational values which are used for evaluation of whether a "streak" exists are the
+
+Alternatively, a percentage can be specified, where if observation values are the same over more than this percentage of all non-missing values in a record, they are flagged as a streak. See :ref:`here <radiosonde_example_yaml>` for an example of using the :code:`obs space.obsdatain.obsgrouping` YAML option to group observations into records. With no obsgrouping, the full set of valid observations counts as a single record.
+
+The observation values which are used for evaluation of whether a "streak" exists are the
 :code:`filter variables`. If multiple :code:`filter variables` are present, then each variable is
 considered independently. In other words the filter flags observations based on each variable,
-independent to the other variables.
-the original full track for each filter variable. Any observations that form streaks in at least one
+independent to the other variables. Any observations that form streaks in at least one
 variable will be flagged.
+
 The following YAML parameters are supported:
 
 * :code:`filter variables`: the variables to use to classify observations as "stuck".
   This required parameter must be entered as a string vector.
 
 * :code:`number stuck tolerance`: the maximum number of observations in a row with the same
-  observational value before its classification as a potential streak is made.
+  observation value before its classification as a potential streak is made.
   This required parameter must be entered as a non-negative integer.
 
 * :code:`time stuck tolerance`: the maximum time duration before a potential streak is rejected
@@ -670,6 +812,12 @@ The following YAML parameters are supported:
   :code:`number stuck tolerance` is exceeded and all of the station's observations are part of the
   same streak, :code:`time stuck tolerance` is ignored and all of the observations are rejected
   regardless of the duration.
+
+* :code:`percentage stuck tolerance`: the maximum percentage out of all non-missing values in each record, above which this many observations with the same value in a row are rejected as a streak. The percentage is first converted to a number for each record; if the number is less than 2, no observations are flagged in that record (otherwise every observation would be flagged as a streak of 1).
+
+If :code:`percentage stuck tolerance` is defined, :code:`number stuck tolerance` and :code:`time stuck tolerance` must NOT be defined.
+
+If :code:`number stuck tolerance` and :code:`time stuck tolerance` are defined, :code:`percentage stuck tolerance` must NOT be defined.
 
 Example 1
 ^^^^^^^^^
@@ -700,9 +848,24 @@ as "stuck": air temperature and air pressure.
     number stuck tolerance: 2
     time stuck tolerance: PT2H
 
-Say we have 5 observations each taken an hour apart. Let the air temperature values equal: 274, 274
+Say we have 5 observations each taken an hour apart. Let the air temperature values equal: 274, 274,
 274, 275, 275; and the air pressure values equal 4, 4, 5, 5, 5. In this case, all of the
 observations would be rejected.
+
+Example 3
+^^^^^^^^^
+
+With the following parameters, a "streak" of observations is defined as sequential observations with
+identical air temperature measured values. A streak is rejected if it is longer than 50 % of the record.
+
+.. code-block:: yaml
+
+  - filter: Stuck Check:
+    filter variables: [air_temperature]
+    percentage stuck tolerance: 50
+    
+Say we have 5 observations in one record: 274, 274, 274, 275, 275; and 4 in another: 274, 274, 275, 275. The first 3 observations in the first record form a streak and are rejected (3 is greater than 50 % of 5). They are the only ones rejected. This is because the next record comprises 2 streaks each 2 observations long, and 2 is exactly 50 % of 4, not greater than 50 % of 4; therefore neither clear the threshold for rejection.
+
 
 Difference Check Filter
 -----------------------
@@ -772,6 +935,113 @@ The options for YAML include:
 
 A special case exists for when the independent variable is 'distance', meaning the dx is computed from the difference of latitude/longitude pairs converted to distance.
  Additionally, when the independent variable is 'datetime' and the dependent variable is set to 'distance', the derivative filter becomes a speed filter, removing moving observations when the horizontal speed is outside of some range.
+
+
+
+.. _spikeandstep-check-filter:
+
+Spike and Step Check Filter
+---------------------------
+
+This filter goes through each record and flags observations where the value of the dependent variable (as specified by the user) is classified as a spike or step relative to adjacent points along the (user-specified) independent variable, e.g. profiles of ocean temperature against depth. (Only tested for data grouped into records - set grouping with the :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option. An example of its use can be found in the :ref:`Profile consistency checks <profconcheck_filtervars>` section.)
+
+A spike is a point whose dependent variable value differs from the adjacent points on either side of it by more than a given tolerance. A step is when two adjacent points' dependent variable values differ from each other by more than the tolerance. The tolerance can vary along the independent variable (more below). Points only count as spikes or steps if they are isolated, and not part of a trend spanning multiple points. A spike results in the point in question being flagged; a step results in both points on either side of the step being flagged.
+
+Required parameters:
+
+- :code:`independent`: the independent (:math:`x`) variable, e.g. depth in ocean profiles. (Must be float type.)
+
+- :code:`dependent`: the dependent (:math:`y`) variable, e.g. temperature or salinity in ocean profiles. (Must be float type.) NB: only one of each must be given.
+
+- :code:`tolerance.nominal value`: the tolerance value where :math:`x = 0`. The tolerance is the value against which adjacent differences :math:`dy` in the dependent variable are compared, to determine whether points are spikes or steps.
+
+Optional parameters:
+
+- :code:`count spikes`: If false, do not count spikes. Default: true.
+
+- :code:`count steps`: If false, do not count steps. Default: true.
+
+- :code:`tolerance.threshold`: For checking conditions for a large spike or large consistent gradient. The smaller :code:`tolerance.threshold` is, the more symmetrical a spike must be to be considered a spike, and the more tightly the point must be aligned with the points on either side to be considered a consistent gradient (in which case the point would not be considered a spike). Default: :math:`0.5`.
+
+- :code:`tolerance.gradient`: :math:`dy/dx` tolerance. If a point doesn't meet the conditions for a large spike, it may yet count as a small spike if its gradient on either side exceeds the gradient tolerance (plus other conditions). Default: numeric maximum, i.e. nothing can exceed the gradient tolerance - small spikes are not counted if this option is left out.
+
+- :code:`tolerance.gradient x resolution`: precision of :math:`dx` when calculating :math:`dy/dx`. Default: epsilon, i.e. the smallest possible to avoid a divide by :math:`0` error.
+
+- :code:`tolerance.factors` and :code:`tolerance.x boundaries`: vector floats of respectively the multiplier factors and :math:`x`-points which when joined by straight line segments, determine the tolerance against :math:`x`: tolerance equals nominal tolerance multiplied by this line segment function thus defined. Either both :code:`factors` and :code:`x boundaries` must be given and of the same size, or neither given. :code:`x boundaries` must be given in order of increasing :math:`x` (and :code:`factors` must match up with them). Default: nominal tolerance applies across whole :math:`x` domain if neither are given.
+
+- :code:`boundary layer.x range`: a 2-element vector :code:`[min, max]` defining the :math:`x`-domain, :code:`min`:math:`\le x <`:code:`max`, such that within it, the tolerance is modified (see :code:`step tolerance range` below). Default: :code:`{0, 0}`.
+
+- :code:`boundary layer.step tolerance range`: if :math:`x` is within the boundary layer defined by :code:`boundary layer.x range`, then if the adjacent difference :math:`dy` is within the range defined by this 2-element vector :code:`step tolerance range`, it cannot count as a step. Default: :code:`{0, 0}`.
+
+- :code:`boundary layer.maximum x interval`: a 2-element vector [within, outside] such that if the spacing :math:`dx` between two points is greater than the first element (when :math:`x` within the :code:`boundary layer.x range`) or the second (when :math:`x` outside the :code:`boundary layer.x range`), then ignore the corresponding :math:`dy`; do not check if it is a spike or step. Default: {numeric max, numeric max}, i.e. check every observation.
+
+
+A call to Spike and Step Check MUST be preceded by creating Diagnostic Flags for the dependent variables in question, and the flags MUST be named "spike" and "step":
+
+.. code-block:: yaml
+
+  - filter: Create Diagnostic Flags
+    filter variables:
+      - name: ocean_temperature
+      - name: ocean_salinity
+    flags:
+    - name: spike
+      initial value: false
+    - name: step
+      initial value: false
+
+This is because the Spike and Step Check sets these flags separately within the code itself. The flags thus set can then be used in the YAML, e.g. to count how many spikes and steps are in each record, and reject entire records whose sum of spikes and steps exceeds a given threshold. An example of this can be found in `qc_spike_and_step_check.yaml <https://github.com/JCSDA-internal/ufo/blob/develop/test/testinput/qc_spike_and_step_check.yaml>`_
+
+An example of applying the Spike and Step Check filter:
+
+.. code-block:: yaml
+
+  - filter: Spike and Step Check
+    filter variables:
+      - name: ObsValue/ocean_temperature
+    dependent: ObsValue/ocean_temperature  # dy/
+    independent: MetaData/ocean_depth      # dx
+    count spikes: true
+    count steps: true
+    tolerance:
+      nominal value: 10  # K, in the case of temperature (not real value)
+      gradient: 0.1      # K/m - if dy/dx greater, could be a spike
+      gradient x resolution: 10       # m - can't know dx to better precision
+      factors: [1.0, 1.0, 0.5, 0.5, 0.1]        # multiply tolerance, for ranges bounded by...
+      x boundaries: [0, 200, 300, 600, 600] # ...these values of x (depth in m)
+    boundary layer:
+      x range: [0.0, 300.0]               # when bounded by these x values (depth in m)...
+      step tolerance range: [-1.0, -2.0]  # ...relax tolerance for steps in boundary layer...
+      maximum x interval: [50.0, 100.0]   # ...and ignore level if dx greater than this
+    action:
+      name: reject
+
+In this case, both spikes and steps are counted for :code:`ocean_temperature` profiles, and rejected for :code:`ocean_temperature` only, since that is the only :code:`filter variable` listed. If other filter variables were listed, they would all be rejected at locations where spikes and steps in :code:`ocean_temperature` (the dependent variable) are found. If looking for spikes and steps in other variables, the Spike and Step Check needs to be called again on each of them as the dependent variable separately.
+
+.. figure:: images/spikestepQC_img.png
+   :alt: The tolerance function specified by 'tolerance.factors' and 'tolerance.x boundaries': straight line segments joining (0, 1.0), (200, 1.0), (300, 0.5), (600, 0.5), (600, 0.1), and constant at 0.1 subsequently.
+
+   The tolerance function specified by :code:`tolerance.factors` and :code:`tolerance.x boundaries`: straight line segments joining :math:`(0, 1.0)`, :math:`(200, 1.0)`, :math:`(300, 0.5)`, :math:`(600, 0.5)`, :math:`(600, 0.1)`, and constant at :math:`0.1` subsequently.
+
+The tolerance value as a function of :math:`x`, is the :code:`nominal value` (:math:`10` K) multiplied by the tolerance factor function. In this example, the filter is more sensitive to spikes and steps the deeper you go. Note that tolerance function is constant at the last value in :code:`factors` when :math:`x` exceeds the last value in :code:`x boundaries`. For jumps in tolerance such as at :math:`x = 600` m, the value on the left hand side (smaller :math:`x`) is used.
+
+The temperature gradient (in K/m) is computed for each profile, and any point that does not count as a large spike but whose gradient on either side exceeds the gradient tolerance :math:`0.1` K/m (amongst other conditions), is counted as a small spike. (The flagging does not distinguish between large and small spikes, they are all spikes.) For any points separated by less than :math:`10` m (:code:`gradient x resolution`), the gradient is computed as the dependent variable adjacent difference :math:`dy` divided by :math:`10` m, preserving the sign of :math:`dx`.
+
+The boundary layer is defined by :code:`boundary layer.x range` to be :code:`0`:math:`\le x <`:code:`300` m. When :math:`x` is within the boundary layer, a step is unflagged if :math:`dy` is within the :code:`step tolerance range` multiplied by the tolerance function - as shown in the figure below:
+
+.. figure:: images/spikestepQC_img2.png
+   :alt: Adjacent points with dy exceeding the tolerance (positive or negative) are flagged as steps; but if x is within the boundary layer, the tolerance to steps is relaxed by the factors given in 'step tolerance range'.
+
+   Adjacent points with :math:`dy` exceeding the tolerance (positive or negative) are flagged as steps; but if :math:`x` is within the boundary layer, the tolerance to steps is relaxed by the factors given in :code:`step tolerance range`.
+
+If two adjacent points have :math:`y` value differing by more than the tolerance at their level :math:`x`, and if neither is a spike nor part of a large consistent gradient, they are flagged as a step (i.e. if :math:`dy` is in the dark grey region). However, the condition is more lenient within the boundary layer, :code:`0`:math:`\le x <`:code:`300` m: the points are accepted as not a step if their :math:`dy` falls within the light grey region, which is :math:`-1` to :math:`-2` times the tolerance (:code:`boundary layer.step tolerance range: [-1.0, -2.0]`).
+
+Additionally, if the spacing :math:`dx` between adjacent points is :math:`> 50` m while :math:`x` within the boundary layer, then the corresponding :math:`dy` is skipped when checking for spikes and steps. That is, points spaced too far apart cannot be confidently flagged as spikes or steps. Outside of the boundary layer, the condition is applied when :math:`dx > 100` m, as :code:`boundary layer.maximum x interval: [50.0, 100.0]`.
+
+The reason for the :code:`boundary layer` options section is to accomodate a thermocline or halocline in the ocean, where a large negative gradient is expected and is not cause to flag a step, unless very large indeed, or large and positive. There is no impact on spike flagging. If the section is left out, the rest of the code applies, there is no relaxation of tolerance conditions anywhere.
+
+Note that this filter does not currently support use of :ref:`"where" clauses <where-statement>`.
+
 
 Track Check Filter
 ------------------
@@ -854,7 +1124,7 @@ The following YAML parameters are supported:
   assumed to have been taken by a single station.
 
   Note: the variable used to group observations into records can be set with the
-  :code:`ObsSpace.ObsDataIn.obsgrouping.group_variable` YAML option.
+  :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option.
 
 Example:
 
@@ -930,6 +1200,10 @@ The following YAML parameters are supported:
   The supported sources are: LNDSYN, SHPSYN, BUOY, MOBSYN, OPENROAD, TEMP, BATHY, TESAC, BUOYPROF,
   LNDSYB, and SHPSYB.
 
+* :code:`records_are_single_obs`: If true, then treat each record as a single location within the track - accept or reject entire records according to the above criteria. Default: false. If option set to true while observations are not grouped into records, an error will be thrown. Set grouping with the :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option. An example of its use can be found in the :ref:`Profile consistency checks <profconcheck_filtervars>` section.
+
+* :code:`station_id_variable`: The variable that defines the tracks - note that this may be different from the obs grouping variable(s) that define records (there may be multiple records per track). If not given and if :code:`records_are_single_obs: true` OR if not given while not grouped into records at all, then all the observations (records or individual) are treated as belonging to a single continuous track. However, if not given while grouped into records but :code:`records_are_single_obs: false`, then each record is treated as a separate track.
+
 Example:
 
 .. code-block:: yaml
@@ -939,6 +1213,9 @@ Example:
     spatial resolution (km): .1
     max speed (m/s): 3.0
     rejection threshold: 0.5
+    station_id_variable:
+      name: station_id@MetaData
+    records_are_single_obs: true
 
 Met Office Buddy Check Filter
 -----------------------------
@@ -949,7 +1226,7 @@ The YAML parameters supported by this filter are listed below.
 
 - General parameters:
 
-  - :code:`filter variables` (a standard parameter supported by all filters): List of the variables to be checked. Currently only surface (single-level) variables are supported. Variables can be either scalar or vector (with two Cartesian components, such as the eastward and northward wind components). In the latter case the two components need to be specified one after the other in the :code:`filter variables` list, with the first component having the :code:`first_component_of_two` option set to true. Example:
+  - :code:`filter variables` (a standard parameter supported by all filters): List of the variables to be checked.  Surface data, single-level and multi-level variables. are supported. Variables can be either scalar or vector (with two Cartesian components, such as the eastward and northward wind components). In the latter case the two components need to be specified one after the other in the :code:`filter variables` list, with the first component having the :code:`first_component_of_two` option set to true. Example:
 
     .. code:: yaml
 
@@ -979,6 +1256,10 @@ The YAML parameters supported by this filter are listed below.
     Default: empty list.
 
 - Buddy pair identification:
+
+  - :code:`num_levels`: Number of levels.  Optional parameter.
+
+    This would not be specified for surface fields. It should be set to 1 for single level fields and be set to >1 for multi-level fields (i.e. corresponding to the number of levels).
 
   - :code:`search_radius`: Maximum distance between two observations that may be classified as buddies, in km. Default: 100 km.
 
@@ -1025,6 +1306,8 @@ The YAML parameters supported by this filter are listed below.
 
   - :code:`temporal_correlation_scale`: Temporal correlation scale. Default: PT6H.
 
+  - :code:`vertical_correlation_scale`: Vertical correlation scale which relates to the ratio of pressures.  Default: 6.
+
   - :code:`damping_factor_1` Parameter used to "damp" gross error probability updates using method 1 described in section 3.8 of the OPS Scientific Documentation Paper 2 to make the buddy check better-behaved in data-dense areas. See the reference above for the full description. Default: 1.0.
 
   - :code:`damping_factor_2` Parameter used to "damp" gross error probability updates using method 2 described in section 3.8 of the OPS Scientific Documentation Paper 2 to make the buddy check better-behaved in data-dense areas. See the reference above for the full description. Default: 1.0.
@@ -1064,6 +1347,8 @@ Implementation Notes
 ^^^^^^^^^^^^^^^^^^^^
 
 The implementation of this filter consists of four steps: sorting, buddy pair identification, PGE update and observation flagging. Observations are grouped into zonal bands and sorted by (a) band index, (b) longitude, (c) latitude, in descending order, (d) pressure (if the :code:`sort_by_pressure` option is on), and (e) datetime. Observations are then iterated over, and for each observation a number of nearby observations (lying no further than :code:`search_radius`) are identified as its buddies. The size and "diversity" of the list of buddy pairs can be controlled with the :code:`max_total_num_buddies`, :code:`max_num_buddies_from_single_band` and :code:`max_num_buddies_with_same_station_id` options. Subsequently, the PGEs of the observations forming each buddy pair are updated. Typically, the PGEs are decreased if the signs of the innovations agree and increased if they disagree. The magnitude of this change depends on the background error correlation between the two observation locations, the error estimates of the observations and background values, and the prior PGEs of the observations: the PGE change is the larger, the stronger the correlation between the background errors and the narrower the error margins. Once all buddy pairs have been processed, observations whose PGEs exceed the specified :code:`rejection_threshold` are flagged.
+
+In calculation of the background error correlation, for both surface and multi-level fields, a vertical correlation of 1 is assumed.  For single-level data, the estimate of the background error correlation depends upon the ratio of pressures between each pair of observations.
 
 History Check Filter
 --------------------
@@ -1155,12 +1440,18 @@ range present in the auxiliary obs space).
            datetimes: [ '2010-01-01T00:00Z', '2010-01-01T01:30Z', '2010-01-01T03:00Z']
          obs errors: [1.0]
 
+.. _VariableAssignmentFilter:
+
 Variable Assignment Filter
 --------------------------
 
 This "filter" (it is not a true filter; rather, a "processing step") assigns specified values to
 specified variables at locations selected by the :code:`where` statement, or at all locations if
-the :code:`where` keyword is not present.
+the :code:`where` keyword is not present. The :code:`where operator` parameter can be used to
+specify the logical operator used to combine conditions used in the :code:`where` statement.
+The possible values are :code:`and` (the default) and :code:`or`.
+Note that it is possible to use the :code:`where operator` option without the :code:`where` statement.
+The option has no impact in that case.
 
 The assigned values can be constants, existing ObsSpace variables or vectors generated by
 ObsFunctions. If the variables don't exist yet, they are created; in this case locations not
@@ -1266,6 +1557,52 @@ Copy the variable :code:`height@MetaData` to :code:`geopotential_height@DerivedM
       - name: geopotential_height@DerivedMetaData
         type: float  # type must be specified if the variable doesn't already exist
         source variable: height@MetaData
+
+Create Diagnostic Flags Filter
+------------------------------
+
+This "filter" (it is not a true filter; rather, a "processing step") makes it possible to define new diagnostic flags and to reinitialize existing ones.
+
+Diagnostic flags are stored in Boolean ObsSpace variables. A diagnostic flag *Flag* associated with a simulated variable *var* is stored in the variable :code:`DiagnosticFlags/Flag/var`.
+
+The diagnostic flags to create or reinitialize are specified in the :code:`flags` list in the
+YAML file. Each element of this list can contain the following keys:
+
+- :code:`name` (required): The flag name. Conventionally, flag names follow the CamelCase naming convention (like group names).
+- :code:`initial value`: Initial value for the flag (either :code:`true` or :code:`false`). If not specified, defaults to :code:`false`.
+- :code:`force reinitialization`: Determines what happens if the flag already exists. By default, the flag is not reinitialized, i.e. its current value is preserved. Set :code:`force reinitialization` to :code:`true` to reset the flag to :code:`initial value`.
+
+In addition, the filter recognizes the standard filter options :code:`filter variables` and :code:`defer to post`, but not :code:`where` or :code:`action`.
+
+Setting and unsetting of diagnostic flags is normally performed using actions on a given filter; examples can be seen in :ref:`Filter Actions <filter-actions>`.
+
+Example 1
+^^^^^^^^^
+
+The following YAML snippet creates diagnostic flags :code:`Duplicate` and :code:`ExtremeValue` for all simulated variables and initializes them to :code:`false` unless they already exist, in which cause their current values are preserved.
+
+.. code:: yaml
+
+  - filter: Create Diagnostic Flags
+    flags:
+    - name: Duplicate
+    - name: ExtremeValue
+
+For instance, if the list of simulated variables in the ObsSpace is :code:`[air_temperature, relative_humidity]`, the filter will create the following Boolean variables: :code:`DiagnosticFlags/Duplicate/air_temperature`, :code:`DiagnosticFlags/Duplicate/relative_humidity`, :code:`DiagnosticFlags/ExtremeValue/air_temperature` and :code:`DiagnosticFlags/ExtremeValue/relative_humidity`.
+
+Example 2
+^^^^^^^^^
+
+The following YAML snippet creates a diagnostic flag :code:`OriginallyMeasuredInMmHg` for the simulated variable :code:`surface_pressure` and initializes it to :code:`true`, overwriting any current values if this flag already exists:
+
+.. code:: yaml
+
+  - filter: Create Diagnostic Flags
+    filter variables: [surface_pressure]
+    flags:
+    - name: OriginallyMeasuredInMmHg
+      initial value: true
+      force reinitialization: true
 
 RTTOV 1D-Var Check (RTTOVOneDVar) Filter
 ----------------------------------------
@@ -1568,3 +1905,95 @@ Example
 
     - filter: Process AMV QI
       number of generating apps: 4
+
+
+Satname Filter
+--------------
+
+This filter creates a string variable that makes it simpler to
+identify Satwind (AMV) observations by combining satellite and channel information. 
+This is useful for later processing where we want to apply filters to subsets of observations.
+
+To identify the type of motion that has been tracked, AMV BUFR observations
+are supplied with a channel central frequency (Hz) and a wind computation method
+as described in code table 002023 below:
+
+==== ================ =========================================================
+Num  Method           Description
+==== ================ =========================================================
+  0  Reserved         
+  1  Infrared         Motion observed in the infrared channel
+  2  Visible          Motion observed in the visible channel
+  3  Vapour cloud     Motion observed in the water vapour channel
+  4  Combination      Motion observed in a combination of spectral channels
+  5  Vapour clear     Motion observed in the water vapour channel in clear air
+  6  Ozone            Motion observed in the ozone channel
+  7  Vapour           Motion observed in water vapour channel (cloud or clear)
+  13 Root-mean-square 
+==== ================ =========================================================
+
+The most common use of the wind computation method is to distinguish between clear-sky and
+cloudy water vapour targets.
+
+This filter combines this channel information, together with the satellite name, to
+create a string ``MetaData/satwind_id`` that defines the satellite/channel combination of each observation.
+We also output a diagnostic variable ``Diag/satwind_id`` which provides information on unidentified
+satellites or channels.
+
+Required variables:
+
+* ``MetaData/sensor_central_frequency``
+* ``MetaData/satellite_identifier``
+* ``MetaData/wind_computation_method``
+
+Outputs variables:
+
+* ``MetaData/satwind_id``
+* ``Diag/satwind_id``
+
+This filter requires the following YAML parameters:
+
+* :code:`min WMO Satellite id`: Minimum WMO platform number to consider
+* :code:`max WMO Satellite id`: Maximum WMO platform number to consider
+* :code:`min frequency`: For each channel, the minimum central frequency (Hz) 
+* :code:`max frequency`: For each channel, the maximum central frequency (Hz) 
+* :code:`wind channel`: For each channel, the string name to call this channel
+* :code:`Sat ID`: For each satellite, the WMO identifier for each platform
+* :code:`Sat name`: For each satellite, the string name for this platform
+
+This following YAML parameter is optional:
+
+* :code:`satobchannel`: Wind computation method number, ignored if none.
+
+Example:
+
+.. code:: yaml
+
+  - filter: satname
+    SatName assignments:
+    - min WMO Satellite id: 1
+      max WMO Satellite id: 999
+      Satellite_comp:
+      - satobchannel: 1
+        min frequency: 2.6e+13
+        max frequency: 2.7e+13
+        wind channel: ir112
+      - satobchannel: 1
+        min frequency: 7.5e+13
+        max frequency: 8.2e+13
+        wind channel: ir38
+      Satellite_id:
+      - Sat ID: 270
+        Sat name: GOES16
+
+This yaml will attempt to identify two infrared channels with computation method
+value of 1 and central frequencies falling between the min and max frequency bounds.
+If observations are identified from GOES-16 (platform number 270) they are also labelled.
+This will fill ``MetaData/satwind_id`` with values of "GOES16ir112","GOES16ir38" if these are present
+in the observations.
+
+If either the satellite or channel are not identified, then ``MetaData/satwind_id`` is set to
+"\*** MISSING \***". To help track down why observations are set to missing, ``Diag/satwind_id``
+has the form ``id<satellite identifier>_comp<cloud motion method>_freq<central frequency>``.
+For example, if the satellite is identified but the channel is not "GOES16_comp3_freq0.484317e14",
+if the satellite is not identified but the channel is "id270ir112".

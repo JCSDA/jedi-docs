@@ -4,7 +4,7 @@
 =================
 Relative Humidity
 =================
-Performs a variable conversion from specific_humidity, temperature, and
+Performs a variable conversion from specific_humidity (or mixing ratio), temperature, and
 pressure to relative humidity. The newly calculated variable is included in the same
 obs space.
 
@@ -23,11 +23,18 @@ obs space.
 - specific_humidity (:math:`q`)
 - air_temperature (:math:`T`)
 - air_pressure or surface_pressure (:math:`P`)
+- humidity_mixing_ratio (:math:`w`) (needed when using Method: UKMOmixingratio)
 
 **Method(s) available**
 
-Only one method is avalable, shared accross all center options. (Any setting of :code:`METHOD` will result
-in using this unique method.) Setting :code:`METHOD` can be omitted.
+Various methods are available, shared across all center options. (Any setting of :code:`METHOD`
+will result in using formulations associated with the method.)
+Setting :code:`METHOD` can be omitted.
+
+options:
+ - methodDEFAULT 
+ - methodUKMOmixingratio
+ - methodUKMO
 
 The relative humidity (:math:`Rh`) is retrieved as follow:
 

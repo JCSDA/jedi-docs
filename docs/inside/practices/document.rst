@@ -11,6 +11,8 @@ There are two principle mechanisms for documenting code in JEDI.
 
 1. Adding comments directly into the source code using :doc:`Doxygen <../developer_tools/doxygen>`
 
-2. Writing brief descriptions of code features for publication here, in the :doc:`JEDI Documentation <../../index>`.  This is achieved by means of a python package called :doc:`Sphinx <../developer_tools/getting-started-with-sphinx>`.
+2. Writing brief descriptions of code features for publication here, in the :doc:`JEDI Documentation <../../index>`.
+This is achieved by means of a python package called :doc:`Sphinx <../developer_tools/getting-started-with-sphinx>`.
+You can find more details about creating documentation `here <../../working-practices/creating-docs.html>`_
 
 Please follow the links above for more information on how to write documentation for use with both Doxygen and Sphinx.

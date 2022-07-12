@@ -15,13 +15,54 @@ Grody et al. (2001), Determination of precipitable water and cloud liquid water 
 Required yaml parameters:
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Channel numbers corresponding to 23.8 GHz to which the retrieval of cloud liquid water applies.
+:code:`clwret_types`
+  Names of the data group used to retrieve the cloud liquid water. Values could be [ObsValue], [HofX] or [ObsValue, HofX].
+
+  
+Optional yaml parameters:
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 :code:`clwret_ch238`
-  Channel number of brightness temperature from the 23.8 GHz Brightness Temperature.
+  Channel number corresponding to 23.8 GHz channel .
 
 :code:`clwret_ch314`
-  Channel number of brightness temperature from the 31.4 GHz Brightness Temperature.
+  Channel number corresponding to 31.4 GHz channel.
+
+:code:`bias_application`
+  Name of the data group to which the bias correction is applied. Could be ObsValue or HofX (default is HofX).
+
+:code:`test_bias`
+  Name of the bias correction group used to replace the default group (default is ObsBiasData). Could be a group name from the input file. This option is usually used for testing/validation purposes.
+
+The following parameters are intended for cloud index for some sensors, e.g., GMI.
+
+:code:`clwret_ch37h`
+  Channel number corresponding to 37H channel. 
+
+:code:`clwret_ch37v`
+  Channel number corresponding to 37V channel. 
+
+The following parameters are intended for cloud index for some sensors, e.g., MHS
+
+:code:`clwret_ch89h`
+  Channel number corresponding to 89H channel. 
+
+:code:`clwret_ch166v`
+  Channel number corresponding to 166V channel. 
+
+The following parameters are intended for cloud index for some sensors, e.g., AMSR2
+
+:code:`clwret_ch18h`
+  Channel number corresponding to 18H channel.
+
+:code:`clwret_ch18v`
+  Channel number corresponding to 18V channel .
+
+:code:`clwret_ch36h`
+  Channel number corresponding to 36H channel . 
+
+:code:`clwret_ch36v`
+  Channel number corresponding to 36V channel. 
 
 Example configuration:
 ~~~~~~~~~~~~~~~~~~~~~~~~

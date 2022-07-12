@@ -301,7 +301,7 @@ the :code:`streams.atmosphere` file used to configure the forecast as follows
 The :code:`output_interval` and :code:`clobber_mode` should be modified to fit the user's
 application in terms of the forecast file writing interval and need to overwrite existing files,
 respspectively. For a working example of using 2-stream input in MPAS-JEDI, users are referred to
-the :doc:`JEDI-MPAS HofX tutorial <../../../learning/tutorials/level2/hofx-mpas>`. Step 4 of that
+the `JEDI-MPAS HofX tutorial <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.3.0/learning/tutorials/level2/hofx-mpas.html>`_. Step 4 of that
 tutorial shows how to read a file with an "mpasout." prefix that was written using the "da_state"
 output stream. The same file is used both for the "input" input stream and for the
 :code:`State::read` method.

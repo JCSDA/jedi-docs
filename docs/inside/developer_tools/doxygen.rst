@@ -25,7 +25,7 @@ Also, as the project proceeds, the JEDI team will provide web pages where you ca
 Installing Doxygen
 ------------------
 
-Doxygen is included in the JEDI :doc:`CharlieCloud <../../using/jedi_environment/charliecloud>` and :doc:`Singularity <../../using/jedi_environment/singularity>` containers and may already be installed on your system.  To check whether it is already installed in your environment, just type this at the command line:
+Doxygen is included in the JEDI containers and may already be installed on your system. To check whether it is already installed in your environment, just type this at the command line:
 
 .. code-block:: bash
 
@@ -43,9 +43,16 @@ Alternatively, if you have a Mac, you can install Doxygen with :doc:`Homebrew <h
 
 .. _graphviztab:
 
-Depending on how you install Doxygen, you may be prompted for optional add-ons, including **Doxywizard** and **Graphviz**.  We recommend that you **say yes to both**.  `Doxywizard <http://www.doxygen.nl/manual/doxywizard_usage.html>`_ is a convenient Graphical User Interface (GUI) for configuring and running Doxygen and `Graphviz <https://www.graphviz.org/>`_ is a plotting package that will enable you to generate inheritance diagrams and call trees.
+Depending on how you install Doxygen, you may be prompted for optional add-ons,
+including **Doxywizard** and **Graphviz**.  We recommend that you **say yes to both**.
+`Doxywizard <http://www.doxygen.nl/manual/doxywizard_usage.html>`_ is a convenient Graphical User
+Interface (GUI) for configuring and running Doxygen and `Graphviz <https://www.graphviz.org/>`_ is
+a plotting package that will enable you to generate inheritance diagrams and call trees.
 
-In particular, Graphviz includes an interpreter for the `DOT <https://graphviz.gitlab.io/_pages/doc/info/lang.html>`_ graphical display language.  A dot interpreter might already be installed on your system.  For example, if you installed doxygen via Homebrew or if you use the JEDI :doc:`Charliecloud <../../using/jedi_environment/charliecloud>` or :doc:`Singularity <../../using/jedi_environment/singularity>` container, you may not need to install anything else.  To check, try running:
+In particular, Graphviz includes an interpreter for the `DOT <https://graphviz.gitlab.io/_pages/doc/info/lang.html>`_ graphical display language.
+A dot interpreter might already be installed on your system.
+For example, if you installed doxygen via Homebrew or if you use the JEDI container,
+you may not need to install anything else.  To check, try running:
 
 .. code-block:: bash
 

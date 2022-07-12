@@ -11,6 +11,8 @@ Symbol glossary
 
    * - Symbol
      - Name
+   * - :math:`C_{p}`
+     - specific heat capacity for dry air
    * - :math:`e`
      - water vapor pressure
    * - :math:`e_{sat}`
@@ -19,6 +21,8 @@ Symbol glossary
      - standard acceleration due to gravity
    * - :math:`P`
      - pressure
+   * - :math:`P_{F}`
+     - reference surface pressure
    * - :math:`q`
      - specific humidity
    * - :math:`q_{sat}`
@@ -47,6 +51,8 @@ Symbol glossary
      - water vapor mixing ratio
    * - :math:`w_{sat}`
      - saturated water vapor mixing ratio
+   * - :math:`\theta`
+     - potential temperature
    * - :math:`\epsilon`
      - ratio of the gas constant for dry air (:math:`R_{d}`) over the gas constant for water vapor (:math:`R_{v}`)
 

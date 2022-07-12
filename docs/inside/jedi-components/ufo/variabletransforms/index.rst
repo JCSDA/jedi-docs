@@ -85,6 +85,13 @@ The variable transforms available are:
 
    transforms/wind
 
+**PotentialTemperature**
+
+.. toctree::
+   :maxdepth: 2
+
+   transforms/potentialtemperature
+
 Formulations
 ============
 

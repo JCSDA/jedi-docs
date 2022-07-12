@@ -15,7 +15,7 @@ Traditionally, code retrieving the values of options controlling the behavior of
     geometry:
       num lats: 5
       num lons: 10
-      level altitudes in km: {0.5, 1, 2, 4, 8, 16}
+      level altitudes in km: [0.5, 1, 2, 4, 8, 16]
 
 and the implementation of the OOPS :code:`Geometry` interface for that model could retrieve the values of these options as follows:
 
@@ -102,10 +102,162 @@ and
     processZonalBand(i);
   }
 
+More Complex Types
+------------------
+
+In the preceding example, we have already seen that parameters can store not only values of "primitive" types (e.g. :code:`int`), but also more complex objects, such as vectors. Other supported types include:
+
+* **Strings**. For instance, the parameter
+
+  .. code-block:: c++
+
+    oops::RequiredParameter<std::string> filename{"filename", this};
+
+  can store the value of the :code:`filename` key from the following YAML file:
+
+  .. code-block:: yaml
+
+    filename: testinput/sondes.nc4
+
+* **Dates** and **durations**. For instance, the parameters
+
+  .. code-block:: c++
+
+    oops::RequiredParameter<util::DateTime> windowBegin{"window begin", this};
+    oops::RequiredParameter<util::Duration> windowLength{"window length", this};
+
+  can store the date and duration loaded from the following YAML file:
+
+  .. code-block:: yaml
+
+    window begin: 2010-01-01T21:00:00Z
+    window length: PT6H
+
+  If the :code:`window begin` or :code:`window length` YAML keys are not set to valid ISO 8601 dates or durations, :code:`validateAndDeserialize()` will throw an exception.
+
+* **Maps**. For instance, the parameter
+
+  .. code-block:: c++
+
+    oops::RequiredParameter<std::map<std::string, double>> constants{"constants", this};
+
+  can store the key-value pairs loaded from the :code:`constants` section of the following YAML file:
+
+  .. code-block:: yaml
+
+    constants:
+      pi: 3.14
+      e:  2.72
+
+* **Pairs**. For instance, the parameter
+
+  .. code-block:: c++
+
+    oops::RequiredParameter<std::pair<util::DateTime, util::Duration>> window{"window", this};
+
+  can store the value of the :code:`window` key in the following YAML file:
+
+  .. code-block:: yaml
+
+    window: [2000-01-01T03:00:00Z, PT6H]
+
+* **Lists of variable names** represented with :code:`oops::Variables` objects. For instance, the parameter
+
+  .. code-block:: c++
+
+    oops::RequiredParameter<oops::Variables> simulatedVariables{"simulated variables", this};
+
+  can store the list of variables loaded from the following YAML file:
+
+  .. code-block:: yaml
+
+    simulated variables: [air_temperature, relative_humidity]
+
+  or
+
+  .. code-block:: yaml
+
+    simulated variables: [brightness_temperature]
+    channels: 7-12, 15-19
+
+  (with the list of channels also stored in the :code:`oops::Variables` object).
+
+  .. note::
+
+    Each file declaring a parameter storing an :code:`oops::Variables` object needs to include the :code:`oops/base/ParameterTraitsVariables.h` header.
+
+* **Variable names** represented with :code:`ufo::Variable` objects. For instance, the parameter
+
+  .. code-block:: c++
+
+    oops::RequiredParameter<ufo::Variable> reference{"reference", this};
+
+  can store the variable specified in the :code:`reference` section of the following YAML file:
+
+  .. code-block:: yaml
+
+    reference:
+      name: HofX/brightness_temperature
+      channels: 7-12, 15-19
+
+  A more complex example is
+
+  .. code-block:: yaml
+
+    reference:
+      name: ObsErrorModelRamp@ObsFunction
+      options:
+        xvar:
+          name: air_temperature@ObsValue
+        x0: [10]
+        x1: [20]
+        err0: [20]
+        err1: [10]
+
+  where the variable is in fact an obs function taking a number of options. The following shorthand YAML syntax (useful for single-channel variables) is also supported:
+
+  .. code-block:: yaml
+
+    reference: MetaData/air_pressure
+
+  .. note::
+
+    Each file declaring a parameter storing a :code:`ufo::Variable` object needs to include the :code:`ufo/utils/parameters/ParameterTraitsVariable.h` header.
+
+* **Sets of non-negative integers** specified with a shorthand syntax supporting ranges. For instance, the parameter
+
+  .. code-block:: c++
+
+    oops::RequiredParameter<std::set<int>> channels{"channels", this};
+
+  will store the single-element set {5} when loaded from the following YAML file:
+
+  .. code-block:: yaml
+
+    channels: 5
+
+  the three-element set {5, 6, 7} when loaded from the following YAML file:
+
+  .. code-block:: yaml
+
+    channels: 5-7
+
+  and the seven-element set {5, 6, 7, 10, 15, 16, 17} when loaded from the following YAML file:
+
+  .. code-block:: yaml
+
+    channels: 5-7, 15-17, 10
+
+  Spaces after commas are optional.
+
+  .. note::
+
+    When a :code:`channels` key appears at the same level as a key set to a variable name or a list of variable names, the values of both keys can be loaded into a single parameter storing a :code:`ufo::Variable` or :code:`oops::Variables` object; it is not necessary to declare a separate parameter for the channel list.
+
 Parameter Nesting
 -----------------
 
-In the preceding example, we have already seen that parameters can store not only values of "primitive" types (e.g. :code:`int`), but also more complex objects, such as vectors. Other supported types include strings, maps, dates, durations, and instances of :code:`oops::Variables` and :code:`ufo::Variable`. It is also possible to nest parameters, i.e. store a subclass of :code:`Parameters` in a :code:`Parameter` object. For example, to load the following YAML snippet:
+It is also possible to nest parameters, i.e. store a subclass of :code:`Parameters` in a parameter object. For example, to load the following YAML snippet:
 
 .. code-block:: yaml
 
@@ -249,10 +401,50 @@ Each item in the :code:`peripherals` list is represented by a :code:`RequiredPol
 
 In JEDI, polymorphic parameters are used, for example, to handle options controlling models and variable changes. 
 
+Parameter Composition
+---------------------
+
+Sometimes it is convenient to group a subset of keys located at the same level of the YAML hierarchy into a separate :code:`Parameters` subclass. For example, given the following YAML file
+
+.. code-block:: yaml
+
+    customer:
+      name: Mary Brown
+      street: 15 High Street
+      city: London
+      postal code: SW1W 0NY
+
+the address components could be grouped in an :code:`AddressParameters` class:
+
+.. code-block:: c++
+
+    class AddressParameters : public Parameters {
+      OOPS_CONCRETE_PARAMETERS(AddressParameters, Parameters)
+     public:
+      RequiredParameter<std::string> street{"street", this};
+      RequiredParameter<std::string> city{"city", this};
+      RequiredParameter<std::string> postalCode{"postal code", this};
+    };
+
+The :code:`CustomerParameters` class, representing the contents of the whole :code:`customer` YAML section, could then be defined as
+
+.. code-block:: c++
+
+    class CustomerParameters : public Parameters {
+      OOPS_CONCRETE_PARAMETERS(CustomerParameters, Parameters)
+     public:
+      RequiredParameter<std::string> name{"name", this};
+      AddressParameters address{this};
+    };
+
+Note that it contains a member variable of type :code:`AddressParameters` rather than e.g. :code:`RequiredParameter<AddressParameters>`, and that its constructor does not receive the name of any key, but only the :code:`this` pointer. This is because the :code:`street`, :code:`city` and :code:`postal code` keys are located directly within the :code:`customer` section rather than within a named subsection of :code:`customer`.
+
+Introduction of a separate :code:`Parameters` subclass containing a subset of keys located at a particular level of the YAML hierarchy is especially convenient when the same group of keys appears multiple times in the configuration tree, each time accompanied by different sibling keys, or when the values of this group of keys (excluding any siblings) need to be passed to a function, typically a class constructor.
+
 Conversion to :code:`Configuration` Objects
 -------------------------------------------
 
-The :code:`Parameters::toConfiguration()` method can be called to convert a :code:`Parameters` object to a :code:`Configuration` object. A typical use case is passing options to Fortran code. As mentioned in :ref:`config-fortran`, JEDI defines a Fortran interface to :code:`Configuration` objects, but there is currently no Fortran interface to :code:`Parameters` objects, so conversion to a :code:`Configuration` object is the easiest way to pass the values of multiple parameters to Fortran.
+The :code:`Parameters::toConfiguration()` method can be called to convert a :code:`Parameters` object to a :code:`LocalConfiguration` object. A typical use case is passing options to Fortran code. As mentioned in :ref:`config-fortran`, JEDI defines a Fortran interface to :code:`Configuration` objects, but there is currently no Fortran interface to :code:`Parameters` objects, so conversion to a :code:`Configuration` object is the easiest way to pass the values of multiple parameters to Fortran.
 
 Copying :code:`Parameters` Objects
 ----------------------------------
@@ -307,6 +499,6 @@ OOPS interfaces that support implementations with such constructors are identifi
 Headers to Include; Adding Support for New Parameter Types
 ----------------------------------------------------------
 
-Inclusion of the :code:`Parameter.h`, :code:`RequiredParameter.h` and :code:`OptionalParameter.h` header files suffices to use parameter objects storing values of type :code:`int`, :code:`size_t`, :code:`float`, :code:`double,` :code:`bool`, :code:`std::string`, :code:`std::vector`, :code:`std::map`, :code:`util::DateTime`, :code:`util::Duration`, and :code:`eckit::LocalConfiguration`. Support for some less frequently used types, such as :code:`ufo::Variable` and :code:`oops::Variables`, can be enabled by including an appropriate :code:`ParameterTraits*.h` file, e.g. :code:`ufo/utils/parameters/ParameterTraitsVariable.h`.
+Inclusion of the :code:`Parameter.h`, :code:`RequiredParameter.h` and :code:`OptionalParameter.h` header files suffices to use parameter objects storing values of type :code:`int`, :code:`size_t`, :code:`float`, :code:`double,` :code:`bool`, :code:`std::string`, :code:`std::vector`, :code:`std::map`, :code:`std::pair`, :code:`util::DateTime`, :code:`util::Duration`, and :code:`eckit::LocalConfiguration`. Support for some less frequently used types, such as :code:`ufo::Variable` and :code:`oops::Variables`, can be enabled by including an appropriate :code:`ParameterTraits*.h` file, e.g. :code:`ufo/utils/parameters/ParameterTraitsVariable.h`.
 
 As you may have guessed from the name of this file, the class template :code:`ParameterTraits<T>` is responsible for the loading of values of type :code:`T` into parameter objects (as well as their storage in :code:`Configuration` objects and JSON schema generation). This template has been specialized for frequently used types such as those listed above. If none of them fit your needs and you want to extract values into instances of a different type, you will need to specialize :code:`ParameterTraits<T>` for that type. To do that, start from one of the existing specializations and adapt it to your requirements.

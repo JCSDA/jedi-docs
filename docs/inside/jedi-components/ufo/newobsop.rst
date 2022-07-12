@@ -1,7 +1,7 @@
 .. _top-ufo-newobsop:
 
-Creating new Observation Operator in UFO
-========================================
+Creating a new Observation Operator in UFO
+==========================================
 
 Existing Observation Operators
 ------------------------------
@@ -11,19 +11,21 @@ Before implementing a new observation operator, check if one of the :doc:`observ
 Creating files for a new Observation Operator
 ---------------------------------------------
 
-If your observation operator is different from the above, you may need to create a new observation operator. Typically, all the files for a new observation operator are in a new directory under :code:`ufo/src/ufo`.
+If the observation operator is not on the list of already implemented observation operators, it may have to be implemented and added to UFO. Typically, all the files for a new observation operator are in a new directory under :code:`ufo/src/ufo`.
 
-The new observation operator has to have a C++ interface, because all observation operators have to be accessed by a generic data assimilation layer written in C++ in oops. Most of the observation operators, however, are written in Fortran. The directory for the observation operator consists of the following files (example from atmvertinterp):
+New observation operators can be written in C++ or in Fortran.
+
+All the observation operators written in Fortran have to have a C++ interface, because all observation operators have to be accessed by a generic data assimilation layer written in C++ in oops. A directory for an observation operator written in Fortran typically consists of the following files (example from atmvertinterp):
 
 1. :code:`ObsAtmVertInterp.cc`, :code:`ObsAtmVertInterp.h`: C++ files defining the ObsOperator class. The methods (functions) there call Fortran subroutines.
 2. :code:`ObsAtmVertInterp.interface.F90`, :code:`ObsAtmVertInterp.interface.h`: C++ and Fortan files defining interfaces between Fortran and C++.
 3. :code:`ufo_atmvertinterp_mod.F90` - Fortran module containing the code to run observation operator.
 
-Most of the time you’d only need to modify the Fortran module (3), and the files from (1-2) can be generated automatically.
+For new observation operators written in Fortran, files from (1-2) can be generated, and the developer would only need to modify the Fortran module (3).
 
-To generate the ObsOperator files, you can run the following script: :code:`ufo/tools/new_obsop/create_obsop_fromexample.sh <ObsOperatorName> <directory>`
+To generate the ObsOperator files, one can run the following script: :code:`ufo/tools/new_obsop/create_obsop_fromexample.sh <ObsOperatorName> <directory>`
 
-:code:`<ObsOperatorName>` is an UpperCamelCase name you’d like your obs operator to go by. :code:`<directory>` is a directory name in :code:`ufo/src/ufo`. Examples for existing obsoperators: atmvertinterp, crtm, identity.
+:code:`<ObsOperatorName>` is the name of the obs operator in UpperCamelCase format. :code:`<directory>` is a directory name in :code:`ufo/src/ufo`. Examples for existing obsoperators: atmvertinterp, crtm, identity.
 
 Example of calling :code:`create_obsop_fromexample.sh`:
 

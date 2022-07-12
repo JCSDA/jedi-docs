@@ -21,14 +21,13 @@ We may need to go beyond CTest to address our large scale system testing that is
 more toward performance benchmarking and verifying functionality on HPC systems.
 
 `Ecbuild <https://github.com/ecmwf/ecbuild>`_ is a set of CMake macros provided by the
-ECMWF that assist with the specification of the manufacturing processes. Along with ecbuild we are using two ECMWF libraries called
-`eckit <https://github.com/ecmwf/eckit>`_ and `fckit <https://github.com/ecmwf/fckit>`_.
-Eckit is a C++ library that provides utilities including logging, MPI, configuration
-file (JSON, YAML) parsing and math functions.
-Fckit is a Fortran tool kit that provides similar utilities as eckit, plus helper functions
-to convert strings and arrays between Fortran and C/C++, and extending the unit test
-framework to Fortran.
+ECMWF that assist with the specification of the manufacturing processes. Along with ecbuild we are using additional ECMWF libraries:
 
+- `eckit <https://github.com/ecmwf/eckit>`_ is a C++ library that provides utilities including logging, MPI, configuration file (JSON, YAML) parsing and math functions.
+
+- `fckit <https://github.com/ecmwf/fckit>`_ is a Fortran tool kit that provides similar utilities as eckit, plus helper functions to convert strings and arrays between Fortran and C/C++, and extending the unit test framework to Fortran.
+
+- `atlas <https://github.com/ecmwf/atlas>`_ is library for numerical weather prediction and climate modelling. Atlas is predominantly C++ code, with main features available to Fortran codes through a F2003 interface. Note that atlas is called ecmwf-atlas in spack, because spack already contains the Atlas Linear Algebra Software.
 
 CMake and CTest
 ---------------
@@ -39,10 +38,8 @@ downloads are available at the `CMake website <https://cmake.org/>`_.
 Installing CMake and CTest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This step is only necessary if you are working outside the
-JEDI :doc:`Charliecloud <../../using/jedi_environment/charliecloud>`
-or :doc:`Singularity <../../using/jedi_environment/singularity>`
-containers.
+This step is only necessary if you are working outside preconfigured JEDI environments or containers, and when not following the 
+`spack-stack <https://spack-stack.readthedocs.io/en/spack-stack-1.0.1/>`_ instructions to set up your environment.
 
 For the Mac, use `homebrew <https://brew.sh/>`_ to install CMake.
 
@@ -193,11 +190,7 @@ CMake also has tools that are useful for debugging.  In particular,  the :code:`
 ecbuild
 -------
 
-The JEDI software stack links directly to the public ecbuild, eckit, and fckit GitHub repositories
-provided by `ECMWF <https://github.com/ecmwf>`_.  In particular, public releases from these repositories
-have been cloned from GitHub, compiled, and included in the JEDI
-:doc:`Singularity <../../using/jedi_environment/singularity>` and :doc:`Charliecloud <../../using/jedi_environment/charliecloud>`
-containers.
+ecbuild and other ECMWF libraries can be installed with spack-stack or manually by using cmake and providing the necessary dependencies. Note that the much simpler and supported method is to let spack-stack handle the software dependencies.
 
 Ecbuild does enforce the restriction recommended above on building your project outside of the
 source directories.
@@ -205,9 +198,7 @@ source directories.
 Installing ecbuild
 ^^^^^^^^^^^^^^^^^^
 
-As before, the steps shown in this section are only necessary if you are working outside the
-:doc:`Singularity <../../using/jedi_environment/singularity>` and
-:doc:`Charliecloud <../../using/jedi_environment/charliecloud>` containers.
+As before, the steps shown in this section are only necessary if you are working outside preconfigured JEDI environments or containers, and when not following the recommendation to use `spack-stack <https://spack-stack.readthedocs.io/en/spack-stack-1.0.1/>`_ to set up your environment.
 
 For all systems, you need to have CMake, eigen3 installed before installing ecbuild.
 To install these on the Mac:

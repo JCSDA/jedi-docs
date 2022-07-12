@@ -26,7 +26,7 @@ These applications are similar to the above but allow users to run several membe
 Data assimilation helper applications
 -------------------------------------
 * EstimateParams
-* GenEnsPertB
+* :doc:`GenEnsPertB<genenspertb>`: generates an ensemble of states distributed according to a specifed background error covariance, and runs an ensemble forecast from that ensemble.
 * StaticBInit
 * ExternalDFI
 * EnsVariance

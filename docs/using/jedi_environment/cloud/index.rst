@@ -6,6 +6,4 @@ JEDI on AWS
    :maxdepth: 2
 
    overview.rst
-   jedicluster.rst
    singlenode.rst
-   cluster.rst

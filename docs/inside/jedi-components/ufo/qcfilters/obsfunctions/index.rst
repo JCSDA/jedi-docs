@@ -5,8 +5,17 @@ Observation Functions are more advanced filtering routines that are encapsulated
 a unit. They usually combine several complicated logic operations, and decomposing these
 filters into separate parts would have an obfuscating effect.
 
+:ref:`BennartzScatIndex <BennartzScatIndex>`
+  Compute Bennartz scattering index from microwave channels
+
+:ref:`BgdDepartureAnomaly <BgdDepartureAnomaly>`
+  Compute the background departure anomaly between two channels
+
 :ref:`ChannelUseflagCheckRad <ChannelUseflagCheckRad>`
   Channel usage flag check for radiances
+
+:ref:`CloudCostFunction <CloudCostFunction>`
+  Bayesian cost function for detecting cloud-affected radiances
 
 :ref:`CloudDetectMinResidualAVHRR <CloudDetectMinResidualAVHRR>`
   Cloud detection using Minimum Residual Method for AVHRR
@@ -25,6 +34,21 @@ filters into separate parts would have an obfuscating effect.
 
 :ref:`CLWRetSymmetricMW <CLWRetSymmetricMW>`
   Estimates the actual Cloud Liquid Water (CLW) content from both model background and observed content
+
+:ref:`Conditional <Conditional>`
+  Create an array of ints, floats, strings or date times using a series of where clauses.
+
+:ref:`DateTimeOffset <DateTimeOffset>`
+  Add an offset variable, with units of seconds, minutes or hours, to the :code:`MetaData/dateTime` variable.
+
+:ref:`DrawObsErrorFromFile <DrawObsErrorFromFile>`
+    Derive observation error values by interpolating an array loaded from a file, representing the variance or covariance matrix (of which only the diagonal elements are taken into account), indexed by coordinates whose names correspond to ObsSpace variables.  This file can potentially contain a collection ("stack") of such matrices.
+
+:ref:`DrawValueFromFile <DrawValueFromFile>`
+    Derive values by interpolating an array loaded from a file, indexed by coordinates whose names correspond to ObsSpace variables
+
+:ref:`FillAveragedProfileData <FillAveragedProfileData>`
+   Copy values from an observed atmospheric profile to the same profile averaged onto model levels.
 
 :ref:`HydrometeorCheckAMSUA <HydrometeorCheckAMSUA>`
   AMSU-A cloud and precipitation checks
@@ -71,17 +95,41 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ObsErrorFactorWavenumIR <ObsErrorFactorWavenumIR>`
   Observation error inflation for satellite infrared sensors
 
+:ref:`ObsErrorModelHumidity <ObsErrorModelHumidity>`
+  Variant of ObsErrorModelStepwiseLinear for humidity observation error assignment
+
 :ref:`ObsErrorModelRamp <ObsErrorModelRamp>`
   Parameterize observation error as a piecewise linear function
 
 :ref:`ObsErrorModelStepwiseLinear <ObsErrorModelStepwiseLinear>`
   GSI variant of ObsErrorModelRamp
 
+:ref:`ObsFunctionExponential <ObsFunctionExponential>`
+  Compute exponential function of a variable
+
+:ref:`ObsFunctionLinearCombination <ObsFunctionLinearCombination>`
+  Compute linear combination of given variables weighted by given coefficients.
+
+:ref:`ObsFunctionSelectStatistic <ObsFunctionSelectStatistic>`
+  Output all 0's, except for 1 in locations corresponding (or closest) to the minimum, maximum, median or mean of the input variable within each record.
+
 :ref:`ObsFunctionVelocity <ObsFunctionVelocity>`
   Compute wind speed from u- and v- components
 
+:ref:`OceanPressureToDepth <OceanPressureToDepth>`
+  Convert an ocean pressure variable (Pa) to depth below surface (m)
+
+:ref:`ProfileAverageObsPressure <ProfileAverageObsPressure>`
+  Fill values of pressure in profiles that have been averaged onto model levels.
+
+:ref:`ProfileLevelCount <ProfileLevelCount>`
+  Count the number of locations in each profile that satisfy a particular condition.
+
 :ref:`RONBAMErrInflate <RONBAMErrInflate>`
   Observation error inflation factor for GnssroBndNBAM
+
+:ref:`SatwindIndivErrors <SatwindIndivErrors>`
+  Compute individual u- or v- component observation errors for Satwinds
 
 :ref:`SatWindsLNVDCheck <SatWindsLNVDCheck>`
   log-normal vector difference (LNVD) between observed and model winds
@@ -101,24 +149,24 @@ filters into separate parts would have an obfuscating effect.
 :ref:`WindDirAngleDiff <WindDirAngleDiff>`
   Compute wind direction angle different between observation and model
 
-:ref:`DrawValueFromFile <DrawValueFromFile>`
-    Derive values by interpolating an array loaded from a file, indexed by coordinates whose names correspond to ObsSpace variables
-
-:ref:`DrawObsErrorFromFile <DrawObsErrorFromFile>`
-    Derive observation error values by interpolating an array loaded from a file, representing the variance or covariance matrix (of which only the diagonal elements are taken into account), indexed by coordinates whose names correspond to ObsSpace variables.  This file can potentially contain a collection ("stack") of such matrices.
-
 .. toctree::
    :hidden:
 
+   BennartzScatIndex
+   BgdDepartureAnomaly
    ChannelUseflagCheckRad
+   CloudCostFunction
    CloudDetectMinResidualAVHRR
    CloudDetectMinResidualIR
    CLWMatchIndexMW
    CLWRetMW
    CLWRetMW_SSMIS
    CLWRetSymmetricMW
+   Conditional
+   DateTimeOffset
    DrawObsErrorFromFile
    DrawValueFromFile
+   FillAveragedProfileData
    HydrometeorCheckAMSUA
    HydrometeorCheckATMS
    InterChannelConsistencyCheck
@@ -134,10 +182,18 @@ filters into separate parts would have an obfuscating effect.
    ObsErrorFactorTopoRad
    ObsErrorFactorTransmitTopRad
    ObsErrorFactorWavenumIR
+   ObsErrorModelHumidity
    ObsErrorModelRamp
    ObsErrorModelStepwiseLinear
+   ObsFunctionExponential
+   ObsFunctionLinearCombination
+   ObsFunctionSelectStatistic
    ObsFunctionVelocity
+   OceanPressureToDepth
+   ProfileAverageObsPressure
+   ProfileLevelCount
    ROobserrInflation
+   SatwindIndivErrors
    SatWindsLNVDCheck
    SatWindsSPDBCheck
    SCATRetMW

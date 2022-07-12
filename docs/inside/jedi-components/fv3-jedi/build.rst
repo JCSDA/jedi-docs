@@ -3,75 +3,77 @@
 Building FV3-JEDI
 =================
 
-This section describes the options that can be used when building FV3-JEDI.
+For most uses, it is recommended to build FV3-JEDI via the
+`FV3-BUNDLE <https://github.com/jcsda/fv3-bundle>`_, which includes associated repositories and
+dependencies. This page describes the options that can be configured when building FV3-JEDI via the
+FV3-BUNDLE.
+
+When using FV3-JEDI with the UFS forecast model, it is instead recommended to build via the
+`UFS-BUNDLE <https://github.com/jcsda/ufs-bundle>`_. This bundle and associated documentation
+are in development.
 
 FV3-BUNDLE
 ----------
 
-In order to build FV3-JEDI and its associated repositories and dependencies it is recommended to use
-FV3-BUNDLE, available at https://github.com/jcsda/fv3-bundle
+FV3-BUNDLE is an ecbuild (a CMake-based build system) script that will install and compile the
+FV3-JEDI repositories and dependencies together. Please follow these |build_jedi_link| to configure
+and build FV3-JEDI using FV3-BUNDLE.
 
-FV3-BUNDLE is always built using ecbuild. When issuing the initial ecbuild command FV3-JEDI can
-accept a number of optional directives, prepended with :code:`-D`. For example
+.. |build_jedi_link| raw:: html
+
+   <a href="https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/
+   latest/using/building_and_running/building_jedi.html"
+   target="_blank">build instructions</a>
+
+When issuing the initial ecbuild command, FV3-BUNDLE/JEDI can accept a number of options,
+prepended with :code:`-D`. For example, this command selects which forecast model
+to use with FV3-JEDI:
 
 .. code::
 
-   ecbuild -DFV3_FORECAST_MODEL_BUILD=FV3CORE ../
+   ecbuild -DFV3_FORECAST_MODEL=FV3CORE ../
 
 The various options that FV3-JEDI can accept are described below.
-
-It is recommended that the |location_link| on various supported platforms are followed
-closely when building FV3-BUNDLE.
-
-.. |location_link| raw:: html
-
-   <a href="https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/
-   latest/developer/building_and_running/building_jedi.html"
-   target="_blank">instructions for building</a>
 
 .. _buildwithmodel:
 
 Choosing an FV3-based model to build with
 -----------------------------------------
 
-**The below instructions are for advanced uses of FV3-JEDI where it is necessary to build with the
-full forecast model of UFS or GEOS. Following the general JEDI build instructions for FV3-BUNDLE is
-sufficient for most applications. The below requires some previous model installation to have been
-completed and knowledge of the install location.**
-
 FV3-JEDI depends on the FV3 dynamical core and cannot be built without some version of it being
 included. Currently there are three models that can be used to provide FV3 as well as the potential
 to make forecasts in-core with FV3-JEDI:
 
-- The JCSDA fork of GFDL_atmos_cubed_sphere (https://github.com/JCSDA/GFDL_atmos_cubed_sphere)
-- The ufs-weather-model built with CMake (https://github.com/ufs-community/ufs-weather-model)
-- GEOSgcm built with CMake (https://github.com/GEOS-ESM/GEOSgcm)
+- The JCSDA fork of GFDL_atmos_cubed_sphere (https://github.com/JCSDA/GFDL_atmos_cubed_sphere).
+  GFDL_atmos_cubed_sphere contains only the FV3 dynamical core and none of the model physics or
+  model infrastructure.
+- The ufs-weather-model (https://github.com/ufs-community/ufs-weather-model).
+- GEOSgcm (https://github.com/GEOS-ESM/GEOSgcm).
 
-Building with GFDL_atmos_cubed_sphere is the default mode and it provides everything necessary to
+By default FV3-BUNDLE builds with GFDL_atmos_cubed_sphere; this provides everything necessary to
 run any data assimilation systems that do not involve executing a forecast of the full model with
-physics in-core with FV3-JEDI. GFDL_atmos_cubed_sphere contains only the FV3 dynamical core and none
-of the model physics or model infrastructure.
-
-Whether to build with the standalone dynamical core, UFS or GEOS is controlled with the build option
-:code:`-DFV3_FORECAST_MODEL_BUILD`. The standalone dynamical core is the default so is chosen by
-either not providing :code:`-DFV3_FORECAST_MODEL_BUILD` or setting to:
+physics in-core with FV3-JEDI. This default behavior can also be directly requested using the
+following ecbuild command:
 
 .. code::
 
-   -DFV3_FORECAST_MODEL_BUILD=FV3CORE
+   ecbuild -DFV3_FORECAST_MODEL=FV3CORE ../
 
-Building with GEOS is triggered by instead specifying:
+**The instructions in the remainder of this section are for advanced uses of FV3-JEDI where it is
+necessary to build with the GEOS forecast model. The below requires GEOS to be installed.**
+
+Building with GEOS is selected by specifying:
 
 .. code::
 
-   -DFV3_FORECAST_MODEL_BUILD=GEOS
+   -DFV3_FORECAST_MODEL=GEOS
 
-When building with GEOS (and UFS) is is also necessary to pass the path where model is installed.
+When building with GEOS it is also necessary to pass the path where model is installed.
 This is controlled by the flag:
 
 .. code::
 
-   -DFV3_FORECAST_MODEL_ROOT==/path/to/model/install
+   -DFV3_FORECAST_MODEL_ROOT=/path/to/model/install
 
 FV3-JEDI will build certain tests when GEOS is used but a directory where GEOS can run from must be
 provided and is passed to the build as follows:
@@ -88,24 +90,8 @@ path. GEOS typically only runs on Discover and there the test path to be provide
 
    -DFV3_FORECAST_MODEL_RUNDIR=/discover/nobackup/drholdaw/JediData/ModelRunDirs/geos-c24
 
-Note that building with UFS is still in relatively early development; please consult FV3-JEDI
-developers for more details about this functionality. Building with ufs-weather-model is triggered
-with:
-
-.. code::
-
-   -DFV3_FORECAST_MODEL_BUILD=UFS
-
-When building with UFS it is also necessary to pass :code:`DFV3_FORECAST_MODEL_ROOT` and
-:code:`DFV3_FORECAST_MODEL_RUNDIR`. In addition the following flags are required:
-
-.. code::
-
-   -DFV3_FORECAST_MODEL_SRC=/path/to/ufs/source/code
-   -DFV3_FORECAST_MODEL_BUILD=/path/to/ufs/build/directory
-
-These two arguments provide additional include paths in order to build with UFS. It is anticipated
-that these will not be needed in the long term as the CMake version of UFS matures.
+**For building with UFS, see the UFS-BUNDLE. Note that building with UFS is still in relatively
+early development; please consult FV3-JEDI developers for more details about this functionality.**
 
 The FV3 dynamical core can be built in either single or double precision, where double is the
 default behavior. When using GEOS or UFS the choice needs to match the choice that was made when the
@@ -115,29 +101,20 @@ FV3-BUNDLE. This choice is controlled with:
 .. code::
 
    -DFV3_PRECISION=SINGLE
-   -DFV3_PRECISION=DOUBLE
-
-As with the nonlinear version of FV3 the tangent linear and adjoint versions of FV3 can also be
-built in both single or double precision, with double being the default. This is controlled with:
-
-.. code::
-
-   -DFV3LM_PRECISION=SINGLE
-   -DFV3LM_PRECISION=DOUBLE
-
+   -DFV3_PRECISION=DOUBLE  # default value
 
 Optional observation operators
 ------------------------------
 
 There are two optional UFO observation operators that FV3-JEDI can be used with. These are the ROPP
 GNSSRO operator from EUMETSAT and the GEOS_AERO AOD operator from NASA. These operators are not
-available without signing a license agreement so default to off but can be be built by turning the
-option to skip them to :code:`OFF`:
+available without signing a license agreement so are omitted by default, but they can be built by
+turning the option to skip them to :code:`OFF`:
 
 .. code::
 
    -DBUNDLE_SKIP_GEOS-AERO=OFF
-   -DBUNDLE_SKIP_ROPP=OFF
+   -DBUNDLE_SKIP_ROPP-UFO=OFF
 
 .. _controltesting:
 
@@ -156,4 +133,4 @@ these tests on systems that may not be able to support them with the following f
 
 .. code::
 
-   ecbuild -SKIP_LARGE_TESTS=ON
+   ecbuild -DBUILD_LARGE_TESTS=OFF
