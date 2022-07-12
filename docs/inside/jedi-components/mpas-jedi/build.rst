@@ -64,13 +64,15 @@ Notes about building on Cheyenne:
 Building MPAS-BUNDLE in Singularity
 -----------------------------------
 
-MPAS-BUNDLE can also be built and tested in the :doc:`JEDI development Singularity container
-</using/jedi_environment/singularity>`.  Detailed instructions are provided at that link.  If you
+MPAS-BUNDLE can also be built and tested in the `JEDI development Singularity container
+<https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.3.0/using/jedi_environment/singularity.html>`_.  
+Detailed instructions are provided at that link.  If you
 do not plan to or are unable to install Singularity natively, you may be interested to learn
-:doc:`how to launch a Singularity container in a Vagrant Virtual Machine
-</using/jedi_environment/vagrant>`. When working in the Singularity container, the main difference
+`how to launch a Singularity container in a Vagrant Virtual Machine
+<https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.3.0/using/jedi_environment/vagrant.html>`_.
+When working in the Singularity container, the main difference
 from the instructions provided above for Cheyenne is that the environment is already set up properly
-within the container. Thus there is no need to :code:`source` an environment setup file.  
+within the container. Thus there is no need to :code:`source` an environment setup file.
 
 .. _controltesting-mpas:
 
@@ -127,8 +129,8 @@ we give short synopses of a few specific MPAS-JEDI implementations.
    - :code:`mpasjedi_rtpp.x` (:code:`oops::RTPP`): standalone application that carries out
      Relaxation to Prior Perturbation, as introduced by Zhang et al. (2004).  The intended purpose
      is to inflate the analysis ensemble spread after running the EDA application.
-     
- 
+
+
 
 Most of the MPAS-JEDI executables are exercised in ctests.  As users learn how to use MPAS-JEDI for
 larger-scale applications, it is useful to consider the ctests as examples and templates. For more
@@ -140,8 +142,8 @@ information on the individual ctests, see :doc:`the documentation for their yaml
 Controlling the testing
 -----------------------
 
-In addition to the basic :code:`ctest` command shown in :ref:`build-test-mpas-cheyenne`, which runs 
-all of the available tests for MPAS-JEDI, :code:`ctest` has basic flags and arguments available for 
+In addition to the basic :code:`ctest` command shown in :ref:`build-test-mpas-cheyenne`, which runs
+all of the available tests for MPAS-JEDI, :code:`ctest` has basic flags and arguments available for
 selecting a subset of tests.  :code:`ctest` also automatically provides some logging functionality
 that is useful for reviewing passing and failing test cases.  Both of those aspects of
 :code:`ctest` are described in more detail within the :doc:`JEDI Developer Tools

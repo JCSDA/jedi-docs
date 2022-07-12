@@ -37,7 +37,8 @@ early stages of the development, and can aid in running the development pipeline
 more efficiently. Automated testing can help make the review process shorter
 and to add new features to the repository more quickly.
 
-:doc:`Docker containers <../using/jedi_environment/containers>` are used to
+`Docker containers <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.3.0/using/jedi_environment/containers.html>`_
+are used to
 test the system in different prebuilt environments. Currently, we use three
 compiler-MPI combinations for automated testing of JEDI repositories: *GNU with openMPI*,
 *CLANG with mpich* and *Intel with impi* containers.

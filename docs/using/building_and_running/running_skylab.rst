@@ -3,4 +3,5 @@
 Building and running SkyLab
 ===========================
 
-Bring instructions from https://docs.google.com/document/d/1wHuTgyhSlrZcbSkS76bdf54O7J9YwTSuq07wwMu-OyY/edit#heading=h.f78wj3w5sfce
+For detailed instruction please see
+`the SkyLab user guide <https://docs.google.com/document/d/1Pn1woXf-appCgImdQhPibICvkUyCx9N1KiLlQfc1MBQ/edit?usp=sharing>`_ 

@@ -244,7 +244,7 @@ To run the remaining tests, particularly those that require MPI, you'll need to 
 
 Or, you can submit a batch script to the queue through ``sbatch`` as described in the Orion instructions above.
 
-For GNU, when using ``ecbuild``, use ``ecbuild ecbuild -DMPIEXEC_EXECUTABLE="/usr/bin/srun" -DMPIEXEC_NUMPROC_FLAG="-n"``. Then run all tests directly from the login node.
+For GNU, when using ``ecbuild``, use ``ecbuild -DMPIEXEC_EXECUTABLE="/usr/bin/srun" -DMPIEXEC_NUMPROC_FLAG="-n"``. Then run all tests directly from the login node.
 
 Hera
 -----
