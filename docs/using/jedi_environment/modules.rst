@@ -230,7 +230,7 @@ For both Intel and GNU, proceed with loading the appropriate modules for your ap
 
 Note that the existing toolchain for Discover in ``jedi-cmake`` is outdated and cannot be used. Also, different methods are needed for Intel and GNU.
 
-For Intel, when using ``ecbuild``, use ``ecbuild -DMPIEXEC_EXECUTABLE="/usr/local/intel/oneapi/2021/mpi/2021.5.0/bin/mpirun" -DMPIEXEC_NUMPROC_FLAG="-np"``. After building, you will want to run the ``get`` tests from the login node to download the test data:
+For Intel, when using ``ecbuild``, use ``ecbuild -DMPIEXEC_EXECUTABLE="/usr/local/intel/oneapi/2021/mpi/2021.5.0/bin/mpirun"`` ``-DMPIEXEC_NUMPROC_FLAG="-np"``. After building, you will want to run the ``get`` tests from the login node to download the test data:
 
 .. code-block:: bash
 
@@ -600,4 +600,4 @@ For more information about using Amazon Web Services please see :doc:`JEDI on AW
 
 As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.0.1` environment
 for `skylab-1.0.0` pre-installed. For more information on how to find these AMIs,
-refer to the `spack-stack documentation <https://spack-stack.readthedocs.io/en/spack-stack-1.0.1/Platforms.html#amazon-web-services-ubuntu-20-04>`_.
+refer to https://spack-stack.readthedocs.io/en/spack-stack-1.0.1/Platforms.html#amazon-web-services-ubuntu-20-04.

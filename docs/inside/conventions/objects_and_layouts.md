@@ -38,7 +38,7 @@ Table 2 &mdash; Common global attributes. For the full list, see convention tabl
 | sensors | No | 1-D array of Variable-length strings | The instruments. This attribute should be a string from the "Instrument Identifiers" table. | ABI |
 | uri | No | Variable-length string | A URI pointer to the source of this data. May be a DOI. | |
 
-#### Global attributes added by R2D2 upon ingest
+### Global attributes added by R2D2 upon ingest
 
 | Name | Required by R2D2 | Data type | Description | Examples |
 | --- | --- | --- | --- | --- |

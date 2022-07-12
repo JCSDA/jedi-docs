@@ -99,7 +99,7 @@ generate the log and reference file:
    grep 'Test     :' forecast.log > forecast.ref    
 
 
-**For more on application testing, configuring numerical tolerances and other options see the documentation here:** :ref:`Application Testing <test-apps:>` . **For more detailed instructions on the pieces of adding a test see the documentation here:** :ref:`Adding A Test <adding-a-test>` .
+**For more on application testing, configuring numerical tolerances and other options see the documentation here:** :ref:`Application Testing <test-apps>` . **For more detailed instructions on the pieces of adding a test see the documentation here:** :ref:`Adding A Test <adding-a-test>` .
 
 
 

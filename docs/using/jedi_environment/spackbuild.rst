@@ -15,9 +15,9 @@ you may run into trouble. Before making any changes to the homebrew environment 
 make sure to take a backup of that directory so that you can put it back if needed. Same goes for Linux.
 
 .. note:: See https://spack-stack.readthedocs.io/en/spack-stack-1.0.1/index.html for general information on how to
-build your own spack stack on your platform. Make sure you have read through the documentation before attempting to
-build your own stack. The commands below only highlight the differences to the general documentation, steps in between
-that are not written down here are identical.
+    build your own spack stack on your platform. Make sure you have read through the documentation before attempting to
+    build your own stack. The commands below only highlight the differences to the general documentation, steps in between
+    that are not written down here are identical.
 
 Supported in this release are macOS with ``clang`` (``ewok`` graphics dependencies don’t build with ``gcc``),
 Red Hat with ``gcc``, Ubuntu with ``gcc``.

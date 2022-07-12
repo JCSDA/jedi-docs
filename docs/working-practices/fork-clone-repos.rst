@@ -4,8 +4,7 @@ Forking and cloning repositories
 
 GitHub and similar tools allow for cloning or forking repositories.
 Cloning is used by developers that have push permission to the official repository.
-In this case, the developers are asked to follow the
-`git flow <../developer/developer_tools/getting-started-with-gitflow.html>`_ methodology.
+In this case, the developers are asked to follow the :doc:`git flow </inside/practices/gitflow>` methodology.
 Forking is used by developers that do not have push permission to the official repository.
 Developers working in a forked repository are free to use the workflow of their choice, but
 we would recommend git-flow.
