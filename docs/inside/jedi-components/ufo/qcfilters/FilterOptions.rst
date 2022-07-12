@@ -65,6 +65,8 @@ The list passed to the :code:`where` keyword can contain more than one item, eac
 - :code:`is_close_to_any_of`: filter applied only to observations for which the condition variable (a float) is close to any of the variables in the given reference list.  Two variables are defined as close if they differ by less than a provided tolerance.  The tolerance must be provided and can either be absolute (:code:`absolute_tolerance`) or relative (:code:`relative_tolerance`).
 - :code:`is_not_in`: filter applied only to observations for which the condition variable is set to a value not belonging to the given blacklist.
 - :code:`is_not_close_to_any_of`: filter applied only to observations for which the condition variable (a float) is not close to any of the variables in the given reference list.  Two variables are defined as close if they differ by less than a provided tolerance.  The tolerance must be provided and can either be absolute (:code:`absolute_tolerance`) or relative (:code:`relative_tolerance`).
+- :code:`is_true`: filter applied only to observations for which the condition variable (normally a diagnostic flag) is set to :code:`true`.
+- :code:`is_false`: filter applied only to observations for which the condition variable (normally a diagnostic flag) is set to :code:`false`.
 - :code:`any_bit_set_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices set.
 - :code:`any_bit_unset_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices unset (i.e. zero).
 - :code:`matches_regex`: filter applied only to observations for which the condition variable is a string that matches the specified regular expression or an integer whose decimal representation matches that expression. The regular expression should conform to the ECMAScript syntax described at http://www.cplusplus.com/reference/regex/ECMAScript.
@@ -72,6 +74,8 @@ The list passed to the :code:`where` keyword can contain more than one item, eac
 - :code:`matches_any_wildcard`: filter applied only to observations for which the condition variable is a string that matches at least one of the specified wildcard patterns, or an integer whose decimal representation matches at least one of these patterns. The same wildcards are recognized as for :code:`matches_wildcard`.
 
 The elements of both whitelists and blacklists can be strings, non-negative integers or ranges of non-negative integers. It is not necessary to put any value after the colon following :code:`is_defined` and :code:`is_not_defined`. Bits are numbered from zero starting from the least significant bit.
+
+By default, if multiple conditions are used in a :code:`where` statement then the logical :code:`and` of the results is used to determine which locations are selected by the statement. The logical operator used to combine the results can be chosen explicitly with the :code:`where operator` parameter; the permitted operators are :code:`and` and :code:`or`. The use of the :code:`or` operator is illustrated in :ref:`Example 11 <where-example-11>`. Note that it is possible to use the :code:`where operator` option without the :code:`where` statement. The option has no impact in that case.
 
 The following examples illustrate the use of these conditions.
 
@@ -119,7 +123,7 @@ Example 2
       minvalue: "****-**-**T09:00:00Z"
       maxvalue: "****-**-**T18:00:00Z"
     
-    In this example, the filter will be applied only to observations taken between 09:00:00 and 18:00:00, between 1st January and 25th May of every year (end inclusive).  Note that datetime components are not yet 'loop aware'.  That is, a where clause between May and February for example would require two filters: one covering the Jan-Feb period and a second to cover the May-Dec period.
+In this example, the filter will be applied only to observations taken between 09:00:00 and 18:00:00, between 1st January and 25th May of every year (end inclusive).  Note that datetime components are not yet 'loop aware'.  That is, a where clause between May and February for example would require two filters: one covering the Jan-Feb period and a second to cover the May-Dec period.
 
 Example 3
 ^^^^^^^^^
@@ -131,7 +135,7 @@ Example 3
         name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
       any_bit_set_of: 0, 1
     
-    In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 0 and/or position 1. (Position 0 denotes the least significant bit -- in other words, bits are numbered "from right to left".)
+In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 0 and/or position 1. (Position 0 denotes the least significant bit -- in other words, bits are numbered "from right to left".)
     
 Example 4
 ^^^^^^^^^
@@ -146,7 +150,7 @@ Example 4
         name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
       any_bit_unset_of: 10-12
     
-    In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 4 and a 0 at any of positions 10 to 12.
+In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 4 and a 0 at any of positions 10 to 12.
     
 Example 5
 ^^^^^^^^^
@@ -158,7 +162,7 @@ Example 5
         name: station_id@MetaData
       matches_regex: 'EUR[A-Z]*'
     
-    In this example, the filter will be applied only to observations taken by stations whose IDs match the regular expression :code:`EUR[A-Z]*`, i.e. consist of the string :code:`EUR` followed by any number of capital letters.
+In this example, the filter will be applied only to observations taken by stations whose IDs match the regular expression :code:`EUR[A-Z]*`, i.e. consist of the string :code:`EUR` followed by any number of capital letters.
     
 Example 6
 ^^^^^^^^^
@@ -170,7 +174,7 @@ Example 6
         name: station_id@MetaData
       matches_wildcard: 'EUR??TEST*'
     
-    In this example, the filter will be applied only to observations taken by stations whose IDs match the wildcard pattern :code:`EUR??TEST*`, i.e. consist of the string :code:`EUR` followed by two arbitrary characters, the string :code:`TEST` and any number of arbitrary characters.
+In this example, the filter will be applied only to observations taken by stations whose IDs match the wildcard pattern :code:`EUR??TEST*`, i.e. consist of the string :code:`EUR` followed by two arbitrary characters, the string :code:`TEST` and any number of arbitrary characters.
     
 Example 7
 ^^^^^^^^^
@@ -209,6 +213,42 @@ Example 9
       relative_tolerance: 0.1
     
 In this example, assuming that :code:`model_elevation@GeoVaLs` is a float variable, the filter will be applied only to observations whose :code:`model_elevation` is not within 10 % of either :code:`100.0` or :code:`200.0`.
+
+Example 10
+^^^^^^^^^^
+
+.. code-block:: yaml
+
+    where:
+    - variable:
+        name: DiagnosticFlags/ExtremeValue/air_temperature
+      is_true:
+    - variable:
+        name: DiagnosticFlags/ExtremeValue/relative_humidity
+      is_false:
+
+In this example, the filter will be applied only to observations with the :code:`ExtremeValue` diagnostic flag set for the air temperature, but not for the relative humidity.
+
+.. _where-example-11:
+
+Example 11
+^^^^^^^^^^
+
+.. code-block:: yaml
+
+    where:
+    - variable:
+        name: latitude@MetaData
+      minvalue: 60.
+    - variable:
+        name: latitude@MetaData
+      maxvalue: -60.
+    where operator: or
+
+In this example, the filter will be applied only to observations for which either of the following criteria are met:
+
+- the latitude is further north than 60°N,
+- the latitude is further south than 60°S.
 
 
 .. _obs-function-and-obs-diagnostic-suffixes:
@@ -250,17 +290,24 @@ Warning: ObsFunctions are evaluated for all observations, including those that h
 
 Filter Actions
 --------------
-The action taken on observations flagged by the filter can be adjusted using the :code:`action` option recognized by each filter.  So far, four actions have been implemented:
+The action taken on observations flagged by the filter can be adjusted using the :code:`action` option recognized by each filter.  The following actions are available:
 
 * :code:`reject`: observations flagged by the filter are marked as rejected.
-* :code:`accept`: observations flagged by the filter are marked as accepted if they have previously been rejected for any reason other than missing data, a pre-processing flag indicating rejection, or failure of the ObsOperator.
+* :code:`accept`: observations flagged by the filter are marked as accepted if they have previously been rejected for any reason other than missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator.
+* :code:`passivate`: observations flagged by the filter are marked as passive.
 * :code:`inflate error`: the error estimates of observations flagged by the filter are multiplied by a factor. This can be either a constant (specified using the :code:`inflation factor` option) or a variable (specified using the :code:`inflation variable` option).
-* :code:`assign error`: the error estimates of observations flagged by the filter are set to a specified value. Again. this can be either a constant (specified using the :code:`error parameter` option) or a variable (specified using the :code:`error function` option).
+* :code:`assign error`: the error estimates of observations flagged by the filter are set to a specified value. Again, this can be either a constant (specified using the :code:`error parameter` option) or a variable (specified using the :code:`error function` option).
+* :code:`set` and :code:`unset`: the diagnostic flag indicated by the :code:`flag` option will be set to :code:`true` or :code:`false`, respectively, at observations flagged by the filter. These actions recognize a further optional keyword :code:`ignore`, which can be set to:
 
-The default action for almost all filters (taken when the :code:`action` keyword is omitted) is :code:`reject`. There are two exceptions: the default action of the :code:`AcceptList` filter is :code:`accept` and the :code:`Perform Action` filter has no default action (it requires the :code:`action` keyword to be present).
+  - :code:`rejected observations` if the diagnostic flag should not be changed at observations that have previously been rejected or
+  - :code:`defective observations` if the diagnostic flag should not be changed at observations that have previously been rejected because of a missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator.
 
-Example 1
-^^^^^^^^^
+To perform multiple actions, replace the :code:`action` option, which takes a single action, by :code:`actions`, which takes a list of actions. This list may contain at most one action altering quality control flags, namely :code:`reject`, :code:`accept` and :code:`passivate`; if present, such an action must be the last in the list. The :code:`action` and :code:`actions` options are mutually exclusive.
+
+The default action for almost all filters (taken when both the :code:`action` and :code:`actions` keywords are omitted) is :code:`reject`. There are two exceptions: the default action of the :code:`AcceptList` filter is :code:`accept` and the :code:`Perform Action` filter has no default action (either the :code:`action` or :code:`actions` keyword must be present).
+
+Example 1 - rejection, error inflation and assignment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: yaml
     
@@ -277,7 +324,7 @@ Example 1
       - name: northward_wind
       threshold: 2.0
       where:
-      - variable: latitude
+      - variable: latitude@MetaData
         minvalue: -60.0
         maxvalue: 60.0
       action:
@@ -314,13 +361,13 @@ Example 1
                     0.400,  0.550,  0.800,  3.000, 18.000]
 
 
-Example 2 - DrawObsErrorFromFile@ObsFunction
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Example 2 - error assignment using :code:`DrawObsErrorFromFile@ObsFunction`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Next we demonstrate deriving the observation error from a NetCDF file which defines the variance/covariance:
 
 .. code-block:: yaml
 
-    - Filter: Perform Action
+    - filter: Perform Action
       filter variables:
       - name: air_temperature
       action:
@@ -337,6 +384,84 @@ Next we demonstrate deriving the observation error from a NetCDF file which defi
             - name: air_pressure@MetaData
               method: linear
 
+
+Example 3 - setting and unsetting a diagnostic flag
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+    - filter: Bounds Check
+      filter variables:
+      - name: air_temperature
+      min value: 250
+      max value: 350
+      # Set the ExtremeValue diagnostic flag at particularly
+      # hot and cold observations, but do not reject them
+      action:
+        name: set
+        flag: ExtremeValue
+    - filter: Perform Action
+      filter variables:
+      - name: air_temperature
+      where:
+      - variable:
+          name: latitude@MetaData
+        maxvalue: -60
+      - variable:
+          name: air_temperature@ObsValue
+        maxvalue: 250
+      # Unset the ExtremeValue diagnostic flag at cold observations
+      # in the Antarctic
+      action:
+        name: unset
+        flag: ExtremeValue
+
+
+Example 4 - setting a diagnostic flag at observations rejected by a filter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this example, a Domain Check filter rejecting observations outside the 60°S--60°N zonal band is followed by a Bounds Check filter rejecting temperature readings above 350 K and below 250 K. The observations rejected by the Bounds Check filter are additionally marked with the :code:`ExtremeCheck` diagnostic flag. The :code:`ignore: rejected observations` option passed to the :code:`set` action ensures that observations that fail the criteria of the Bounds Check filter, but have already been rejected by the Domain Check filter, are not marked with the :code:`ExtremeCheck` flag.
+
+.. code-block:: yaml
+
+    - filter: Domain Check
+      where:
+      - variable:
+          name: latitude@MetaData
+        minvalue: -60
+        maxvalue:  60
+    - filter: Bounds Check
+      filter variables:
+      - name: air_temperature
+      min value: 250
+      max value: 350
+      # Reject particularly hot and cold observations
+      # and mark them with the ExtremeValue diagnostic flag
+      actions:
+      - name: set
+        flag: ExtremeCheck
+        ignore: rejected observations
+      - name: reject
+
+
+Example 5 - setting a diagnostic flag at observations accepted by a filter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this example, observations taken in the zonal band 30°S--30°N that have previously been rejected for a reason other a missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator are re-accepted and additionally marked with the :code:`Tropics` diagnostic flag. The :code:`ignore: defective observations` option passed to the :code:`set` action ensures that the diagnostic flag is not assigned to observations that are not accepted because of their previous rejection for one of the reasons listed above.
+
+.. code-block:: yaml
+
+    - filter: AcceptList
+      where:
+      - variable:
+          name: latitude@MetaData
+        minvalue: -30
+        maxvalue: 30
+      actions:
+      - name: set
+        flag: Tropics
+        ignore: defective observations
+      - name: accept
 
 Outer Loop Iterations
 ---------------------

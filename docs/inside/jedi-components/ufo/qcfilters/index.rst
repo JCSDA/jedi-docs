@@ -10,5 +10,6 @@ Quality Control in UFO
    obsfunctions/index.rst
    ProfileQC
    FilterOptions
+   PrintFilterData
    NewFilter
  

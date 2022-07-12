@@ -7,6 +7,7 @@ This section contains information about the JEDI code, how to work with it and c
    :maxdepth: 2
 
    jedi-components/index.rst
+   conventions/index.rst
    testing/index.rst
    practices/index.rst
    developer_tools/index.rst

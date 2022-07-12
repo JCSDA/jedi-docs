@@ -151,15 +151,15 @@ Then, from that build directory, run :code:`ecbuild`, specifying the path to the
 
 Here we have used :code:`~/jedi/src` as our source directory and :code:`~jedi/build` as our build directory.  Feel free to change this as you wish, but just **make sure that your source and build directories are different**.
 
-This should work for most bundles but if it doesn't then check in the bundle source directory to see if there are other **build scripts** you may need to run.  This is particularly true if you are running outside of the JEDI :doc:`CharlieCloud <../jedi_environment/charliecloud>` and :doc:`Singularity <../jedi_environment/singularity>` containers.  These build scripts are customized for each bundle and instructions on how to use them can be found in the :code:`README` file in the top level of the bundle repository.
+This should work for most bundles, and in particular when working on a preconfigured HPC or AWS instance.
 
 .. warning::
 
-    **Some bundles may require you to run a build script prior to or in lieu of running ecbuild, particularly if you are running outside of the CharlieCloud and Singularity containers.  Check the README file in the top directory of the bundle repository to see if this is necessary, particularly if you encounter problems running ecbuild, cmake, or ctest.**
+    **Some bundles may require you to run a build script prior to or in lieu of running ecbuild, particularly if you are running on an HPC system.  Check the README file in the top directory of the bundle repository to see if this is necessary, particularly if you encounter problems running ecbuild, cmake, or ctest.**
 
 After you enter the ecbuild command, remember to practice patience, dear `padawan <http://starwars.wikia.com/wiki/Padawan>`_.  The build process may take several minutes.
 
-As described :doc:`here </inside/developer_tools/cmake>`, ecbuild is really just a sophisticated (and immensely useful!) interface to CMake.  So, if there are any CMake options or arguments you wish to invoke, you can pass them to ecbuild and it will kindly pass them on to CMake.  The general calling syntax is:
+As described :doc:`here </inside/developer_tools/cmake>`, ecbuild is a sophisticated interface to CMake.  So, if there are any CMake options or arguments you wish to invoke, you can pass them to ecbuild and it will kindly pass them on to CMake.  The general calling syntax is:
 
 .. code-block:: bash
 
@@ -178,17 +178,9 @@ This will invoke the debug flags on the C++ and Fortran compilers and it will al
    ecbuild -- -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CXX_FLAGS="-Wfloat-equal -Wcast-align" ../src/fv3-bundle
 
 
-Let's say that you're working on an HPC system where you do not have the privileges to install Singularity.  If this is the case then we recommend that your first check to see if there are :doc:`JEDI modules <../jedi_environment/modules>` installed on your system.   If your system is listed on this modules documentation page then you can simply load the JEDI module as described there and you will have access to ecbuild, eckit, and other JEDI infrastructure.
+If you are working on an HPC system, then we recommend that your first check to see if there are :doc:`JEDI modules <../jedi_environment/modules>` installed on your system.   If your system is listed on this modules documentation page then you can simply load the modules as described there and you will have access to ecbuild, eckit, and many other third-party libraries.
 
-If your system is not one that is supported by the JEDI team, then a second option is to install :doc:`CharlieCloud <../jedi_environment/charliecloud>` in your home directory and run JEDI from within the Charliecloud container.
-
-A third option is for you to install eckit on your system manually (not recommended).  If you do this, then you may have to tell ecbuild where to find it with this command line option:
-
-.. code-block:: bash
-
-   ecbuild -- -DECKIT_PATH=<path-to-eckit> ../src/fv3-bundle
-
-For more information, enter :code:`ecbuild --help` and see our JEDI page on :doc:`ecbuild and cmake </inside/developer_tools/cmake>`.
+If your system is not one that is supported by the spack-stack maintainers, then refer to the spack-stack instructions on how to generate a site config and install the environment yourself.
 
 Step 4: Run make (from the build directory)
 -------------------------------------------

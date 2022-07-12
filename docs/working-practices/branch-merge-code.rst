@@ -57,6 +57,4 @@ the main and develop branches and the release number is incremented (a new tag
 is created with a minor version number increased, for example from 2.1.0 to 2.1.1).
 For reproducibility, an existing tag should never be moved.
 
-See the guide for
-`getting started with git-flow <../developer/developer_tools/getting-started-with-gitflow.html>`_
-for more details.
+See the guide for :doc:`getting started with git-flow </inside/practices/gitflow>` for more details.

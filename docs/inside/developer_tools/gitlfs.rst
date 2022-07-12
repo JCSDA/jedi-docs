@@ -17,7 +17,7 @@ Installing git-lfs
 
 Git-LFS is a service but it is also an application.  The application is a command-line extension to :code:`git` that enables you to access and use the service.
 
-If you are working from within the JEDI :doc:`Charliecloud <../../using/jedi_environment/charliecloud>` or :doc:`Singularity <../../using/jedi_environment/singularity>` container then you can skip this section; the git-lfs application is already installed as part of the JEDI environment.
+If you are working from within the JEDI container then you can skip this section; the git-lfs application is already installed as part of the JEDI environment.
 
 If you have a Mac, you can install the git-lfs application outside the container using :doc:`Homebrew <homebrew>`:
 

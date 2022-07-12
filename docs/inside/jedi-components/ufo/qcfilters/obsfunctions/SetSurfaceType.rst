@@ -3,9 +3,7 @@
 SetSurfaceType
 ==============
 
-Determine and output surface type for use with observation operator
-(e.g. RTTOV) based on GeoVaLs, observation report type and AAPP (ATOVS and AVHRR Pre-processing Package)
-classification, where available. 
+Determine and output surface type for use with observation operator (e.g. RTTOV) based on GeoVaLs, observation report type and AAPP (ATOVS and AVHRR Pre-processing Package) classification, where available. 
 Based on UK Met Office Ops_SatRad_SetSurfaceType procedure.
 
 Required input variables:

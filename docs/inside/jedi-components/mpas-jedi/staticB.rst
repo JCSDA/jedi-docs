@@ -57,7 +57,7 @@ The application of these univariate correlation matrices is implemented using BU
 B Estimation
 ------------
 
-Please see the :code:`operators-generation` section in SABER's :doc:`../saber/getting_started` to
+Please see the :code:`operators-generation` section in SABER's :doc:`../saber/BUMP_getting_started` to
 generate various BUMP statistics in general.
 
 One missing operation in MPAS-JEDI is an inverse operation of :code:`control2analysis`

@@ -20,10 +20,10 @@ OOPS applications and classes are templated on OBS and/or MODEL traits. These tr
 * :code:`ObsAuxControl`: auxiliary state related to observations (currently only used for bias correction coefficients, but can be used for other cases);
 * :code:`ObsAuxIncrement`: auxiliary increment related to observations (currently only used for bias correction coefficient increments);
 * :code:`ObsAuxCovariance`: auxiliary error covariance related to observations (currently only used for bias correction coefficient error covariances);
+* :code:`ObsAuxPreconditioner`: preconditioner for auxiliary error covariance related to observations (currently only used for the preconditioning of the bias correction coefficient error covariances);
 * :code:`Locations`: observations locations, used in the interface between model and observations, for interpolating model fields to observations locations to be used in H(x);
 * :code:`GeoVaLs`: geophysical values at locations: model fields interpolated to the observation locations; used in H(x);
-* :code:`ObsDiagnostics`: observation operator diagnostics: additional output from the observation operator that can be used in quality control;
-* :code:`AnalyticInit`: analytic initialization for the :code:`GeoVaLs`, used in the interpolation tests.
+* :code:`ObsDiagnostics`: observation operator diagnostics: additional output from the observation operator that can be used in quality control.
 
 There are currently three implementations of :code:`OBS` traits in JEDI: :code:`lorenz95::L95ObsTraits` used with the toy Lorenz95 model, :code:`qg::QgObsTraits` used with the toy quasi-geostrophic model, and :code:`ufo::ObsTraits` used with all realistic models connected to JEDI. :code:`ufo::ObsTraits` lists classes implemented in ioda and ufo as the implementations of above interfaces. All the new models added to JEDI can make use of :code:`ufo::ObsTraits` and do not have to implement any of the above classes.
 
@@ -32,13 +32,15 @@ There are currently three implementations of :code:`OBS` traits in JEDI: :code:`
 * :code:`Geometry`: model grid description, MPI distribution;
 * :code:`State`: analysis state, model state, ensemble member, etc;
 * :code:`Increment`: perturbation to a state;
-* :code:`GetValues`: interpolation from model grid to observation locations;
-* :code:`LinearGetValues`: tangent-linear and adjoint of the interpolation;
+* :code:`LocalInterpolator`: optional, interpolator from/to state locations to/from specified locations on the same MPI task. If :code:`LocalInterpolator` is not specified in the :code:`MODEL` trait, a generic :code:`oops::UnstructuredInterpolator<MODEL>` will be used as a local interpolator;
+* :code:`VariableChange`: variable change in the model space;
+* :code:`LinearVariableChange`: tangent-linear and adjoint of the variable change;
 * :code:`ModelAuxControl`: auxiliary state related to model (currently not used, could be e.g. model bias);
 * :code:`ModelAuxIncrement`: auxiliary increment related to model;
 * :code:`ModelAuxCovariance`: auxiliary error covariance related to model;
-* :code:`ErrorCovariance`: background error covariance;
-* :code:`GeometryIterator`: iterator over model grid points.
+* :code:`ErrorCovariance`: background error covariance (optional);
+* :code:`GeometryIterator`: iterator over model grid points (only used in the :code:`LocalEnsembleDA` applications);
+* :code:`NormGradient`: scale an increment (gradient) according to a given norm (only used in :code:`AdjointForecast`).
 
 Classes in the :code:`MODEL` traits are typically implemented for each distinct model used in JEDI. Depending on the oops application, only a subset of these classes may have to be implemented.
 
@@ -60,7 +62,7 @@ Here :code:`MODEL::Geometry` implementation (an implementation of :code:`Geometr
 
 .. note:: Not all the interface classes are implemented with :code:`interface::Class` and :code:`Class` distinction yet.
 
-.. note:: For the interface classes that do not need additional functionality implemented at oops level (e.g :code:`ObsOperator`, :code:`GetValues`), there is no need for :code:`interface::Class` and :code:`Class` distinction. In this case :code:`Class` interface class is located in :code:`interface` directory.
+.. note:: For the interface classes that do not need additional functionality implemented at oops level (e.g :code:`ObsOperator`, :code:`VariableChange`), there is no need for :code:`interface::Class` and :code:`Class` distinction. In this case :code:`Class` interface class is located in :code:`interface` directory.
 
 Interface classes chosen at runtime
 ===================================

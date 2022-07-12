@@ -12,7 +12,7 @@ Particularities of files representing variance or covariance
 ------------------------------------------------------------
 
 In using `DrawObsErrorFromFile`, differently to :ref:`DrawValueFromFile`, we identify
-our payload variable to have group `ErrorVariance`.  That is, we do not specify the group in the yaml.
+our payload variable to have the group defined by the parameter :code:`group`. The default value of this is `ErrorVariance`.
 
 For NetCDF, we additionally support pulling out the diagonals where the file contains a covariance matrix.
 We identify whether the input NetCDF represents a covariance matrix by the presence of a `full = "true"`
@@ -76,3 +76,6 @@ channel number:
               method: exact
             - name: latitude_band@MetaData
               method: nearest
+
+The `DrawObsErrorFromFile` ObsFunction can read either standard deviations or variances from a file.
+This is controlled by the :code:`dispersion measure` parameter which can take the value of either :code:`standard deviation` or :code:`variance` (the default).

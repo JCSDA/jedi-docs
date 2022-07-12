@@ -146,7 +146,9 @@ An example of using LGETKF solver in FV3:
 Localization supported in the ensemble solvers
 ----------------------------------------------
 
-Observation-space :math:`R`-localization is used in the horizontal in all of the currently available solvers. Localization distance can be specified differently for different observation types in the :code:`obs error.localization` section of configuration, for example:
+Observation-space :math:`R-localization` is used in all local solvers. The :code:`obs localizations` syntax specifies a sequence of obs localizations for each obs space. Localization is initialized to all ones internally and is refined (multiplied) with each subsequent localization in the list. In other words, we assume that localizations are separable. 
+
+Localization sequence is specified as following for each obs space:
 
 .. code-block:: yaml
 
@@ -154,15 +156,13 @@ Observation-space :math:`R`-localization is used in the horizontal in all of the
    - obs space:
        name: radiosonde
      ...
-     obs error:
-       covariance model: diagonal
-     obs localization:
-       localization method: Gaspari-Cohn    # inflate errors with Gaspari-Cohn function, based on the
-                                            # horizontal distance from the updated grid point
-       lengthscale: 1000e3                  # localization distance in meters
+     obs localizations:
+     - localization method: Horizontal Gaspari-Cohn    # inflate errors with Gaspari-Cohn function, based on the
+                                                       # horizontal distance from the updated grid point
+       lengthscale: 1000e3                             # localization distance in meters
 
 
-There is currently no vertical localization in LETKF implementations in JEDI. LGETKF implementation uses ensemble modulation to emulate model-space vertical localization.
+There is currently no vertical localization in LETKF implementations in JEDI. LGETKF implementation uses ensemble modulation to approximate model-space vertical localization. Vertical R-localization is work in progress. 
 
 .. list-table:: Localization options available in different solvers
    :header-rows: 1
@@ -179,6 +179,8 @@ There is currently no vertical localization in LETKF implementations in JEDI. LG
    * - GETKF
      - Gaspari-Cohn R-localization
      - Modulated ensembles for emulating Gaspari-Cohn B-localization
+
+Other options for obs localizations are available outside of oops. Specifically, UFO supports Gaspari-Cohn and SOAR localizations with kd-tree distance search. Additional localizations are supported in soca (Rossby radius based) and fv3-jedi (soil-specific localization). 
 
 Inflation supported in the ensemble solvers
 -------------------------------------------

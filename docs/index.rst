@@ -16,7 +16,9 @@ JEDI is a community effort and external contributions are welcome.  This documen
 
 If you have questions about the JEDI project, JEDI usage, JEDI components, or this document, please `visit our forums <https://forums.jcsda.org>`_.
 
-**If you are eager to get going**, you can go straight to the :doc:`JEDI tutorials <learning/tutorials/index>`.
+**If you are eager to get going**, you can go straight to the `JEDI tutorials <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.3.0/learning/tutorials/index.html>`_.
+Please note that tutorials are specific to releases and some releases do not have companion tutorials. You can choose your desired version of tutorials
+by clicking on the version number in the bottom left side of the readthedocs page.
 
 Table of Contents
 -----------------

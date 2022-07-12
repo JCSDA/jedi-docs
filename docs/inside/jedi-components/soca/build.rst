@@ -12,8 +12,8 @@ in the :doc:`JEDI CMake, CTest, and ecbuild </inside/developer_tools/cmake>` doc
 
 While SOCA can be complied on various architectures (HPC, workstations, ...),
 this section only describes how to compile SOCA inside of a Singularity container.
-Instruction on how to install and run Singularity is provided in the :doc:`JEDI development Singularity container
-</using/jedi_environment/singularity>`.
+Instruction on how to install and run Singularity is provided in the `JEDI development Singularity container
+<https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.3.0/using/jedi_environment/singularity.html>`_.
 
 Download and run a shell inside of a Singularity container:
 
@@ -82,7 +82,7 @@ we give short synopses of a few specific SOCA implementations.
    - :code:`soca_dirac.x` (:code:`oops::Dirac`)
    - :code:`soca_forecast.x` (:code:`oops::Forecast`): similar to the
      :code:`mom6.x` executable, but through the JEDI generic framework via the SOCA interface.
-   - :code:`soca_enspert.x` (:code:`oops::GenEnsPertB`)
+   - :code:`soca_enspert.x` (:doc:`oops::GenEnsPertB <../oops/applications/genenspertb>`)
    - :code:`soca_ensrecenter.x` (:code:`oops::EnsRecenter`)
    - :code:`soca_ensvariance` (:code:`oops::EnsVariance`)
    - :code:`soca_hofx.x` (:code:`oops::HofX4D`)
