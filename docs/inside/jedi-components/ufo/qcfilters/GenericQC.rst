@@ -1,7 +1,7 @@
 Generic QC Filters
 ==================
 
-This section describes how to configure each of the existing QC filters in UFO. All filters can also use the :ref:`"where" statement <where-statement>` to act only on observations meeting certain conditions. By default, each filter acts on all the variables marked as *simulated variables* in the ObsSpace. The :code:`filter variables` keyword can be used to limit the action of the filter to a subset of these variables or to specific channels, as shown in the examples from the :ref:`Bounds Check Filter <bounds-check-filter>` section below.
+This section describes how to configure each of the existing QC filters in UFO. All filters can also use the :ref:`"where" statement <where-statement>` to act only on observations meeting certain conditions. By default, each pre and prior filter acts on all the variables marked as *observed variables* in the ObsSpace, where as post filters act on all *simulated variables* in the ObsSpace. The :code:`filter variables` keyword can be used to limit the action of the filter to a subset of these variables or to specific channels, as shown in the examples from the :ref:`Bounds Check Filter <bounds-check-filter>` section below.
 
 .. _bounds-check-filter:
 
@@ -43,7 +43,7 @@ In this example, all observations from channel 3 will pass QC because the filter
 
 In the above example two filters are configured, one testing temperature, and the other testing wind components. The first filter would reject all temperature observations that are below 230. The second, all wind component observations whose magnitude is above 40.
 
-In practice, one would be more likely to want to filter out wind component observations based on the value of the wind speed :code:`sqrt(eastward_wind**2 + northward_wind**2)`. This can be done using the :code:`test variables` keyword, which rejects observations of a variable if the value of *another* lies outside specified bounds. The "test variable" does not need to be a simulated variable; in particular, it can be an :ref:`ObsFunction <obs-function-and-obs-diagnostic-suffixes>`, i.e. a quantity derived from simulated variables. For example, the following snippet filters out wind component observations if the wind speed is above 40:
+In practice, one would be more likely to want to filter out wind component observations based on the value of the wind speed :code:`sqrt(eastward_wind**2 + northward_wind**2)`. This can be done using the :code:`test variables` keyword, which rejects observations of a variable if the value of *another* lies outside specified bounds. The "test variable" does not need to be a simulated or observed variable; in particular, it can be an :ref:`ObsFunction <obs-function-and-obs-diagnostic-suffixes>`, i.e. a quantity derived from simulated variables. For example, the following snippet filters out wind component observations if the wind speed is above 40:
 
 .. code-block:: yaml
 
@@ -1484,7 +1484,7 @@ YAML file. Each element of this list can contain the following options:
 It is possible to assign variables or ObsFunctions of type :code:`int` to variables of type
 :code:`float` and vice versa. No other type conversions are supported.
 
-If the modified variable belongs to the :code:`DerivedObsValue` group and is a simulated variable,
+If the modified variable belongs to the :code:`DerivedObsValue` group and is a observed variable,
 QC flags previously set to :code:`missing` are reset to :code:`pass` at locations where a valid
 observed value has been assigned. Conversely, QC flags previously set to :code:`pass` are reset to
 :code:`missing` at locations where the observed value has been set to missing.
@@ -1563,7 +1563,7 @@ Create Diagnostic Flags Filter
 
 This "filter" (it is not a true filter; rather, a "processing step") makes it possible to define new diagnostic flags and to reinitialize existing ones.
 
-Diagnostic flags are stored in Boolean ObsSpace variables. A diagnostic flag *Flag* associated with a simulated variable *var* is stored in the variable :code:`DiagnosticFlags/Flag/var`.
+Diagnostic flags are stored in Boolean ObsSpace variables. A diagnostic flag *Flag* associated with a observed variable *var* is stored in the variable :code:`DiagnosticFlags/Flag/var`.
 
 The diagnostic flags to create or reinitialize are specified in the :code:`flags` list in the
 YAML file. Each element of this list can contain the following keys:
@@ -1579,7 +1579,7 @@ Setting and unsetting of diagnostic flags is normally performed using actions on
 Example 1
 ^^^^^^^^^
 
-The following YAML snippet creates diagnostic flags :code:`Duplicate` and :code:`ExtremeValue` for all simulated variables and initializes them to :code:`false` unless they already exist, in which cause their current values are preserved.
+The following YAML snippet creates diagnostic flags :code:`Duplicate` and :code:`ExtremeValue` for all observed variables and initializes them to :code:`false` unless they already exist, in which cause their current values are preserved.
 
 .. code:: yaml
 
@@ -1588,12 +1588,12 @@ The following YAML snippet creates diagnostic flags :code:`Duplicate` and :code:
     - name: Duplicate
     - name: ExtremeValue
 
-For instance, if the list of simulated variables in the ObsSpace is :code:`[air_temperature, relative_humidity]`, the filter will create the following Boolean variables: :code:`DiagnosticFlags/Duplicate/air_temperature`, :code:`DiagnosticFlags/Duplicate/relative_humidity`, :code:`DiagnosticFlags/ExtremeValue/air_temperature` and :code:`DiagnosticFlags/ExtremeValue/relative_humidity`.
+For instance, if the list of observed variables in the ObsSpace is :code:`[air_temperature, relative_humidity]`, the filter will create the following Boolean variables: :code:`DiagnosticFlags/Duplicate/air_temperature`, :code:`DiagnosticFlags/Duplicate/relative_humidity`, :code:`DiagnosticFlags/ExtremeValue/air_temperature` and :code:`DiagnosticFlags/ExtremeValue/relative_humidity`.
 
 Example 2
 ^^^^^^^^^
 
-The following YAML snippet creates a diagnostic flag :code:`OriginallyMeasuredInMmHg` for the simulated variable :code:`surface_pressure` and initializes it to :code:`true`, overwriting any current values if this flag already exists:
+The following YAML snippet creates a diagnostic flag :code:`OriginallyMeasuredInMmHg` for the observed variable :code:`surface_pressure` and initializes it to :code:`true`, overwriting any current values if this flag already exists:
 
 .. code:: yaml
 
