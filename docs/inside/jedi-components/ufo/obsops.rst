@@ -574,6 +574,29 @@ Example of a yaml:
        CoefficientPath: Data/
        AerosolOption: aerosols_gocart_default
 
+Aerosol Optical Depth (AOD) for dust (Met Office)
+-------------------------------------------------
+
+This operator calculates the Aerosol Optical Depth at one wavelength (e.g. 550 nm) from control variables of mass concentration of atmospheric dust (in :math:`kg/m^3`) by height for a number of different size bins, air pressure by height and surface pressure, assuming constant extinction coefficients per bin which are independent of humidity. The air pressure is assumed to be on staggered levels in relation to dust mass concentration, and the levels must be ordered from top-to-bottom. This operator is designed for use with the Met Office forecast model which includes prognostic dust fields with 2 - 6 bins, and for the assimilation of AOD products such as from MODIS and VIIRS.
+
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+- :code:`NDustBins`: number of bins;
+- :code:`AodKExt`: extinction coefficients for each bin in :math:`m^2/kg`. This must be a vector of size `NDustBins`.
+
+Example of a yaml:
+^^^^^^^^^^^^^^^^^^
+
+For example, to calculate the AOD for 3 aerosol dust bins with average extinction coefficients of (for the sake of argument) 100, 200 and 300 :math:`m^2/kg`:
+
+.. code-block:: yaml
+
+    obs operator:
+      name: AodMetOffice
+      NDustBins: 3
+      AodKExt: [1.00E+02,2.00E+02,3.00E+02]
+
 GNSS RO bending angle (NBAM)
 -----------------------------
 
