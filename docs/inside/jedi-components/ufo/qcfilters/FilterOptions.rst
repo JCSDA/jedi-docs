@@ -302,6 +302,8 @@ The action taken on observations flagged by the filter can be adjusted using the
   - :code:`rejected observations` if the diagnostic flag should not be changed at observations that have previously been rejected or
   - :code:`defective observations` if the diagnostic flag should not be changed at observations that have previously been rejected because of a missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator.
 
+* :code:`flag original and average profiles`: rejects any observations in the original profiles that have been flagged by the filter, and also rejects all observations in any averaged profile whose corresponding original profile contains at least one flagged observation. See the example below for further details.
+
 To perform multiple actions, replace the :code:`action` option, which takes a single action, by :code:`actions`, which takes a list of actions. This list may contain at most one action altering quality control flags, namely :code:`reject`, :code:`accept` and :code:`passivate`; if present, such an action must be the last in the list. The :code:`action` and :code:`actions` options are mutually exclusive.
 
 The default action for almost all filters (taken when both the :code:`action` and :code:`actions` keywords are omitted) is :code:`reject`. There are two exceptions: the default action of the :code:`AcceptList` filter is :code:`accept` and the :code:`Perform Action` filter has no default action (either the :code:`action` or :code:`actions` keyword must be present).
@@ -462,6 +464,51 @@ In this example, observations taken in the zonal band 30°S--30°N that have pre
         flag: Tropics
         ignore: defective observations
       - name: accept
+
+
+Example 6: ``flag original and average profiles`` action
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``flag original and averaged profiles`` action should only be used for data sets that satisfy two criteria:
+firstly they have been grouped into records (profiles), and secondly they have an extended
+section of the ObsSpace that consists of profiles that have been averaged onto model levels.
+The action rejects any observations in the original profiles that have been flagged by the
+filter. It also rejects all observations in any averaged profile whose corresponding original
+profile contains at least one flagged observation.
+
+This action should therefore be used for filters that are run only on the original profiles;
+it enables the corresponding averaged profiles to be flagged without running the filter on them.
+Doing this reduces the chance of configuration errors occurring. It may also be desirable if the
+filter relies on properties of the original profiles that are not shared by the averaged
+profiles or if the filter is expensive to run.
+If rejecting observations in the averaged profile is not required, the standard ``reject``
+action can be used instead.
+
+NB the ObsSpace extension is produced with the following yaml options:
+
+.. code-block:: yaml
+
+   extension:
+     allocate companion records with length: N
+
+where ``N`` is the desired number of levels per averaged profile.
+
+For example, to run the ``Gaussian Thinning`` filter on all of the original profiles and
+automatically flag the equivalent averaged profiles, the following yaml block can be used:
+
+.. code-block:: yaml
+
+    - filter: Gaussian Thinning
+      where:
+      - variable:
+          name: MetaData/extended_obs_space
+        is_in: 0
+      action:
+        name: flag original and averaged profiles
+
+If any location in an original profile is flagged (with the ``thinned`` flag in this case),
+all of the locations in the corresponding average profile are also flagged with ``thinned``.
+
 
 Outer Loop Iterations
 ---------------------
