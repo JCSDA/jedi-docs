@@ -198,23 +198,23 @@ The following bash shell commands are necessary to access the installed spack-st
    module load miniconda/3.9.7
    module load ecflow/5.8.4
 
-For ``spack-stack-1.0.1`` with Intel, load the following modules after loading miniconda and ecflow:
+For ``spack-stack-1.0.2`` with Intel, load the following modules after loading miniconda and ecflow:
 
 .. code-block:: bash
 
    ulimit -s unlimited
-   module use /discover/swdev/jcsda/spack-stack/spack-stack-v1/envs/skylab-1.0.0-intel-2022.0.1/install/modulefiles/Core
+   module use /discover/swdev/jcsda/spack-stack/spack-stack-v1/envs/skylab-1.0.2-intel-2022.0.1/install/modulefiles/Core
    module load stack-intel/2022.0.1
    module load stack-intel-oneapi-mpi/2021.5.0
    module load stack-python/3.9.7
    module available
 
-For ``spack-stack-1.0.1`` with GNU, load the following modules after loading miniconda and ecflow:
+For ``spack-stack-1.0.2`` with GNU, load the following modules after loading miniconda and ecflow:
 
 .. code-block:: bash
 
    ulimit -s unlimited
-   module use /gpfsm/dswdev/jcsda/spack-stack/spack-stack-v1/envs/skylab-1.0.0-gnu-10.1.0/install/modulefiles/Core
+   module use /gpfsm/dswdev/jcsda/spack-stack/spack-stack-v1/envs/skylab-1.0.2-gnu-10.1.0/install/modulefiles/Core
    module load stack-gcc/10.1.0
    module load stack-intel-oneapi-mpi/2021.4.0
    module load stack-python/3.9.7
