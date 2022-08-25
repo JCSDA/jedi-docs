@@ -78,8 +78,8 @@ i.e. please make sure to properly shut down or terminate the instance once no lo
 
 In the "Key pair" box, select your key pair (PEM) file.
 Again use the search bar to quickly find your file.
-  Note you will need a PEM file containing your private SSH key.
-  Contact a JEDI Infrastructure team member if you need to set this up.
+Note you will need a PEM file containing your private SSH key.
+Contact a JEDI Infrastructure team member if you need to set this up.
 
 In the "Network settings" box, click on the "Select existing security group" button and select "Global SSH".
 The "Global SSH" security group allows SSH from all IP addresses (“global SSH”) which will allow you to ssh from your

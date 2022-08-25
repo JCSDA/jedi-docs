@@ -99,24 +99,18 @@ For both Intel and GNU, proceed with loading the appropriate modules for your ap
    module load jedi-ewok-env/1.0.0
    module load nco/5.0.6
 
-Orion uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs.  Though some slurm implementations allow you to use the usual mpi job scripts :code:`mpirun` or :code:`mpiexec`, these may not function properly on orion. Instead, you are advised to use the slurm run script :code:`srun`; an appropriate ``jedi-cmake`` toolchain is available to set this up: Pass the following toolchain to :code:`ecbuild`, and use multiple threads to speed up the compilation:
 
+After loading the appropiate modules, you need to clone the jedi-bundle, create a build directory, configure, and build the bundle.
+   
 .. code-block:: bash
 
     git clone https://github.com/jcsda/<jedi-bundle>
     mkdir -p build; cd build
-    ecbuild --toolchain=${$jedi_cmake_ROOT}/share/jedicmake/Toolchains/jcsda-Orion-Intel.cmake <path-to-bundle>
+    ecbuild <path-to-bundle>
     make -j4
 
-Alternatively, you can specify the MPI executable directly on the command line:
-
-.. code-block:: bash
-
-   ecbuild -DMPIEXEC_EXECUTABLE=/opt/slurm/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
-   make -j4
-
-Note that specifying :code:`srun` as the MPI executable is really only necessary for the ctests.  If you run an application directly (outside of ctest), you may simply use :code:`srun`.
-
+The next step is to run ctests. We do not recommand running the ctests on login nodes because of the computational requirements of these tests. Instead you can submit ctests
+as a batch job or use an interactive node. 
 Here is a sample `slurm <https://slurm.schedmd.com/>`_ batch script for running ctest. Note that you will need to add appropriate :code:`#SBATCH` directives for specifying a computing account, quality of service, job partition, and so on; please consult `the Orion Usage and Guidelines documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/cluster_guide.php#orion-use>`_.
 
 .. code-block:: bash
@@ -181,6 +175,15 @@ Submit and monitor your jobs with these commands
 	  squeue -u <your-user-name>
 
 You can delete jobs with the :code:`scancel` command.  For further information please consult `the Orion Cluster Computing Basics documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/clusters_getting_started.php>`_.
+
+An alternative to using the batch script is to request an interactive session on Orion and run the ctests there.
+To request an interactive session you can run:
+
+.. code-block:: bash
+
+   salloc -N1 -n 24 -A <account> --qos=batch --partition=orion --time=480 -I
+
+Make sure you use the correct account number. This command requests for one node with 24 MPI tasks.
 
 
 Discover
