@@ -140,7 +140,7 @@ Here is a sample `slurm <https://slurm.schedmd.com/>`_ batch script for running 
 
    exit 0
 
-Note that the options specified with ``#SBATCH`` include the number of nodes but not the number of tasks needed.  This is most appropriate for running ``ctest`` because some tests require a different number of MPI tasks than others.  However, if you run an application individually, you should specify ``#SBATCH --ntasks <number>`` instead of ``#SBATCH --nodes=<number>``, as shown in the following example.  The slurm job scheduler will properly determine how many nodes your job requires. Specifying ``--ntasks`` instead of ``--nodes`` in the ``#SBATCH`` header commands will mandate that your computing allocation will only be charged for what you use.  This is preferable for more computationally intensive jobs:
+Note that the options specified with ``#SBATCH`` include the number of nodes but not the number of tasks needed.  This is most appropriate for running ``ctest`` because some tests require a different number of MPI tasks than others.  However, if you run an application individually, you should specify ``#SBATCH --ntasks <number>`` instead of ``#SBATCH --nodes=<number>``, as shown in the following example.  The slurm job scheduler will properly determine how many nodes your job requires. Specifying ``--ntasks`` instead of ``--nodes`` in the ``#SBATCH`` header commands will mandate that your computing allocation will only be charged for what you use.  This is preferable for more computationally intensive jobs.
 
 .. code-block:: bash
 
@@ -163,9 +163,13 @@ Note that the options specified with ``#SBATCH`` include the number of nodes but
 
    # make sure the number of tasks it requires matches the SBATCH --ntasks specification above
    cd <path-to-bundle-build-directory>
+   # Note that --ntasks=4 below is not needed in this case - srun will use what's in the SBATCH line above
    srun --ntasks=4 --cpu_bind=core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
 
    exit 0
+
+.. note::
+   JEDI applications (like most NWP applications) require a decent amount of memory, in which case asking for just a fraction of a node may fail with out of memory errors. This can be avoided by asking for an entire node (or, for larger jobs, more nodes) and running with fewer MPI tasks than each node provides by using ``#SBATCH --nodes=1`` and ``srun --ntasks=4``, for example.
 
 Submit and monitor your jobs with these commands
 
@@ -317,60 +321,55 @@ To run tests with slurm and :code:`srun`, you also need to have the following en
 Cheyenne
 --------
 
-.. note:: spack-stack is not yet available on Cheyenne. The instructions below refer to the previous jedi-stack modules that will be replaced with spack-stack modules over the next few weeks.
+`Cheyenne <https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/cheyenne>`_ is a 5.34-petaflops, high-performance computer built for NCAR by SGI.
 
-`Cheyenne <https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/cheyenne>`_ is a 5.34-petaflops, high-performance computer built for NCAR by SGI. On Cheyenne, users can access the installed jedi modules by first entering
+The following bash shell commands are necessary to access the installed spack-stack modules (substitute equivalent csh shell commands as appropriate):
 
 .. code-block:: bash
 
    module purge
-   export JEDI_OPT=/glade/work/jedipara/cheyenne/opt/modules
-   module use $JEDI_OPT/modulefiles/core
+   module unuse /glade/u/apps/ch/modulefiles/default/compilers
+   export MODULEPATH_ROOT=/glade/work/jedipara/cheyenne/spack-stack/modulefiles
+   module use /glade/work/jedipara/cheyenne/spack-stack/modulefiles/compilers
+   module use /glade/work/jedipara/cheyenne/spack-stack/modulefiles/misc
+   module load ecflow/5.8.4
+   module load miniconda/3.9.12
 
-Current options for setting up the JEDI environment include (choose only one)
-
-.. code-block:: bash
-
-   module load jedi/gnu-openmpi # GNU compiler suite and openmpi
-   module load jedi/intel-impi # Intel 19.0.5 compiler suite and Intel mpi
-
-Because of space limitations on your home directory, it's a good idea to locate your build directory on the `glade <https://www2.cisl.ucar.edu/resources/storage-and-file-systems/glade-file-spaces>`_ filesystems:
+For ``spack-stack-1.0.1`` with Intel, load the following modules after loading miniconda and ecflow:
 
 .. code-block:: bash
 
-    cd /glade/work/<username>
-    mkdir jedi/build; cd jedi/build
+   ulimit -s unlimited
+   module use /glade/work/jedipara/cheyenne/spack-stack/spack-stack-v1/envs/skylab-1.0.0-intel-19.1.1.217/install/modulefiles/Core
+   module load stack-intel/19.1.1.217
+   module load stack-intel-mpi/2019.7.217
+   module load stack-python/3.9.12
+   module available
 
-If you choose the :code:`jedi/gnu-openmpi` module, you can proceed run :code:`ecbuild` as you would on most other systems:
+For ``spack-stack-1.0.1`` with GNU, load the following modules after loading miniconda and ecflow:
+
+.. code-block:: console
+
+   ulimit -s unlimited
+   module use /glade/work/jedipara/cheyenne/spack-stack/spack-stack-v1/envs/skylab-1.0.0-gnu-10.1.0/install/modulefiles/Core
+   module load stack-gcc/10.1.0
+   module load stack-openmpi/4.1.1
+   module load stack-python/3.9.12
+   module available
+
+For both Intel and GNU, proceed with loading the appropriate modules for your application, for example for the ``skylab-1.0`` release:
 
 .. code-block:: bash
 
-   ecbuild <path-to-bundle>
-   make update
-   make -j4
+   module load jedi-fv3-env/1.0.0
+   module load jedi-ewok-env/1.0.0
+   module load nco/5.0.6
+
+Because of space limitations on your home directory, it's a good idea to build your code on the `glade <https://www2.cisl.ucar.edu/resources/storage-and-file-systems/glade-file-spaces>`_ filesystems (`work` or `scratch`):
 
 .. warning::
 
    Please do not use too many threads to speed up the compilation, Cheyenne system administrator might terminate your login node.
-
-However, if you choose to compile with the :code:`jedi/intel-impi` module you must use a toolchain.  This is required in order enable C++14 and to link to the proper supporting libraries.
-
-First clone the :code:`jedi-cmake` repository:
-
-.. code-block:: bash
-
-   git clone git@github.com:jcsda/jedi-cmake.git
-
-Then pass this toolchain to :code:`ecbuild`:
-
-.. code-block:: bash
-
-   ecbuild --toolchain=<path-to-jedi-cmake>/jedi-cmake/cmake/Toolchains/jcsda-Cheyenne-Intel.cmake <path-to-bundle>
-
-.. note::
-
-   If you cloned the ``jedi-cmake`` repository as part of building a jedi bundle, then the name of the repository may be ``jedicmake`` instead of ``jedi-cmake``.
-   In all subsequent ``ecbuild`` commands you must continue to pass the toolchain file.
 
 The system configuration on Cheyenne will not allow you to run mpi jobs from the login node.  If you try to run :code:`ctest` from here, the mpi tests will fail.  To run the jedi unit tests you will have to either submit a batch job or request an interactive session with :code:`qsub -I`.  The following is a sample batch script to run the unit tests for ``ufo-bundle``.  Note that some ctests require up to 6 MPI tasks so requesting 6 cores should be sufficient.
 
@@ -380,22 +379,17 @@ The system configuration on Cheyenne will not allow you to run mpi jobs from the
     #PBS -N ctest-ufo-gnu
     #PBS -A <account-number>
     #PBS -l walltime=00:20:00
-    #PBS -l select=1:ncpus=6:mpiprocs=6
+    #PBS -l select=1:ncpus=24:mpiprocs=24
     #PBS -q regular
     #PBS -j oe
     #PBS -k eod
     #PBS -m abe
     #PBS -M <your-email>
 
-    source source /etc/profile.d/modules.sh
-    module purge
-    export JEDI_OPT=/glade/work/jedipara/cheyenne/opt/modules
-    module use $JEDI_OPT/modulefiles/core
-    module load jedi/gnu-openmpi
-    module list
+    # Insert the appropriate module purge and load commands here
 
     # cd to your build directory.  Make sure that these binaries were built
-    # with the same module that is loaded above, in this case jedi/intel-impi
+    # with the same module that is loaded above
 
     cd <build-directory>
 
@@ -469,7 +463,7 @@ The following is a sample batch script to run the unit tests for ``ufo-bundle``.
     #PBS -N ctest-ufo-gnu
     #PBS -A <project-code>
     #PBS -l walltime=00:20:00
-    #PBS -l select=1:ncpus=6:mpiprocs=6
+    #PBS -l select=1:ncpus=24:mpiprocs=24
     #PBS -q casper
     #PBS -j oe
     #PBS -k eod
@@ -494,46 +488,53 @@ The following is a sample batch script to run the unit tests for ``ufo-bundle``.
 S4
 --
 
-.. note:: spack-stack is not yet available on S4. The instructions below refer to the previous jedi-stack modules that will be replaced with spack-stack modules over the next few weeks.
-
 S4 is the **Satellite Simulations and Data Assimilation Studies** supercomputer located at the University of Wisconsin-Madison's Space Science and Engineering Center.
 
 The S4 system currently only supports intel compilers.  Furthermore, S4 uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs.  Though some slurm implementations allow you to use the usual mpi job scripts :code:`mpirun` or :code:`mpiexec`, these may not function properly on S4.  Instead, you are advised to use the slurm run script :code:`srun`.
 
-To load the JEDI intel module you can use the following commands (as on other systems, you can put the first two lines in your :code:`~/.bashrc` file for convenience):
+The following bash shell commands are necessary to access the installed spack-stack modules (substitute equivalent csh shell commands as appropriate):
 
 .. code-block:: bash
 
-   export JEDI_OPT=/data/prod/jedi/opt/modules
-   module use $JEDI_OPT/modulefiles/core
-   module load jedi/intel-impi
+   module purge
+   module use /data/prod/jedi/spack-stack/modulefiles
+   module load miniconda/3.9.12
+   module load ecflow/5.8.4
 
-The recommended way to compile JEDI on S4 is to first clone the :code:`jedi-cmake` repository, which contains an S4 toolchain:
-
-.. code-block:: bash
-
-   git clone git@github.com:jcsda/jedi-cmake.git
-
-Then pass this toolchain to :code:`ecbuild`:
+For ``spack-stack-1.0.2`` with Intel, load the following modules after loading miniconda and ecflow:
 
 .. code-block:: bash
 
-   ecbuild --toolchain=<path-to-jedi-cmake>/jedi-cmake/cmake/Toolchains/jcsda-S4-Intel.cmake <path-to-bundle>
+   ulimit -s unlimited
+   module use /data/prod/jedi/spack-stack/spack-stack-v1/envs/skylab-1.0.0-intel-2021.5.0/install/modulefiles/Core
+   module load stack-intel/2021.5.0
+   module load stack-intel-oneapi-mpi/2021.5.0
+   module load stack-python/3.9.12
+   module unuse /opt/apps/modulefiles/Compiler/intel/non-default/22
+   module unuse /opt/apps/modulefiles/Compiler/intel/22
+   module available
 
-.. note::
-
-   If you cloned the ``jedi-cmake`` repository as part of building a jedi bundle, then the name of the repository may be ``jedicmake`` instead of ``jedi-cmake``.
-
-Alternatively, you can specify the MPI executable directly on the command line:
+Note the two `module unuse` statements, that need to be run after the stack metamodules are loaded. Loading the Intel compiler meta module loads the Intel compiler module provided by the sysadmins, which adds those two directories to the module path. These contain duplicate libraries that are not compatible with our stack, such as ``hdf4``. Proceed with loading the appropriate modules for your application, for example for the ``skylab-1.0`` release:
 
 .. code-block:: bash
 
-   ecbuild -DMPIEXEC_EXECUTABLE=/usr/bin/srun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle>
-   make -j4
+   module load jedi-fv3-env/1.0.0
+   module load jedi-ewok-env/1.0.0
+   module load nco/5.0.6
 
-Note that this specifying :code:`srun` as the MPI executable is only really necessary for the ctests.  If you run an application directly (outside of ctest), you can just use :code:`srun`.
+When using ``ecbuild``, use ``ecbuild -DMPIEXEC_EXECUTABLE="/usr/bin/srun" -DMPIEXEC_NUMPROC_FLAG="-n"``. After building, you will want to run the ``get`` tests from the login node to download the test data:
 
-Here is a sample slurm batch script for running ctest.
+.. code-block:: bash
+
+    ctest -R get_
+
+You can run the remaining tests from the login node, because ``srun`` will dispatch them on a compute node.  You can also run them interactively on a compute node after running
+
+.. code-block:: bash
+
+    salloc --nodes=1 --time=30 -I
+
+or you can submit a batch script to the queue through ``sbatch``. Here is a sample slurm batch script:
 
 .. code-block:: bash
 
@@ -544,13 +545,23 @@ Here is a sample slurm batch script for running ctest.
    #SBATCH --time=0:10:00
    #SBATCH --mail-user=<email-address>
 
-   source /etc/bashrc
    module purge
-   export JEDI_OPT=/data/prod/jedi/opt/modules
-   module use $JEDI_OPT/modulefiles/core
-   module load jedi/intel-impi
-   module list
+   module use /data/prod/jedi/spack-stack/modulefiles
+   module load miniconda/3.9.12
+   module load ecflow/5.8.4
+
    ulimit -s unlimited
+   module use /data/prod/jedi/spack-stack/spack-stack-v1/envs/skylab-1.0.0-intel-2021.5.0/install/modulefiles/Core
+   module load stack-intel/2021.5.0
+   module load stack-intel-oneapi-mpi/2021.5.0
+   module load stack-python/3.9.12
+
+   module unuse /opt/apps/modulefiles/Compiler/intel/non-default/22
+   module unuse /opt/apps/modulefiles/Compiler/intel/22
+
+   module load jedi-fv3-env/1.0.0
+   module load jedi-ewok-env/1.0.0
+   module load nco/5.0.6
 
    export SLURM_EXPORT_ENV=ALL
    export HDF5_USE_FILE_LOCKING=FALSE
@@ -560,7 +571,9 @@ Here is a sample slurm batch script for running ctest.
 
    exit 0
 
-Note that the options specified with ``#SBATCH`` include the number of nodes but not the number of tasks needed.  This is most appropriate for running ``ctest`` because some tests require a different number of MPI tasks than others.  However, if you run an application individually, you should specify ``#SBATCH --ntasks <number>`` instead of ``#SBATCH --nodes=<number>``, as shown in the following example.  The slurm job scheduler will then determine how many nodes you need.  For example, if you are running with the ivy partition as shown here, then each node has 20 cpu cores.  So, if your application takes more than 20 MPI tasks, slurm will allocate more than one node.  Specifying ``--ntasks`` instead of ``--nodes`` in the ``#SBATCH`` header commands will ensure that your computing allocation will only be charged for what you use.  So, this is preferable for more computationally intensive jobs:
+Note that the options specified with ``#SBATCH`` include the number of nodes but not the number of tasks needed.  This is most appropriate for running ``ctest`` because some tests require a different number of MPI tasks than others. 
+
+Note that the options specified with ``#SBATCH`` include the number of nodes but not the number of tasks needed.  This is most appropriate for running ``ctest`` because some tests require a different number of MPI tasks than others.  However, if you run an application individually, you should specify ``#SBATCH --ntasks <number>`` instead of ``#SBATCH --nodes=<number>``, as shown in the following example.  The slurm job scheduler will properly determine how many nodes your job requires. Specifying ``--ntasks`` instead of ``--nodes`` in the ``#SBATCH`` header commands will mandate that your computing allocation will only be charged for what you use.  This is preferable for more computationally intensive jobs.
 
 .. code-block:: bash
 
@@ -572,23 +585,26 @@ Note that the options specified with ``#SBATCH`` include the number of nodes but
    #SBATCH --mail-user=<email-address>
 
    source /etc/bashrc
-   module purge
-   export JEDI_OPT=/data/prod/jedi/opt/modules
-   module use $JEDI_OPT/modulefiles/core
-   module load jedi/intel-impi
-   module list
+
+   # Insert the module purge and load statements in here
+
    ulimit -s unlimited
+   ulimit -v unlimited
 
    export SLURM_EXPORT_ENV=ALL
    export HDF5_USE_FILE_LOCKING=FALSE
 
    # make sure the number of tasks it requires matches the SBATCH --ntasks specification above
-   cd <path-to-bundle-build-directory>/test/ufo
+   cd <path-to-bundle-build-directory>
+   # Note that --ntasks=4 below is not needed in this case - srun will use what's in the SBATCH line above
    srun --ntasks=4 --cpu_bind=core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
 
    exit 0
 
-Then you can submit and monitor your jobs with these commands
+.. note::
+   JEDI applications (like most NWP applications) require a decent amount of memory, in which case asking for just a fraction of a node may fail with out of memory errors. This can be avoided by asking for an entire node (or, for larger jobs, more nodes) and running with fewer MPI tasks than each node provides by using ``#SBATCH --nodes=1`` and ``srun --ntasks=4``, for example.
+
+After submitting the batch script with :code:`sbatch name_of_script`, you can monitor your jobs with these commands:
 
 .. code-block:: bash
 
