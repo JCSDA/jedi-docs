@@ -92,6 +92,13 @@ The variable transforms available are:
 
    transforms/potentialtemperature
 
+**PStar**
+
+.. toctree::
+   :maxdepth: 2
+
+   transforms/surfacepressure
+
 Formulations
 ============
 
