@@ -961,6 +961,194 @@ Examples of yaml:
      - name: [refractivity]
      threshold: 3
 
+Ground Based GNSS observation operator (Met Office)
+---------------------------------------------------
+
+The JEDI UFO interface of the Met Office's observation operator for Ground based GNSS Zenith Total Delay (ZTD). 
+ZTD is the equivalent extra path that a radio signal from a Global Navigation Satellite System satellite travels from vertically overhead to a station on the ground due to the presence of the atmosphere compared to that same path through a vacuum. 
+The ZTD may be expressed as
+
+.. math::
+   ZTD=10^{-6}\int_{z=0}^{z=\infty}{N dz}
+ 
+Where :math:`z` is the height above the surface and :math:`N` is the refractivity, given by
+
+.. math::
+  N=\frac{aP}{T}+\frac{be^2}{T^2}
+
+Where :math:`P` is pressure, :math:`e` is water vapour pressure, :math:`T` is temperature and :math:`a` and :math:`b` are the dry and wet refractivity constants respectively, given by 0.776 KPa\ :sup:`-1` and 3.73x10\ :sup:`3` K\ :sup:`2` Pa\ :sup:`-1`. ZTD can be considered to be constructed from two delay components; Zenith Wet Delay (ZWD), due to the dipole moment of water and Zenith Hydrostatic Delay (ZHD) due to the dry atmosphere.
+
+The Met Office Ground Based GNSS observation operator makes use of a generic refractivity calculator and for the tangent linear and adjoint it calculates the ZTD gradient with respect to both the pressure and specific humidity. 
+
+Model inputs for the forward operator are specific humidity, pressure, geopotential heights of air_pressure/full levels/theta and geopotential heights of air_pressure_levels/half levels/rho. 
+
+Configuration options (ObsFilters):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+These configurations are generic to using the refractivity calculator, which the Ground Based GNSS operator utilises.  
+The operator requires these values to be set to the default values to work correctly, therefore, these configuration options do not need to be written out in the YAML when calling this operator.
+
+:code:`vert_interp_ops`:
+  If true, then perform vertical interpolation of pressure from half levels to full levels using ln(p), otherwise
+  use exner (air_pressure levels pressure) (default: true).
+:code:`pseudo_ops`:
+  If true, use pseudo-levels to improve the accuracy of the refractivity
+  calculation (default: false).
+:code:`min_temp_grad`:
+  Minimum value of the vertical temperature gradient when checking for isothermal
+  levels in the pseudo-level calculation (default: 1e-6).
+  
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+:code:`ufo/test/testinput/groundgnssmetoffice.yaml`
+
+.. code-block:: yaml
+
+  - obs operator: 
+      name: GroundgnssMetOffice
+      min_temp_grad: 1.0e-6
+    obs space: 
+      name: Groundgnss
+      obsdatain: 
+        obsfile: Data/ufo/testinput_tier_1/groundgnss_obs_2019123006_obs.nc
+      simulated variables: [total_zenith_delay] 
+    geovals: 
+      filename: Data/ufo/testinput_tier_1/groundgnss_geovals_20191230T0600Z.nc4
+
+Details of how the operator works
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+
+Below, the method for calculating ZTD using the refractivity calculator, the partial derivatives at each calculation, and the ZTD gradient with respect to pressure and humidity is described.
+Both pressure and humidity signals can be identified in the ZTD and so the gradient for the tangent linear and adjoint (TL/AD) are calculated with respect to both pressure and specific humidity. 
+
+The operator works in the direction of surface to the model top.  
+
+In this operator, we assume ln(pressure) is linear with height and therefore :code:`vert_interp_ops` needs to be true (default), and use this assumption to interpolate pressure on rho levels :math:`P_{\rho}` (air_pressure_levels/half levels) to pressure on theta levels :math:`P_{\theta}` (air_pressure/full levels), such that:
+
+.. math::
+  P_{\theta}=e^{((z_{weight})lnP_{\rho_{i}}+(1-z_{weight})lnP_{\rho_{i+1}} )}
+
+Where
+
+.. math::
+  z_{weight} =\frac{z_{\rho_{i+1}}-z_{\theta_{i}}}{z_{\rho_{i+1}}-z_{\rho_{i}}},
+
+with :math:`z_{\rho}` being the geopotential height of the rho levels and :math:`z_{\theta}` being the geopotential height of the theta levels. 
+Pressure on theta and rho levels, together with specific humidity on theta levels is then passed to the generic refractivity calculator, which calculates refractivity on theta levels. The partial derivative of the pressure on theta with regards to pressure on rho levels is required for the refractivity derivatives used in the ZTD TL/AD, and is
+
+.. math::
+  \frac{\partial P_{\theta_{i}}}{\partial P_{\rho_{i}}}=\frac{P_{\theta_{i}} z_{weight}}{P_{\rho_{i}}} 
+
+And for the ZTD above the model top we require
+
+.. math::
+  \frac{\partial P_{\theta_{i}}}{\partial P_{\rho_{i+1}}}=\frac{P_{\theta_{i}} (1-z_{weight})}{P_{\rho_{i+1}}} 
+
+The operator then loops through the theta levels, starting with the theta level directly above the station height, calculating the delay contribution for each layer bounded by the theta levels, assuming the refractivity decays exponentially between the model levels.
+
+.. math::
+  N_{i+1}=N_{i} e^{-c(z_{i+1}-z_{i})}
+
+Where :math:`c` is the scale height such that
+
+.. math::
+  c_{i}=\frac{lnN_{i+1}-lnN_{i}}{z_{i}-z_{i+1}} 
+
+.. math::
+  \frac{\partial c_{i}}{\partial N_{i} }=\frac{-1}{N_{i} (z_{i}-z_{i+1})}
+  
+.. math::  
+  \frac{\partial c_{i}}{\partial N_{i+1}}=\frac{1}{N_{i+1}(z_{i}-z_{i+1})}
+
+
+Delay for layer :math:`i` is then
+
+.. math::
+  ZTD_{i}=-10^{-6} \frac{N_{i}}{c_{i}} e^{c_{i} z_{i}} (e^{-c_{i} z_{i+1}}-e^{-c_{i} z_{i}})
+
+.. math::
+  \frac{\partial ZTD_{i}}{\partial c_{i}} =-10^{-6} \frac{N_{i}}{c_{i}}  (\frac{1}{c_{i}} +e^{c_{i} (z_{i}-z_{i+1})} (z_{i}-z_{i+1}-\frac{1}{c_{i}} ))
+
+.. math::
+  \frac{\partial ZTD_{i}}{\partial N_{i}}=\frac{-10^{-6}}{c_{i}}  e^{c_{i} z_{i} } (e^{-c_{i} z_{i+1} }-e^{-c_{i} z_{i} })
+  
+The delay for each layer is added to the running total delay.
+The operator iterates up to the highest theta level, calculating the delay up to that point. 
+A further small correction must be made for the signal above the model top. An assumption of hydrostatic equilibrium is used to calculate the integral 
+
+.. math::
+   ZTD_{top}=10^{-6}\int_{z=z_{modeltop}}^{z=\infty}{\frac{aP}{T}}dz
+
+which then gives the delay above the model top as
+
+.. math::
+  ZTD_{top}=\frac{10^{-6} aR}{g} P_{\theta_{top}}
+  
+where :math:`R` is the gas constant and :math:`g` is the gravitational acceleration.
+  
+:math:`ZTD_{top}` is then added to the accumulated ZTD. Therefore the partial differentials with respect to specific humidity :math:`q` and pressure at the top of the model levels (note for rho levels, :math:`\rho_{top}` is one level above :math:`\theta_{top}`) are
+
+.. math::
+  \frac{\partial {ZTD_{top}}}{\partial {q_{\theta_{top}}}}=0.0
+
+.. math::
+  \frac{\partial{ZTD_{top}}}{\partial P_{\rho_{top}}}=0.0
+
+.. math::
+  \frac{\partial ZTD_{top}}{\partial P_{\theta_{top}}} =\frac{10^{-6} aR}{g}
+
+
+At the model bottom (see GBGNSS figure 1), if the station height is below the model bottom, the scale height from the first model layer is used, and the height of the station is used in the Zenith delay calculation such that
+
+.. math::
+  ZTD_{1}=-10^{-6}  \frac{N_{1}}{c_{1}}  e^{c_{1} z_{1} } (e^{-c_{1} z_{2} }-e^{-c_{1} z_{station} })
+
+and
+
+.. math::
+  \frac{dZTD_{1}}{dN_{1}}=\frac{\partial ZTD_{1}}{\partial N_{1}}+\frac{\partial ZTD_{1}}{\partial c_{1}}  \frac{\partial c_{1}}{\partial N_{1}}
+  
+If the station lies above the lowest model level, the refractivity is interpolated exponentially to the station height (see GBGNSS figure 2) from level :math:`i`, the scale height is that for the whole model layer i.e. :math:`z_{i}` to :math:`z_{i+1}`, and Zenith delay is calculated from the station height such that
+
+.. math::
+  ZTD_{station}=-10^{-6} \frac{N_{station}}{c_{i}} e^{c_{i} z_{station}} (e^{-c_{i} z_{i+1} }-e^{-c_{i} z_{station}})
+  
+and
+
+.. math::
+  \frac{dZTD_{i}}{dN_{i}}=\frac{\partial ZTD_{station}}{\partial N_{station}} \frac{\partial N_{station}}{\partial N_{i}}+\frac{\partial ZTD_{station}}{\partial c_{i}} \frac{\partial c_{i}}{\partial N_{i}}
+
+Where
+
+.. math:: 
+  \frac{\partial ZTD_{station}}{\partial c_{i}}=\frac{\partial ZTD_{station}}{\partial c_{i}}+\frac{\partial ZTD_{station}}{\partial N_{station}}  \frac{\partial N_{station}}{\partial c_{i}}
+
+And
+
+.. math::
+  \frac{\partial N_{station}}{\partial c_{i}}=-N_{station} (z_{station}-z_{i+1})
+
+Using the above partial differentials, and using the partial differential of refractivity with respect to pressure and specific humidity, the differential of ZTD with respect to input pressure and humidity on the rest of the levels can be found through: 
+
+.. math::
+  \frac{dZTD_{i}}{dN_{i}}=\frac{\partial ZTD_{i}}{\partial N_{i}}+\frac{\partial ZTD_{i}}{\partial c_{i}}  \frac{\partial c_{i}}{\partial N_{i}} +\frac{\partial ZTD_{i}}{\partial c_{i-1}}  \frac{\partial c_{i-1}}{\partial N_{i}}
+
+.. math::
+  \frac{dZTD_{i}}{dP_{\rho_{i}}}=\frac{\partial ZTD_{i}}{\partial N_{i}}  \frac{\partial N_{i}}{\partial P_{\rho_{i}}}
+
+.. math::
+  \frac{dZTD_{i}}{dq_{\theta_{i}}}=\frac{\partial ZTD_{i}}{\partial N_{i}}  \frac{\partial N_{i}}{\partial q_{\theta_{i}}}
+
+.. image:: images/GNSS_Station_height_below_model_surface.png
+           :alt: A diagram for stations below model levels
+
+GBGNSS Figure 1: Diagram of the model levels with the station height lying below the lowest model level. 
+
+.. image:: images/GNSS_Station_height_between_levels.png
+           :alt: A diagram for stations between levels
+	   
+GBGNSS Figure 2: Diagram of the model levels with the station height lying between two model levels. 
+
 .. _obsops_identity:
 
 Identity observation operator
