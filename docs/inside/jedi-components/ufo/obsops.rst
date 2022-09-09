@@ -1303,6 +1303,43 @@ Cotton, J., 2018. Update on surface wind activities at the Met Office.
 Proceedings for the 14 th International Winds Workshop, 23-27 April 2018, Jeju City, South Korea.
 Available from http://cimss.ssec.wisc.edu/iwwg/iww14/program/index.html.
 
+SfcPCorrected
+---------------------------------------
+
+Description:
+^^^^^^^^^^^^
+This forward operator contains several schemes to correct the computation of surface atmospheric pressure at a location for the discrepancy in model topography at the observation location. Note that only the nonlinear operator is included, and to use it in variational applications will require specifying the linear obs operator (Identity).
+
+Schemes:
+
+`GSI`: If there is observed temperature along with pressure, take the average of the model simulated and observed near surface temperature, otherwise use just the model simulated temperature (and extrapolate to the surface using 6.5K/km lapse rate if the ob height is below the model lowest layer). Then the pressure correction is as such: `P = exp(log(P) - ((Z_ob - Z_model) * (gravity * Rd) / T))` where `Rd` is 287.05 J/kg/K 
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+* da_psfc_scheme - choice of `UKMO`, `GSI`, or `WRFDA` methods
+* geovar_geomz - name of height geovar
+* geovar_sfc_geomz - name of surface altitude/elevation geovar
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+.. code-block:: yaml
+
+  observations:
+  - obs space:
+    name: sondes_ps
+    obsdatain:
+      obsfile: sondes_ps_obs_2022082300.nc4
+    obsdataout:
+      obsfile: sondes_ps_diag_2022082300.nc4
+    simulated variables: [surface_pressure]
+  obs operator:
+    name: SfcPCorrected
+    da_psfc_scheme: GSI
+    geovar_sfc_geomz: surface_geopotential_height
+    geovar_geomz: geopotential_height
+  linear obs operator:
+    name: Identity
+
 Background Error Vertical Interpolation
 ---------------------------------------
 
