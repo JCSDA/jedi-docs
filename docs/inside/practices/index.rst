@@ -10,3 +10,4 @@ Best Practices for Developers
    pullrequest.rst
    document.rst
    ecmwf_forks.rst
+   openmp.rst
