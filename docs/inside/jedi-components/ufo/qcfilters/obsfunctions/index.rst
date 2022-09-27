@@ -23,6 +23,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`CloudDetectMinResidualIR <CloudDetectMinResidualIR>`
   Cloud detection using Minimum Residual Method for IR Sensors
 
+:ref:`CloudFirstGuessMinimumResidual <CloudFirstGuessMinimumResidual>`
+  Cloud top pressure and effective cloud amount from satellite BTs.
+
 :ref:`CLWMatchIndexMW <CLWMatchIndexMW>`
   Cloud liquid water match index for microwave radiances
 
@@ -161,6 +164,7 @@ filters into separate parts would have an obfuscating effect.
    CloudCostFunction
    CloudDetectMinResidualAVHRR
    CloudDetectMinResidualIR
+   CloudFirstGuessMinimumResidual
    CLWMatchIndexMW
    CLWRetMW
    CLWRetMW_SSMIS
