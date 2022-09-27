@@ -16,7 +16,7 @@ relative humidity from GeoVaLs of specific humidity, temperature, and pressure a
 then performs vertical interpolation. The output of the ObsFunction is the difference
 between the two interpolated H(x) values.
 
-The H(x) difference can be added to observed relative humidity (using a :code:`LinearCombination`
+The H(x) difference can be added to observed relative humidity (using an :code:`Arithmetic`
 ObsFunction) prior to running QC filters that rely on relative humidity O-B such as the
 Background Check. After those filters have run, the H(x) difference can be subtracted back off.
 
@@ -34,7 +34,7 @@ Parameters
 
 - :code:`observed_pressure`: Name of observed pressure.
 
-- :code:`capsupersat`: Cap relative humidity at 100%. Default :code:`false`.
+- :code:`capsupersat`: [optional, default :code:`false`] Cap relative humidity at 100%. Default :code:`false`.
 
 
 Example yaml

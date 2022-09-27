@@ -470,8 +470,10 @@ Example 6: ``flag original and average profiles`` action
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``flag original and averaged profiles`` action should only be used for data sets that satisfy two criteria:
-firstly they have been grouped into records (profiles), and secondly they have an extended
-section of the ObsSpace that consists of profiles that have been averaged onto model levels.
+
+1. They have been grouped into records (profiles).
+2. They have an extended section of the ObsSpace that consists of profiles that have been averaged onto model levels.
+
 The action rejects any observations in the original profiles that have been flagged by the
 filter. It also rejects all observations in any averaged profile whose corresponding original
 profile contains at least one flagged observation.
@@ -491,7 +493,7 @@ NB the ObsSpace extension is produced with the following yaml options:
    extension:
      allocate companion records with length: N
 
-where ``N`` is the desired number of levels per averaged profile.
+where ``N`` is an integer equal to the number of levels per averaged profile.
 
 For example, to run the ``Gaussian Thinning`` filter on all of the original profiles and
 automatically flag the equivalent averaged profiles, the following yaml block can be used:

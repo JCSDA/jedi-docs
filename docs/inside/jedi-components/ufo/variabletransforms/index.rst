@@ -41,6 +41,9 @@ The :code:`Variable Transforms` filter has the following available yaml settings
    (See individual :ref:`available-variable-transforms` for possible choices and definitions)
  - **UseValidDataOnly**: [*Optional* | *default = true*] 
    Should the variable transform be applied only to valid data? 
+ - **FillMissingDerivedFromOriginal** [*Optional* | *default = false*]
+   If *true*, fill any missing entries of a vector in a Derived group (e.g. DerivedObsValue) with
+   the non-missing entries of the vector in the equivalent original group (e.g. ObsValue).
    
    .. warning:: If :code:`UseValidDataOnly=true`, the variable transform is 
       **not** applied to observations that have a :code:`QCflag` equal to either
@@ -71,12 +74,19 @@ The variable transforms available are:
    transforms/humidity
 
 
-**Pressure**
+**Pressure from height**
 
 .. toctree::
    :maxdepth: 2
 
    transforms/pressure
+
+**Height from pressure**
+
+.. toctree::
+   :maxdepth: 1
+
+   transforms/heightfrompressure
 
 **Wind**
 
@@ -92,6 +102,13 @@ The variable transforms available are:
 
    transforms/potentialtemperature
 
+**Profile horizontal drift**
+
+.. toctree::
+   :maxdepth: 1
+
+   transforms/profilehorizontaldrift
+
 **PStar**
 
 .. toctree::
@@ -99,17 +116,18 @@ The variable transforms available are:
 
    transforms/surfacepressure
 
+
 Formulations
 ============
 
-The formuations available are:
+The formulations available are:
 
 .. toctree::
    :maxdepth: 2
 
    formulations/formula_part1 
 
-**Table listing all the symbol used**
+**Table listing all the symbols used**
 
 .. toctree::
    :maxdepth: 2
