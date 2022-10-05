@@ -152,7 +152,9 @@ option; if this option is not present, all variables in the ObsSpace are simulat
   obs space:
     name: Radiosonde
     obsdatain:
-      obsfile: Data/ioda/testinput_tier_1/sondes_obs_2018041500_s.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ioda/testinput_tier_1/sondes_obs_2018041500_s.nc4
     simulated variables: [eastward_wind, northward_wind, surface_pressure, relative_humidity]
   obs operator:
     name: Composite
@@ -179,7 +181,9 @@ vertical interpolation of the variables simulated by this operator.
   obs space:
     name: Radiosonde with staggered vertical levels
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_composite_operator_sonde_obs.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_composite_operator_sonde_obs.nc4
     simulated variables: [eastward_wind, northward_wind, air_temperature]
   obs operator:
     name: Composite
@@ -654,13 +658,17 @@ Examples of yaml:
  - obs space:
       name: GnssroBnd
       obsdatain:
-        obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
+        engine:
+          type: H5File
+          obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
         obsgrouping:
           group variable: "record_number"
           sort variable: "impact_height"
           sort order: "ascending"
       obsdataout:
-        obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
+        engine:
+          type: H5File
+          obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
       simulate variables: [bending_angle]
     obs operator:
       name: GnssroBndNBAM
@@ -725,12 +733,16 @@ Examples of yaml:
  - obs space:
      name: GnssroBndROPP1D
      obsdatain:
-       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+       engine:
+         type: H5File
+         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
        obsgrouping:
          group variable: "record_number"
          sort variable: "impact_height"
      obsdataout:
-       obsfile: Data/gnssro_bndropp1d_2018041500_m_output.nc4
+       engine:
+         type: H5File
+         obsfile: Data/gnssro_bndropp1d_2018041500_m_output.nc4
      simulate variables: [bending_angle]
    obs operator:
       name:  GnssroBndROPP1D
@@ -798,12 +810,16 @@ Examples of yaml:
  - obs space:
      name: GnssroBndROPP2D
      obsdatain:
-       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+       engine:
+         type: H5File
+         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
        obsgrouping:
          group_variable: "record_number"
          sort_variable: "impact_height"
      obsdataout:
-       obsfile: Data/gnssro_bndropp2d_2018041500_m_output.nc4
+       engine:
+         type: H5File
+         obsfile: Data/gnssro_bndropp2d_2018041500_m_output.nc4
      simulate variables: [bending_angle]
    obs operator:
       name: GnssroBndROPP2D
@@ -872,7 +888,9 @@ Examples of yaml:
     obs space:
       name: GnssroBnd
       obsdatain:
-        obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2019050700_1obs.nc4
+        engine:
+          type: H5File
+          obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2019050700_1obs.nc4
       simulated variables: [bending_angle]
     geovals:
       filename: Data/gnssro_geoval_2019050700_1obs.nc4
@@ -938,7 +956,9 @@ Examples of yaml:
  - obs space:
      name: GnssroRef
      obsdatain:
-       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
+       engine:
+         type: H5File
+         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
      simulate variables: [refractivity]
    obs operator:
      name: GnssroRefNCEP
@@ -1009,7 +1029,9 @@ Examples of yaml:
     obs space: 
       name: Groundgnss
       obsdatain: 
-        obsfile: Data/ufo/testinput_tier_1/groundgnss_obs_2019123006_obs.nc
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/groundgnss_obs_2019123006_obs.nc
       simulated variables: [total_zenith_delay] 
     geovals: 
       filename: Data/ufo/testinput_tier_1/groundgnss_geovals_20191230T0600Z.nc4
@@ -1258,7 +1280,9 @@ Examples of yaml:
     obs space:
       name: Radar
       obsdatain:
-        obsfile: Data/radar_rw_obs_2019052222.nc4
+        engine:
+          type: H5File
+          obsfile: Data/radar_rw_obs_2019052222.nc4
       simulated variables: [radial_velocity]
 
 Scatterometer neutral wind (Met Office)
@@ -1288,9 +1312,13 @@ Examples of yaml:
     obs space:
       name: Scatwind
       obsdatain:
-        obsfile: Data/ioda/testinput_tier_1/scatwind_obs_1d_2020100106.nc4
+        engine:
+          type: H5File
+          obsfile: Data/ioda/testinput_tier_1/scatwind_obs_1d_2020100106.nc4
       obsdataout:
-        obsfile: Data/scatwind_obs_1d_2020100106_opr_test_out.nc4
+        engine:
+          type: H5File
+          obsfile: Data/scatwind_obs_1d_2020100106_opr_test_out.nc4
       simulated variables: [eastward_wind, northward_wind]
     geovals:
       filename: Data/ufo/testinput_tier_1/scatwind_geoval_20201001T0600Z.nc4
@@ -1395,9 +1423,13 @@ Examples of yaml:
   - obs space:
     name: sondes_ps
     obsdatain:
-      obsfile: sondes_ps_obs_2022082300.nc4
+      engine:
+        type: H5File
+        obsfile: sondes_ps_obs_2022082300.nc4
     obsdataout:
-      obsfile: sondes_ps_diag_2022082300.nc4
+      engine:
+        type: H5File
+        obsfile: sondes_ps_diag_2022082300.nc4
     simulated variables: [surface_pressure]
   obs operator:
     name: SfcPCorrected

@@ -567,9 +567,13 @@ type in the YAML. For example,
     obs space:
       name: Radiosonde
       obsdatain:
-        obsfile: sondes_obs_2018041500_m.nc4
+        engine:
+          type: H5File
+          obsfile: sondes_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: obsout_sondes.nc4
+        engine:
+          type: H5File
+          obsfile: obsout_sondes.nc4
       simulated variables: [air_temperature, eastward_wind, northward_wind, specific_humidity]
     obs operator:
       name: VertInterp

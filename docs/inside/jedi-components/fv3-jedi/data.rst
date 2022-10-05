@@ -101,7 +101,9 @@ users can select where they would like the data to be output.
 .. code:: yaml
 
    obsdataout:
-     obsfile: Data/hofx/aircraft_4denvar-gfs_2018041500_m.nc4
+     engine:
+       type: H5File
+       obsfile: Data/hofx/aircraft_4denvar-gfs_2018041500_m.nc4
 
 
 **bump**

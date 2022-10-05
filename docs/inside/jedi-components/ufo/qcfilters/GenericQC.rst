@@ -1387,8 +1387,8 @@ The following YAML parameters are supported:
   details on how each of these sub-parameters works. Optional parameter.
 
 * :code:`obs space`: The options used to create the auxiliary obs space that is determined by the
-  observation subtype. A user needs to enter the following fields: name, simulated variables, and
-  obsdatain.obsfile or generate. It additionally may be necessary to specify the distribution as
+  observation subtype. A user needs to enter the following fields: name, simulated variables,
+  and obsdatain. It additionally may be necessary to specify the distribution as
   InefficientDistribution. This prevents the observations from distributing to different
   processors between the original obs space and the auxiliary obs space, which could cause
   in-window observations flagged in the auxiliary obs space to be left unflagged in the original

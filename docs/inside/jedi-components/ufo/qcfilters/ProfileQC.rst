@@ -21,11 +21,13 @@ The user can specify two options in the yaml: :code:`absolute threshold` and :co
     - obs space:
         name: test data
         obsdatain:
-        obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
-        obsgrouping:
-          group variables: [ "record_number" ]
-          sort variable: "latitude"
-          sort order: "descending"
+          engine:
+            type: H5File
+            obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+          obsgrouping:
+            group variables: [ "record_number" ]
+            sort variable: "latitude"
+            sort order: "descending"
         simulated variables: [variable]
       HofX: HofX
       obs filters:
@@ -54,9 +56,11 @@ This filter finds the number of valid observations within a profile.  If this nu
     - obs space:
         name: test data
         obsdatain:
-        obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
-        obsgrouping:
-          group variables: ["record_number"]
+          engine:
+            type: H5File
+            obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+          obsgrouping:
+            group variables: ["record_number"]
         simulated variables: [variable]
       obs filters:
       - filter: Profile Few Observations Check
@@ -97,7 +101,9 @@ This filter relies on the refractivity and model geopotential heights being save
       obs space:
         name: GnssroBnd
         obsdatain:
-          obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2020050106_1dvar.nc4
+          engine:
+            type: H5File
+            obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2020050106_1dvar.nc4
         simulated variables: [bending_angle]
       geovals:
         filename: Data/ufo/testinput_tier_1/gnssro_geoval_2020050106_1dvar.nc4
