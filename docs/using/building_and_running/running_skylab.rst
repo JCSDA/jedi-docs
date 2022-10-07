@@ -20,7 +20,7 @@ Versions used:
 
     AMI Name skylab-2.0.0-ubuntu20
 
-    AMI ID ami-06fce89fba374ea67
+    AMI ID ami-02e7b2df53af9596b
 
     Recommend using t2.2xlarge instance or M5 instance with 32 cores (expensive …)
 
