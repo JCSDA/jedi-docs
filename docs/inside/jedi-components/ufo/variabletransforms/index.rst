@@ -21,7 +21,9 @@ the example below:
    - obs space:
       name: test_relative_humidity1
       obsdatain:
-         obsfile: Data/ioda/testinput_tier_1/sfc_obs_2018041500_metars_small.nc
+         engine:
+           type: H5File
+           obsfile: Data/ioda/testinput_tier_1/sfc_obs_2018041500_metars_small.nc
       simulated variables: [specific_humidity, air_temperature, surface_pressure]
    obs filters:
    - filter: Variable Transforms
@@ -91,6 +93,13 @@ The variable transforms available are:
    :maxdepth: 2
 
    transforms/potentialtemperature
+
+**PStar**
+
+.. toctree::
+   :maxdepth: 2
+
+   transforms/surfacepressure
 
 Formulations
 ============

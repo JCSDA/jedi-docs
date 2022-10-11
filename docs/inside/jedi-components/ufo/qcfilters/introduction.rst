@@ -39,7 +39,9 @@ Most filters are written once and used with many observation types; several such
   - obs space:
       name: AMSUA-NOAA19
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 1-15
     obs filters:

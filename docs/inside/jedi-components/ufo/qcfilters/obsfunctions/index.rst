@@ -59,6 +59,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`InterChannelConsistencyCheck <InterChannelConsistencyCheck>`
   Inter-channel consistency check for radiances
 
+:ref:`MetOfficeRelativeHumidityCorrection <MetOfficeRelativeHumidityCorrection>`
+  Produce correction to Met Office relative humidity H(x).
+
 :ref:`NearSSTRetCheckIR <NearSSTRetCheckIR>`
   NCEP-GDAP near-sea-surface temperature IR retrieval
 
@@ -170,6 +173,7 @@ filters into separate parts would have an obfuscating effect.
    HydrometeorCheckAMSUA
    HydrometeorCheckATMS
    InterChannelConsistencyCheck
+   MetOfficeRelativeHumidityCorrection
    NearSSTRetCheckIR
    ObsErrorBoundIR
    ObsErrorBoundMW

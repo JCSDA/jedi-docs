@@ -41,76 +41,79 @@ Generic arguments:
 
 Specific arguments:
 
-+-------------+---------------------+----------------------+--------------------------------------------------------+
-| $MODEL      | $DIAG               | $SPECIFIC_ARGS       | DESCRIPTION                                            |
-+=============+=====================+======================+========================================================+
-| :code:`l95` | :code:`cost`        | :code:`filepath`     | Log file path [.test or .log.out]                      |
-+             +---------------------+----------------------+--------------------------------------------------------+
-|             | :code:`fields`      | :code:`filepath`     | NetCDF file path [.nc]                                 |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`basefilepath` | Base NetCDF file path for difference [.nc]             |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`-bg`          | Background file path (optional for plot) [.nc]         |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`-t`           | Truth file path (optional for plot) [.nc]              |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`-o`           | Observations file path (optional for plot) [.nc]       |
-+             +---------------------+----------------------+--------------------------------------------------------+
-|             | :code:`timeseries`  | :code:`filepath`     | NetCDF file path (with %id% template) [.nc]            |
-+             +                     +----------------------+--------------------------------------------------------+ 
-|             |                     | :code:`-fKey`        | Legend key for data from 'filepath' file (optional)    |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`-f2`          | NetCDF file path (with %id% template) [.nc] (optional) |
-+             +                     +----------------------+--------------------------------------------------------+ 
-|             |                     | :code:`-f2Key`       | Legend key for data from '-f2' file (optional)         |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`-f3`          | NetCDF file path (with %id% template) [.nc] (optional) |
-+             +                     +----------------------+--------------------------------------------------------+ 
-|             |                     | :code:`-f3Key`       | Legend key for data from '-f3' file (optional)         |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`-f4`          | NetCDF file path (with %id% template) [.nc] (optional) |
-+             +                     +----------------------+--------------------------------------------------------+ 
-|             |                     | :code:`-f4Key`       | Legend key for data from '-f4' file (optional)         |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`truthfilepath`| Truth file path (with %id% template) [.nc]             |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`times`        | Time series pattern values (used to replace %id%)      |
-+             +---------------------+----------------------+--------------------------------------------------------+
-|             | :code:`errors`      | :code:`filepath`     | Analysis file path [.nc]                               |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`truthfilepath`| Truth file path [.nc]                                  |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`-bg`          | Background file path (optional for plot) [.nc]         |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`--recenter`   | Recenter plot around first and last variable (optional)|
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`--title`      | User specified title (optional)                        |
-+             +---------------------+----------------------+--------------------------------------------------------+
-|             | :code:`increments`  | :code:`filepath`     | Analysis file path [.nc]                               |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`bgfilepath`   | Background file path [.nc]                             |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`-t`           | Truth file path (optional for plot) [.nc]              |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`--recenter`   | Recenter plot around first and last variable (optional)|
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`--title`      | User specified title (optional)                        |
-+-------------+---------------------+----------------------+--------------------------------------------------------+
-| :code:`qg`  | :code:`cost`        | :code:`filepath`     | Log file path [.test or .log.out]                      |
-+             +---------------------+----------------------+--------------------------------------------------------+
-|             | :code:`fields`      | :code:`filepath`     | NetCDF file path [.nc]                                 |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`basefilepath` | Base NetCDF file path for difference [.nc]             |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`--plotwind`   | Flag to plot the wind                                  |
-+             +                     +----------------------+--------------------------------------------------------+
-|             |                     | :code:`--gif`        | Pattern replacing %id% in filepath to create a gif     |
-+             +---------------------+----------------------+--------------------------------------------------------+
-|             | :code:`obs`         | :code:`filepath`     | NetCDF file path [.nc]                                 |
-+-------------+---------------------+----------------------+--------------------------------------------------------+
++-------------+---------------------+----------------------------+--------------------------------------------------------+
+| $MODEL      | $DIAG               | $SPECIFIC_ARGS             | DESCRIPTION                                            |
++=============+=====================+============================+========================================================+
+| :code:`l95` | :code:`cost`        | :code:`filepath`           | Log file path [.test or .log.out]                      |
++             +---------------------+----------------------------+--------------------------------------------------------+
+|             | :code:`fields`      | :code:`filepath`           | NetCDF file path [.nc]                                 |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`basefilepath`       | Base NetCDF file path for difference [.nc]             |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-bg`                | Background file path (optional for plot) [.nc]         |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-t`                 | Truth file path (optional for plot) [.nc]              |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-o`                 | Observations file path (optional for plot) [.nc]       |
++             +---------------------+----------------------------+--------------------------------------------------------+
+|             | :code:`timeseries`  | :code:`filepath`           | NetCDF file path (with %id% template) [.nc]            |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-fKey`              | Legend key for data from 'filepath' file (optional)    |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-f2`                | NetCDF file path (with %id% template) [.nc] (optional) |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-f2Key`             | Legend key for data from '-f2' file (optional)         |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-f3`                | NetCDF file path (with %id% template) [.nc] (optional) |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-f3Key`             | Legend key for data from '-f3' file (optional)         |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-f4`                | NetCDF file path (with %id% template) [.nc] (optional) |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-f4Key`             | Legend key for data from '-f4' file (optional)         |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`truthfilepath`      | Truth file path (with %id% template) [.nc]             |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`times`              | Time series pattern values (used to replace %id%)      |
++             +---------------------+----------------------------+--------------------------------------------------------+
+|             | :code:`errors`      | :code:`filepath`           | Analysis file path [.nc]                               |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`truthfilepath`      | Truth file path [.nc]                                  |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-bg`                | Background file path (optional for plot) [.nc]         |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`--recenter`         | Recenter plot around first and last variable (optional)|
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`--title`            | User specified title (optional)                        |
++             +---------------------+----------------------------+--------------------------------------------------------+
+|             | :code:`increments`  | :code:`filepath`           | Analysis file path [.nc]                               |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`bgfilepath`         | Background file path [.nc]                             |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`-t`                 | Truth file path (optional for plot) [.nc]              |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`--recenter`         | Recenter plot around first and last variable (optional)|
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`--title`            | User specified title (optional)                        |
++-------------+---------------------+----------------------------+--------------------------------------------------------+
+| :code:`qg`  | :code:`cost`        | :code:`filepath`           | Log file path [.test or .log.out]                      |
++             +---------------------+----------------------------+--------------------------------------------------------+
+|             | :code:`fields`      | :code:`filepath`           | NetCDF file path [.nc]                                 |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`basefilepath`       | Base NetCDF file path for difference [.nc]             |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`--plotObsLocations` | Specify an observation file to plot the obs positions  |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`--plotwind`         | Flag to plot the wind                                  |
++             +                     +----------------------------+--------------------------------------------------------+
+|             |                     | :code:`--gif`              | Pattern replacing %id% in filepath to create a gif     |
++             +---------------------+----------------------------+--------------------------------------------------------+
+|             | :code:`obs`         | :code:`filepath`           | NetCDF file path [.nc]                                 |
++-------------+---------------------+----------------------------+--------------------------------------------------------+
 
 Examples
 ^^^^^^^^
+
 
 **L95 / cost**
 
@@ -122,8 +125,8 @@ Plot the cost function components for the 3DVar test of the L95 model:
 
 .. code-block:: bash
 
-  ./plot.py l95 cost --output l95_cost \
-                    [build_bundle]/oops/l95/test/testoutput/3dvar.out
+  python plot.py l95 cost --output l95_cost \
+                 [build_bundle]/oops/l95/test/testoutput/3dvar.out
   Parameters:
    - model: l95
    - diagnostic: cost
@@ -134,9 +137,10 @@ Plot the cost function components for the 3DVar test of the L95 model:
 
 You will notice the quadratic function is flat, it is because the problem converges very fast.
 
-
-.. image:: l95_cost.jpg
+.. image:: images/l95_cost.jpg
+   :width: 500
    :align: center
+
 
 **L95 / fields**
 
@@ -144,9 +148,9 @@ Plot the analysis increment (analysis - background) for the 3DVar test of the L9
 
 .. code-block:: bash
 
-  ./plot.py l95 fields --output l95_fields \
-                       [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
-                       [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95
+  python plot.py l95 fields --output l95_fields \
+                 [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
+                 [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95
   Parameters:
    - model: l95
    - diagnostic: fields
@@ -156,7 +160,8 @@ Plot the analysis increment (analysis - background) for the 3DVar test of the L9
   Run script
    -> plot produced: l95_fields_incr.jpg
 
-.. image:: l95_fields_incr.jpg
+.. image:: images/l95_fields_incr.jpg
+   :width: 500
    :align: center
 
 
@@ -164,11 +169,11 @@ Plot the analysis, background, truth and observations for the 3DVar test of the 
 
 .. code-block:: bash
 
-  ./plot.py l95 fields [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
-            -bg [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
-            -t [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
-            -o [build_bundle]/oops/l95/test/Data/truth3d.2010-01-02T00\:00\:00Z.obt
-            
+  python plot.py l95 fields [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
+                 -bg [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
+                 -t [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
+                 -o [build_bundle]/oops/l95/test/Data/truth3d.2010-01-02T00\:00\:00Z.obt
+
   Parameters:
    - model: l95
    - diagnostic: fields
@@ -184,25 +189,27 @@ Plot the analysis, background, truth and observations for the 3DVar test of the 
 
 Since several observations are available at each location throughout the time window, you can see up to three observation points for each location on the following plot.
 
-.. image:: l95_fields_all_plots.jpg
+.. image:: images/l95_fields_all_plots.jpg
+   :width: 500
    :align: center
+
 
 **L95 / timeseries**
 
-Plot a time series of RMSE(field1 - field2) for DA tests using the L95 model. Optionally plot up to 3 more series with optional user specified legend keys. 
+Plot a time series of RMSE(field1 - field2) for DA tests using the L95 model. Optionally plot up to 3 more series with optional user specified legend keys.
 
 .. code-block:: bash
-   
-   ./plot.py l95 timeseries [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P%id%.l95 \
-                            -fKey "Series 1" \
-                            -f2 [build_bundle]/oops/l95/test/Data/forecast.ens.1.2010-01-01T00\:00\:00Z.P%id%.l95  \
-                            -f2Key "Series 2" \
-                            -f3 [build_bundle]/oops/l95/test/Data/forecast.ens.2.2010-01-01T00\:00\:00Z.P%id%.l95 \
-                            -f3Key "Series 3" \
-                            -f4 [build_bundle]/oops/l95/test/Data/forecast.ens.3.2010-01-01T00\:00\:00Z.P%id%.l95 \
-                            -f4Key "Series 4" \
-                            [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P%id%.l95 \
-                            T3H,T6H,T9H,T12H,T18H,1D 
+
+  python plot.py l95 timeseries [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P%id%.l95 \
+                 -fKey "Series 1" \
+                 -f2 [build_bundle]/oops/l95/test/Data/forecast.ens.1.2010-01-01T00\:00\:00Z.P%id%.l95  \
+                 -f2Key "Series 2" \
+                 -f3 [build_bundle]/oops/l95/test/Data/forecast.ens.2.2010-01-01T00\:00\:00Z.P%id%.l95 \
+                 -f3Key "Series 3" \
+                 -f4 [build_bundle]/oops/l95/test/Data/forecast.ens.3.2010-01-01T00\:00\:00Z.P%id%.l95 \
+                 -f4Key "Series 4" \
+                 [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P%id%.l95 \
+                  T3H,T6H,T9H,T12H,T18H,1D
 
   Parameters:
    - model: l95
@@ -221,20 +228,21 @@ Plot a time series of RMSE(field1 - field2) for DA tests using the L95 model. Op
   Run script
    -> plot produced: forecast.fc.2010-01-01T00:00:00Z.P.jpg
 
-.. image:: l95_errors_timeseries.jpg
+.. image:: images/l95_errors_timeseries.jpg
+   :width: 500
    :align: center
+
 
 **L95 / errors**
 
 Plot the following errors for the L95 model: analysis - truth (always) and background - truth (optionally).
 
-
 .. code-block:: bash
 
-  ./plot.py l95 errors [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
-                       [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
-                       -bg [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
-                       --recenter --title "Errors Experiment I"
+  python plot.py l95 errors [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
+                 [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
+                 -bg [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
+                 --recenter --title "Errors Experiment I"
 
   Parameters:
    - model: l95
@@ -244,24 +252,25 @@ Plot the following errors for the L95 model: analysis - truth (always) and backg
    - bgfilepath: [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95
    - output: None
    - recenter: True
-   - title Errors Experiment I 
+   - title Errors Experiment I
   Run script
    -> plot produced: 3dvar.an.2010-01-02T00:00:00Z.jpg
 
-.. image:: l95_errors_an_bg.jpg
+.. image:: images/l95_errors_an_bg.jpg
+   :width: 500
    :align: center
-   
+
+
 **L95 / increments**
 
 Plot the following increments for the L95 model: increment analysis-background (always) and perfect increment truth - background (optionally).
 
-
 .. code-block:: bash
 
-  ./plot.py l95 increments [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
-                       [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
-                       -t [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
-                       --recenter --title "Increments Experiment I"
+  python plot.py l95 increments [build_bundle]/oops/l95/test/Data/3dvar.an.2010-01-02T00\:00\:00Z.l95 \
+                 [build_bundle]/oops/l95/test/Data/forecast.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
+                 -t [build_bundle]/oops/l95/test/Data/truth.fc.2010-01-01T00\:00\:00Z.P1D.l95 \
+                 --recenter --title "Increments Experiment I"
 
   Parameters:
    - model: l95
@@ -275,37 +284,92 @@ Plot the following increments for the L95 model: increment analysis-background (
   Run script
    -> plot produced: 3dvar.an.2010-01-02T00:00:00Z.jpg
 
-.. image:: l95_increments.jpg
+.. image:: images/l95_increments.jpg
+   :width: 500
    :align: center
+
 
 
 **QG / fields**
 
-Plot the analysis for the 3DVar test of the QG model, with corresponding geostropic winds:
+Plot the analysis for the 3DVar test of the QG model, with corresponding geostrophic winds:
  - streamfunction on levels 1 and 2,
  - potential vorticity on levels 1 and 2.
+ - horizontal wind on levels 1 and 2.
+ - vertical wind on levels 1 and 2.
 
 .. code-block:: bash
 
-  ./plot.py qg fields --output qg_fields \
-                      --plotwind \
-                      [build_bundle]/oops/qg/test/Data/3dvar.an.2010-01-01T12\:00\:00Z.nc
+  python plot.py qg fields --output qg_fields \
+                 [build_bundle]/oops/qg/test/Data/3dvar.an.2010-01-01T12\:00\:00Z.nc
   Parameters:
    - model: qg
    - diagnostic: fields
    - filepath: [build_bundle]/oops/qg/test/Data/3dvar.an.2010-01-01T12:00:00Z.nc
    - basefilepath: None
-   - plotwind: True
+   - plotObsLocations: None
+   - plotwind: False
+   - gif: None
    - output: qg_fields
+   - title: None
   Run script
    -> plot produced: qg_fields_x.jpg
    -> plot produced: qg_fields_q.jpg
+   -> plot produced: qg_fields_u.jpg
+   -> plot produced: qg_fields_v.jpg
 
-.. image:: qg_fields_x.jpg
+.. image:: images/qg_fields_x.jpg
+   :width: 500
    :align: center
 
-.. image:: qg_fields_q.jpg
+.. image:: images/qg_fields_q.jpg
+   :width: 500
    :align: center
+
+.. image:: images/qg_fields_u.jpg
+   :width: 500
+   :align: center
+
+.. image:: images/qg_fields_v.jpg
+   :width: 500
+   :align: center
+
+
+**QG / fields - increment and overlay observation positions**
+
+Plot the increment for the 3DVar test of the QG model and overlay the observation locations:
+
+.. code-block:: bash
+
+  python plot.py qg fields --output qg_increment \
+                 --plotwind \
+                 [build_bundle]/oops/qg/test/Data/3dvar.an.2010-01-01T12\:00\:00Z.nc \
+                 [build_bundle]/oops/qg/test/Data/forecast.fc.2009-12-31T00\:00\:00Z.P1DT12H.nc \
+                 --plotObsLocations [build_bundle]/oops/qg/test/Data/truth.obs3d.nc
+  Parameters:
+   - model: qg
+   - diagnostic: fields
+   - filepath: [build_bundle]/oops/qg/test/Data/3dvar.an.2010-01-01T12:00:00Z.nc
+   - basefilepath: [build_bundle]/oops/qg/test/Data/forecast.fc.2009-12-31T00:00:00Z.P1DT12H.nc
+   - plotObsLocations: [build_bundle]/oops/qg/test/Data/truth.obs3d.nc
+   - plotwind: True
+   - gif: None
+   - output: qg_increment
+   - title: None
+  Run script
+   -> plot produced: qg_increment_x_diff.jpg
+   -> plot produced: qg_increment_q_diff.jpg
+   -> plot produced: qg_increment_u_diff.jpg
+   -> plot produced: qg_increment_v_diff.jpg
+
+.. image:: images/qg_increment_x_diff.jpg
+   :width: 500
+   :align: center
+
+.. image:: images/qg_increment_u_diff.jpg
+   :width: 500
+   :align: center
+
 
 **QG / fields - animated GIF**
 
@@ -313,17 +377,19 @@ Plot the sequence of states of the "truth" forecast in an animated GIF.
 
 .. code-block:: bash
 
-  ./plot.py qg fields --output qg_fields_animation_%id% \
-                      [build_bundle]/oops/qg/test/Data/truth.fc.2009-12-15T00\:00\:00Z.%id%.nc \
-                      --gif P1D,P2D,P3D,P4D,P5D,P6D,P7D,P8D,P9D,P10D,P11D,P12D,P13D,P14D,P15D,P16D,P17D,P18D
+  python plot.py qg fields --output qg_fields_animation_%id% \
+                 [build_bundle]/oops/qg/test/Data/truth.fc.2009-12-15T00\:00\:00Z.%id%.nc \
+                 --gif P1D,P2D,P3D,P4D,P5D,P6D,P7D,P8D,P9D,P10D,P11D,P12D,P13D,P14D,P15D,P16D,P17D,P18D
   Parameters:
    - model: qg
    - diagnostic: fields
    - filepath: [build_bundle]/oops/qg/test/Data/truth.fc.2009-12-15T00:00:00Z.%id%.nc
    - basefilepath: None
+   - plotObsLocations: None
    - plotwind: False
    - gif: P1D,P2D,P3D,P4D,P5D,P6D,P7D,P8D,P9D,P10D,P11D,P12D,P13D,P14D,P15D,P16D,P17D,P18D
    - output: qg_fields_animation_%id%
+   - title: None
   Run script
    -> plot produced: qg_fields_animation_P1D_x.jpg
    -> plot produced: qg_fields_animation_P2D_x.jpg
@@ -364,11 +430,14 @@ Plot the sequence of states of the "truth" forecast in an animated GIF.
    -> plot produced: qg_fields_animation_P18D_q.jpg
    -> gif produced: qg_fields_animation_P1D_q.gif
 
-.. image:: qg_fields_animation_P1D_x.gif
+.. image:: images/qg_fields_animation_P1D_x.gif
+   :width: 500
    :align: center
 
-.. image:: qg_fields_animation_P1D_q.gif
+.. image:: images/qg_fields_animation_P1D_q.gif
+   :width: 500
    :align: center
+
 
 **QG / obs**
 
@@ -376,7 +445,7 @@ Copy the observation file values from the NetCDF into a text file.
 
 .. code-block:: bash
 
-  ./plot.py qg obs --output qg_obs [build_bundle]/oops/qg/test/Data/3dvar.obs3d.nc
+  python plot.py qg obs --output qg_obs [build_bundle]/oops/qg/test/Data/3dvar.obs3d.nc
   Parameters:
    - model: qg
    - diagnostic: obs
