@@ -7,7 +7,7 @@ Overview
 --------
 
 The Interface for Observation Data Access (IODA) component of JEDI provides the interfaces that bridge the external observation data to the components within JEDI that utilize those data, namely OOPS and UFO.
-As shown in :numref:`ioda-hlev-dflow`, observation data needs to be transferred between four primary systems: the GTS network (data providers), the observation pre-processing system, the data assimilation (DA) process and the diagnostics processes.
+As shown in :numref:`ioda-hlev-dflow`, observation data needs to be transferred between four primary systems: the data providers, the observation pre-processing system, the data assimilation (DA) process and the diagnostics processes.
 
 .. _ioda-hlev-dflow:
 .. figure:: images/IODA_Overview.png
@@ -58,10 +58,10 @@ Therefore, UFO takes the observation location meta data from IODA, queries the m
 One task for OOPS is to run minimization which operates in part on the difference between the actual observations, y, and the simulated observations, H(x).
 OOPS collects H(x) from UFO and y from IODA to form a departure, y - H(x), that is used in the minimization process.
 
-GTS Network and Output Diagnostics
-----------------------------------
+Data Providers and Output Diagnostics
+-------------------------------------
 
-The `Global Telecommunication System (GTS) <https://public.wmo.int/en/programmes/global-telecommunication-system>`_ data providers (:numref:`ioda-hlev-dflow`, GTS network) store observation data in a wide variety of formats.
+The Data Providers, :numref:`ioda-hlev-dflow`, (e.g., `Global Telecommunication System (GTS) <https://public.wmo.int/en/programmes/global-telecommunication-system>`_ store observation data in a wide variety of formats.
 Because of this, the general idea in IODA is to convert these formats to a common format, the IODA data model, to facilitate access by IODA.
 This way, the different manners in which JEDI may want to select, query, or distribute the observation data can be done through one API to the IODA data model, as opposed to many API's to the various data provider formats.
 After the DA run completes, it is often desired to analyze different aspects of that run.

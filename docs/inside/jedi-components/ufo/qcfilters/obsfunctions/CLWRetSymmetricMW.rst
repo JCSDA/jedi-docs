@@ -38,7 +38,9 @@ AMSU-A Example (function_clwretmean.yaml), see "obs function" section below:
   - obs space:
       name: amsua_n19
       obsdatain:
-        obsfile: Data/ufo/testinput_tier_1/amsua_n19_obs_2018041500_m_qc.nc4
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/amsua_n19_obs_2018041500_m_qc.nc4
       simulated variables: [brightness_temperature]
       channels: 1, 2
     geovals:

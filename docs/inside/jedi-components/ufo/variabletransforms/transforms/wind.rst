@@ -12,13 +12,34 @@ the eastward (u) and northward (v) wind component.
 .. code-block:: yaml
 
     obs filters:
-    - filter: Variables Transform
+    - filter: Variable Transforms
     Transform: ["WindComponents"]
     
 **Observation parameters needed** (JEDI name)
 
+The default option for this transform requires the following variables:
+
 - wind_speed (:math:`V_{s}`)
 - wind_from_direction (:math:`V_{d}`)
+
+It is possible to change the default variables by setting the following options in the yaml: 
+
+- wind direction variable
+- wind speed variable
+- group
+
+For example the surface wind speed and direction can be transformed using the following:
+
+.. code-block:: yaml
+
+    obs filters:
+    - filter: Variable Transforms
+    Transform: ["WindComponents"]
+    wind speed variable: windSpeedAt10M
+    wind direction variable: windDirectionAt10M
+
+The group option can be set to transform wind speed and direction from a group other than ObsValue. 
+
 
 **Method(s) available**
 
@@ -51,13 +72,34 @@ wind speed and direction.
 .. code-block:: yaml
 
     obs filters:
-    - filter: Variables Transform
+    - filter: Variable Transforms
     Transform: ["WindSpeedAndDirection"]
     
 **Observation parameters needed** (JEDI name)
 
+The default option for this transform requires the following variables:
+
 - eastward_wind (:math:`u`)
 - northward_wind (:math:`v`)
+
+It is possible to change the default variables by setting the following options in the yaml: 
+
+- eastward wind variable
+- northward wind variable
+- group
+
+For example the surface wind speed and direction can be transformed using the following:
+
+.. code-block:: yaml
+
+    obs filters:
+    - filter: Variable Transforms
+    Transform: ["WindSpeedAndDirection"]
+    eastward wind variable: windEastwardAt10M
+    northward wind variable: windNorthwardAt10M
+
+The group option can be set to transform eastward and northward wind from a group other than ObsValue. 
+
 
 **Method(s) available**
 

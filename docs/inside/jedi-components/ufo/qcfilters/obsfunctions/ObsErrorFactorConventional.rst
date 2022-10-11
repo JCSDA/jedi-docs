@@ -65,9 +65,11 @@ accordingly in descending :code:`air_pressure` order.
     obs space:
       name: test
       obsdatain:
-        obsfile: testdata
-       obsgrouping:
-         group variables: ["station_id", "datetime"] # Choose parameteres to identify each of
-                                                     # the obs profiles
-         sort variable: "air_pressure"
-         sort order: "descending"
+        engine:
+          type: H5File
+          obsfile: testdata
+        obsgrouping:
+          group variables: ["station_id", "datetime"] # Choose parameteres to identify each of
+                                                      # the obs profiles
+          sort variable: "air_pressure"
+          sort order: "descending"

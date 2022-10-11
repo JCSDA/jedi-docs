@@ -152,7 +152,9 @@ option; if this option is not present, all variables in the ObsSpace are simulat
   obs space:
     name: Radiosonde
     obsdatain:
-      obsfile: Data/ioda/testinput_tier_1/sondes_obs_2018041500_s.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ioda/testinput_tier_1/sondes_obs_2018041500_s.nc4
     simulated variables: [eastward_wind, northward_wind, surface_pressure, relative_humidity]
   obs operator:
     name: Composite
@@ -179,7 +181,9 @@ vertical interpolation of the variables simulated by this operator.
   obs space:
     name: Radiosonde with staggered vertical levels
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_composite_operator_sonde_obs.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_composite_operator_sonde_obs.nc4
     simulated variables: [eastward_wind, northward_wind, air_temperature]
   obs operator:
     name: Composite
@@ -574,6 +578,29 @@ Example of a yaml:
        CoefficientPath: Data/
        AerosolOption: aerosols_gocart_default
 
+Aerosol Optical Depth (AOD) for dust (Met Office)
+-------------------------------------------------
+
+This operator calculates the Aerosol Optical Depth at one wavelength (e.g. 550 nm) from control variables of mass concentration of atmospheric dust (in :math:`kg/m^3`) by height for a number of different size bins, air pressure by height and surface pressure, assuming constant extinction coefficients per bin which are independent of humidity. The air pressure is assumed to be on staggered levels in relation to dust mass concentration, and the levels must be ordered from top-to-bottom. This operator is designed for use with the Met Office forecast model which includes prognostic dust fields with 2 - 6 bins, and for the assimilation of AOD products such as from MODIS and VIIRS.
+
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+- :code:`NDustBins`: number of bins;
+- :code:`AodKExt`: extinction coefficients for each bin in :math:`m^2/kg`. This must be a vector of size `NDustBins`.
+
+Example of a yaml:
+^^^^^^^^^^^^^^^^^^
+
+For example, to calculate the AOD for 3 aerosol dust bins with average extinction coefficients of (for the sake of argument) 100, 200 and 300 :math:`m^2/kg`:
+
+.. code-block:: yaml
+
+    obs operator:
+      name: AodMetOffice
+      NDustBins: 3
+      AodKExt: [1.00E+02,2.00E+02,3.00E+02]
+
 GNSS RO bending angle (NBAM)
 -----------------------------
 
@@ -631,13 +658,17 @@ Examples of yaml:
  - obs space:
       name: GnssroBnd
       obsdatain:
-        obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
+        engine:
+          type: H5File
+          obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
         obsgrouping:
           group variable: "record_number"
           sort variable: "impact_height"
           sort order: "ascending"
       obsdataout:
-        obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
+        engine:
+          type: H5File
+          obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
       simulate variables: [bending_angle]
     obs operator:
       name: GnssroBndNBAM
@@ -702,12 +733,16 @@ Examples of yaml:
  - obs space:
      name: GnssroBndROPP1D
      obsdatain:
-       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+       engine:
+         type: H5File
+         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
        obsgrouping:
          group variable: "record_number"
          sort variable: "impact_height"
      obsdataout:
-       obsfile: Data/gnssro_bndropp1d_2018041500_m_output.nc4
+       engine:
+         type: H5File
+         obsfile: Data/gnssro_bndropp1d_2018041500_m_output.nc4
      simulate variables: [bending_angle]
    obs operator:
       name:  GnssroBndROPP1D
@@ -775,12 +810,16 @@ Examples of yaml:
  - obs space:
      name: GnssroBndROPP2D
      obsdatain:
-       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+       engine:
+         type: H5File
+         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
        obsgrouping:
          group_variable: "record_number"
          sort_variable: "impact_height"
      obsdataout:
-       obsfile: Data/gnssro_bndropp2d_2018041500_m_output.nc4
+       engine:
+         type: H5File
+         obsfile: Data/gnssro_bndropp2d_2018041500_m_output.nc4
      simulate variables: [bending_angle]
    obs operator:
       name: GnssroBndROPP2D
@@ -849,7 +888,9 @@ Examples of yaml:
     obs space:
       name: GnssroBnd
       obsdatain:
-        obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2019050700_1obs.nc4
+        engine:
+          type: H5File
+          obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2019050700_1obs.nc4
       simulated variables: [bending_angle]
     geovals:
       filename: Data/gnssro_geoval_2019050700_1obs.nc4
@@ -915,7 +956,9 @@ Examples of yaml:
  - obs space:
      name: GnssroRef
      obsdatain:
-       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
+       engine:
+         type: H5File
+         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
      simulate variables: [refractivity]
    obs operator:
      name: GnssroRefNCEP
@@ -937,6 +980,196 @@ Examples of yaml:
      filter variables:
      - name: [refractivity]
      threshold: 3
+
+Ground Based GNSS observation operator (Met Office)
+---------------------------------------------------
+
+The JEDI UFO interface of the Met Office's observation operator for Ground based GNSS Zenith Total Delay (ZTD). 
+ZTD is the equivalent extra path that a radio signal from a Global Navigation Satellite System satellite travels from vertically overhead to a station on the ground due to the presence of the atmosphere compared to that same path through a vacuum. 
+The ZTD may be expressed as
+
+.. math::
+   ZTD=10^{-6}\int_{z=0}^{z=\infty}{N dz}
+ 
+Where :math:`z` is the height above the surface and :math:`N` is the refractivity, given by
+
+.. math::
+  N=\frac{aP}{T}+\frac{be^2}{T^2}
+
+Where :math:`P` is pressure, :math:`e` is water vapour pressure, :math:`T` is temperature and :math:`a` and :math:`b` are the dry and wet refractivity constants respectively, given by 0.776 KPa\ :sup:`-1` and 3.73x10\ :sup:`3` K\ :sup:`2` Pa\ :sup:`-1`. ZTD can be considered to be constructed from two delay components; Zenith Wet Delay (ZWD), due to the dipole moment of water and Zenith Hydrostatic Delay (ZHD) due to the dry atmosphere.
+
+The Met Office Ground Based GNSS observation operator makes use of a generic refractivity calculator and for the tangent linear and adjoint it calculates the ZTD gradient with respect to both the pressure and specific humidity. 
+
+Model inputs for the forward operator are specific humidity, pressure, geopotential heights of air_pressure/full levels/theta and geopotential heights of air_pressure_levels/half levels/rho. 
+
+Configuration options (ObsFilters):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+These configurations are generic to using the refractivity calculator, which the Ground Based GNSS operator utilises.  
+The operator requires these values to be set to the default values to work correctly, therefore, these configuration options do not need to be written out in the YAML when calling this operator.
+
+:code:`vert_interp_ops`:
+  If true, then perform vertical interpolation of pressure from half levels to full levels using ln(p), otherwise
+  use exner (air_pressure levels pressure) (default: true).
+:code:`pseudo_ops`:
+  If true, use pseudo-levels to improve the accuracy of the refractivity
+  calculation (default: false).
+:code:`min_temp_grad`:
+  Minimum value of the vertical temperature gradient when checking for isothermal
+  levels in the pseudo-level calculation (default: 1e-6).
+  
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+:code:`ufo/test/testinput/groundgnssmetoffice.yaml`
+
+.. code-block:: yaml
+
+  - obs operator: 
+      name: GroundgnssMetOffice
+      min_temp_grad: 1.0e-6
+    obs space: 
+      name: Groundgnss
+      obsdatain: 
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/groundgnss_obs_2019123006_obs.nc
+      simulated variables: [total_zenith_delay] 
+    geovals: 
+      filename: Data/ufo/testinput_tier_1/groundgnss_geovals_20191230T0600Z.nc4
+
+Details of how the operator works
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+
+Below, the method for calculating ZTD using the refractivity calculator, the partial derivatives at each calculation, and the ZTD gradient with respect to pressure and humidity is described.
+Both pressure and humidity signals can be identified in the ZTD and so the gradient for the tangent linear and adjoint (TL/AD) are calculated with respect to both pressure and specific humidity. 
+
+The operator works in the direction of surface to the model top.  
+
+In this operator, we assume ln(pressure) is linear with height and therefore :code:`vert_interp_ops` needs to be true (default), and use this assumption to interpolate pressure on rho levels :math:`P_{\rho}` (air_pressure_levels/half levels) to pressure on theta levels :math:`P_{\theta}` (air_pressure/full levels), such that:
+
+.. math::
+  P_{\theta}=e^{((z_{weight})lnP_{\rho_{i}}+(1-z_{weight})lnP_{\rho_{i+1}} )}
+
+Where
+
+.. math::
+  z_{weight} =\frac{z_{\rho_{i+1}}-z_{\theta_{i}}}{z_{\rho_{i+1}}-z_{\rho_{i}}},
+
+with :math:`z_{\rho}` being the geopotential height of the rho levels and :math:`z_{\theta}` being the geopotential height of the theta levels. 
+Pressure on theta and rho levels, together with specific humidity on theta levels is then passed to the generic refractivity calculator, which calculates refractivity on theta levels. The partial derivative of the pressure on theta with regards to pressure on rho levels is required for the refractivity derivatives used in the ZTD TL/AD, and is
+
+.. math::
+  \frac{\partial P_{\theta_{i}}}{\partial P_{\rho_{i}}}=\frac{P_{\theta_{i}} z_{weight}}{P_{\rho_{i}}} 
+
+And for the ZTD above the model top we require
+
+.. math::
+  \frac{\partial P_{\theta_{i}}}{\partial P_{\rho_{i+1}}}=\frac{P_{\theta_{i}} (1-z_{weight})}{P_{\rho_{i+1}}} 
+
+The operator then loops through the theta levels, starting with the theta level directly above the station height, calculating the delay contribution for each layer bounded by the theta levels, assuming the refractivity decays exponentially between the model levels.
+
+.. math::
+  N_{i+1}=N_{i} e^{-c(z_{i+1}-z_{i})}
+
+Where :math:`c` is the scale height such that
+
+.. math::
+  c_{i}=\frac{lnN_{i+1}-lnN_{i}}{z_{i}-z_{i+1}} 
+
+.. math::
+  \frac{\partial c_{i}}{\partial N_{i} }=\frac{-1}{N_{i} (z_{i}-z_{i+1})}
+  
+.. math::  
+  \frac{\partial c_{i}}{\partial N_{i+1}}=\frac{1}{N_{i+1}(z_{i}-z_{i+1})}
+
+
+Delay for layer :math:`i` is then
+
+.. math::
+  ZTD_{i}=-10^{-6} \frac{N_{i}}{c_{i}} e^{c_{i} z_{i}} (e^{-c_{i} z_{i+1}}-e^{-c_{i} z_{i}})
+
+.. math::
+  \frac{\partial ZTD_{i}}{\partial c_{i}} =-10^{-6} \frac{N_{i}}{c_{i}}  (\frac{1}{c_{i}} +e^{c_{i} (z_{i}-z_{i+1})} (z_{i}-z_{i+1}-\frac{1}{c_{i}} ))
+
+.. math::
+  \frac{\partial ZTD_{i}}{\partial N_{i}}=\frac{-10^{-6}}{c_{i}}  e^{c_{i} z_{i} } (e^{-c_{i} z_{i+1} }-e^{-c_{i} z_{i} })
+  
+The delay for each layer is added to the running total delay.
+The operator iterates up to the highest theta level, calculating the delay up to that point. 
+A further small correction must be made for the signal above the model top. An assumption of hydrostatic equilibrium is used to calculate the integral 
+
+.. math::
+   ZTD_{top}=10^{-6}\int_{z=z_{modeltop}}^{z=\infty}{\frac{aP}{T}}dz
+
+which then gives the delay above the model top as
+
+.. math::
+  ZTD_{top}=\frac{10^{-6} aR}{g} P_{\theta_{top}}
+  
+where :math:`R` is the gas constant and :math:`g` is the gravitational acceleration.
+  
+:math:`ZTD_{top}` is then added to the accumulated ZTD. Therefore the partial differentials with respect to specific humidity :math:`q` and pressure at the top of the model levels (note for rho levels, :math:`\rho_{top}` is one level above :math:`\theta_{top}`) are
+
+.. math::
+  \frac{\partial {ZTD_{top}}}{\partial {q_{\theta_{top}}}}=0.0
+
+.. math::
+  \frac{\partial{ZTD_{top}}}{\partial P_{\rho_{top}}}=0.0
+
+.. math::
+  \frac{\partial ZTD_{top}}{\partial P_{\theta_{top}}} =\frac{10^{-6} aR}{g}
+
+
+At the model bottom (see GBGNSS figure 1), if the station height is below the model bottom, the scale height from the first model layer is used, and the height of the station is used in the Zenith delay calculation such that
+
+.. math::
+  ZTD_{1}=-10^{-6}  \frac{N_{1}}{c_{1}}  e^{c_{1} z_{1} } (e^{-c_{1} z_{2} }-e^{-c_{1} z_{station} })
+
+and
+
+.. math::
+  \frac{dZTD_{1}}{dN_{1}}=\frac{\partial ZTD_{1}}{\partial N_{1}}+\frac{\partial ZTD_{1}}{\partial c_{1}}  \frac{\partial c_{1}}{\partial N_{1}}
+  
+If the station lies above the lowest model level, the refractivity is interpolated exponentially to the station height (see GBGNSS figure 2) from level :math:`i`, the scale height is that for the whole model layer i.e. :math:`z_{i}` to :math:`z_{i+1}`, and Zenith delay is calculated from the station height such that
+
+.. math::
+  ZTD_{station}=-10^{-6} \frac{N_{station}}{c_{i}} e^{c_{i} z_{station}} (e^{-c_{i} z_{i+1} }-e^{-c_{i} z_{station}})
+  
+and
+
+.. math::
+  \frac{dZTD_{i}}{dN_{i}}=\frac{\partial ZTD_{station}}{\partial N_{station}} \frac{\partial N_{station}}{\partial N_{i}}+\frac{\partial ZTD_{station}}{\partial c_{i}} \frac{\partial c_{i}}{\partial N_{i}}
+
+Where
+
+.. math:: 
+  \frac{\partial ZTD_{station}}{\partial c_{i}}=\frac{\partial ZTD_{station}}{\partial c_{i}}+\frac{\partial ZTD_{station}}{\partial N_{station}}  \frac{\partial N_{station}}{\partial c_{i}}
+
+And
+
+.. math::
+  \frac{\partial N_{station}}{\partial c_{i}}=-N_{station} (z_{station}-z_{i+1})
+
+Using the above partial differentials, and using the partial differential of refractivity with respect to pressure and specific humidity, the differential of ZTD with respect to input pressure and humidity on the rest of the levels can be found through: 
+
+.. math::
+  \frac{dZTD_{i}}{dN_{i}}=\frac{\partial ZTD_{i}}{\partial N_{i}}+\frac{\partial ZTD_{i}}{\partial c_{i}}  \frac{\partial c_{i}}{\partial N_{i}} +\frac{\partial ZTD_{i}}{\partial c_{i-1}}  \frac{\partial c_{i-1}}{\partial N_{i}}
+
+.. math::
+  \frac{dZTD_{i}}{dP_{\rho_{i}}}=\frac{\partial ZTD_{i}}{\partial N_{i}}  \frac{\partial N_{i}}{\partial P_{\rho_{i}}}
+
+.. math::
+  \frac{dZTD_{i}}{dq_{\theta_{i}}}=\frac{\partial ZTD_{i}}{\partial N_{i}}  \frac{\partial N_{i}}{\partial q_{\theta_{i}}}
+
+.. image:: images/GNSS_Station_height_below_model_surface.png
+           :alt: A diagram for stations below model levels
+
+GBGNSS Figure 1: Diagram of the model levels with the station height lying below the lowest model level. 
+
+.. image:: images/GNSS_Station_height_between_levels.png
+           :alt: A diagram for stations between levels
+	   
+GBGNSS Figure 2: Diagram of the model levels with the station height lying between two model levels. 
 
 .. _obsops_identity:
 
@@ -1047,7 +1280,9 @@ Examples of yaml:
     obs space:
       name: Radar
       obsdatain:
-        obsfile: Data/radar_rw_obs_2019052222.nc4
+        engine:
+          type: H5File
+          obsfile: Data/radar_rw_obs_2019052222.nc4
       simulated variables: [radial_velocity]
 
 Scatterometer neutral wind (Met Office)
@@ -1077,9 +1312,13 @@ Examples of yaml:
     obs space:
       name: Scatwind
       obsdatain:
-        obsfile: Data/ioda/testinput_tier_1/scatwind_obs_1d_2020100106.nc4
+        engine:
+          type: H5File
+          obsfile: Data/ioda/testinput_tier_1/scatwind_obs_1d_2020100106.nc4
       obsdataout:
-        obsfile: Data/scatwind_obs_1d_2020100106_opr_test_out.nc4
+        engine:
+          type: H5File
+          obsfile: Data/scatwind_obs_1d_2020100106_opr_test_out.nc4
       simulated variables: [eastward_wind, northward_wind]
     geovals:
       filename: Data/ufo/testinput_tier_1/scatwind_geoval_20201001T0600Z.nc4
@@ -1091,6 +1330,114 @@ References:
 Cotton, J., 2018. Update on surface wind activities at the Met Office.
 Proceedings for the 14 th International Winds Workshop, 23-27 April 2018, Jeju City, South Korea.
 Available from http://cimss.ssec.wisc.edu/iwwg/iww14/program/index.html.
+
+SfcPCorrected
+---------------------------------------
+
+Description:
+^^^^^^^^^^^^
+This forward operator contains several schemes to correct the computation of surface atmospheric pressure at a location for the discrepancy in model topography at the observation location. Note that only the nonlinear operator is included, and to use it in variational applications will require specifying the linear obs operator (Identity).
+
+Schemes:
+
+:code:`GSI`: If there is observed temperature along with pressure, take the average of the model simulated and observed near surface temperature, otherwise use just the model simulated temperature (and extrapolate to the surface using 6.5K/km 
+lapse rate if the ob height is below the model lowest layer).  Then the pressure output from this option is the model (background) surface pressure corrected from model surface to observation height as such: 
+
+.. math::
+  H(x) = exp(log(Ps_{model}) - ((Zs_{ob} - Zs_{model}) * (gravity * Rd) / Tv_{avg})) 
+
+where `Rd` is 287.05 J/kg/K, `Ps` and `Zs` are the surface pressure and height, and 
+`Tv_avg` is the averged virtual temperature of the model surface virtual temperature (`Tv_model`) and observed (virtual) temperature as such: 
+
+.. math::
+  Tv_{avg} = (Tv_{model} + Tv_{ob})/2.0
+
+if the surface obervation has virtual temperature value (`Tv_ob`). Otherwise
+
+.. math::
+  Tv_{avg} = (Tv_{model} + T_{ob})/2.0 
+
+:code:`UKMO`: If the observed surface height and pressure are not missing, the pressure output from this option is the corrected
+model pressure as such: 
+
+.. math::
+  H(x) = Ps_{model}+(Ps_{ob}-Ps_{o2m}) 
+
+where `Ps_model` and `Ps_ob` are the model and observed surface
+pressure, and `Ps_o2m` is the observed pressure adjusted to the model surface height. 
+`Ps_o2m` is computed based on the method descried in UKMO Technical Report No.582, Appendix 1, by B. Ingleby (2013) as such:
+
+.. math::
+  Ps_{o2m} = Ps_{ob} * (Ps_{model}/Ps_{m2o})
+
+`Ps_m2o` is the model(background) surface pressure adjusted to observed station height as such:
+
+.. math::
+  Ps_{m2o} = Ps_{model} * (T_{m2o}/T_{model})** (gravity / Rd * L) 
+
+where `L` is the constant lapse rate (0.0065 K/m), 
+`T_model` is the temperature at model surface height (`H_model`), derived from the virtual temperature at 2000m above the model surface height (Tv_2000) to avoid diurnal/local variations, and `T_m2o` is the model temperature at observed station height (`H_ob`) as such:
+
+.. math::
+  T_{model} = TV_{2000} * (Ps_{model} / P_{2000}) ** (Rd * L / gravity)
+
+.. math::
+  T_{m2o} = T_{model} + L*(H_{model} - H_{ob})
+
+
+:code:`WRFDA`: This option is based on a subroutine from WRFDA da_intpsfc_prs.inc file
+corresponding to `sfc_assi_options = 1` in WRFDA's namelist.
+If the observed surface height and pressure are not missing, the pressure output from this option is the corrected
+model pressure as such: 
+
+.. math::
+  H(x) = Ps_{model}+(Ps_{obs}-Ps_{o2m}) 
+
+where `Ps_o2m` is the observed pressure adjusted from station hight to model surface height as such
+
+.. math::
+  Ps_{o2m} = Ps_{ob} * exp(- (H_{model} - H_{ob}) * gravity / (Rd * Tv_{avg}))
+
+where `Tv_avg` is the averged virtual temperature of the model surface virtual temperature (`Tv_model`) and observed (virtual) temperature as such:
+
+.. math::
+   Tv_{avg} = (Tv_{model} + Tv_{ob})/2.0
+
+
+Where the observed virtual temperature value is computed from the observed temperature and humidity, or using the observed
+temperature or model temperature if there are missing values for any observed quantities.
+
+
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+* da_psfc_scheme - choice of `UKMO`, `GSI`, or `WRFDA` methods
+* geovar_geomz - name of height geovar
+* geovar_sfc_geomz - name of surface altitude/elevation geovar
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+.. code-block:: yaml
+
+  observations:
+  - obs space:
+    name: sondes_ps
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: sondes_ps_obs_2022082300.nc4
+    obsdataout:
+      engine:
+        type: H5File
+        obsfile: sondes_ps_diag_2022082300.nc4
+    simulated variables: [surface_pressure]
+  obs operator:
+    name: SfcPCorrected
+    da_psfc_scheme: GSI
+    geovar_sfc_geomz: surface_geopotential_height
+    geovar_geomz: geopotential_height
+  linear obs operator:
+    name: Identity
 
 Background Error Vertical Interpolation
 ---------------------------------------
