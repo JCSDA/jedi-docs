@@ -8,7 +8,7 @@ List of spack, software, and AMIs
 
 Versions used:
 
-- spack-stack-1.0.1 from July 5, 2022
+- spack-stack-1.1.0 from October 6, 2022
 
   * https://github.com/NOAA-EMC/spack-stack/tree/1.1.0 
 
@@ -23,8 +23,6 @@ Versions used:
     AMI ID ami-02e7b2df53af9596b
 
     Recommend using t2.2xlarge instance or M5 instance with 32 cores (expensive …)
-
-
 
   - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.4:
 
@@ -123,7 +121,7 @@ S4 - intel-2022.1
   module load miniconda/3.9.12
   module load ecflow/5.8.4
   module use /data/prod/jedi/spack-stack/spack-stack-v1/envs/skylab-2.0.0-intel-2021.5.0/install/modulefiles/Core
-  module load stack-intel/2022.1
+  module load stack-intel/2021.5.0
   module load stack-intel-oneapi-mpi/2021.5.0
   module load stack-python/3.9.12
   module load jedi-ewok-env/1.0.0 jedi-fv3-env/1.0.0 soca-env/1.0.0 sp/2.3.3
