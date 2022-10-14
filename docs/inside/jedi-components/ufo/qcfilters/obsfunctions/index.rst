@@ -118,6 +118,9 @@ filters into separate parts would have an obfuscating effect.
 
 :ref:`ObsFunctionSelectStatistic <ObsFunctionSelectStatistic>`
   Output all 0's, except for 1 in locations corresponding (or closest) to the minimum, maximum, median or mean of the input variable within each record.
+  
+:ref:`ObsFunctionStringManipulation <ObsFunctionStringManipulation>`
+  Perform an operation on a string to change its format i.e slice. 
 
 :ref:`ObsFunctionVelocity <ObsFunctionVelocity>`
   Compute wind speed from u- and v- components
@@ -196,6 +199,7 @@ filters into separate parts would have an obfuscating effect.
    ObsFunctionExponential
    ObsFunctionLinearCombination
    ObsFunctionSelectStatistic
+   ObsFunctionStringManipulation
    ObsFunctionVelocity
    OceanPressureToDepth
    ProfileAverageObsPressure
