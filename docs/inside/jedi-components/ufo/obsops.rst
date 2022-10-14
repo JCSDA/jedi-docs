@@ -152,7 +152,9 @@ option; if this option is not present, all variables in the ObsSpace are simulat
   obs space:
     name: Radiosonde
     obsdatain:
-      obsfile: Data/ioda/testinput_tier_1/sondes_obs_2018041500_s.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ioda/testinput_tier_1/sondes_obs_2018041500_s.nc4
     simulated variables: [eastward_wind, northward_wind, surface_pressure, relative_humidity]
   obs operator:
     name: Composite
@@ -179,7 +181,9 @@ vertical interpolation of the variables simulated by this operator.
   obs space:
     name: Radiosonde with staggered vertical levels
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_composite_operator_sonde_obs.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_composite_operator_sonde_obs.nc4
     simulated variables: [eastward_wind, northward_wind, air_temperature]
   obs operator:
     name: Composite
@@ -654,13 +658,17 @@ Examples of yaml:
  - obs space:
       name: GnssroBnd
       obsdatain:
-        obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
+        engine:
+          type: H5File
+          obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
         obsgrouping:
           group variable: "record_number"
           sort variable: "impact_height"
           sort order: "ascending"
       obsdataout:
-        obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
+        engine:
+          type: H5File
+          obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
       simulate variables: [bending_angle]
     obs operator:
       name: GnssroBndNBAM
@@ -725,12 +733,16 @@ Examples of yaml:
  - obs space:
      name: GnssroBndROPP1D
      obsdatain:
-       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+       engine:
+         type: H5File
+         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
        obsgrouping:
          group variable: "record_number"
          sort variable: "impact_height"
      obsdataout:
-       obsfile: Data/gnssro_bndropp1d_2018041500_m_output.nc4
+       engine:
+         type: H5File
+         obsfile: Data/gnssro_bndropp1d_2018041500_m_output.nc4
      simulate variables: [bending_angle]
    obs operator:
       name:  GnssroBndROPP1D
@@ -798,12 +810,16 @@ Examples of yaml:
  - obs space:
      name: GnssroBndROPP2D
      obsdatain:
-       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+       engine:
+         type: H5File
+         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
        obsgrouping:
          group_variable: "record_number"
          sort_variable: "impact_height"
      obsdataout:
-       obsfile: Data/gnssro_bndropp2d_2018041500_m_output.nc4
+       engine:
+         type: H5File
+         obsfile: Data/gnssro_bndropp2d_2018041500_m_output.nc4
      simulate variables: [bending_angle]
    obs operator:
       name: GnssroBndROPP2D
@@ -872,7 +888,9 @@ Examples of yaml:
     obs space:
       name: GnssroBnd
       obsdatain:
-        obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2019050700_1obs.nc4
+        engine:
+          type: H5File
+          obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2019050700_1obs.nc4
       simulated variables: [bending_angle]
     geovals:
       filename: Data/gnssro_geoval_2019050700_1obs.nc4
@@ -938,7 +956,9 @@ Examples of yaml:
  - obs space:
      name: GnssroRef
      obsdatain:
-       obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
+       engine:
+         type: H5File
+         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
      simulate variables: [refractivity]
    obs operator:
      name: GnssroRefNCEP
@@ -1009,7 +1029,9 @@ Examples of yaml:
     obs space: 
       name: Groundgnss
       obsdatain: 
-        obsfile: Data/ufo/testinput_tier_1/groundgnss_obs_2019123006_obs.nc
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/groundgnss_obs_2019123006_obs.nc
       simulated variables: [total_zenith_delay] 
     geovals: 
       filename: Data/ufo/testinput_tier_1/groundgnss_geovals_20191230T0600Z.nc4
@@ -1258,7 +1280,9 @@ Examples of yaml:
     obs space:
       name: Radar
       obsdatain:
-        obsfile: Data/radar_rw_obs_2019052222.nc4
+        engine:
+          type: H5File
+          obsfile: Data/radar_rw_obs_2019052222.nc4
       simulated variables: [radial_velocity]
 
 Scatterometer neutral wind (Met Office)
@@ -1288,9 +1312,13 @@ Examples of yaml:
     obs space:
       name: Scatwind
       obsdatain:
-        obsfile: Data/ioda/testinput_tier_1/scatwind_obs_1d_2020100106.nc4
+        engine:
+          type: H5File
+          obsfile: Data/ioda/testinput_tier_1/scatwind_obs_1d_2020100106.nc4
       obsdataout:
-        obsfile: Data/scatwind_obs_1d_2020100106_opr_test_out.nc4
+        engine:
+          type: H5File
+          obsfile: Data/scatwind_obs_1d_2020100106_opr_test_out.nc4
       simulated variables: [eastward_wind, northward_wind]
     geovals:
       filename: Data/ufo/testinput_tier_1/scatwind_geoval_20201001T0600Z.nc4
@@ -1312,7 +1340,74 @@ This forward operator contains several schemes to correct the computation of sur
 
 Schemes:
 
-`GSI`: If there is observed temperature along with pressure, take the average of the model simulated and observed near surface temperature, otherwise use just the model simulated temperature (and extrapolate to the surface using 6.5K/km lapse rate if the ob height is below the model lowest layer). Then the pressure correction is as such: `P = exp(log(P) - ((Z_ob - Z_model) * (gravity * Rd) / T))` where `Rd` is 287.05 J/kg/K 
+:code:`GSI`: If there is observed temperature along with pressure, take the average of the model simulated and observed near surface temperature, otherwise use just the model simulated temperature (and extrapolate to the surface using 6.5K/km 
+lapse rate if the ob height is below the model lowest layer).  Then the pressure output from this option is the model (background) surface pressure corrected from model surface to observation height as such: 
+
+.. math::
+  H(x) = exp(log(Ps_{model}) - ((Zs_{ob} - Zs_{model}) * (gravity * Rd) / Tv_{avg})) 
+
+where `Rd` is 287.05 J/kg/K, `Ps` and `Zs` are the surface pressure and height, and 
+`Tv_avg` is the averged virtual temperature of the model surface virtual temperature (`Tv_model`) and observed (virtual) temperature as such: 
+
+.. math::
+  Tv_{avg} = (Tv_{model} + Tv_{ob})/2.0
+
+if the surface obervation has virtual temperature value (`Tv_ob`). Otherwise
+
+.. math::
+  Tv_{avg} = (Tv_{model} + T_{ob})/2.0 
+
+:code:`UKMO`: If the observed surface height and pressure are not missing, the pressure output from this option is the corrected
+model pressure as such: 
+
+.. math::
+  H(x) = Ps_{model}+(Ps_{ob}-Ps_{o2m}) 
+
+where `Ps_model` and `Ps_ob` are the model and observed surface
+pressure, and `Ps_o2m` is the observed pressure adjusted to the model surface height. 
+`Ps_o2m` is computed based on the method descried in UKMO Technical Report No.582, Appendix 1, by B. Ingleby (2013) as such:
+
+.. math::
+  Ps_{o2m} = Ps_{ob} * (Ps_{model}/Ps_{m2o})
+
+`Ps_m2o` is the model(background) surface pressure adjusted to observed station height as such:
+
+.. math::
+  Ps_{m2o} = Ps_{model} * (T_{m2o}/T_{model})** (gravity / Rd * L) 
+
+where `L` is the constant lapse rate (0.0065 K/m), 
+`T_model` is the temperature at model surface height (`H_model`), derived from the virtual temperature at 2000m above the model surface height (Tv_2000) to avoid diurnal/local variations, and `T_m2o` is the model temperature at observed station height (`H_ob`) as such:
+
+.. math::
+  T_{model} = TV_{2000} * (Ps_{model} / P_{2000}) ** (Rd * L / gravity)
+
+.. math::
+  T_{m2o} = T_{model} + L*(H_{model} - H_{ob})
+
+
+:code:`WRFDA`: This option is based on a subroutine from WRFDA da_intpsfc_prs.inc file
+corresponding to `sfc_assi_options = 1` in WRFDA's namelist.
+If the observed surface height and pressure are not missing, the pressure output from this option is the corrected
+model pressure as such: 
+
+.. math::
+  H(x) = Ps_{model}+(Ps_{obs}-Ps_{o2m}) 
+
+where `Ps_o2m` is the observed pressure adjusted from station hight to model surface height as such
+
+.. math::
+  Ps_{o2m} = Ps_{ob} * exp(- (H_{model} - H_{ob}) * gravity / (Rd * Tv_{avg}))
+
+where `Tv_avg` is the averged virtual temperature of the model surface virtual temperature (`Tv_model`) and observed (virtual) temperature as such:
+
+.. math::
+   Tv_{avg} = (Tv_{model} + Tv_{ob})/2.0
+
+
+Where the observed virtual temperature value is computed from the observed temperature and humidity, or using the observed
+temperature or model temperature if there are missing values for any observed quantities.
+
+
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -1328,9 +1423,13 @@ Examples of yaml:
   - obs space:
     name: sondes_ps
     obsdatain:
-      obsfile: sondes_ps_obs_2022082300.nc4
+      engine:
+        type: H5File
+        obsfile: sondes_ps_obs_2022082300.nc4
     obsdataout:
-      obsfile: sondes_ps_diag_2022082300.nc4
+      engine:
+        type: H5File
+        obsfile: sondes_ps_diag_2022082300.nc4
     simulated variables: [surface_pressure]
   obs operator:
     name: SfcPCorrected

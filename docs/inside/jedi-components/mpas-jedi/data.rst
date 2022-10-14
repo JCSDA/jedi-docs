@@ -171,7 +171,9 @@ users can specify the file name and select where they would like the data to be 
 .. code:: yaml
 
    obsdataout:
-     obsfile: Data/os/obsout_hofx3d_sondes.nc4
+     engine:
+       type: H5File
+       obsfile: Data/os/obsout_hofx3d_sondes.nc4
 
 **BUMP**
 

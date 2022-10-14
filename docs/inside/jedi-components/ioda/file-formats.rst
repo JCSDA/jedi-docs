@@ -20,23 +20,31 @@ The following sections describe how these formats are handled from the user's po
 HDF5
 ----
 
-To read an HDF5 file into an ``ObsSpace``, it is enough to set the ``obs space.obsdatain.obsfile`` option in the YAML configuration file to the HDF5 file path. For example,
+To read an HDF5 file into an ``ObsSpace``, it is enough to set the ``obs space.obsdatain.engine`` option in the YAML configuration file to the HDF5 file path. For example,
 
 .. code-block:: YAML
 
     obs space:
       obsdatain:
-        obsfile: Data/testinput_tier_1/sondes_obs_2018041500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/testinput_tier_1/sondes_obs_2018041500_m.nc4
 
-Similarly, to write the contents of an ``ObsSpace`` to disk at the end of the observation processing pipeline, use the ``obs space.obsdataout.obsfile`` option:
+Note that the HDF5 file type is explicitly specified using the ``obs space.obsdatain.engine.type`` keyword with the value of ``H5File``.
+
+Similarly, to write the contents of an ``ObsSpace`` to an HDF5 file at the end of the observation processing pipeline, use the ``obs space.obsdataout.engine`` option:
 
 .. code-block:: YAML
 
     obs space:
       obsdataout:
-        obsfile: obsfile: Data/sondes_obs_2018041500_m_out.nc4
+        engine:
+          type: H5File
+          obsfile: obsfile: Data/sondes_obs_2018041500_m_out.nc4
 
-Each MPI rank will then write its observations to a separate file with the name obtained by inserting the rank before the extension of the file name taken from the ``obs space.obsdataout.obsfile`` option. In the example above, processes 0 and 1 would produce files called ``Data/sondes_obs_2018041500_m_out_0000.nc4`` and ``Data/sondes_obs_2018041500_m_out_0001.nc4``, respectively (assuming observations were split across ranks only in space; if they were split also in time, file names would have an extra suffix with the index of the time partition).
+Again, note the explicit specification of an HDF5 output file using the ``obs space.obsdataout.engine.type`` keyword.
+
+Each MPI rank will then write its observations to a separate file with the name obtained by inserting the rank before the extension of the file name taken from the ``obs space.obsdataout.engine.obsfile`` option. In the example above, processes 0 and 1 would produce files called ``Data/sondes_obs_2018041500_m_out_0000.nc4`` and ``Data/sondes_obs_2018041500_m_out_0001.nc4``, respectively (assuming observations were split across ranks only in space; if they were split also in time, file names would have an extra suffix with the index of the time partition).
 
 ODB
 ---
@@ -45,8 +53,9 @@ ODB
 
    To be able to read ODB files, ``ioda`` needs to be built in an environment providing access to ECMWF's ``odc`` library. All of the development containers (Intel, GNU and Clang) include this library.
 
-To read an ODB file into an ``ObsSpace``, three options need to be set in the ``obs space.obsdatain`` section of the YAML configuration file:
+To read an ODB file into an ``ObsSpace``, four options need to be set in the ``obs space.obsdatain.engine`` section of the YAML configuration file:
 
+* ``type``: ODB
 * ``obsfile``: the path to the ODB file;
 * ``mapping file``: the path to a YAML file mapping ODB column names and units to IODA variable names;
 * ``query file``: the path to a YAML file defining the parameters of an SQL query selecting the required data from the ODB file.
@@ -57,9 +66,11 @@ The syntax of the mapping and query files is described in the subsections below.
 
     obs space:
       obsdatain:
-        obsfile: Data/testinput_tier_1/aircraft.odb
-        mapping file: testinput/odb_default_name_map.yml
-        query file: testinput/iodatest_odb_aircraft.yml
+        engine:
+          type: ODB
+          obsfile: Data/testinput_tier_1/aircraft.odb
+          mapping file: testinput/odb_default_name_map.yml
+          query file: testinput/iodatest_odb_aircraft.yml
 
 Mapping Files
 """""""""""""

@@ -52,8 +52,20 @@ Often the largest section of the configuration file, this describes one or more 
 * **obs space**: describes observation space-related configuration (required)
 
   * **name**: descriptive name, used in logs (required)
-  * **obsdatain.obsfile**: input filename (this or **generate** section is required)
-  * **obsdataout.obsfile**: output filename (optional)
+  * **obsdatain** (required)
+
+    * **engine:** (required)
+
+      * **type**: type of backend (HDF5 file, ODB file, etc.)
+      * **obsfile**: input filename
+
+  * **obsdatain** (optional)
+
+    * **engine:** (required, if obsdataout used)
+
+      * **type**: type of backend (HDF5 file, eg)
+      * **obsfile**: output filename
+
   * **observed variables**: list of variables to be processed using ufo filters whose observed values can be loaded from the input file (optional, may be an empty list if derived variables present). If not specified all ObsValue variables in the input are used to populate this list; if **channels** has been specified then this list is used for both the **observed variables** and **simulated variables**.
   * **derived variables**: list of variables to be processed using ufo filters whose observed values cannot be loaded from the input file and need to be created by a filter (optional).
   * **simulated variables**: list of variables that need to be simulated by the observation operator (required, though may be an empty list).
@@ -66,15 +78,21 @@ Example:
    obs space:
      name: Radiosonde
      obsdatain:
-       obsfile: Data/sondes_obs_2018041500.nc4
+       engine:
+         type: H5File
+         obsfile: Data/sondes_obs_2018041500.nc4
      simulated variables: [air_temperature, eastward_wind, northward_wind]
    # Example 2: radiances (note channels specification)
    obs space:
      name: amsua_n19
      obsdatain:
-       obsfile: Data/amsua_n19_obs_2018041500.nc4
+       engine:
+         type: H5File
+         obsfile: Data/amsua_n19_obs_2018041500.nc4
      obsdataout:
-       obsfile: Data/amsua_n19_obs_2018041500_out.nc4
+       engine:
+         type: H5File
+         obsfile: Data/amsua_n19_obs_2018041500_out.nc4
      simulated variables: [brightness_temperature]
      channels: 1-10,15
    # Example 3: derived variables. Suppose the input file contains wind speeds and directions,
@@ -83,7 +101,9 @@ Example:
    obs space:
      name: Radiosonde
      obsdatain:
-       obsfile: Data/sondes_obs_2018041500.nc4
+       engine:
+         type: H5File
+         obsfile: Data/sondes_obs_2018041500.nc4
      simulated variables: [air_temperature, eastward_wind, northward_wind]
      derived variables: [eastward_wind, northward_wind]
    # Example 4: observed and derived variables. Suppose the input file contains station_pressure  
@@ -92,7 +112,9 @@ Example:
    obs space:
      name: Surface
      obsdatain:
-       obsfile: Data/ufo/testinput_tier_1/PStar_obs_20210521T1200Z.nc4
+       engine:
+         type: H5File
+         obsfile: Data/ufo/testinput_tier_1/PStar_obs_20210521T1200Z.nc4
      observed variables: [station_pressure, mean_sea_level_pressure]
      derived variables: [surface_pressure]
      simulated variables: [surface_pressure]
@@ -105,7 +127,9 @@ If the observations have been divided into records then it is possible to extend
   - obs space:
       name: Sonde
       obsdatain:
-        obsfile: sonde.odb
+        engine:
+          type: H5File
+          obsfile: sonde.odb
         obsgrouping:
           group variables: [ "station_id" ]
       extension:
