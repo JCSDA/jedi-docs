@@ -483,6 +483,12 @@ S4 is the **Satellite Simulations and Data Assimilation Studies** supercomputer 
 
 The S4 system currently only supports Intel compilers.  Furthermore, S4 uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs.  Though some slurm implementations allow you to use the usual mpi job scripts :code:`mpirun` or :code:`mpiexec`, these may not function properly on S4.  Instead, you are advised to use the slurm run script :code:`srun`.
 
+Once logged into S4, you must then log into s4-submit to load the spack-stack modules to build and run JEDI.
+
+.. code-block:: bash
+
+   ssh -Y s4-submit
+
 The following bash shell commands are necessary to access the installed spack-stack modules (substitute equivalent csh shell commands as appropriate):
 
 .. code-block:: bash
