@@ -12,8 +12,8 @@ obs space.
 .. code-block:: yaml
 
     obs filters:
-    - filter: Variables Transform
-    Transform: ["PressureFromHeightForICAO"] 
+    - filter: Variable Transforms
+      Transform: ["PressureFromHeightForICAO"] 
     
 **Observation parameters needed** (JEDI name)
 
@@ -44,8 +44,8 @@ template.
 
     obs filters:
     - filter: Variable Transforms
-    Transform: ["PressureFromHeightForProfile"]
-    Method: UKMO  
+      Transform: ["PressureFromHeightForProfile"]
+      Method: UKMO  
     
 **Observation parameters needed** (JEDI name)
 

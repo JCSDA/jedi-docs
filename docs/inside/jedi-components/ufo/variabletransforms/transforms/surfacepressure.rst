@@ -16,7 +16,7 @@ Performs a variable conversion to presure at model surface height from:
 
     obs filters:
     - filter: Variable Transforms
-    Transform: PStar
+      Transform: PStar
     
 **Observation parameters needed** (JEDI name)
 

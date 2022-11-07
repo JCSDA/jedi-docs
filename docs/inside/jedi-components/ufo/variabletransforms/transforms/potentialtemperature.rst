@@ -11,8 +11,8 @@ Performs a variable conversion from temperature and pressure to potential temper
 .. code-block:: yaml
 
     obs filters:
-    - filter: Variables Transform
-    Transform: PotentialTFromT
+    - filter: Variable Transforms
+      Transform: PotentialTFromT
     
 **Observation parameters needed** (JEDI name)
 

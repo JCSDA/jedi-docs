@@ -13,7 +13,7 @@ the eastward (u) and northward (v) wind component.
 
     obs filters:
     - filter: Variable Transforms
-    Transform: ["WindComponents"]
+      Transform: ["WindComponents"]
     
 **Observation parameters needed** (JEDI name)
 
@@ -34,9 +34,9 @@ For example the surface wind speed and direction can be transformed using the fo
 
     obs filters:
     - filter: Variable Transforms
-    Transform: ["WindComponents"]
-    wind speed variable: windSpeedAt10M
-    wind direction variable: windDirectionAt10M
+      Transform: ["WindComponents"]
+      wind speed variable: windSpeedAt10M
+      wind direction variable: windDirectionAt10M
 
 The group option can be set to transform wind speed and direction from a group other than ObsValue. 
 
@@ -73,7 +73,7 @@ wind speed and direction.
 
     obs filters:
     - filter: Variable Transforms
-    Transform: ["WindSpeedAndDirection"]
+      Transform: ["WindSpeedAndDirection"]
     
 **Observation parameters needed** (JEDI name)
 
@@ -94,9 +94,9 @@ For example the surface wind speed and direction can be transformed using the fo
 
     obs filters:
     - filter: Variable Transforms
-    Transform: ["WindSpeedAndDirection"]
-    eastward wind variable: windEastwardAt10M
-    northward wind variable: windNorthwardAt10M
+      Transform: ["WindSpeedAndDirection"]
+      eastward wind variable: windEastwardAt10M
+      northward wind variable: windNorthwardAt10M
 
 The group option can be set to transform eastward and northward wind from a group other than ObsValue. 
 
