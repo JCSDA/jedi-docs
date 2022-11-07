@@ -814,3 +814,141 @@ This example runs the basic and SamePDiffT checks on the input data, using the s
       Checks: ["Basic", "SamePDiffT"]
       SPDTCheck_TThresh: 30.0 # This is an example modification of a check parameter
 
+
+.. _oceanvertstabcheck:
+
+Ocean Vertical Stability Check
+------------------------------
+
+This filter calculates the density (kg/m^3) from given temperature, salinity and pressure, and then checks for locations where the density spikes (is different from the densities above and below by more than the specified tolerance) or steps (decreases with depth by more than the specified tolerance). Such spikes or steps in density indicate a vertical instability, as we expect density to increase monotonically with depth.
+
+**Summary of yaml parameters**
+
+- :code:`filter variables`: the :code:`ObsValue` variable(s) that will be associated with the :code:`DensitySpike` and :code:`DensityStep` flags. The choice of filter variables does not affect the functioning of the filter as long as the variables' :code:`ObsError` s are not missing everywhere.
+
+- :code:`variables.temperature`: in situ temperature values (degrees C) used in computation of density (required).
+
+- :code:`variables.salinity`: absolute salinity values (g/kg) used in computation of density (required).
+
+- :code:`variables.pressure`: pressure values (dbar) used in computation of density (required).
+
+- :code:`count spikes`: count the number of spikes in density (default :code:`true`).
+
+- :code:`count steps`: count the number of steps in decreasing density (default :code:`true`).
+
+- :code:`nominal tolerance`: if a density difference from one level to the next deeper one is less than this (more negative), then this is counted as a step (default: -0.05 kg/m^3).
+
+- :code:`threshold`: the smaller the threshold, the more symmetrical a density spike must be to count as a spike (default: 0.25).
+
+Note that a call to the Ocean Vertical Stability Check filter MUST be preceded by creation of Diagnostic Flags called :code:`DensitySpike` and :code:`DensityStep`, for every filter variable listed (see example below). An error will be thrown if a filter variable is listed but does not have both :code:`DensitySpike` and :code:`DensityStep` flags associated with it. They need to be present because the code itself sets them - :code:`DensitySpike` at the location of the spike, and :code:`DensityStep` at the 'foot' of the step (the deeper level, not both, so as not to double-count steps).
+
+
+**Example yaml**
+
+.. code-block:: yaml
+
+  window begin: 2020-12-31T23:59:00Z
+  window end: 2021-01-01T00:01:00Z
+
+  observations:
+  - obs space:
+      name: test data
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+        obsgrouping:
+          group variables: [ "station_id", "dateTime", "latitude", "longitude" ]
+          sort variable: "ocean_pressure"
+          sort group: "DerivedObsValue"
+          sort order: "ascending"
+      simulated variables: [ocean_temperature, ocean_salinity, ocean_depth, ocean_pressure]
+      observed variables: [ocean_temperature, ocean_salinity]
+      derived variables: [ocean_depth, ocean_pressure]
+    HofX: HofX
+    obs filters:
+    - filter: Create Diagnostic Flags
+      filter variables:
+        - name: DerivedObsValue/ocean_depth
+      flags:
+      - name: DensitySpike
+        initial value: false
+      - name: DensityStep
+        initial value: false
+      - name: Superadiabat
+        initial value: false
+    - filter: Ocean Vertical Stability Check
+      filter variables:
+        - name: DerivedObsValue/ocean_depth
+      variables:
+        temperature: ObsValue/ocean_temperature
+        salinity: ObsValue/ocean_salinity
+        pressure: DerivedObsValue/ocean_pressure
+      count spikes: true
+      count steps: true
+      nominal tolerance: -0.05
+      threshold: 0.25
+      actions:
+      - name: set
+        flag: Superadiabat
+      - name: reject
+    
+In this example, the Diagnostic Flags are associated with the filter variable :code:`DerivedObsValue/ocean_depth`. This sets :code:`DiagnosticFlags/DensitySpike/ocean_depth` and :code:`DiagnosticFlags/DensityStep/ocean_depth`. Additionally, because a filter action is specified to set :code:`DiagnosticFlags/Superadiabat`, this flag is set (for :code:`ocean_depth` only) at every location that is flagged as a density spike or step (both levels of each step). These locations are rejected because that filter action has also been specified.
+
+This filter has only been tested for observations that have been grouped into records (profiles) by setting the :code:`obsgrouping.group variables` option. The :code:`sort variable`, :code:`sort group` and :code:`sort order` options are optional, though incorrect results will be obtained if the profiles are not sorted surface to depth.
+
+**Example of subsequent flagging of whole profiles**
+
+Once the density spikes and steps have been flagged, it is possible to subsequently reject whole profiles that exceed specified conditions:
+
+.. code-block:: yaml
+
+  # create derived metadata counting levels:
+    - filter: Variable Assignment
+      assignments:
+      - name: DerivedMetaData/number_of_levels
+        type: int
+        function:
+          name: ProfileLevelCount@IntObsFunction
+          options:
+            where:
+              - variable:
+                  name: ObsValue/ocean_temperature
+                is_defined:
+  # create derived metadata counting spikes only:
+    - filter: Variable Assignment
+      assignments:
+      - name: DerivedMetaData/ocean_density_spikes
+        type: int
+        function:
+          name: ProfileLevelCount@IntObsFunction
+          options:
+            where:
+              - variable:
+                  name: DiagnosticFlags/DensitySpike/ocean_depth
+                is_true:
+  # reject whole profile if num spikes >= numlev/4, so compute
+  #  4*( num spikes ) minus numlev in order to check it against 0:
+    - filter: Variable Assignment
+      assignments:
+      - name: DerivedMetaData/ocean_density_rejections
+        type: int
+        function:
+          name: LinearCombination@IntObsFunction
+          options:
+            variables: [ocean_density_spikes@DerivedMetaData, number_of_levels@DerivedMetaData]
+            coefs: [4, -1]
+  # reject whole profile if num spikes >= numlev/4 AND >= 2:
+    - filter: Perform Action
+      where:
+      - variable:
+          name: DerivedMetaData/ocean_density_rejections
+        minvalue: 0
+      - variable:
+          name: DerivedMetaData/ocean_density_spikes
+        minvalue: 2
+      where operator: and
+      action:
+        name: reject
+
+This example rejects whole profiles which contain >=2 density spikes AND the number of spikes exceeds one quarter of the number of non-missing levels in the profile. It makes use of the :ref:`ProfileLevelCount` and :ref:`LinearCombination <ObsFunctionLinearCombination>` obsFunctions, and :code:`Perform Action: reject` based on :ref:`where statements <where-statement>`. With spikes and steps separated like this, they can be counted and used separately in conditional flagging, if required.
