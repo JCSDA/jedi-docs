@@ -1,4 +1,4 @@
-# Note - as of Nov 7, 2022, the master branch of this repository is frozen. All development and releases are now made from the develop branch.
+# Note - as of Nov 7, 2022, the master branch of this repository is frozen. The develop branch is used for all releases and all developments.
 
 # jedi-docs
 
