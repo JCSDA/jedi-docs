@@ -519,7 +519,7 @@ Note the two ``module unuse`` statements, that need to be run after the stack me
    module load soca-env/1.0.0
    module load sp/2.3.3
 
-When using ``ecbuild``, use ``cmake -DCMAKE_CROSSCOMPILING_EMULATOR="/usr/bin/srun;-n;1" -DMPIEXEC_EXECUTABLE="/usr/bin/srun" -DMPIEXEC_NUMPROC_FLAG="-n" PATH_TO_SOURCE``. After building, you will want to run the ``get`` tests from the login node to download the test data:
+When using ``ecbuild``, use ``ecbuild -DCMAKE_CROSSCOMPILING_EMULATOR="/usr/bin/srun;-n;1" -DMPIEXEC_EXECUTABLE="/usr/bin/srun" -DMPIEXEC_NUMPROC_FLAG="-n" PATH_TO_SOURCE``. After building, you will want to run the ``get`` tests from the login node to download the test data:
 
 .. code-block:: bash
 
