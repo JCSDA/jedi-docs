@@ -258,14 +258,16 @@ new session on your machine.
 Create and source $jedi_ROOT/activate.sh
 """"""""""""""""""""""""""""""""""""""""
 We recommend creating this bash script and sourcing it before running the experiment.
-This bash script sets environment variables such as :code:`jedi_ROOT`, :code:`JEDI_BUILD`,
-and :code:`JEDI_SRC` for ecflow/ewok to use. Users may set :code:`JEDI_SRC`, :code:`JEDI_BUILD`,
-and :code:`EWOK_TMP` however they want (that’s why we made them different variables)
-or use the default template in the sample script below. Note that :code:`JEDI_SRC`
-and :code:`JEDI_BUILD` are experiment specific, i.e. you can run several experiments
-at the same time, each having their own :code:`JEDI_SRC` and :code:`JEDI_BUILD`. :code:`EWOK_STATIC_DATA`
-includes static data used by ewok and is available on Orion, Discover, and the AWS AMI.
-Make sure you set this variable based on the platform you are using.
+This bash script sets environment variables such as :code:`JEDI_BUILD`, :code:`JEDI_SRC`,
+:code:`EWOK_WORKDIR` and :code:`EWOK_FLOWDIR` required by ewok. If these variables are not
+defined they will be set from :code:`jedi_ROOT`.
+Users may set :code:`JEDI_SRC`, :code:`JEDI_BUILD`, :code:`EWOK_WORKDIR` and
+:code:`EWOK_FLOWDIR` to point to relevant directories on their systems
+or use the default template in the sample script below. Note that :code:`JEDI_SRC`,
+:code:`JEDI_BUILD` and :code:`EWOK_WORKDIR` are experiment specific, i.e. you can run several
+experiments at the same time, each having their own definition for these variables.
+:code:`EWOK_STATIC_DATA` includes static data used by ewok and is available on Orion, Discover,
+and the AWS AMI. Make sure you set this variable based on the platform you are using.
 Please don’t forget to source this script after creating it: :code:`source $jedi_ROOT/activate.sh`
 
 .. code-block:: bash
@@ -276,20 +278,28 @@ Please don’t forget to source this script after creating it: :code:`source $je
   source $jedi_ROOT/venv/bin/activate
 
   if [ -z $jedi_ROOT ]; then
-    export jedi_ROOT=**Set this based on your set up**
+    export jedi_ROOT=**Set this based on your set up if JEDI_SRC, JEDI_BUILD, EWOK_WORKDIR or EWOK_FLOWDIR are not defined.**
+  fi
+
+  if [ -z $JEDI_SRC ]; then
+    export JEDI_SRC=${jedi_ROOT}/jedi-bundle
   fi
 
   if [ -z $JEDI_BUILD ]; then
     export JEDI_BUILD=${jedi_ROOT}/build
   fi
 
+  if [ -z $EWOK_WORKDIR ]; then
+    export EWOK_WORKDIR=${jedi_ROOT}/workdir
+  fi
+
+  if [ -z $EWOK_FLOWDIR ]; then
+    export EWOK_FLOWDIR=${jedi_ROOT}/ecflow
+  fi
+
   # Add ioda python bindings to PYTHONPATH
   PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:2]; print("{0}.{1}".format(*version))'`
   export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}/pyioda:${PYTHONPATH}"
-
-  if [ -z $JEDI_SRC ]; then
-    export JEDI_SRC=${jedi_ROOT}/jedi-bundle
-  fi
 
   if [ -z $CARTOPY_DATA ]; then
     # On Orion
@@ -300,12 +310,8 @@ Please don’t forget to source this script after creating it: :code:`source $je
     export CARTOPY_DATA=${jedi_ROOT}/cartopy_data
   fi
 
-  if [ -z $EWOK_TMP ]; then
-    export EWOK_TMP=${jedi_ROOT}/tmp
-  fi
-
   # necessary user directories for ewok and ecFlow files
-  mkdir -p $EWOK_TMP/ewok $EWOK_TMP/ecflow
+  mkdir -p $EWOK_WORKDIR $EWOK_FLOWDIR
 
   # ecFlow vars
   myid=$(id -u ${USER})
