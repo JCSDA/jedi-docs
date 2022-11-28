@@ -266,16 +266,20 @@ Users may set :code:`JEDI_SRC`, :code:`JEDI_BUILD`, :code:`EWOK_WORKDIR` and
 or use the default template in the sample script below. Note that :code:`JEDI_SRC`,
 :code:`JEDI_BUILD` and :code:`EWOK_WORKDIR` are experiment specific, i.e. you can run several
 experiments at the same time, each having their own definition for these variables.
-:code:`EWOK_STATIC_DATA` includes static data used by ewok and is available on Orion, Discover,
-and the AWS AMI. Make sure you set this variable based on the platform you are using.
+
+The user further has to set the environment variable :code:`R2D2_HOST` in the script
+on pre-configured platforms, or unset this variable on generic platforms.
+:code:`R2D2_HOST` is required by r2d2, ewok, and to determine the location :code:`EWOK_STATIC_DATA`
+of the static data used by ewok. This data is staged on the preconfigured platforms.
+On generic platforms, the script sets :code:`EWOK_STATIC_DATA` to :code:`${jedi_ROOT}/static`.
+
 Please don’t forget to source this script after creating it: :code:`source $jedi_ROOT/activate.sh`
 
 .. code-block:: bash
 
   #!/bin/bash
 
-  # Source source this file for ewok ecFlow workflows
-  source $jedi_ROOT/venv/bin/activate
+  # Set jedi_ROOT
 
   if [ -z $jedi_ROOT ]; then
     export jedi_ROOT=**Set this based on your set up if JEDI_SRC, JEDI_BUILD, EWOK_WORKDIR or EWOK_FLOWDIR are not defined.**
@@ -284,6 +288,26 @@ Please don’t forget to source this script after creating it: :code:`source $je
   if [ -z $JEDI_SRC ]; then
     export JEDI_SRC=${jedi_ROOT}/jedi-bundle
   fi
+
+  # Set host name for R2D2/EWOK
+
+  # On Orion:
+  export R2D2_HOST=orion
+  # On Discover:
+  export R2D2_HOST=discover
+  # On Cheyenne:
+  export R2D2_HOST=cheyenne
+  # On S4:
+  export R2D2_HOST=s4
+  # On AWS Parallel Cluster
+  export R2D2_HOST=aws-pcluster
+  # On your local machine / AWS single node
+  unset R2D2_HOST
+
+  # Most users won't need to change the following settings
+
+  # Source source this file for ewok ecFlow workflows
+  source $jedi_ROOT/venv/bin/activate
 
   if [ -z $JEDI_BUILD ]; then
     export JEDI_BUILD=${jedi_ROOT}/build
@@ -301,15 +325,6 @@ Please don’t forget to source this script after creating it: :code:`source $je
   PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:2]; print("{0}.{1}".format(*version))'`
   export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}/pyioda:${PYTHONPATH}"
 
-  if [ -z $CARTOPY_DATA ]; then
-    # On Orion
-    export CARTOPY_DATA=/work/noaa/da/jedipara/ewok/cartopy_data
-    # On Discover
-    export CARTOPY_DATA=/discover/nobackup/projects/jcsda/s2127/ewok/cartopy_data
-    # On AWS
-    export CARTOPY_DATA=${jedi_ROOT}/cartopy_data
-  fi
-
   # necessary user directories for ewok and ecFlow files
   mkdir -p $EWOK_WORKDIR $EWOK_FLOWDIR
 
@@ -320,17 +335,35 @@ Please don’t forget to source this script after creating it: :code:`source $je
   fi
   export ECF_PORT=$((myid + 1500))
 
+  # The ecflow hostname (e.g. a specific login node) is different from the R2D2/EWOK general host (i.e. system) name 
   host=$(hostname | cut -f1 -d'.')
   export ECF_HOST=$host
-
-  # Define path to static B files (platform-dependent):
-  # On orion:
-  export EWOK_STATIC_DATA=/work/noaa/da/role-da/static
-  # On discover:
-  export EWOK_STATIC_DATA=/discover/nobackup/projects/jcsda/s2127/static/
-
-  # On AWS:
-  export EWOK_STATIC_DATA=$HOME/static
+  
+  if [[ x"${R2D2_HOST}" == "x" ]]; then
+    export EWOK_STATIC_DATA=${jedi_ROOT}/static
+  else
+    case $R2D2_HOST in
+      orion)
+        export EWOK_STATIC_DATA=/work/noaa/da/role-da/static
+        ;;
+      discover)
+        export EWOK_STATIC_DATA=/discover/nobackup/projects/jcsda/s2127/static
+        ;;
+      cheyenne)
+        export EWOK_STATIC_DATA=/glade/p/mmm/jedipara/static
+        ;;
+      s4)
+        export EWOK_STATIC_DATA=/data/prod/jedi/static
+        ;;
+      aws-pcluster)
+        export EWOK_STATIC_DATA=${jedi_ROOT}/static
+        ;;
+      *)
+        echo "Unknown host name $R2D2_HOST"
+        exit 1
+        ;;
+    esac
+  fi
 
 5- Run SkyLab
 ^^^^^^^^^^^^^
@@ -340,15 +373,14 @@ To start the ecflow server:
 
 .. code-block:: bash
 
-  ecflow_start.sh
+  ecflow_start.sh -p $ECF_PORT
 
-Note: On Discover users need to specify port number (choose any port between 2500 and 9999)
-using -p when running this command. You also need to set ECF_PORT manually on Discover:
+Note: On Discover, users need to set ECF_PORT manually:
 
 .. code-block:: bash
 
   export ECF_PORT=2500
-  ecflow_start.sh -p 2500
+  ecflow_start.sh -p $ECF_PORT
 
 Please note “Host” and “Port Number” here. Also note that each user must use a
 unique port number (we recommend using a random number between 2500 and 9999)
@@ -369,17 +401,9 @@ To stop the ecflow server:
 
 .. code-block:: bash
 
-  ecflow_stop.sh
-
-Note: On Discover users need to specify port number using -p when running this command.
-
-
-.. code-block:: bash
-
-	ecflow_stop.sh -p 2500
+  ecflow_start.sh -p $ECF_PORT
 
 To start your ewok experiment:
-
 
 .. code-block:: bash
 
