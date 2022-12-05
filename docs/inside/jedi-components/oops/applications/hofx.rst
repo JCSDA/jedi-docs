@@ -34,11 +34,11 @@ The HofX3D application computes :math:`H(x)` for all specified observations usin
     window length: # duration in ISO format
     # list of observations (input files, observation operators, observation errors, etc).
     observations:
-    - ...
-    - ...
-    # "obs perturbations" and "make obs" are optional, default values are false.
-    obs perturbations: false  # set to true for perturbing the result of H(x) -- for OSSE experiments
-    make obs: false           # set to true to save the result of H(x) as "ObsValue" -- for OSSE experiments
+      obs perturbations:  # default false; set to true for perturbing the result of H(x) -- for OSSE experiments
+      observers:
+      - ...
+      - ...
+    make obs:  # default false; set to true to save the result of H(x) as "ObsValue" -- for OSSE experiments
 
 HofX4D yaml structure
 ---------------------
@@ -68,8 +68,8 @@ The HofX4D application runs the model forecast from the specified `initial condi
     window length: # duration in ISO format
     # list of observations (input files, observation operators, observation errors, etc).
     observations:
-    - ...
-    - ...
-    # "obs perturbations" and "make obs" are optional, default values are false.
-    obs perturbations: false  # set to true for perturbing the result of H(x) -- for OSSE experiments
-    make obs: false           # set to true to save the result of H(x) as "ObsValue" -- for OSSE experiments
+      obs perturbations:  # default false; set to true for perturbing the result of H(x) -- for OSSE experiments
+      observers:
+      - ...
+      - ...
+    make obs:  # default false; set to true to save the result of H(x) as "ObsValue" -- for OSSE experiments

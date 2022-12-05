@@ -9,7 +9,7 @@ Observation error standard deviations for :math:`R` are read as an :code:`ObsErr
 
 The covariance can be configured using the following options:
 
-* :code:`random amplitude` (optional, default value is 1.0) -- a multiplier used when generating a random sample from the observation error covariances (standard error deviations are multiplied by this number)
+* :code:`obs perturbations amplitude` (optional, default value is 1.0) -- a multiplier used when generating a random sample of observation perturbations using the observation error covariance matrix (standard deviations are multiplied by this number)
 * :code:`zero-mean perturbations`: logical variable with a default of :code:`false`. Set to :code:`true` to constrain observation perturbations to have a zero ensemble mean (can be used in the :doc:`Ensemble of Data Assimilations (EDA) <../applications/ensemble-applications>`). If this option is set to :code:`true`, the following options also have to be set:
 
   - :code:`member`: ensemble member index (1-based);
@@ -27,6 +27,14 @@ A diagonal :math:`R` can be configured as:
 
  obs error:
    covariance model: diagonal
+
+For an EDA experiment where the amplitude of observation perturbations is half of its default value, the following YAML settings can be used:
+
+.. code-block:: yaml
+
+ obs error:
+   covariance model: diagonal
+   obs perturbations amplitude: 0.5
 
 For an EDA experiment with 10 ensemble members, and perturbing observations ensuring zero-mean perturbations, a diagonal :math:`R` for the 2nd ensemble member can be set up as:
 

@@ -47,7 +47,9 @@ This is used to define the initial condition of a forecast or DA cycle.  It ofte
 observations
 ^^^^^^^^^^^^
 
-Often the largest section of the configuration file, this describes one or more observation types, each of which is a multi-level YAML/JSON object in its own right.  As described our :doc:`Configuration file implementation example </using/building_and_running/config_content>`, each of these observation types are read into JEDI as an :code:`eckit::Configuration` object.  Commonly used components within each observation type include
+This section, which is often the largest section of the configuration file, describes the observations to be generated in an HofX application or to be assimilated in a DA cycle.  Observation perturbation settings are also prescribed here.  At the top level of this section, the YAML key :code:`obs perturbations` controls whether the observations are perturbed.  Its default value is :code:`false`.
+
+The YAML key :code:`observers` is a list containing the details of each observation type.  Commonly used components within each item of this list include:
 
 * **obs space**: describes observation space-related configuration (required)
 
@@ -59,7 +61,7 @@ Often the largest section of the configuration file, this describes one or more 
       * **type**: type of backend (HDF5 file, ODB file, etc.)
       * **obsfile**: input filename
 
-  * **obsdatain** (optional)
+  * **obsdataout** (optional)
 
     * **engine:** (required, if obsdataout used)
 
@@ -124,23 +126,24 @@ If the observations have been divided into records then it is possible to extend
 .. code-block:: YAML
 
   observations:
-  - obs space:
-      name: Sonde
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: sonde.odb
-        obsgrouping:
-          group variables: [ "station_id" ]
-      extension:
-        allocate companion records with length: 10
-        variables filled with non-missing values:
-        - "latitude"
-        - "longitude"
-        - "dateTime"
-        - "air_pressure"
-        - "air_pressure_levels"
-        - "station_id"
+    observers:
+    - obs space:
+        name: Sonde
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: sonde.odb
+          obsgrouping:
+            group variables: [ "station_id" ]
+        extension:
+          allocate companion records with length: 10
+          variables filled with non-missing values:
+          - "latitude"
+          - "longitude"
+          - "dateTime"
+          - "air_pressure"
+          - "air_pressure_levels"
+          - "station_id"
 
 The number of locations allocated to each companion profile is governed by the :code:`allocate companion records with length` option. In the example this is set to 10, but any integer value greater than zero can be used. If an invalid number is selected then the extension is not performed. The companion records are only produced if the option :code:`obsdatain.obsgrouping.group variables` has been set.
 
