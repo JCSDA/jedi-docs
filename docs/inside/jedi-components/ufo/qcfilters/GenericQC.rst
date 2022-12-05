@@ -1304,6 +1304,12 @@ The YAML parameters supported by this filter are listed below.
 
     Default: :code:`{ "-90": 100, "90": 100 }`, i.e. a constant function equal to 100 km everywhere.
 
+  - :code:`horizontal_correlation_scale_2` (optional): In the same format as :code:`horizontal_correlation_scale`, define a second latitude-dependent length scale to use in the calculation of the PGE adjustment. E.g. the oceans use mesoscale and synoptic length scales. N.B.: for this option to be used, both :code:`anisotropy`, :code:`anisotropy_2` and :code:`background_error_group_2` must be specified (see below).
+
+  - :code:`anisotropy`: Latitude-dependent anisotropy factor, specified in the same format as :code:`horizontal_correlation_scale`. Must be given if using 2-scale Buddy Check. A factor of 1 means isotropic; >1 means a buddy pair of observations a given distance apart would cause a greater PGE increase if the line joining them is aligned closer to an E-W line than to N-S. If not specified, the filter reverts to 1-scale isotropic.
+
+  - :code:`anisotropy_2`: As for :code:`anisotropy`, but to match the second length scale. Must be given if using 2-scale Buddy Check. If not specified, the filter reverts to 1-scale isotropic.
+
   - :code:`temporal_correlation_scale`: Temporal correlation scale. Default: PT6H.
 
   - :code:`vertical_correlation_scale`: Vertical correlation scale which relates to the ratio of pressures.  Default: 6.
@@ -1311,6 +1317,14 @@ The YAML parameters supported by this filter are listed below.
   - :code:`damping_factor_1` Parameter used to "damp" gross error probability updates using method 1 described in section 3.8 of the OPS Scientific Documentation Paper 2 to make the buddy check better-behaved in data-dense areas. See the reference above for the full description. Default: 1.0.
 
   - :code:`damping_factor_2` Parameter used to "damp" gross error probability updates using method 2 described in section 3.8 of the OPS Scientific Documentation Paper 2 to make the buddy check better-behaved in data-dense areas. See the reference above for the full description. Default: 1.0.
+
+  - :code:`background_error_group`: Group name of the background error variable. Default: :code:`ObsDiag`.
+
+  - :code:`background_error_suffix`: Suffix of the background error variable. Default: :code:`_background_error`, i.e. if neither the group nor suffix are specified, the background error is assumed to be :code:`ObsDiag/<var>_background_error` for the corresponding filter variable :code:`<var>`.
+
+  - :code:`background_error_group_2`: As for :code:`background_error_group`, but for the second length scale. If not specified, the filter reverts to 1-scale isotropic.
+
+  - :code:`background_error_suffix_2`: As for :code:`background_error_suffix`, but for the second length scale. Default: :code:`""`, e.g. if not specified but :code:`background_error_group_2: MesoscaleError`, then the second background error is assumed to be :code:`MesoscaleError/<var>` for the filter variable :code:`<var>`.
 
 Example:
 
