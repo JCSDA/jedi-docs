@@ -18,20 +18,21 @@ the example below:
    window end: 2018-04-15T03:00:00Z
 
    observations:
-   - obs space:
-      name: test_relative_humidity1
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: Data/ioda/testinput_tier_1/sfc_obs_2018041500_metars_small.nc
-      simulated variables: [specific_humidity, air_temperature, surface_pressure]
-   obs filters:
-   - filter: Variable Transforms
-      Transform: ["RelativeHumidity"] 
-      Method: UKMO            
-      Formulation: Sonntag
+     observers:
+     - obs space:
+         name: test_relative_humidity1
+         obsdatain:
+           engine:
+             type: H5File
+             obsfile: Data/ioda/testinput_tier_1/sfc_obs_2018041500_metars_small.nc
+         simulated variables: [specific_humidity, air_temperature, surface_pressure]
+       obs filters:
+       - filter: Variable Transforms
+         Transform: ["RelativeHumidity"] 
+         Method: UKMO            
+         Formulation: Sonntag
 
-   
+
 The :code:`Variable Transforms` filter has the following available yaml settings:
  - **Transform**: name of the variable transform that need to be performed. 
    (see :ref:`available-variable-transforms`).

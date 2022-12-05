@@ -18,23 +18,24 @@ The user can specify two options in the yaml: :code:`absolute threshold` and :co
     window end: 2021-01-01T00:01:00Z
 
     observations:
-    - obs space:
-        name: test data
-        obsdatain:
-          engine:
-            type: H5File
-            obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
-          obsgrouping:
-            group variables: [ "record_number" ]
-            sort variable: "latitude"
-            sort order: "descending"
-        simulated variables: [variable]
-      HofX: HofX
-      obs filters:
-      - filter: Profile Background Check
-        filter variables:
-        - name: variable
-        absolute threshold: 2.5
+      observers:
+      - obs space:
+          name: test data
+          obsdatain:
+            engine:
+              type: H5File
+              obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+            obsgrouping:
+              group variables: [ "record_number" ]
+              sort variable: "latitude"
+              sort order: "descending"
+          simulated variables: [variable]
+        HofX: HofX
+        obs filters:
+        - filter: Profile Background Check
+          filter variables:
+          - name: variable
+          absolute threshold: 2.5
       
 Note: The :code:`obsgrouping: group variables` option is necessary to identify which observations belong to a given profile.  The :code:`sort variable` and :code:`sort order` options are optional.
 
@@ -53,20 +54,21 @@ This filter finds the number of valid observations within a profile.  If this nu
     window end: 2021-01-01T00:01:00Z
 
     observations:
-    - obs space:
-        name: test data
-        obsdatain:
-          engine:
-            type: H5File
-            obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
-          obsgrouping:
-            group variables: ["record_number"]
-        simulated variables: [variable]
-      obs filters:
-      - filter: Profile Few Observations Check
-        filter variables:
-        - name: variable
-        threshold: 10
+      observers:
+      - obs space:
+          name: test data
+          obsdatain:
+            engine:
+              type: H5File
+              obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+            obsgrouping:
+              group variables: ["record_number"]
+          simulated variables: [variable]
+        obs filters:
+        - filter: Profile Few Observations Check
+          filter variables:
+          - name: variable
+          threshold: 10
 
 Note: The :code:`obsgrouping: group variables` option is necessary to identify which observations belong to a given profile.
 
@@ -93,27 +95,28 @@ This filter relies on the refractivity and model geopotential heights being save
     window end: 2020-05-01T09:00:00Z
 
     observations:
-    - obs operator:
-        name: GnssroBendMetOffice
-        obs options:
-          vert_interp_ops: true
-          pseudo_ops: true
-      obs space:
-        name: GnssroBnd
-        obsdatain:
-          engine:
-            type: H5File
-            obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2020050106_1dvar.nc4
-        simulated variables: [bending_angle]
-      geovals:
-        filename: Data/ufo/testinput_tier_1/gnssro_geoval_2020050106_1dvar.nc4
-      obs filters:
-      - filter: GNSSRO Impact Height Check
-        filter variables:
-        - name: bending_angle
-        gradient threshold: -0.08
-        sharp gradient offset: 600
-        surface offset: 500
+      observers:
+      - obs operator:
+          name: GnssroBendMetOffice
+          obs options:
+            vert_interp_ops: true
+            pseudo_ops: true
+        obs space:
+          name: GnssroBnd
+          obsdatain:
+            engine:
+              type: H5File
+              obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2020050106_1dvar.nc4
+          simulated variables: [bending_angle]
+        geovals:
+          filename: Data/ufo/testinput_tier_1/gnssro_geoval_2020050106_1dvar.nc4
+        obs filters:
+        - filter: GNSSRO Impact Height Check
+          filter variables:
+          - name: bending_angle
+          gradient threshold: -0.08
+          sharp gradient offset: 600
+          surface offset: 500
 
 
 Conventional Profile Processing
@@ -850,47 +853,48 @@ Note that a call to the Ocean Vertical Stability Check filter MUST be preceded b
   window end: 2021-01-01T00:01:00Z
 
   observations:
-  - obs space:
-      name: test data
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
-        obsgrouping:
-          group variables: [ "station_id", "dateTime", "latitude", "longitude" ]
-          sort variable: "ocean_pressure"
-          sort group: "DerivedObsValue"
-          sort order: "ascending"
-      simulated variables: [ocean_temperature, ocean_salinity, ocean_depth, ocean_pressure]
-      observed variables: [ocean_temperature, ocean_salinity]
-      derived variables: [ocean_depth, ocean_pressure]
-    HofX: HofX
-    obs filters:
-    - filter: Create Diagnostic Flags
-      filter variables:
-        - name: DerivedObsValue/ocean_depth
-      flags:
-      - name: DensitySpike
-        initial value: false
-      - name: DensityStep
-        initial value: false
-      - name: Superadiabat
-        initial value: false
-    - filter: Ocean Vertical Stability Check
-      filter variables:
-        - name: DerivedObsValue/ocean_depth
-      variables:
-        temperature: ObsValue/ocean_temperature
-        salinity: ObsValue/ocean_salinity
-        pressure: DerivedObsValue/ocean_pressure
-      count spikes: true
-      count steps: true
-      nominal tolerance: -0.05
-      threshold: 0.25
-      actions:
-      - name: set
-        flag: Superadiabat
-      - name: reject
+    observers:
+    - obs space:
+        name: test data
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+          obsgrouping:
+            group variables: [ "station_id", "dateTime", "latitude", "longitude" ]
+            sort variable: "ocean_pressure"
+            sort group: "DerivedObsValue"
+            sort order: "ascending"
+        simulated variables: [ocean_temperature, ocean_salinity, ocean_depth, ocean_pressure]
+        observed variables: [ocean_temperature, ocean_salinity]
+        derived variables: [ocean_depth, ocean_pressure]
+      HofX: HofX
+      obs filters:
+      - filter: Create Diagnostic Flags
+        filter variables:
+          - name: DerivedObsValue/ocean_depth
+        flags:
+        - name: DensitySpike
+          initial value: false
+        - name: DensityStep
+          initial value: false
+        - name: Superadiabat
+          initial value: false
+      - filter: Ocean Vertical Stability Check
+        filter variables:
+          - name: DerivedObsValue/ocean_depth
+        variables:
+          temperature: ObsValue/ocean_temperature
+          salinity: ObsValue/ocean_salinity
+          pressure: DerivedObsValue/ocean_pressure
+        count spikes: true
+        count steps: true
+        nominal tolerance: -0.05
+        threshold: 0.25
+        actions:
+        - name: set
+          flag: Superadiabat
+        - name: reject
     
 In this example, the Diagnostic Flags are associated with the filter variable :code:`DerivedObsValue/ocean_depth`. This sets :code:`DiagnosticFlags/DensitySpike/ocean_depth` and :code:`DiagnosticFlags/DensityStep/ocean_depth`. Additionally, because a filter action is specified to set :code:`DiagnosticFlags/Superadiabat`, this flag is set (for :code:`ocean_depth` only) at every location that is flagged as a density spike or step (both levels of each step). These locations are rejected because that filter action has also been specified.
 

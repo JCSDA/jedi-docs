@@ -70,32 +70,33 @@ The following is a YAML example for configuring the processing of radiosonde dat
    window begin: 2018-04-14T21:00:00Z
    window end: 2018-04-15T03:00:00Z
    observations:
-   - obs space:
-       name: Radiosonde
-       obsdatain:
-         engine:
-           type: H5File
-           obsfile: Data/testinput_tier_1/sondes_obs_2018041500_m.nc4
-         obsgrouping:
-           group variables: [ "station_id" ]
-           sort variable: "air_pressure"
-           sort order: "descending"
-       obsdataout:
-         engine:
-           type: H5File
-           obsfile: Data/sondes_obs_2018041500_m_out.nc4
-       simulated variables: [air_temperature]
-     obs operator:
-       name: VertInterp
-       vertical coordinate: air_pressure
-     geovals:
-       filename: Data/sondes_geoval_2018041500_m.nc4
-     vector ref: GsiHofX
-     tolerance: 1.0e-04  # in % so that corresponds to 10^-3
-     linear obs operator test:
-       iterations TL: 12
-       tolerance TL: 1.0e-9
-       tolerance AD: 1.0e-11
+     observers:
+     - obs space:
+         name: Radiosonde
+         obsdatain:
+           engine:
+             type: H5File
+             obsfile: Data/testinput_tier_1/sondes_obs_2018041500_m.nc4
+           obsgrouping:
+             group variables: [ "station_id" ]
+             sort variable: "air_pressure"
+             sort order: "descending"
+         obsdataout:
+           engine:
+             type: H5File
+             obsfile: Data/sondes_obs_2018041500_m_out.nc4
+         simulated variables: [air_temperature]
+       obs operator:
+         name: VertInterp
+         vertical coordinate: air_pressure
+       geovals:
+         filename: Data/sondes_geoval_2018041500_m.nc4
+       vector ref: GsiHofX
+       tolerance: 1.0e-04  # in % so that corresponds to 10^-3
+       linear obs operator test:
+         iterations TL: 12
+         tolerance TL: 1.0e-9
+         tolerance AD: 1.0e-11
 
 
 The :code:`obs space.obsdatain.obsgrouping` keyword is used to initate the obs grouping step in the IODA input flow (:numref:`ioda-operations`).

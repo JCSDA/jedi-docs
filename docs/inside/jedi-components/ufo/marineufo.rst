@@ -152,25 +152,26 @@ Examples of yaml:
 .. code-block:: yaml
 
    observations:
-   - obs space:
-       name: cryosat2_thickness
-       obsdatain:
-         engine:
-           type: H5File
-           obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
-       simulated variables: [sea_ice_thickness]
-     obs operator:
-       name: SeaIceThickness
+     observers:
+     - obs space:
+         name: cryosat2_thickness
+         obsdatain:
+           engine:
+             type: H5File
+             obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
+         simulated variables: [sea_ice_thickness]
+       obs operator:
+         name: SeaIceThickness
 
-   - obs space:
-       name: cryosat2_freeboard
-       obsdatain:
-         engine:
-           type: H5File
-           obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
-       simulated variables: [sea_ice_freeboard]
-     obs operator:
-       name: SeaIceThickness
+     - obs space:
+         name: cryosat2_freeboard
+         obsdatain:
+           engine:
+             type: H5File
+             obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
+         simulated variables: [sea_ice_freeboard]
+       obs operator:
+         name: SeaIceThickness
 
 
 Sea ice fraction

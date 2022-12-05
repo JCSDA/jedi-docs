@@ -655,45 +655,46 @@ Examples of yaml:
 .. code-block:: yaml
 
  observations:
- - obs space:
-      name: GnssroBnd
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
-        obsgrouping:
-          group variable: "record_number"
-          sort variable: "impact_height"
-          sort order: "ascending"
-      obsdataout:
-        engine:
-          type: H5File
-          obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
-      simulate variables: [bending_angle]
-    obs operator:
-      name: GnssroBndNBAM
-      obs options:
-        use_compress: 1
-        vertlayer: full
-        super_ref_qc: NBAM
-        sr_steps: 2
-    obs filters:
-    - filter: Domain Check
-      filter variables:
-      - name: [bending_angle]
-      where:
-      - variable:
-          name: impact_height@MetaData
-        minvalue: 0
-        maxvalue: 50000
-    - filter: ROobserror
-      filter variables:
-      - name: bending_angle
-      errmodel: NRL
-    - filter: Background Check
-      filter variables:
-      - name: [bending_angle]
-      threshold: 3
+   observers:
+   - obs space:
+        name: GnssroBnd
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
+          obsgrouping:
+            group variable: "record_number"
+            sort variable: "impact_height"
+            sort order: "ascending"
+        obsdataout:
+          engine:
+            type: H5File
+            obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
+        simulate variables: [bending_angle]
+      obs operator:
+        name: GnssroBndNBAM
+        obs options:
+          use_compress: 1
+          vertlayer: full
+          super_ref_qc: NBAM
+          sr_steps: 2
+      obs filters:
+      - filter: Domain Check
+        filter variables:
+        - name: [bending_angle]
+        where:
+        - variable:
+            name: impact_height@MetaData
+          minvalue: 0
+          maxvalue: 50000
+      - filter: ROobserror
+        filter variables:
+        - name: bending_angle
+        errmodel: NRL
+      - filter: Background Check
+        filter variables:
+        - name: [bending_angle]
+        threshold: 3
 
 
 GNSS RO bending angle (ROPP 1D)
@@ -730,40 +731,41 @@ Examples of yaml:
 .. code-block:: yaml
 
  observations:
- - obs space:
-     name: GnssroBndROPP1D
-     obsdatain:
-       engine:
-         type: H5File
-         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
-       obsgrouping:
-         group variable: "record_number"
-         sort variable: "impact_height"
-     obsdataout:
-       engine:
-         type: H5File
-         obsfile: Data/gnssro_bndropp1d_2018041500_m_output.nc4
-     simulate variables: [bending_angle]
-   obs operator:
-      name:  GnssroBndROPP1D
-      obs options:
-   obs filters:
-   - filter: Domain Check
-     filter variables:
-     - name: [bending_angle]
-     where:
-     - variable:
-         name: impact_height@MetaData
-       minvalue: 0
-       maxvalue: 50000
-   - filter: ROobserror
-     filter variables:
-     - name: bending_angle
-     errmodel: NRL
-   - filter: Background Check
-     filter variables:
-     - name: [bending_angle]
-     threshold: 3
+   observers:
+   - obs space:
+       name: GnssroBndROPP1D
+       obsdatain:
+         engine:
+           type: H5File
+           obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+         obsgrouping:
+           group variable: "record_number"
+           sort variable: "impact_height"
+       obsdataout:
+         engine:
+           type: H5File
+           obsfile: Data/gnssro_bndropp1d_2018041500_m_output.nc4
+       simulate variables: [bending_angle]
+     obs operator:
+        name:  GnssroBndROPP1D
+        obs options:
+     obs filters:
+     - filter: Domain Check
+       filter variables:
+       - name: [bending_angle]
+       where:
+       - variable:
+           name: impact_height@MetaData
+         minvalue: 0
+         maxvalue: 50000
+     - filter: ROobserror
+       filter variables:
+       - name: bending_angle
+       errmodel: NRL
+     - filter: Background Check
+       filter variables:
+       - name: [bending_angle]
+       threshold: 3
 
 GNSS RO bending angle (ROPP 2D)
 -----------------------------------
@@ -807,44 +809,45 @@ Examples of yaml:
 .. code-block:: yaml
 
  observations:
- - obs space:
-     name: GnssroBndROPP2D
-     obsdatain:
-       engine:
-         type: H5File
-         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
-       obsgrouping:
-         group_variable: "record_number"
-         sort_variable: "impact_height"
-     obsdataout:
-       engine:
-         type: H5File
-         obsfile: Data/gnssro_bndropp2d_2018041500_m_output.nc4
-     simulate variables: [bending_angle]
-   obs operator:
-      name: GnssroBndROPP2D
-      obs options:
-        n_horiz: 31
-        res: 40.0
-        top_2d: 1O.0
-   obs filters:
-   - filter: Domain Check
-     filter variables:
-     - name: [bending_angle]
-     where:
-     - variable:
-         name: impact_height@MetaData
-       minvalue: 0
-       maxvalue: 50000
-   - filter: ROobserror
-     n_horiz: 31
-     filter variables:
-     - name: bending_angle
-     errmodel: NRL
-   - filter: Background Check
-     filter variables:
-     - name: [bending_angle]
-     threshold: 3
+   observers:
+   - obs space:
+       name: GnssroBndROPP2D
+       obsdatain:
+         engine:
+           type: H5File
+           obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+         obsgrouping:
+           group_variable: "record_number"
+           sort_variable: "impact_height"
+       obsdataout:
+         engine:
+           type: H5File
+           obsfile: Data/gnssro_bndropp2d_2018041500_m_output.nc4
+       simulate variables: [bending_angle]
+     obs operator:
+        name: GnssroBndROPP2D
+        obs options:
+          n_horiz: 31
+          res: 40.0
+          top_2d: 1O.0
+     obs filters:
+     - filter: Domain Check
+       filter variables:
+       - name: [bending_angle]
+       where:
+       - variable:
+           name: impact_height@MetaData
+         minvalue: 0
+         maxvalue: 50000
+     - filter: ROobserror
+       n_horiz: 31
+       filter variables:
+       - name: bending_angle
+       errmodel: NRL
+     - filter: Background Check
+       filter variables:
+       - name: [bending_angle]
+       threshold: 3
 
 GNSS RO bending angle (MetOffice)
 -----------------------------------
@@ -953,33 +956,34 @@ Examples of yaml:
 .. code-block:: yaml
 
  observations:
- - obs space:
-     name: GnssroRef
-     obsdatain:
-       engine:
-         type: H5File
-         obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
-     simulate variables: [refractivity]
-   obs operator:
-     name: GnssroRefNCEP
-     obs options:
-   obs filters:
-   - filter: Domain Check
-     filter variables:
-     - name: [refractivity]
-     where:
-     - variable:
-         name: altitude@MetaData
-       minvalue: 0
-       maxvalue: 30000
-   - filter: ROobserror
-     filter variables:
-     - name: refractivity
-     errmodel: NCEP
-   - filter: Background Check
-     filter variables:
-     - name: [refractivity]
-     threshold: 3
+   observers:
+   - obs space:
+       name: GnssroRef
+       obsdatain:
+         engine:
+           type: H5File
+           obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
+       simulate variables: [refractivity]
+     obs operator:
+       name: GnssroRefNCEP
+       obs options:
+     obs filters:
+     - filter: Domain Check
+       filter variables:
+       - name: [refractivity]
+       where:
+       - variable:
+           name: altitude@MetaData
+         minvalue: 0
+         maxvalue: 30000
+     - filter: ROobserror
+       filter variables:
+       - name: refractivity
+       errmodel: NCEP
+     - filter: Background Check
+       filter variables:
+       - name: [refractivity]
+       threshold: 3
 
 Ground Based GNSS observation operator (Met Office)
 ---------------------------------------------------
@@ -1275,15 +1279,16 @@ Examples of yaml:
 .. code-block:: yaml
 
   observations:
-  - obs operator:
-      name: RadarRadialVelocity
-    obs space:
-      name: Radar
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: Data/radar_rw_obs_2019052222.nc4
-      simulated variables: [radial_velocity]
+    observers:
+    - obs operator:
+        name: RadarRadialVelocity
+      obs space:
+        name: Radar
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/radar_rw_obs_2019052222.nc4
+        simulated variables: [radial_velocity]
 
 Scatterometer neutral wind (Met Office)
 ---------------------------------------
@@ -1307,23 +1312,24 @@ Examples of yaml:
 .. code-block:: yaml
 
   observations:
-  - obs operator:
-      name: ScatwindNeutralMetOffice
-    obs space:
-      name: Scatwind
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: Data/ioda/testinput_tier_1/scatwind_obs_1d_2020100106.nc4
-      obsdataout:
-        engine:
-          type: H5File
-          obsfile: Data/scatwind_obs_1d_2020100106_opr_test_out.nc4
-      simulated variables: [eastward_wind, northward_wind]
-    geovals:
-      filename: Data/ufo/testinput_tier_1/scatwind_geoval_20201001T0600Z.nc4
-    vector ref: MetOfficeHofX
-    tolerance: 1.0e-05
+    observers:
+    - obs operator:
+        name: ScatwindNeutralMetOffice
+      obs space:
+        name: Scatwind
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/ioda/testinput_tier_1/scatwind_obs_1d_2020100106.nc4
+        obsdataout:
+          engine:
+            type: H5File
+            obsfile: Data/scatwind_obs_1d_2020100106_opr_test_out.nc4
+        simulated variables: [eastward_wind, northward_wind]
+      geovals:
+        filename: Data/ufo/testinput_tier_1/scatwind_geoval_20201001T0600Z.nc4
+      vector ref: MetOfficeHofX
+      tolerance: 1.0e-05
 
 References:
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -1420,24 +1426,25 @@ Examples of yaml:
 .. code-block:: yaml
 
   observations:
-  - obs space:
-    name: sondes_ps
-    obsdatain:
-      engine:
-        type: H5File
-        obsfile: sondes_ps_obs_2022082300.nc4
-    obsdataout:
-      engine:
-        type: H5File
-        obsfile: sondes_ps_diag_2022082300.nc4
-    simulated variables: [surface_pressure]
-  obs operator:
-    name: SfcPCorrected
-    da_psfc_scheme: GSI
-    geovar_sfc_geomz: surface_geopotential_height
-    geovar_geomz: geopotential_height
-  linear obs operator:
-    name: Identity
+    observers:
+    - obs space:
+      name: sondes_ps
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: sondes_ps_obs_2022082300.nc4
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: sondes_ps_diag_2022082300.nc4
+      simulated variables: [surface_pressure]
+    obs operator:
+      name: SfcPCorrected
+      da_psfc_scheme: GSI
+      geovar_sfc_geomz: surface_geopotential_height
+      geovar_geomz: geopotential_height
+    linear obs operator:
+      name: Identity
 
 Background Error Vertical Interpolation
 ---------------------------------------

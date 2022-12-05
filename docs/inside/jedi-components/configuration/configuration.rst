@@ -35,31 +35,32 @@ As an example, consider a configuration file similar to the one used in the :cod
     window begin: 2010-01-01T00:00:00Z
     window length: PT12H
     observations:
-    - obs space:
-        obs type: Stream
-        obsdatain:
-          engine:
-            type: H5File
-            obsfile: Data/truth.obs4d_12h.nc
-        obsdataout:
-          engine:
-            type: H5File
-            obsfile: Data/hofx.obs4d_12h.nc
-      obs operator:
-        obs type: Stream
-      obs bias: {}
-    - obs space:
-        obs type: Wind
-        obsdatain:
-          engine:
-            type: H5File
-            obsfile: Data/truth.obs4d_12h.nc
-        obsdataout:
-          engine:
-            type: H5File
-            obsfile: Data/hofx.obs4d_12h.nc
-      obs operator:
-        obs type: Wind
+      observers:
+      - obs space:
+          obs type: Stream
+          obsdatain:
+            engine:
+              type: H5File
+              obsfile: Data/truth.obs4d_12h.nc
+          obsdataout:
+            engine:
+              type: H5File
+              obsfile: Data/hofx.obs4d_12h.nc
+        obs operator:
+          obs type: Stream
+        obs bias: {}
+      - obs space:
+          obs type: Wind
+          obsdatain:
+            engine:
+              type: H5File
+              obsfile: Data/truth.obs4d_12h.nc
+          obsdataout:
+            engine:
+              type: H5File
+              obsfile: Data/hofx.obs4d_12h.nc
+        obs operator:
+          obs type: Wind
 
 
 Note that keys representing objects (single variables, vectors or more complex objects) are represented as lower case and entire words.  This is the preferred style but it is not currently followed by all JEDI repositories.

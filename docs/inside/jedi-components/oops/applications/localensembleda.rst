@@ -153,13 +153,14 @@ Localization sequence is specified as following for each obs space:
 .. code-block:: yaml
 
    observations:
-   - obs space:
-       name: radiosonde
-     ...
-     obs localizations:
-     - localization method: Horizontal Gaspari-Cohn    # inflate errors with Gaspari-Cohn function, based on the
-                                                       # horizontal distance from the updated grid point
-       lengthscale: 1000e3                             # localization distance in meters
+     observers:
+     - obs space:
+         name: radiosonde
+       ...
+       obs localizations:
+       - localization method: Horizontal Gaspari-Cohn    # inflate errors with Gaspari-Cohn function, based on the
+                                                         # horizontal distance from the updated grid point
+         lengthscale: 1000e3                             # localization distance in meters
 
 
 There is currently no vertical localization in LETKF implementations in JEDI. LGETKF implementation uses ensemble modulation to approximate model-space vertical localization. Vertical R-localization is work in progress. 
@@ -251,8 +252,9 @@ The type of the obs. distribution is specified for each ObsSpace:
 .. code-block:: yaml
 
  observations:
- - obs space:
-     distribution: Halo 
+   observers:
+   - obs space:
+       distribution: Halo 
 
 If Halo obs. distribution is used one also needs to specify
 
