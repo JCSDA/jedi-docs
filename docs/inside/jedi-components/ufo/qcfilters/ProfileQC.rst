@@ -814,7 +814,6 @@ This example runs the basic and SamePDiffT checks on the input data, using the s
       Checks: ["Basic", "SamePDiffT"]
       SPDTCheck_TThresh: 30.0 # This is an example modification of a check parameter
 
-
 .. _oceanvertstabcheck:
 
 Ocean Vertical Stability Check
@@ -952,3 +951,110 @@ Once the density spikes and steps have been flagged, it is possible to subsequen
         name: reject
 
 This example rejects whole profiles which contain >=2 density spikes AND the number of spikes exceeds one quarter of the number of non-missing levels in the profile. It makes use of the :ref:`ProfileLevelCount` and :ref:`LinearCombination <ObsFunctionLinearCombination>` obsFunctions, and :code:`Perform Action: reject` based on :ref:`where statements <where-statement>`. With spikes and steps separated like this, they can be counted and used separately in conditional flagging, if required.
+
+.. _profaveobstomodlevs:
+
+Average Observations to Model Levels
+------------------------------------
+
+For each of the filter variables given, this filter computes the model-level average increment (where :math:`j` indexes observation levels):
+
+.. math::
+
+    inc_{m} = \frac{ \sum_{j = j_{0_m}}^{j_{N_m}} { (y_j - H(x)_j) } }{j_{N_m} - j_{0_m}}
+
+It is the mean of all where-included, QC-passing, non-missing observation-minus-background values :math:`(y_j - H(x)_j)` that fall within the range :math:`j_{0_m}` to :math:`j_{N_m}` of that model level :math:`m`. The range is bounded by the mid-points between model level :math:`m` and the adjacent model level above and below it.
+
+Each average increment is added to the background value at that model level:
+
+.. math::
+
+    <y>_m = H(x)_m + inc_m
+
+The resulting observation values averaged on to model levels, :math:`<y>_m`, are written to the :code:`DerivedObsValue` 's extended space. The original space of the :code:`DerivedObsValue` is the same as that of the :code:`ObsValue`.
+
+The QC flags on model levels are set by this filter to be equal to those of the nearest observation level that is only just deeper in the ocean, or only just higher in the atmosphere, than that model level. It is the user's responsibility to set the model-level (extended-space) :code:`ObsError` as required, and :code:`Perform Action: assign error` separately, as there is no agreed method for this filter to assign observation errors.
+
+**Summary of yaml parameters**
+
+- :code:`filter variables`: the (Derived)ObsValue(s) whose observation-level values are to be averaged on to model levels.
+
+- :code:`observation vertical coordinate`: variable containing the observation levels (e.g. air pressure, ocean depth) in its original space (required).
+
+- :code:`model vertical coordinate`: variable containing the model levels (e.g. air pressure, ocean depth) in its extended space (required).
+
+**Example**
+
+.. code-block:: yaml
+
+    window begin: 2020-12-31T23:59:00Z
+    window end: 2021-01-01T00:01:00Z
+
+    observations:
+    - obs space:
+        name: Average Obs to Model Levels
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/ufo/testinput_tier_1/profile_testdata.nc4  # not real
+        obsgrouping:
+          group variables: [ "station_id" ]
+          sort variable: "ocean_depth"
+          sort order: "ascending"
+        simulated variables: ["ocean_depth", "ocean_salinity"]
+
+        extension:
+          allocate companion records with length: &num_levels 75
+          variables filled with non-missing values:
+          - "latitude"
+          - "longitude"
+          - "dateTime"
+          - "station_id"
+          - "observation_type“
+
+      geovals: Data/ufo/testinput_tier_1/profile_geovalsdata.nc4  # not real
+
+      obs operator:
+        name: Categorical
+        categorical variable: extended_obs_space
+        fallback operator: "CompositeOriginal"
+        categorised operators: {"1": "CompositeAverage"}
+        operator labels: ["CompositeOriginal", "CompositeAverage"]
+        operator configurations:
+        - name: Composite
+          components:
+          - name: VertInterp
+            variables:
+            - name: ocean_salinity
+            - name: ocean_depth
+            observation vertical coordinate: ocean_depth
+            observation vertical coordinate group: DerivedObsValue
+            vertical coordinate: ocean_depth
+        - name: Composite
+          components:
+          - name: ProfileAverage
+            variables:
+            - name: ocean_salinity
+            - name: ocean_depth
+            model vertical coordinate: "ocean_depth"
+            pressure coordinate: ocean_depth
+            pressure group: DerivedObsValue
+            require descending pressure sort: false
+            number of intersection iterations: 0
+
+      obs post filters:
+      - filter: Average Observations To Model Levels
+        filter variables:
+        - name: ocean_salinity
+        observation vertical coordinate: DerivedObsValue/ocean_depth
+        model vertical coordinate: HofX/ocean_depth
+
+In order for this filter to work correctly, the observations must be grouped into records (profiles) using the :code:`obsgrouping.group variables` option. The filter works whether the vertical coordinate is in increasing or decreasing order, but the model and observation vertical coordinates must both increase or both decrease, otherwise an error is thrown.
+
+The ObsSpace must also have been extended with :code:`obs space.extension` as in the example above, to accommodate the averaged observation values on model levels, in the extended space.
+
+It is expected that the :code:`model vertical coordinate` should contain values in its extended space - one way to achieve this is with the :ref:`ProfileAverage obsOperator <profileaverageoperator>` (see example above). ProfileAverage fills the extended space of an HofX variable (created by the :ref:`VertInterp obsOperator <obsops_vertinterp>` in the above example), with the GeoVaLs values appropriate to each profile's location. If the extended space of :code:`model vertical coordinate` is all zeroes (as would be the case if ProfileAverage had not been performed), an error is thrown when applying this filter. (The filter does not stop if the extended space of :code:`model vertical coordinate` is all missing for a profile, as some profiles may be missing all their data.)
+
+In the example above, a variable called :code:`DerivedObsValue/ocean_salinity` is created. It contains the same values as :code:`ObsValue/ocean_salinity` in its original space, while its extended space is filled with the values of :code:`ObsValue/ocean_salinity` averaged on to the model levels specified by :code:`model vertical coordinate`.
+
+This filter supports use of :ref:`"where" statements <where-statement>`: any where-excluded observation locations are excluded from the calculation of the average increments.

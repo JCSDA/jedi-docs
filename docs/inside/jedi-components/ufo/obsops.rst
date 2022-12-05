@@ -1549,6 +1549,8 @@ Example of a yaml
 
 .. include:: marineufo.rst
 
+.. _profileaverageoperator:
+
 Profile Average operator
 ------------------------
 
