@@ -13,10 +13,10 @@ obs space.
 .. code-block:: yaml
 
     obs filters:
-    - filter: Variables Transform
-    Transform: ["RelativeHumidity"]
-    Method: UKMO            
-    Formulation: Sonntag    
+    - filter: Variable Transforms
+      Transform: ["RelativeHumidity"]
+      Method: UKMO            
+      Formulation: Sonntag    
 
 **Observation parameters needed** (JEDI name)
 
@@ -78,10 +78,10 @@ obs space.
 .. code-block:: yaml
 
     obs filters:
-    - filter: Variables Transform
-    Transform: ["SpecificHumidity"]
-    Method: UKMO            
-    Formulation: Sonntag  
+    - filter: Variable Transforms
+      Transform: ["SpecificHumidity"]
+      Method: UKMO            
+      Formulation: Sonntag  
     
 **Observation parameters needed** (JEDI name)
 

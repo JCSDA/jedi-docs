@@ -49,14 +49,18 @@ The sample yaml setting to output the feedback file for hofx is as follows:
 .. code:: yaml
 
     obsdataout:
-      obsfile: dbOut/obsout_hofx_sondes.h5
+      engine:
+        type: H5File
+        obsfile: dbOut/obsout_hofx_sondes.h5
 
 and for variational:
 
 .. code:: yaml
 
     obsdataout:
-      obsfile: dbOut/obsout_variational_sondes.h5
+      engine:
+        type: H5File
+        obsfile: dbOut/obsout_variational_sondes.h5
 
 In the Variational application, ObsGroups associated with :code:`EffectiveQC`, :code:`EffectiveError`, :code:`hofx`, and :code:`ObsBias` are saved with iteration number, such as :code:`EffectiveQC0`, :code:`EffectiveQC1`, which is not the case for the HofX application.
 Those database files feed into a robust observation-space

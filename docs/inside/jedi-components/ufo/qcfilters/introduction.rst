@@ -31,29 +31,32 @@ Observation filters have access to:
  - Simulated observation value (for post-filter)
  - Their own private data
 
-Most filters are written once and used with many observation types; several such generic filters already exist and are decribed below. Filters applied to observations from a specific ObsSpace need to be listed in the :code:`observations.obs filters` section of the input YAML configuration file, together with any options controlling their behavior. Example:
+Most filters are written once and used with many observation types; several such generic filters already exist and are decribed below. Filters applied to observations from a specific ObsSpace need to be listed in the :code:`observations.observers.obs filters` section of the input YAML configuration file, together with any options controlling their behavior. Example:
 
 .. code-block:: yaml
 
   observations:
-  - obs space:
-      name: AMSUA-NOAA19
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
-      simulated variables: [brightness_temperature]
-      channels: 1-15
-    obs filters:
-    - filter: Bounds Check
-      filter variables:
-      - name: brightness_temperature
+    observers:
+    - obs space:
+        name: AMSUA-NOAA19
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
+        simulated variables: [brightness_temperature]
         channels: 1-15
-      minvalue: 100.0
-      maxvalue: 500.0
-    - filter: Background Check
-      filter variables:
-      - name: brightness_temperature
-        channels: 1-15
-      threshold: 3.0
+      obs filters:
+      - filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-15
+        minvalue: 100.0
+        maxvalue: 500.0
+      - filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-15
+        threshold: 3.0
 
 An alternative to using :code:`obs filters` is to specify the sequence of filters explicitly using the :code:`obs pre filters`, :code:`obs prior filters`
 and :code:`obs post filters` options. Further information on that can be found in the following section.

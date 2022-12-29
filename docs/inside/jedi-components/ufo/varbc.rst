@@ -115,29 +115,30 @@ To use the bias correction in an observation operator, add the :code:`obs bias` 
   :emphasize-lines: 12-24
 
   observations:
-  - obs space:
-      name: AMSUA-NOAA19
-      ...
-      simulated variables: [brightness_temperature]
-      channels: &channels 1-15
-    obs operator:
-      name: CRTM
-      obs options:
-        Sensor_ID: &Sensor_ID amsua_n19
-      ...
-    obs bias:
-      input file: Data/obs/satbias_crtm_in_amsua_n19.nc4
-      variational bc:
-        predictors:
-        - name: constant
-        - name: emissivity
-        - name: scan_angle
-          order: 4
-        - name: scan_angle
-          order: 3
-        - name: scan_angle
-          order: 2
-        - name: scan_angle
+    observers:
+    - obs space:
+        name: AMSUA-NOAA19
+        ...
+        simulated variables: [brightness_temperature]
+        channels: &channels 1-15
+      obs operator:
+        name: CRTM
+        obs options:
+          Sensor_ID: &Sensor_ID amsua_n19
+        ...
+      obs bias:
+        input file: Data/obs/satbias_crtm_in_amsua_n19.nc4
+        variational bc:
+          predictors:
+          - name: constant
+          - name: emissivity
+          - name: scan_angle
+            order: 4
+          - name: scan_angle
+            order: 3
+          - name: scan_angle
+            order: 2
+          - name: scan_angle
 
 Here is the detailed explanation:
 

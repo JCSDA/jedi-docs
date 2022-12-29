@@ -35,7 +35,7 @@ The MetaData table (related to locations) contains columns (variables) correspon
 Examples of location-related meta data are quantities that describe each location such as Latitude, Longitude, Date/Time, and descriptive quantities associated with locations such the Scan Angle of a satellite-borne instrument.
 
 The Additional MetaData table is similar to the MetaData array, except that it holds meta data associated with other dimensions than the locations dimension.
-Examples include the variable names, and in the case of satellite instruments, channel frequencies.
+An example for satellite instruments is a MetaData variable holding channel frequencies, which would be associated with the channels dimension.
 
 A primary design principle for IODA is to not alter the original observations and meta data that was received from the data providers.
 Nervertheless, there are still important fuctions that IODA needs to perform as shown in :numref:`ioda-operations`.
@@ -55,7 +55,7 @@ An example is to organize radiosonde locations by station ID and launch time (ie
 Lastly the records are distributed to MPI tasks according to distribution specifications in the YAML configuration.
 The point of doing the observation grouping before the MPI distribution is to ensure that IODA does not break up the groups (e.g., radiosonde soundings) during the MPI distribution step.
 
-IODA also handles the transfer of observation data between the GTS network (data providers) and the diagnostics/monitoring system (:numref:`ioda-hlev-dflow`).
+IODA also handles the transfer of observation data between the Data Providers and the diagnostics/monitoring system (:numref:`ioda-hlev-dflow`).
 As of the JEDI 1.1.0 release, the IODA architecture (:numref:`ioda-structure`) is targeted to handle these tasks and work is actively progressing to migrate the current implementaions (e.g. ioda converters, diagnostic plotting tools) to the IODA client API.
 
 .. _radiosonde_example_yaml:
@@ -70,28 +70,33 @@ The following is a YAML example for configuring the processing of radiosonde dat
    window begin: 2018-04-14T21:00:00Z
    window end: 2018-04-15T03:00:00Z
    observations:
-   - obs space:
-       name: Radiosonde
-       obsdatain:
-         obsfile: Data/testinput_tier_1/sondes_obs_2018041500_m.nc4
-         obsgrouping:
-           group variables: [ "station_id" ]
-           sort variable: "air_pressure"
-           sort order: "descending"
-       obsdataout:
-         obsfile: Data/sondes_obs_2018041500_m_out.nc4
-       simulated variables: [air_temperature]
-     obs operator:
-       name: VertInterp
-       vertical coordinate: air_pressure
-     geovals:
-       filename: Data/sondes_geoval_2018041500_m.nc4
-     vector ref: GsiHofX
-     tolerance: 1.0e-04  # in % so that corresponds to 10^-3
-     linear obs operator test:
-       iterations TL: 12
-       tolerance TL: 1.0e-9
-       tolerance AD: 1.0e-11
+     observers:
+     - obs space:
+         name: Radiosonde
+         obsdatain:
+           engine:
+             type: H5File
+             obsfile: Data/testinput_tier_1/sondes_obs_2018041500_m.nc4
+           obsgrouping:
+             group variables: [ "station_id" ]
+             sort variable: "air_pressure"
+             sort order: "descending"
+         obsdataout:
+           engine:
+             type: H5File
+             obsfile: Data/sondes_obs_2018041500_m_out.nc4
+         simulated variables: [air_temperature]
+       obs operator:
+         name: VertInterp
+         vertical coordinate: air_pressure
+       geovals:
+         filename: Data/sondes_geoval_2018041500_m.nc4
+       vector ref: GsiHofX
+       tolerance: 1.0e-04  # in % so that corresponds to 10^-3
+       linear obs operator test:
+         iterations TL: 12
+         tolerance TL: 1.0e-9
+         tolerance AD: 1.0e-11
 
 
 The :code:`obs space.obsdatain.obsgrouping` keyword is used to initate the obs grouping step in the IODA input flow (:numref:`ioda-operations`).
@@ -106,7 +111,7 @@ IODA has an additional feature that provides functions that denote the sorting o
 A MetaData variable and sort order is specified to enable and drive this feature.
 The :code:`obs space.obsdatain.obsgrouping.sort variable` and :code:`obs space.obsdatain.obsgrouping.sort order` are telling IODA to use the values of the "MetaData/air_pressure" variable in corresponding locations to sort the soundings into ascending order (i.e., descending pressure values).
 
-Under the :code:`obs space.obsdataout.obsfile` specification, the output file is requested to be created in the path: :code:`Data/sondes_obs_2018041500_m_out.nc4`.
+Under the :code:`obs space.obsdataout.engine.obsfile` specification, the output file is requested to be created in the path: :code:`Data/sondes_obs_2018041500_m_out.nc4`.
 IODA tags the MPI rank number onto the end of the file name (before the ".nc4" suffix) so that multiple MPI tasks writing files do not collide.
 If there are 4 MPI tasks, then the output will appear in the following four files:
 
@@ -122,10 +127,9 @@ More details about constructing and processing YAML configuration files can be f
 Interfaces to other JEDI Components
 -----------------------------------
 
-For the JEDI 1.1.0 release, the ObsSpace and ObsVector interfaces remained backward compatible with the existing OOPS and UFO facing interfaces which are described below.
-After the release, the stage will be set to migrate the relevant classes to directly utilize the IODA client API (:numref:`ioda-structure`).
-Once accomplished the OOPS and UFO interfaces below will be obsoleted and replaced with the much richer IODA client API.
-See the `low-level description of the classes, functions, and subroutines <http://data.jcsda.org/doxygen/Release/1.1.0/ioda/index.html>`_ for details about the client API.
+For now, the ObsSpace and ObsVector interfaces remain backward compatible with the existing OOPS and UFO facing interfaces which are described below.
+IODA development plans include the evolution of the existing OOPS and UFO facing interfaces to more directly utilize the IODA client API (:numref:`ioda-structure`).
+See the `low-level description of the classes, functions, and subroutines in the IODA Doxygen documentation <http://data.jcsda.org/doxygen/Release/1.1.0/ioda/index.html>`_ for details about the IODA client API.
 
 .. _ioda-oops-interface:
 

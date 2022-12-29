@@ -556,25 +556,31 @@ There are two algorithms that can be used for the horizontal interpolation, one 
 and another from the OOPS repository. The latter is referred to as "unstructured interpolation",
 even though both algorithms are technically generalized for unstructured meshes. In MPAS-JEDI, the
 user can choose the interpolation algorithm via the
-:code:`observations[:].get values.interpolation type` configuration element under each observation
+:code:`observations.observers[:].get values.interpolation type` configuration element under each observation
 type in the YAML. For example,
 
 .. code:: yaml
 
   observations:
-  - get values:
-      interpolation type: unstructured
-    obs space:
-      name: Radiosonde
-      obsdatain:
-        obsfile: sondes_obs_2018041500_m.nc4
-      obsdataout:
-        obsfile: obsout_sondes.nc4
-      simulated variables: [air_temperature, eastward_wind, northward_wind, specific_humidity]
-    obs operator:
-      name: VertInterp
-    obs error:
-      covariance model: diagonal
+    observers:
+    - obs space:
+        name: Radiosonde
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: sondes_obs_2018041500_m.nc4
+        obsdataout:
+          engine:
+            type: H5File
+            obsfile: obsout_sondes.nc4
+        simulated variables: [air_temperature, eastward_wind, northward_wind, specific_humidity]
+      obs operator:
+        name: VertInterp
+      obs error:
+        covariance model: diagonal
+      get values:
+        interpolation type: unstructured
+
 
 The valid values of :code:`get values.interpolation type` in MPAS-JEDI are `unstructured` and
 `bump`, where `bump` is the default value.  Both interpolation algorithms have pros and cons, and

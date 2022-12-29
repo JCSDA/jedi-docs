@@ -18,18 +18,21 @@ the example below:
    window end: 2018-04-15T03:00:00Z
 
    observations:
-   - obs space:
-      name: test_relative_humidity1
-      obsdatain:
-         obsfile: Data/ioda/testinput_tier_1/sfc_obs_2018041500_metars_small.nc
-      simulated variables: [specific_humidity, air_temperature, surface_pressure]
-   obs filters:
-   - filter: Variable Transforms
-      Transform: ["RelativeHumidity"] 
-      Method: UKMO            
-      Formulation: Sonntag
+     observers:
+     - obs space:
+         name: test_relative_humidity1
+         obsdatain:
+           engine:
+             type: H5File
+             obsfile: Data/ioda/testinput_tier_1/sfc_obs_2018041500_metars_small.nc
+         simulated variables: [specific_humidity, air_temperature, surface_pressure]
+       obs filters:
+       - filter: Variable Transforms
+         Transform: ["RelativeHumidity"] 
+         Method: UKMO            
+         Formulation: Sonntag
 
-   
+
 The :code:`Variable Transforms` filter has the following available yaml settings:
  - **Transform**: name of the variable transform that need to be performed. 
    (see :ref:`available-variable-transforms`).
@@ -66,21 +69,6 @@ Variable transforms
 
 The variable transforms available are:
 
-**Humidity**
-
-.. toctree::
-   :maxdepth: 2
-
-   transforms/humidity
-
-
-**Pressure from height**
-
-.. toctree::
-   :maxdepth: 2
-
-   transforms/pressure
-
 **Height from pressure**
 
 .. toctree::
@@ -88,12 +76,19 @@ The variable transforms available are:
 
    transforms/heightfrompressure
 
-**Wind**
+**Humidity**
 
 .. toctree::
    :maxdepth: 2
 
-   transforms/wind
+   transforms/humidity
+
+**Ocean Conversions**
+
+.. toctree::
+   :maxdepth: 1
+
+   transforms/oceanconversions
 
 **PotentialTemperature**
 
@@ -101,6 +96,13 @@ The variable transforms available are:
    :maxdepth: 2
 
    transforms/potentialtemperature
+
+**Pressure from height**
+
+.. toctree::
+   :maxdepth: 2
+
+   transforms/pressure
 
 **Profile horizontal drift**
 
@@ -115,6 +117,13 @@ The variable transforms available are:
    :maxdepth: 2
 
    transforms/surfacepressure
+
+**Wind**
+
+.. toctree::
+   :maxdepth: 2
+
+   transforms/wind
 
 
 Formulations

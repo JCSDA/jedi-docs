@@ -35,23 +35,32 @@ As an example, consider a configuration file similar to the one used in the :cod
     window begin: 2010-01-01T00:00:00Z
     window length: PT12H
     observations:
-    - obs space:
-        obs type: Stream
-        obsdatain:
-          obsfile: Data/truth.obs4d_12h.nc
-        obsdataout:
-          obsfile: Data/hofx.obs4d_12h.nc
-      obs operator:
-        obs type: Stream
-      obs bias: {}
-    - obs space:
-        obs type: Wind
-        obsdatain:
-          obsfile: Data/truth.obs4d_12h.nc
-        obsdataout:
-          obsfile: Data/hofx.obs4d_12h.nc
-      obs operator:
-        obs type: Wind
+      observers:
+      - obs space:
+          obs type: Stream
+          obsdatain:
+            engine:
+              type: H5File
+              obsfile: Data/truth.obs4d_12h.nc
+          obsdataout:
+            engine:
+              type: H5File
+              obsfile: Data/hofx.obs4d_12h.nc
+        obs operator:
+          obs type: Stream
+        obs bias: {}
+      - obs space:
+          obs type: Wind
+          obsdatain:
+            engine:
+              type: H5File
+              obsfile: Data/truth.obs4d_12h.nc
+          obsdataout:
+            engine:
+              type: H5File
+              obsfile: Data/hofx.obs4d_12h.nc
+        obs operator:
+          obs type: Wind
 
 
 Note that keys representing objects (single variables, vectors or more complex objects) are represented as lower case and entire words.  This is the preferred style but it is not currently followed by all JEDI repositories.
@@ -77,7 +86,7 @@ As noted in the previous section, JEDI configuration files are read by means of 
 
 Configuration files are read into JEDI as :code:`eckit::Configuration` objects.  More specifically, :code:`eckit::Configuration` is the base class that is often accessed through its derived classes :code:`eckit::LocalConfiguration` and :code:`eckit::YAMLConfiguration`.  All of these classes are defined in the :code:`src/eckit/config` directory of the  `eckit repository <https://github.com/ecmwf/eckit>`_.
 
-As described in our document on :doc:`JEDI Testing <../../../inside/testing/unit_testing>` (see :ref:`Tests as Applications <test-apps>` in particular), JEDI applications are executed by passing an :code:`oops::Application` object to the :code:`execute()` method of an :code:`oops::Run` object.  The name of the configuration file (including path) is generally specified on the command line when running a JEDI executable and this file name is passed to the constructor of the :code:`oops::Run` object.  There is it used to create an :code:`eckit::Configuration` object which is passed to the Application when it is executed.  The :code:`eckit::Configuration` class contains a number of public methods that can be then used to query the config file and access its contents.
+As described in our document on :doc:`JEDI Testing <../../../inside/testing/unit_testing>` (see :ref:`Tests as Applications <test-apps>` in particular), JEDI applications are executed by passing an :code:`oops::Application` object to the :code:`execute()` method of an :code:`oops::Run` object.  The name of the configuration file (including path) is generally specified on the command line when running a JEDI executable and this file name is passed to the constructor of the :code:`oops::Run` object.  There it is used to create an :code:`eckit::Configuration` object which is passed to the Application when it is executed.  The :code:`eckit::Configuration` class contains a number of public methods that can be then used to query the config file and access its contents.
 
 To illustrate how this works, let's return to our :code:`test_qg_hofx` example introduced in the previous section.  The configuration file for that test is called :code:`qg/test/testinput/hofx.yaml`.  In this example, our Application happens to be a HofX object and :code:`oops::HofX` is a subclass (child) of :code:`oops:Application`.  So, the configuration file is passed from the command line to the :code:`oops::Run` object and then to the Application as an argument (of type :code:`eckit::Configuration`) to the :code:`oops::HofX::execute()` method.  This general approach is similar to other Applications.
 
@@ -150,7 +159,7 @@ As an example of how to use these query functions, we could place the following 
   }
   if(typeconfs[0].has("obs space.obsdataout")) {
     const eckit::LocalConfiguration outconf(typeconfs[0], "obs space.obsdataout");
-    std::string outfile = outconf.getString("obsfile");
+    std::string outfile = outconf.getString("engine.obsfile");
     std::cout << obstype << " Output file: " << outfile << std::endl;
   } else {
     std::cout << obstype << " Warning: Observations Output not specified in config file " << std::endl;

@@ -100,7 +100,9 @@ The following block of code gives the main components of the yaml file needed to
       background error:
         #one of the supported background error covariance matrix
       observations:
-        #list of observation files
+        obs perturbations: #switch for observation perturbations (default false)
+        observers:
+          #list of observation files
     variational:
       minimizer:
         algorithm: #one of the supported minimizers

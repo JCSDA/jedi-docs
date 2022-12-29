@@ -23,7 +23,9 @@ Examples of yaml:
    obs space:
      name: ADT
      obsdatain:
-       obsfile: Data/ufo/testinput_tier_1/Jason-2-2018-04-15.nc
+       engine:
+         type: H5File
+         obsfile: Data/ufo/testinput_tier_1/Jason-2-2018-04-15.nc
      simulated variables: [obs_absolute_dynamic_topography]
    obs operator:
      name: ADT
@@ -57,7 +59,9 @@ Examples of yaml:
    obs space:
      name: CoolSkin
      obsdatain:
-       obsfile: Data/ufo/testinput_tier_1/coolskin_fake_obs_2018041500.nc
+       engine:
+         type: H5File
+         obsfile: Data/ufo/testinput_tier_1/coolskin_fake_obs_2018041500.nc
      simulated variables: [sea_surface_temperature]
 
 
@@ -90,7 +94,9 @@ Examples of yaml:
    obs space:
      name: InsituTemperature
      obsdatain:
-       obsfile: Data/ufo/testinput_tier_1/profile_2018-04-15.nc
+       engine:
+         type: H5File
+         obsfile: Data/ufo/testinput_tier_1/profile_2018-04-15.nc
      simulated variables: [sea_water_temperature]
 
 Vertical Interpolation
@@ -113,7 +119,9 @@ Examples of yaml:
    obs space:
      name: InsituSalinity
      obsdatain:
-       obsfile: Data/ufo/testinput_tier_1/profile_2018-04-15.nc
+       engine:
+         type: H5File
+         obsfile: Data/ufo/testinput_tier_1/profile_2018-04-15.nc
      simulated variables: [sea_water_salinity]
 
 Sea ice thickness
@@ -144,21 +152,26 @@ Examples of yaml:
 .. code-block:: yaml
 
    observations:
-   - obs space:
-       name: cryosat2_thickness
-       obsdatain:
-         obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
-       simulated variables: [sea_ice_thickness]
-     obs operator:
-       name: SeaIceThickness
+     observers:
+     - obs space:
+         name: cryosat2_thickness
+         obsdatain:
+           engine:
+             type: H5File
+             obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
+         simulated variables: [sea_ice_thickness]
+       obs operator:
+         name: SeaIceThickness
 
-   - obs space:
-       name: cryosat2_freeboard
-       obsdatain:
-         obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
-       simulated variables: [sea_ice_freeboard]
-     obs operator:
-       name: SeaIceThickness
+     - obs space:
+         name: cryosat2_freeboard
+         obsdatain:
+           engine:
+             type: H5File
+             obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
+         simulated variables: [sea_ice_freeboard]
+       obs operator:
+         name: SeaIceThickness
 
 
 Sea ice fraction
@@ -185,5 +198,7 @@ Examples of yaml:
    obs space:
      name: SeaIceFraction
      obsdatain:
-       obsfile: Data/ufo/testinput_tier_1/icec-2018-04-15.nc
+       engine:
+         type: H5File
+         obsfile: Data/ufo/testinput_tier_1/icec-2018-04-15.nc
      simulated variables: [sea_ice_area_fraction]

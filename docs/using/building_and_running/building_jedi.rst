@@ -97,8 +97,6 @@ As executed above, Step 1 will create a directory called :code:`~/jedi/src/fv3-b
 
 .. code-block:: cmake
 
-   ecbuild_bundle( PROJECT fckit    GIT "https://github.com/JCSDA/fckit.git"        BRANCH release-stable UPDATE )
-   ecbuild_bundle( PROJECT atlas    GIT "https://github.com/JCSDA/atlas.git"        BRANCH release-stable UPDATE )
    ecbuild_bundle( PROJECT oops     GIT "https://github.com/JCSDA/oops.git"         BRANCH develop UPDATE )
    ecbuild_bundle( PROJECT gsw      GIT "https://github.com/JCSDA/GSW-Fortran.git"  BRANCH develop UPDATE )
    ecbuild_bundle( PROJECT crtm     GIT "https://github.com/JCSDA/crtm.git"         BRANCH develop UPDATE )

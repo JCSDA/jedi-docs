@@ -511,6 +511,52 @@ automatically flag the equivalent averaged profiles, the following yaml block ca
 If any location in an original profile is flagged (with the ``thinned`` flag in this case),
 all of the locations in the corresponding average profile are also flagged with ``thinned``.
 
+Example 7: ``Copy Flags From Extended To Original Space`` filter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Technically this is a UFO filter and not a filter action. The intention is that after applying a filter on only the extended section of the ObsSpace (only the model levels - see example yaml snippet below), any flags thus set can be copied back to the corresponding observation levels (in original space) by calling :code:`Copy Flags From Extended To Original Space`. This is useful in cases where some filters are applied on model levels only and others on observation levels only, then consistency can be maintained throughout.
+
+.. code-block:: yaml
+
+    - filter: Bayesian Background Check
+      where:
+      - variable:
+          name: MetaData/extended_obs_space
+        is_in: 1
+      ...
+
+This filter should only be used for data sets that satisfy two criteria:
+
+1. They have been grouped into records (profiles).
+2. They have an extended section of the ObsSpace that consists of profiles that have been averaged onto model levels.
+
+See Example 6 above.
+
+These yaml parameters are **required**:
+
+- :code:`filter variables`: flags to copy from extended to original space. MUST be in the :code:`DiagnosticFlags` group, otherwise filter throws an error.
+
+- :code:`observation vertical coordinate`: variable containing the observation levels (e.g. air pressure, ocean depth) in its original space.
+
+- :code:`model vertical coordinate`: variable containing the model levels (e.g. air pressure, ocean depth) in its extended space. (One way this can be achieved is by applying the :ref:`ProfileAverage obsOperator <profileaverageoperator>` on the extended space, in combination with another obsOperator such as :ref:`VertInterp <obsops_vertinterp>` on the original space.)
+
+Note that any diagnostic flags in the original space that are already set remain unchanged by this filter, regardless of whether the flag on the corresponding model level is set or unset; the filter can only set flags in original space that are currently unset. The filter also leaves flags unchanged in extended space. The filter does not alter any QC flags (only diagnostic flags specified by the user), nor the rejection status of any observation location. If the rejection status is also required to be set, then a subsequent :code:`Perform Action` filter should be applied, with a :ref:`where statement <where-statement>` conditional on the diagnostic flag(s) copied across by :code:`Copy Flags From Extended to Original Space`.
+
+.. code-block:: yaml
+
+    - filter: Copy Flags From Extended To Original Space
+      where:
+        - variable:
+            name: ObsValue/ocean_potential_temperature
+          is_defined:
+      filter variables:
+        - name: DiagnosticFlags/BayBgCheckReject/ocean_salinity
+        - name: DiagnosticFlags/BayBgCheckReject/ocean_potential_temperature
+      observation vertical coordinate: DerivedObsValue/ocean_depth
+      model vertical coordinate: HofX/ocean_depth
+
+The example above matches up each observation level in the original space of :code:`DerivedObsValue/ocean_depth` with its corresponding model level in the extended space of :code:`HofX/ocean_depth`; for every unset observation-level flag in :code:`DiagnosticFlags/BayBgCheckReject/ocean_salinity` and :code:`DiagnosticFlags/BayBgCheckReject/ocean_potential_temperature`, for which :code:`ObsValue/ocean_potential_temperature` is non-missing (due to the 'where' statement), the flag value at the corresponding model-level overwrites it. Be wary when using 'where' statements with this filter, because the 'where' statement covers all the filter variables listed - any where-excluded locations' flag values remain unchanged.
+
 
 Outer Loop Iterations
 ---------------------
