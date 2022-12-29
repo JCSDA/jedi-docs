@@ -8,30 +8,29 @@ List of spack, software, and AMIs
 
 Versions used:
 
-- spack-stack-1.1.0 from October 6, 2022
+- spack-stack-1.2.0 from December 20, 2022
 
-  * https://github.com/NOAA-EMC/spack-stack/tree/1.1.0 
+  * https://github.com/NOAA-EMC/spack-stack/tree/1.2.0 
 
-  * https://spack-stack.readthedocs.io/en/1.1.0
+  * https://spack-stack.readthedocs.io/en/1.2.0
 
-- AMIs
+- AMIs available in us-east-1 region (N. Virginia)
 
   - Ubuntu 20.04 with gnu-10.3.0 and mpich-4.0.2:
 
-    AMI Name skylab-2.0.0-ubuntu20
+    AMI Name skylab-3.0.0-ubuntu20
 
-    AMI ID ami-02e7b2df53af9596b
+    AMI ID ami-0b112e4c34b83c3b2
 
-    Recommend using t2.2xlarge instance or M5 instance with 32 cores (expensive …)
+    It is necessary to use c6i.2xlarge or larger instances of this family.
 
   - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.4:
 
-    AMI Name skylab-2.0.0-redhat8
+    AMI Name skylab-3.0.0-redhat8
 
-    AMI ID ami-0f6b5f8a07d2f4350
+    AMI ID ami-0b7ee6595f9f79860
 
-    Recommend using t2.2xlarge instance or M5 instance with 32 cores (expensive …)
-
+    It is necessary to use c6i.2xlarge or larger instances of this family.
 
 Developer section
 -----------------
@@ -43,113 +42,13 @@ First, you need to load all the modules needed to build jedi-bundle and solo/r2d
 Note loading modules only set up the environment for you. You still need to build
 jedi-bundle, run ctests, and install solo/r2d2/ewok/simobs.
 
-Please note that currently we only support Orion, Discover, and AWS platforms.
+Please note that currently we only support Orion, Discover, S4, and AWS platforms.
 If you are working on a system not specified below please follow the instructions on
-`JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.4.0/using/jedi_environment/index.html>`_ .
+`JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.6.0/using/jedi_environment/index.html>`_.
 
 Users are responsible for setting up their GitHub and AWS credentials on the platform they are using.
 
-Orion - Intel-2022.0.2
-""""""""""""""""""""""
-
-.. code-block:: bash
-
-  module purge
-  module use /work/noaa/da/role-da/spack-stack/modulefiles
-  module load miniconda/3.9.7
-  module load ecflow/5.8.4
-  module use /work/noaa/da/role-da/spack-stack/spack-stack-v1/envs/skylab-2.0.0-intel-2022.0.2/install/modulefiles/Core
-  module load stack-intel/2022.0.2
-  module load stack-intel-oneapi-mpi/2021.5.1
-  module load stack-python/3.9.7
-  module load jedi-ewok-env/1.0.0 jedi-fv3-env/1.0.0 soca-env/1.0.0 sp/2.3.3
-
-
-Orion - gnu-10.2.0
-""""""""""""""""""
-
-.. code-block:: bash
-
-  module purge
-  module use /work/noaa/da/role-da/spack-stack/modulefiles
-  module load miniconda/3.9.7
-  module load ecflow/5.8.4
-  module use /work/noaa/da/role-da/spack-stack/spack-stack-v1/envs/skylab-2.0.0-gnu-10.2.0/install/modulefiles/Core
-  module load stack-gcc/10.2.0
-  module load stack-openmpi/4.0.4
-  module load stack-python/3.9.7
-  module load jedi-ewok-env/1.0.0 jedi-fv3-env/1.0.0 soca-env/1.0.0 sp/2.3.3
-
-Discover - intel-2022.0.1
-"""""""""""""""""""""""""
-
-.. code-block:: bash
-
-  module purge
-  module use /discover/swdev/jcsda/spack-stack/modulefiles
-  module load miniconda/3.9.7
-  module load ecflow/5.8.4
-  module use /gpfsm/dswdev/jcsda/spack-stack/spack-stack-v1/envs/skylab-2.0.0-intel-2022.0.1/install/modulefiles/Core
-  module load stack-intel/2022.0.1
-  module load stack-intel-oneapi-mpi/2021.5.0
-  module load stack-python/3.9.7
-  module load jedi-ewok-env/1.0.0 jedi-fv3-env/1.0.0 soca-env/1.0.0 sp/2.3.3
-
-Discover - gnu-10.1.0
-"""""""""""""""""""""
-
-.. code-block:: bash
-
-  module purge
-  module use /discover/swdev/jcsda/spack-stack/modulefiles
-  module load miniconda/3.9.7
-  module load ecflow/5.8.4
-  module use /gpfsm/dswdev/jcsda/spack-stack/spack-stack-v1/envs/skylab-2.0.0-gnu-10.1.0/install/modulefiles/Core
-  module load stack-gcc/10.1.0
-  module load stack-openmpi/4.1.3
-  module load stack-python/3.9.7
-  module load jedi-ewok-env/1.0.0 jedi-fv3-env/1.0.0 soca-env/1.0.0 sp/2.3.3
-
-
-S4 - intel-2022.1
-"""""""""""""""""
-
-.. code-block:: bash
-
-  module purge
-  module use /data/prod/jedi/spack-stack/modulefiles
-  module load miniconda/3.9.12
-  module load ecflow/5.8.4
-  module use /data/prod/jedi/spack-stack/spack-stack-v1/envs/skylab-2.0.0-intel-2021.5.0/install/modulefiles/Core
-  module load stack-intel/2021.5.0
-  module load stack-intel-oneapi-mpi/2021.5.0
-  module load stack-python/3.9.12
-  module load jedi-ewok-env/1.0.0 jedi-fv3-env/1.0.0 soca-env/1.0.0 sp/2.3.3
-
-
-AWS Ubuntu 20
-"""""""""""""
-
-.. code-block:: bash
-
-  module use /home/ubuntu/spack-stack-v1/envs/skylab-2.0.0-gcc-10.3.0/install/modulefiles/Core
-  module load stack-gcc/10.3.0
-  module load stack-mpich/4.0.2 stack-python/3.8.10
-  module load jedi-ewok-env/1.0.0 jedi-fv3-env/1.0.0 soca-env/1.0.0
-  module load sp/2.3.3
-  module av
-
-AWS RedHat 8
-""""""""""""
-
-.. code-block:: bash
-
-  scl enable gcc-toolset-11 bash
-  module use /home/ec2-user/spack-stack-v1/envs/skylab-2.0.0-gcc-11.2.1/install/modulefiles/Core
-  module load stack-gcc/11.2.1
-  module load stack-openmpi/4.1.4 stack-python/3.9.7
-  module load jedi-ewok-env/1.0.0 jedi-fv3-env/1.0.0 soca-env/1.0.0
-  module load sp/2.3.3
+The commands for loading the modules to compile and run Skylab are provided in separate sections for :doc:`HPC platforms <../jedi_environment/modules>` and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`. Users need to execute these commands before proceeding with the build of ``jedi-bundle`` below.
 
 2- Build jedi-bundle
 ^^^^^^^^^^^^^^^^^^^^
@@ -167,7 +66,7 @@ The next step is to clone the code bundle to a local directory:
 
   mkdir $jedi_ROOT
   cd $jedi_ROOT
-  git clone --branch 2.0.0 https://github.com/jcsda/jedi-bundle
+  git clone --branch 3.0.0 https://github.com/jcsda/jedi-bundle
 
 
 The example here is for jedi-bundle, the instructions apply to other bundles as well.
@@ -207,7 +106,7 @@ the build was successful by running the tests (still from $JEDI_BUILD):
 
 If you are on an HPC you may need to provide additional flags to the ecbuild
 command, or login to a compute node, or submit a batch script for running the
-ctests. Please refer the `documentation <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.4.0/using/jedi_environment/modules.html#general-tips-for-hpc-systems>`_ for more details.
+ctests. Please refer the `documentation <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.6.0/using/jedi_environment/modules.html#general-tips-for-hpc-systems>`_ for more details.
 
 (You might have another coffee.) You have successfully built JEDI!
 
@@ -231,11 +130,11 @@ building solo/r2d2/ewok/simobs
 .. code-block:: bash
 
   cd $JEDI_SRC
-  git clone --branch 1.0.0 https://github.com/jcsda-internal/solo
-  git clone --branch 1.1.0 https://github.com/jcsda-internal/r2d2
-  git clone --branch 0.2.0 https://github.com/jcsda-internal/ewok
-  git clone --branch 1.0.0 https://github.com/jcsda-internal/simobs
-  git clone --branch 1.1.0 https://github.com/jcsda-internal/r2d2-data
+  git clone --branch 1.1.0 https://github.com/jcsda-internal/solo
+  git clone --branch 1.2.0 https://github.com/jcsda-internal/r2d2
+  git clone --branch 0.3.1 https://github.com/jcsda-internal/ewok
+  git clone --branch 1.1.0 https://github.com/jcsda-internal/simobs
+  git clone --branch 1.2.0 https://github.com/jcsda-internal/r2d2-data
 
   cd $jedi_ROOT
   python3 -m venv --system-site-packages --without-pip venv
@@ -255,6 +154,7 @@ new session on your machine.
 
 4- Setup SkyLab
 ^^^^^^^^^^^^^^^
+
 Create and source $jedi_ROOT/activate.sh
 """"""""""""""""""""""""""""""""""""""""
 We recommend creating this bash script and sourcing it before running the experiment.
@@ -401,7 +301,7 @@ To stop the ecflow server:
 
 .. code-block:: bash
 
-  ecflow_start.sh -p $ECF_PORT
+  ecflow_stop.sh -p $ECF_PORT
 
 To start your ewok experiment:
 

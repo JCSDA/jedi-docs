@@ -1,8 +1,7 @@
-.. _openmp.top
+.. _openmp-top:
 
-=================================================================================
-	   OpenMP Safety in JEDI and UFO
-=================================================================================
+OpenMP Safety in JEDI and UFO
+=============================
 
 As a developer, one needs to be aware of thread safety if one wants to use OpenMP or pthreads within code. Most JEDI code uses MPI for parallel tasks, which is not an issue. Currently, there is no OpenMP code anywhere in JEDI with a small section in FMS. Some of the dependencies do use OpenMP within function calls however these would not be visible to our packages. If a problem existed within these dependencies, the best one could do was to notify the developers and await a fix. In most if not all cases we could build the package without OpenMP. This is best handled as bug fix reports on a case-by-case basis.
 
