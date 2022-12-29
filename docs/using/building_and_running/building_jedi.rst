@@ -153,7 +153,7 @@ This should work for most bundles, and in particular when working on a preconfig
 
 .. warning::
 
-    **Some bundles may require you to run a build script prior to or in lieu of running ecbuild, particularly if you are running on an HPC system.  Check the README file in the top directory of the bundle repository to see if this is necessary, particularly if you encounter problems running ecbuild, cmake, or ctest.**
+    **Some bundles may require you to run a build script prior to or in lieu of running ecbuild, particularly if you are running on an HPC system. Check the README file in the top directory of the bundle repository to see if this is necessary, particularly if you encounter problems running ecbuild, cmake, or ctest.**
 
 After you enter the ecbuild command, remember to practice patience, dear `padawan <http://starwars.wikia.com/wiki/Padawan>`_.  The build process may take several minutes.
 

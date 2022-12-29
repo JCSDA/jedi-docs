@@ -3,7 +3,7 @@
 Running JEDI on a Single Compute Node
 =====================================
 
-Often a single `EC2 compute node <https://aws.amazon.com/ec2>`_ is sufficient to run JEDI applications and tests.  This is particularly the case for code development.  A single AWS node can nowadays provide as many as 96 compute cores that can each be assigned an MPI task.
+Often a single `EC2 compute node <https://aws.amazon.com/ec2>`_ is sufficient to run JEDI applications and tests.  This is particularly the case for code development.  A single AWS node can nowadays provide more than 100 compute cores that can each be assigned an MPI task.
 
 As described elsewhere in :doc:`this chapter <index>`, there are several steps you need to take before you are ready to launch your very own compute node and run jedi:
 
@@ -12,16 +12,43 @@ As described elsewhere in :doc:`this chapter <index>`, there are several steps y
 
 When you have completed these steps, you are ready to launch a single JEDI EC2 instance through the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ on the AWS console.
 
-As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.0.1` environment
-for `skylab-1.0.0` pre-installed. For more information on how to find these AMIs,
-refer to the `spack-stack documentation <https://spack-stack.readthedocs.io/en/spack-stack-1.0.1/Platforms.html#amazon-web-services-ubuntu-20-04>`_.
+As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.2.0` environment for `skylab-3.0.0` pre-installed. For more information on how to find these AMIs, refer to the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.2.0/Platforms.html>`_.
 
 .. _aws-ssh:
 
 Logging in
 ----------
 
-After launching the instance through the AWS console, select the instance and click on "Connect", then choose "SSH client" to obtain the necessary command to log into the instance from the command line. After logging in, follow the **FRIENDLY USER INSTRUCTIONS THAT NEED TO BE ADDED SOMEWHERE** to set up the environment compiling and running Skylab experiments. To help you identify your instance, you can give it a label by hovering over the instance description in the console and selecting the pencil icon that appears in the field just to the right of the selection box (this box is blue when selected).
+After launching the instance through the AWS console, select the instance and click on "Connect", then choose "SSH client" to obtain the necessary command to log into the instance from the command line. To help you identify your instance, you can give it a label by hovering over the instance description in the console and selecting the pencil icon that appears in the field just to the right of the selection box (this box is blue when selected). After logging in, follow the instructions below to set up the environment for compiling and running Skylab experiments.
+
+For AWS Red Hat 8:
+
+.. code-block:: bash
+
+   ulimit -s unlimited
+   scl enable gcc-toolset-11 bash
+   module use /home/ec2-user/spack-stack-v1/envs/skylab-3.0.0-gcc-11.2.1/install/modulefiles/Core
+   module load stack-gcc/11.2.1
+   module load stack-openmpi/4.1.4
+   module load stack-python/3.9.7
+
+   module load jedi-ewok-env/1.0.0
+   module load jedi-fv3-env/1.0.0
+   module load soca-env/1.0.0
+
+For AWS Ubuntu 20.04:
+
+.. code-block:: bash
+
+   ulimit -s unlimited
+   module use /home/ubuntu/spack-stack-v1/envs/skylab-3.0.0-gcc-10.3.0/install/modulefiles/Core
+   module load stack-gcc/10.3.0
+   module load stack-mpich/4.0.2
+   module load stack-python/3.8.10
+
+   module load jedi-ewok-env/1.0.0
+   module load jedi-fv3-env/1.0.0
+   module load soca-env/1.0.0
 
 Suspending or terminating your compute node
 -------------------------------------------
@@ -47,6 +74,6 @@ Choosing a different EC2 Instance Type
 
 AWS offers `a variety of EC2 instance types <https://aws.amazon.com/ec2/instance-types/>`_ that differ in the number of compute cores, memory, disk storage, and network bandwidth.  Not surprisingly, higher-performance nodes are more expensive, so JEDI users are encouraged to **choose an instance that is no less but no more than what you need for your application or workflow.**
 
-The recommended and most tested option for this release is type ``t2.2xlarge``. Always consult `the AWS documentation <https://aws.amazon.com/ec2/pricing/on-demand/>`_ for the most up-to-date pricing information.
+The recommended and most tested option for this release is type ``c6i.2xlarge``. Always consult `the AWS documentation <https://aws.amazon.com/ec2/pricing/on-demand/>`_ for the most up-to-date pricing information.
 
 There are also a number of other nodes available that optimize compute and or memory and or IO bandwidth: See the `AWS documentation <https://aws.amazon.com/ec2/instance-types/>`_ for details.
