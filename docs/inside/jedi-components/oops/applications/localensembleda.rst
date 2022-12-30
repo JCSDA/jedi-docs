@@ -84,12 +84,12 @@ Supported modifications to the driver
  driver: 
    save posterior variance: false #default value
    
-* If Halo obs. distribution is used, one also needs to set  the following option as "true"
+* Default behavior is for the LocalEnsembleDa to update the obs config with the geometry info relevant to this PE. This is needed for Halo distribution to work properly. If not using Halo distribution or using models that do not implement grid decomposition (e.g. l95) one might choose to not update obs config by setting :code:`update obs config with geometry info : false`. 
 
 .. code:: yaml
 
  driver: 
-   update obs config with geometry info: fasle #default value
+   update obs config with geometry info: true #default value
 
 
 Supported Local Ensemble Kalman filters
@@ -244,21 +244,15 @@ Parameter of RTPS inflation is controlled by :code:`inflation.rtps` configuratio
 
 NOTE about obs distributions
 -----------------------------
-Currently Local Ensemble DA supports :code:`InefficientDistribution` and :code:`Halo` obs distribution. For InefficientDistribution each obs and H(x) is replicated on each PE. For Halo distribution only obs. needed on this PE are stored on each PE. Halo is more efficient however it is less mature compared to InefficientDistribution. 
-We also have an option to run Local Ensemble DA in the observer only mode with :code:`RoundRobin` to compute H(X). Then one can read ensemble of H(x) from disk using :code:`driver.read HX from disk == true` and :code:`driver.do posterior observer == false`. 
+Currently Local Ensemble DA supports :code:`InefficientDistribution` and :code:`Halo` obs distribution. When :code:`InefficientDistribution` distribution is used, all observations and H(x) are replicated on all PEs. When :code:`Halo` distribution is used, only observations needed on this PE are stored on each PE. :code:`Halo`  distribution allows for more efficient memory management compared to :code:`distribution.name: InefficientDistribution`, however at the expense of potentially poor load management compared to :code:`distribution.name: RoundRobin`. For optimal combination of memory and load balancing, we developed an option to run Local Ensemble DA in the observer-only mode with :code:`distribution.name: RoundRobin`. Then one can read ensemble of H(x) from disk using :code:`driver.read HX from disk == true`, :code:`distribution.name: Halo` obs distribution, and :code:`driver.do posterior observer == false`.   
 
-The type of the obs. distribution is specified for each ObsSpace:
+The type of the obs. distribution is specified for each ObsSpace. For example:
 
 .. code-block:: yaml
 
  observations:
    observers:
    - obs space:
-       distribution: Halo 
-
-If Halo obs. distribution is used one also needs to specify
-
-.. code-block:: yaml
-
- driver: 
-   update obs config with geometry info: true
+       distribution:
+         name: Halo
+         halo size: 5000e3
