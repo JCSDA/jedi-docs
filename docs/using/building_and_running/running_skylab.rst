@@ -58,14 +58,14 @@ is to get and build the JEDI executables.
 
 The first step is to create your work directory. In this directory you will clone
 the JEDI code and all the files needed to build, test, and run JEDI and SkyLab.
-We call this directory ``jedi_ROOT`` throughout this document.
+We call this directory ``JEDI_ROOT`` throughout this document.
 
 The next step is to clone the code bundle to a local directory:
 
 .. code-block:: bash
 
-  mkdir $jedi_ROOT
-  cd $jedi_ROOT
+  mkdir $JEDI_ROOT
+  cd $JEDI_ROOT
   git clone --branch 3.0.0 https://github.com/jcsda/jedi-bundle
 
 
@@ -73,19 +73,19 @@ The example here is for jedi-bundle, the instructions apply to other bundles as 
 
 From this point, we will use two environment variables:
 
-* :code:`$JEDI_SRC` which should point to the base of the bundle to be built (i.e. the directory that was cloned just above, where the main CMakeLists.txt is located or :code:`$jedi_ROOT/jedi-bundle`). :code:`$JEDI_SRC=$jedi_ROOT/jedi-bundle`
+* :code:`$JEDI_SRC` which should point to the base of the bundle to be built (i.e. the directory that was cloned just above, where the main CMakeLists.txt is located or :code:`$JEDI_ROOT/jedi-bundle`). :code:`$JEDI_SRC=$JEDI_ROOT/jedi-bundle`
 
-* :code:`$JEDI_BUILD` which should point to the build directory or :code:`$jedi_ROOT/build`. Create the directory if it does not exist. :code:`$JEDI_BUILD=$jedi_ROOT/build`
+* :code:`$JEDI_BUILD` which should point to the build directory or :code:`$JEDI_ROOT/build`. Create the directory if it does not exist. :code:`$JEDI_BUILD=$JEDI_ROOT/build`
 
 Note:
 
 It is recommended these two directories are not one inside the other.
 
-- Orion: it’s recommended to use :code:`$jedi_ROOT=/work/noaa/da/${USER}/jedi`.
+- Orion: it’s recommended to use :code:`$JEDI_ROOT=/work/noaa/da/${USER}/jedi`.
 
-- Discover: it’s recommended to use :code:`$jedi_ROOT=/discover/nobackup/${USER}/jedi`.
+- Discover: it’s recommended to use :code:`$JEDI_ROOT=/discover/nobackup/${USER}/jedi`.
 
-- On the preconfigured AWS AMIs, use ``$jedi_ROOT=$HOME/jedi``
+- On the preconfigured AWS AMIs, use ``$JEDI_ROOT=$HOME/jedi``
 
 
 Building JEDI then can be achieved with the following commands:
@@ -134,9 +134,8 @@ building solo/r2d2/ewok/simobs
   git clone --branch 1.2.0 https://github.com/jcsda-internal/r2d2
   git clone --branch 0.3.1 https://github.com/jcsda-internal/ewok
   git clone --branch 1.1.0 https://github.com/jcsda-internal/simobs
-  git clone --branch 1.2.0 https://github.com/jcsda-internal/r2d2-data
 
-  cd $jedi_ROOT
+  cd $JEDI_ROOT
   python3 -m venv --system-site-packages --without-pip venv
   source venv/bin/activate
 
@@ -155,12 +154,12 @@ new session on your machine.
 4- Setup SkyLab
 ^^^^^^^^^^^^^^^
 
-Create and source $jedi_ROOT/activate.sh
+Create and source $JEDI_ROOT/activate.sh
 """"""""""""""""""""""""""""""""""""""""
 We recommend creating this bash script and sourcing it before running the experiment.
 This bash script sets environment variables such as :code:`JEDI_BUILD`, :code:`JEDI_SRC`,
 :code:`EWOK_WORKDIR` and :code:`EWOK_FLOWDIR` required by ewok. If these variables are not
-defined they will be set from :code:`jedi_ROOT`.
+defined they will be set from :code:`JEDI_ROOT`.
 Users may set :code:`JEDI_SRC`, :code:`JEDI_BUILD`, :code:`EWOK_WORKDIR` and
 :code:`EWOK_FLOWDIR` to point to relevant directories on their systems
 or use the default template in the sample script below. Note that :code:`JEDI_SRC`,
@@ -171,22 +170,22 @@ The user further has to set the environment variable :code:`R2D2_HOST` in the sc
 on pre-configured platforms, or unset this variable on generic platforms.
 :code:`R2D2_HOST` is required by r2d2, ewok, and to determine the location :code:`EWOK_STATIC_DATA`
 of the static data used by ewok. This data is staged on the preconfigured platforms.
-On generic platforms, the script sets :code:`EWOK_STATIC_DATA` to :code:`${jedi_ROOT}/static`.
+On generic platforms, the script sets :code:`EWOK_STATIC_DATA` to :code:`${JEDI_ROOT}/static`.
 
-Please don’t forget to source this script after creating it: :code:`source $jedi_ROOT/activate.sh`
+Please don’t forget to source this script after creating it: :code:`source $JEDI_ROOT/activate.sh`
 
 .. code-block:: bash
 
   #!/bin/bash
 
-  # Set jedi_ROOT
+  # Set JEDI_ROOT
 
-  if [ -z $jedi_ROOT ]; then
-    export jedi_ROOT=**Set this based on your set up if JEDI_SRC, JEDI_BUILD, EWOK_WORKDIR or EWOK_FLOWDIR are not defined.**
+  if [ -z $JEDI_ROOT ]; then
+    export JEDI_ROOT=**Set this based on your set up if JEDI_SRC, JEDI_BUILD, EWOK_WORKDIR or EWOK_FLOWDIR are not defined.**
   fi
 
   if [ -z $JEDI_SRC ]; then
-    export JEDI_SRC=${jedi_ROOT}/jedi-bundle
+    export JEDI_SRC=${JEDI_ROOT}/jedi-bundle
   fi
 
   # Set host name for R2D2/EWOK
@@ -207,18 +206,18 @@ Please don’t forget to source this script after creating it: :code:`source $je
   # Most users won't need to change the following settings
 
   # Source source this file for ewok ecFlow workflows
-  source $jedi_ROOT/venv/bin/activate
+  source $JEDI_ROOT/venv/bin/activate
 
   if [ -z $JEDI_BUILD ]; then
-    export JEDI_BUILD=${jedi_ROOT}/build
+    export JEDI_BUILD=${JEDI_ROOT}/build
   fi
 
   if [ -z $EWOK_WORKDIR ]; then
-    export EWOK_WORKDIR=${jedi_ROOT}/workdir
+    export EWOK_WORKDIR=${JEDI_ROOT}/workdir
   fi
 
   if [ -z $EWOK_FLOWDIR ]; then
-    export EWOK_FLOWDIR=${jedi_ROOT}/ecflow
+    export EWOK_FLOWDIR=${JEDI_ROOT}/ecflow
   fi
 
   # Add ioda python bindings to PYTHONPATH
@@ -240,7 +239,7 @@ Please don’t forget to source this script after creating it: :code:`source $je
   export ECF_HOST=$host
   
   if [[ x"${R2D2_HOST}" == "x" ]]; then
-    export EWOK_STATIC_DATA=${jedi_ROOT}/static
+    export EWOK_STATIC_DATA=${JEDI_ROOT}/static
   else
     case $R2D2_HOST in
       orion)
@@ -256,7 +255,7 @@ Please don’t forget to source this script after creating it: :code:`source $je
         export EWOK_STATIC_DATA=/data/prod/jedi/static
         ;;
       aws-pcluster)
-        export EWOK_STATIC_DATA=${jedi_ROOT}/static
+        export EWOK_STATIC_DATA=${JEDI_ROOT}/static
         ;;
       *)
         echo "Unknown host name $R2D2_HOST"

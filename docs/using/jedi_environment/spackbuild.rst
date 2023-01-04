@@ -11,18 +11,47 @@ spack-stack currently requires a basic Python version 3.8-3.10 that has nothing 
 
 Supported in this release are macOS with ``clang`` (``ewok`` graphics dependencies don’t build with ``gcc``), Red Hat with ``gcc``, Ubuntu with ``gcc``.
 
+Before building the spack-stack modules on macOS, you must first install homebrew and update the local path to your homebrew installation. See https://brew.sh/ and https://spack-stack.readthedocs.io/en/latest/Platforms.html#homebrew-notes for more specific information on this task. It is recommended to start with a fresh homebrew installation before setting up the spack-stack prerequisites. See https://docs.brew.sh/FAQ#how-do-i-uninstall-homebrew for information on how to uninstall homebrew from your current environment.
+
+Install the prerequisites:
+
+Go to https://spack-stack.readthedocs.io/en/latest/Platforms.html#prerequisites-one-off for instructions.
+
 Check out the code:
 
 .. code-block:: bash
 
    git clone -b 1.2.0 --recursive https://github.com/noaa-emc/spack-stack spack-stack-1.2.0
 
-Use the following command to build everything needed for ``skylab-3.0``:
+Go into the ``spack-stack-1.2.0`` directory and source the spack-stack ``setup.sh`` script:
+
+.. code-block:: bash
+
+   cd spack-stack-1.2.0
+   source setup.sh
+
+Use the following command to create the spack-stack environment for ``skylab-3.0``:
 
 .. code-block:: bash
 
    spack stack create env --site=linux.default --template=skylab-3.0.0 --name=skylab-3.0.0
 
 Replace ``linux.default`` with ``macos.default`` as required for your system.
+
+Activate the ``skylab-3.0`` spack-stack environment:
+
+.. code-block:: bash
+
+   spack env activate [-p] envs/skylab-3.0.0
+
+Export ``SPACK_SYSTEM_CONFIG_PATH``:
+
+.. code-block:: bash
+
+   export SPACK_SYSTEM_CONFIG_PATH="$PWD/envs/skylab-3.0.0/site"
+
+Build the ``skylab-3.0`` spack-stack environment:
+
+Go to https://spack-stack.readthedocs.io/en/latest/Platforms.html#creating-a-new-environment for instructions starting with Step 3.
 
 In the :doc:`next section <modules>` we describe in details how to use spack-stack modules to build and run JEDI on different platforms.
