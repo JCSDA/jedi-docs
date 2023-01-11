@@ -14,4 +14,5 @@ Before VADER, every JEDI model interface had to implement every variable change 
    :maxdepth: 2
 
    how_to_use_vader
+   recipe_naming
    VariableChanges/index.rst

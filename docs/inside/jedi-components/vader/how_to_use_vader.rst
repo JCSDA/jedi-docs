@@ -3,16 +3,29 @@
 How To Use VADER
 ================
 
-Models instantiate and call the VADER methods within their implementation of the ``oops::VariableChange`` interface (the class specified in the model's TRAITS file). Note that VADER does not replace this class, instead it is called from this class. A model that already has a JEDI interface will, at a high level, just insert the call to VADER into its ``changeVar`` method immediately before its existing ``changeVar`` implementation. With the call to VADER's ``changeVar`` method in place, the model code will no longer need to perform the transformations that VADER is able to do. As VADER gains more implemented variable changes, there will be less that the model needs to do in its own code.
+VADER was designed to be invoked within a model's implementations of the :code:`oops::VariableChange` and ``oops::LinearVariableChange`` interface classes (the classes specified in the model's TRAITS file). Note that VADER does not replace these classes, instead it is called *from* these classes as a helper.
 
-In order to pass model fields to and from VADER, ``Fields`` and ``FieldSets`` from Atlas are used. (This is similar to the interface models use with SABER repository methods.) The methods ``toFieldSet`` and ``fromFieldSet``, which are defined in the OOPS ``State`` interface, are used to convert the model State to and from an Atlas FieldSet.  *Note:* The Atlas FieldSet that is passed to and from VADER must contain BOTH the input and the desired output fields.
+The methods used to invoke VADER's functionality correspond to the methods with the same name in these two OOPS interface classes. So, VADER's ``changeVar`` method should be called within the model's ``VariableChange`` class's ``changeVar`` method. In the model's ``LinearVariableChange`` interface class, VADER's ``changeVarTraj``, ``changeVarTL``, and ``changeVarAD`` methods should be called inside the interface methods of the same name.
 
-When a model calls Vader's ``changeVar`` method, passing the input/output Fieldset and the list of desired output variables, Vader's algorithm will analyze how it can produce the maximum number of the requested output variables, given the inputs it was provided and the variable-change algorithms (usually called "recipes") that it currently has at its disposal.
+In order to pass model fields to and from VADER, ``Fields`` and ``FieldSets`` from Atlas are used. (This is similar to the interface models use with SABER repository methods.) The methods ``toFieldSet`` and ``fromFieldSet``, which are defined in the OOPS ``State`` and ``Increment`` interfaces, are used to convert the model State/Increment to and from an Atlas FieldSet.
+
+When a model calls Vader's ``changeVar`` method, passing the input/output Fieldset and the list of desired output variables, Vader's algorithm will analyze how it can produce the maximum number of the requested output variables, given the inputs it was provided and the variable-change algorithms (usually called "recipes") that it currently has at its disposal. In some cases, VADER will not have all the recipes required to produce all the desired variables. Consequently, the model may still need some of its own, model-specific, variable change code to finish the work that VADER cannot do. VADER's methods report back which variables VADER was able to produce, and the model's code must use this information to know which variable changes it still needs to do.
 
 * **Workflow to call Vader's changeVar method**
 
 .. image:: VaderDiagram.jpg
    :align: center
 
-For an example, here is a link to the `fv3-jedi code that implements this process. <https://github.com/JCSDA-internal/fv3-jedi/blob/757af51af83446b9b86bb2ebfb2b6e821c9b875e/src/fv3jedi/VariableChange/VariableChange.cc#L54-L99>`_
+For detailed, up-to-date examples of how to call VADER's methods, please see the fv3-jedi code:
 
+- `VariableChange.cc <https://github.com/JCSDA/fv3-jedi/blob/develop/src/fv3jedi/VariableChange/VariableChange.cc>`_ (See the ``changeVar`` method.)
+- `LinearVariableChange.cc <https://github.com/JCSDA/fv3-jedi/blob/develop/src/fv3jedi/LinearVariableChange/LinearVariableChange.cc>`_. (See the ``changeVarTraj``, ``changeVarTL``, and ``changeVarAD`` methods.)
+
+For detailed, up-to-date descriptions of the parameters and return values for these VADER methods, please see the doxygen header block comments above the methods in the `vader source code <https://github.com/JCSDA/vader/blob/develop/src/vader/vader.cc>`_.
+
+.. _vader_cookbook:
+
+VADER's "Cookbook"
+^^^^^^^^^^^^^^^^^^
+
+An important concept to understand in order to use VADER is its **cookbook**. As mentioned earlier, the individual variable change algorithms that VADER can use are coded into classes called *recipes*. Each recipe produces one and only one variable. (The code for all the recipes is `here <https://github.com/JCSDA/vader/tree/develop/src/vader/recipes>`_.) When ``changeVar`` or ``changeVarTraj`` is called, VADER uses its recipe-search algorithm on *only the recipes that are in the cookbook* in order to attempt to create as many of the desired variables as possible. Models can define which recipes are in VADER's cookbook by passing the cookbook as a parameter when VADER is constructed. If no cookbook is passed to the constructor, VADER will use a default cookbook. Since the default cookbook will get updated as new recipes are created, the advanatage of passing the cookbook as a parameter when VADER is constructed is that VADER's behavior is less likely to change at an unexpected time.
