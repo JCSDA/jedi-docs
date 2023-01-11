@@ -14,12 +14,61 @@ When you have completed these steps, you are ready to launch a single JEDI EC2 i
 
 As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.2.0` environment for `skylab-3.0.0` pre-installed. For more information on how to find these AMIs, refer to the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.2.0/Platforms.html>`_.
 
-.. _aws-ssh:
+.. _singlenode-launch:
+
+Launching instance
+------------------
+
+This section provides detailed instructions on how to build and use an EC2 instance based on an existing AMI. The AMI can be thought of as a pre-built template that provides a software stack, and just needs the configuration details of the EC2 instance (such as the number of cores, the amount of memory, etc.).
+
+The following example uses the ``skylab-3.0.0-ubuntu20`` AMI.
+
+1. Log into the AWS Console and select the EC2 service. In the sidebar on the left, scroll down to the Images section and click on the "AMIs" option. Select ``skylab-3.0.0-ubuntu20`` from the list of AMIs. Click on "Launch instance from AMI".
+2. Give your instance a meaningful name so that you can identify it later in the list of running instances.
+3. Select an instance type that has enough memory for your experiment. For available options see, https://aws.amazon.com/ec2/instance-types. Note that because you only have one node you will need a large amount of memory when running higher resolution experiments. For low resolution experiments, instances like t2.2xlarge may be sufficient, but for c96 experiments instances with at least 512GB memory are required.
+
+.. note:: Because the ``skylab`` AMIs come with a precompiled software stack and because ``spack`` optimizes the code for the hardware it is compiling on, instances of the same (processor) family or of a newer, compatible family are required for these AMIs. Here is a list of currently available ``skylab`` AMIs and the instance type they were built on:
+
++-----------------------------------------+---------------------------------+--------------------------+
+| AMI name                                | Instance type used for building | Processor                |
++=========================================+=================================+==========================+
+| ``skylab-1.0.0-{ubuntu20,redhat8}``     | t2.2xlarge                      | Intel Haswell E5-2676 v3 |
++-----------------------------------------+---------------------------------+--------------------------+
+| ``skylab-2.0.0-{ubuntu20,redhat8}``     | t2.2xlarge                      | Intel Haswell E5-2676 v3 |
++-----------------------------------------+---------------------------------+--------------------------+
+| ``skylab-3.0.0-{ubuntu20,redhat8}``     | c6i.4xlarge                     | Intel Ice Lake 8375C     |
++-----------------------------------------+---------------------------------+--------------------------+
+
+4. Select an existing key pair (for which you hold the private key on your machine) or create a new key pair and follow the process.
+5. Check the entries under "Network settings". Make sure that the network is correct (usually the default is), that the subnet is public (usually indicated by the name), and that "Auto-assign public IP" enabled. Choose the existing security group  "Global SSH" or create a new security group that allows SSH traffic from anywhere so that you can connect to the instance from your local machine.
+6. Make sure that you request enough storage for your instance. For testing purposes, the default/minimum for the AMI is usually sufficient.
+7. Click on "Launch instance" on the bottom right.
+
+At this point, your new instance will start up and run. On the page that comes up there will be a message with the instance ID (in the format ``i-<long hex number>``. It is recommended to click on the instance ID which will take you to the Instance viewer showing only your newly created instance.
+
+.. _singlenode-ssh:
 
 Logging in
 ----------
 
-After launching the instance through the AWS console, select the instance and click on "Connect", then choose "SSH client" to obtain the necessary command to log into the instance from the command line. To help you identify your instance, you can give it a label by hovering over the instance description in the console and selecting the pencil icon that appears in the field just to the right of the selection box (this box is blue when selected). After logging in, follow the instructions below to set up the environment for compiling and running Skylab experiments.
+After launching the instance through the AWS console, select the instance and click on "Connect", then choose "SSH client" to obtain the necessary command to log into the instance from the command line. To help you identify your instance, you can give it a label by hovering over the instance description in the console and selecting the pencil icon that appears in the field just to the right of the selection box (this box is blue when selected).
+
+   .. note:: If you are going to run ewok, add ``-XY`` to the ssh command line arguments. After logging in, configure your AWS credentials by running ``aws configure``, or, if the AWS command line tools are not installed, by creating/editing ``~/.aws/credentials`` and pasting your amazon credentials in the following format:
+
+      .. code-block:: bash
+
+         [default]
+         aws_access_key_id=AKIAIOSFODNN7EXAMPLE
+         aws_secret_access_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+      Similarly, create/edit ``~/.aws/config`` and set your default region:
+
+      .. code-block:: bash
+
+         [default]
+         region = us-east-1
+
+After logging in, follow the instructions below to set up the environment for compiling and running Skylab experiments.
 
 For AWS Red Hat 8:
 
