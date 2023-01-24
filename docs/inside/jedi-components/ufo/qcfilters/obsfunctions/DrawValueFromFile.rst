@@ -168,16 +168,24 @@ Each element of this list should have the following attributes:
   - :code:`linear`: Performs a piecewise linear interpolation along the dimension indexed by the
     specified ObsSpace variable.
 
-    This method is supported only by the obs function producing a float (not an int or a string).
+    This method is supported only for the obs function producing a float (not an int or a string).
     It can only be used for the final indexing variable, since it does not select slices, but
     produces the final result (a single value).
 
   - :code:`bilinear`: Performs a bilinear interpolation along two dimensions indexed by the ObsSpace
     variables.
 
-    This method is supported only by the obs function producing a float (not an int or a string).
+    This method is supported only for the obs function producing a float (not an int or a string).
     It can only be used for the final two indexing variables, since it does not select slices, but
     produces the final result (a single value).
+
+  - :code:`trilinear`: Performs a trilinear interpolation along three dimensions indexed by the ObsSpace
+    variables.
+
+    This method is supported only for the obs function producing a float (not an int or a string).
+    The three interpolation variables must also be floats.
+
+    It is possible to specify log-linear interpolation along each dimension with the option :code:`coordinate transformation: loglinear`. For further context see example 5 below.
 
   * :code:`extrapolation mode`: Chosen behaviour in the case where an extraction step leads to extrapolation.
 
@@ -304,3 +312,32 @@ Next we demonstrate the use of bilinear interpolation of two variables:
                method: bilinear
              - name: latitude@MetaData
                method: bilinear
+
+Example 5 (trilinear interpolation)
+..................................
+The following example shows the use of trilinear interpolation of three variables
+(latitude, longitude and air pressure). The interpolation is performed log-linearly
+in pressure. Any out-of-bounds values are set to the value of the relevant bound
+prior to performing the interpolation.
+
+.. code-block:: yaml
+
+     - filter: Variable Assignment
+       assignments:
+       - name: <some-new-variable-name>
+         function:
+           name: ObsFunction/DrawValueFromFile
+           options:
+             file: <path-to-input>    # path to the CSV/NetCDF file
+             group: DerivedObsValue      # group with the payload variable
+             interpolation:
+             - name: MetaData/longitude
+               method: trilinear
+               extrapolation mode: nearest
+             - name: MetaData/latitude
+               method: trilinear
+               extrapolation mode: nearest
+             - name: MetaData/pressure
+               method: trilinear
+               coordinate transformation: loglinear
+               extrapolation mode: nearest
