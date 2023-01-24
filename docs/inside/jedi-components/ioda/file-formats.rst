@@ -59,6 +59,17 @@ To read an ODB file into an ``ObsSpace``, four options need to be set in the ``o
 * ``obsfile``: the path to the ODB file;
 * ``mapping file``: the path to a YAML file mapping ODB column names and units to IODA variable names;
 * ``query file``: the path to a YAML file defining the parameters of an SQL query selecting the required data from the ODB file.
+* ``max number channels``: The `max number channels` option is intended for use with GNSSRO data where it is desired to treat these observations as profiles (thus altering how tangent-point drift is accounted for).
+  This parameter must be set to zero (the default) if the data are read into a 1D variable, and a number greater than zero if the data are read into a 2D variable.
+  In the 2D case, any profiles which are not a multiple of `max number channels` in length will be padded with missing data.   Unless the typical length of a profile is known, fewer missing values will be used when the value of `max number channels` is smaller.
+  However, using `max number channels` greater than one decreases the number of locations in the data, which decreases the number of geovals used.  Since geovals typically dominate the memory used by JEDI decreasing the number of locations decreases the overall amount of memory used.
+  On the other hand, those geovals will not be at the correct location for all the observations, so this decreases the accuracy of the calculated `H(x)`.  Therefore choosing an appropriate value for `max number channels` will be a balance between accuracy and memory usage.
+* ``time window extended lower bound``: Extended lower bound of time window (datetime in ISO-8601 format).
+  This is an optional parameter which, if set, must be a dateTime equal to or earlier than the start of the assimilation window.
+  Observations which lie between this lower bound and the start of the assimilation window have their dateTime set
+  equal to the start of the assimilation window. This ensures that the observation will be accepted by the time
+  window cutoff that is applied in oops. The original value of the datetime is stored in :code:`MetaData/initialDateTime` if
+  the unmodified dateTime needs to be accessed.
 
 The syntax of the mapping and query files is described in the subsections below. The ``ioda`` repository contains sample mapping and query files that should be sufficient for most needs. There is a single mapping file, ``test/testinput/odb_default_name_map.yml``, and one query file per observation type, e.g. ``test/testinput/iodatest_odb_aircraft.yml`` for aircraft observations and ``test/testinput/iodatest_odb_atms.yml`` for ATMS observations. For example, a YAML file used for aircraft data processing could contain the following ``obs space.obsdatain`` section:
 
@@ -224,3 +235,9 @@ corresponds to the following SQL query:
 This is the query used to retrieve data from the input ODB file. The names of the specified columns are converted to ``ioda`` variable names when the ObsSpace object is constructed.
 
 In general, a query file must contain a ``where`` section with the ``varno`` key set to the list of identifiers of the geophysical variables of interest (see https://apps.ecmwf.int/odbgov/varno for the full list). In addition, it can contain an optional ``variables`` list; the ``name`` key in each item in this list is the name of a column or a bitfield column member to be retrieved from the ODB file. If the mapping file defines mappings for individual members of a bitfield column and the ``variables`` list contains just the name of this column (rather than names of specific members), all members for which mappings exist are retrieved. Finally, an optional ``ignored names`` key can be set to a list of names of ODB columns that should not be mapped to ``ioda`` variables according to the rules defined in the mapping file even if they are loaded from the ODB file for other reasons. By default, this applies to the following columns: ``date``, ``time``, ``receipt_date``, ``receipt_time``, ``entryno``, ``seqno``, ``varno``, ``vertco_type`` and ``ops_obsgroup``.
+
+There are two additional options which are specific to data that are divided into records (e.g. radiosonde and ocean profiles).
+If the option ``truncate profiles to numlev`` is set to ``true``, each profile is shortened to have a number of levels equal to the ODB variable ``numlev``,
+which varies from profile to profile. This avoids a large number of unnecessary levels being stored in memory. The default value of this parameter is ``false``.
+The option ``time displacement variable`` can be used to define an ODB variable (typically ``initial_level_time``) which is added on to the station launch time
+to produce a dateTime that varies along a profile. If ``time displacement variable`` is empty (the default) then the dateTimes are not changed in this way.
