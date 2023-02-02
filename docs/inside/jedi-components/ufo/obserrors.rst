@@ -6,23 +6,23 @@ Observation uncertainties in the UFO
 Using filter to specify observation uncertainties
 -------------------------------------------------
 
-For many observation types, the observation uncertainties (also known as observation errors) can be specified using filters within ufo.  For instance, the following yaml snippet shows the ``VariableAssignment`` filter being used to give uncertainty values to ``air_pressure`` in the AMV processing:
+For many observation types, the observation uncertainties (also known as observation errors) can be specified using filters within ufo.  For instance, the following yaml snippet shows the ``VariableAssignment`` filter being used to give uncertainty values to ``pressure`` in the AMV processing:
 
 .. code-block:: yaml
 
   - filter: Variable Assignment
     assignments:
-    - name: air_pressure@MetaDataError
+    - name: MetaDataError/pressure
       type: float
       function:
-        name: DrawValueFromFile@ObsFunction
+        name: ObsFunction/DrawValueFromFile
         options:
           file: Data/ufo/testinput_tier_1/satwind_pressure_errors.nc4
           group: MetaDataError
           interpolation:
-          - name: satwind_id@MetaData
+          - name: MetaData/satwindIdentifier
             method: exact
-          - name: air_pressure@MetaData
+          - name: MetaData/pressure
             method: linear
 
 Also, within filters there is the ability to set observation uncertainties using the :doc:`assign_error filter action <qcfilters/FilterOptions>`.  An example of this, from the surface observation code when assigning errors to ``surface_pressure``, is included here:
@@ -31,7 +31,7 @@ Also, within filters there is the ability to set observation uncertainties using
 
   - filter: Perform Action
     filter variables:
-    - name: surface_pressure
+    - name: stationPressure
     action:
       name: assign error
       error parameter: 120             # 120 Pa = 1.2 mb
@@ -122,7 +122,7 @@ av_temp (float, K)
 
   - filter: ROobserror
     filter variables:
-    - name: bending_angle
+    - name: bendingAngle
     errmodel: MetOffice
     err_variable: latitude
     rmatrix_filename: ../resources/rmatrix/gnssro/gnssro_ba_rmatrix_latitude.nl

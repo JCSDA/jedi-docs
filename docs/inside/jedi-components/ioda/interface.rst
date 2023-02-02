@@ -78,14 +78,14 @@ The following is a YAML example for configuring the processing of radiosonde dat
              type: H5File
              obsfile: Data/testinput_tier_1/sondes_obs_2018041500_m.nc4
            obsgrouping:
-             group variables: [ "station_id" ]
-             sort variable: "air_pressure"
+             group variables: [ stationIdentification ]
+             sort variable: pressure
              sort order: "descending"
          obsdataout:
            engine:
              type: H5File
              obsfile: Data/sondes_obs_2018041500_m_out.nc4
-         simulated variables: [air_temperature]
+         simulated variables: [airTemperature]
        obs operator:
          name: VertInterp
          vertical coordinate: air_pressure
@@ -100,7 +100,7 @@ The following is a YAML example for configuring the processing of radiosonde dat
 
 
 The :code:`obs space.obsdatain.obsgrouping` keyword is used to initate the obs grouping step in the IODA input flow (:numref:`ioda-operations`).
-This specification is requesting that IODA group locations according the MetaData variable "station_id" ("MetaData/station_id").
+This specification is requesting that IODA group locations according the MetaData variable "stationIdentification" ("MetaData/stationIdentification").
 All locations with the same unique station_id value will be grouped into an individual record
 before doing the MPI distribution step.
 The intent of this specification is to keep individual soundings intact during the MPI distribution step.
@@ -109,7 +109,7 @@ The observations will be grouped according to the first variable in the list, th
 
 IODA has an additional feature that provides functions that denote the sorting of locations within each record.
 A MetaData variable and sort order is specified to enable and drive this feature.
-The :code:`obs space.obsdatain.obsgrouping.sort variable` and :code:`obs space.obsdatain.obsgrouping.sort order` are telling IODA to use the values of the "MetaData/air_pressure" variable in corresponding locations to sort the soundings into ascending order (i.e., descending pressure values).
+The :code:`obs space.obsdatain.obsgrouping.sort variable` and :code:`obs space.obsdatain.obsgrouping.sort order` are telling IODA to use the values of the "MetaData/pressure" variable in corresponding locations to sort the soundings into ascending order (i.e., descending pressure values).
 
 Under the :code:`obs space.obsdataout.engine.obsfile` specification, the output file is requested to be created in the path: :code:`Data/sondes_obs_2018041500_m_out.nc4`.
 IODA tags the MPI rank number onto the end of the file name (before the ".nc4" suffix) so that multiple MPI tasks writing files do not collide.
@@ -138,8 +138,8 @@ OOPS Interface
 
 OOPS accesses observation data via C++ methods belonging to the ObsVector class.
 The variables being assimilated are selected in the YAML configuration using the :code:`simulated variables` sub-keyword under the :code:`obs space` keyword.
-In the :ref:`radiosonde example <radiosonde_example_yaml>` above, one variable "air_temperature" is being assimilated.
-In this case, the ObsVector will read only the air_temperature row from the ObsSpace and load that into a vector.
+In the :ref:`radiosonde example <radiosonde_example_yaml>` above, one variable "airTemperature" is being assimilated.
+In this case, the ObsVector will read only the airTemperature row from the ObsSpace and load that into a vector.
 
 The ObsVector class contains the following two methods, :code:`read()` for filling a vector from an ObsSpace in memory and :code:`save()` for storing a vector into an ObsSpace.
 
@@ -191,7 +191,7 @@ Typically, only meta data are used in the actual H(x) calculations.
 * The :code:`group` arguments are names of the ObsSpace Group holding the requested variable
     * E.g., "HofX", "MetaData"
 * The :code:`vname` arguments are names of the requested variable (column)
-    * E.g., "air_temperature", "Scan_Angle"
+    * E.g., "airTemperature", "sensorScanAngle"
 * The :code:`vect` argument is a Fortran array for holding the data values
     * The client (caller) is responsible for allocating the memory for the :code:`vect` argument
 
@@ -204,22 +204,22 @@ Following is an example from the CRTM radiance simulator, where meta data from t
    allocate(TmpVar(nlocs))
 
    ! Read in satellite meta data and transfer to geo structure
-   call obsspace_get_db(obss, "MetaData", "Sat_Zenith_Angle", TmpVar)
+   call obsspace_get_db(obss, "MetaData", "sensorZenithAngle", TmpVar)
    geo(:)%Sensor_Zenith_Angle = TmpVar(:)
 
-   call obsspace_get_db(obss, "MetaData", "Sol_Zenith_Angle", TmpVar)
+   call obsspace_get_db(obss, "MetaData", "solarZenithAngle", TmpVar)
    geo(:)%Source_Zenith_Angle = TmpVar(:)
 
-   call obsspace_get_db(obss, "MetaData", "Sat_Azimuth_Angle", TmpVar)
+   call obsspace_get_db(obss, "MetaData", "sensorAzimuthAngle", TmpVar)
    geo(:)%Sensor_Azimuth_Angle = TmpVar(:)
 
-   call obsspace_get_db(obss, "MetaData", "Sol_Azimuth_Angle", TmpVar)
+   call obsspace_get_db(obss, "MetaData", "solarAzimuthAngle", TmpVar)
    geo(:)%Source_Azimuth_Angle = TmpVar(:)
 
-   call obsspace_get_db(obss, "MetaData", "Scan_Position", TmpVar)
+   call obsspace_get_db(obss, "MetaData", "sensorScanPosition", TmpVar)
    geo(:)%Ifov = TmpVar(:)
 
-   call obsspace_get_db(obss, "MetaData", "Scan_Angle", TmpVar) !The Sensor_Scan_Angle is optional
+   call obsspace_get_db(obss, "MetaData", "sensorScanAngle", TmpVar) !The sensorScanAngle is optional
    geo(:)%Sensor_Scan_Angle = TmpVar(:)
 
    deallocate(TmpVar)

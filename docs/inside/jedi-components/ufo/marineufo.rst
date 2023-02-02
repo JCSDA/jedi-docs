@@ -26,7 +26,7 @@ Examples of yaml:
        engine:
          type: H5File
          obsfile: Data/ufo/testinput_tier_1/Jason-2-2018-04-15.nc
-     simulated variables: [obs_absolute_dynamic_topography]
+     simulated variables: [absoluteDynamicTopography]
    obs operator:
      name: ADT
 
@@ -62,7 +62,7 @@ Examples of yaml:
        engine:
          type: H5File
          obsfile: Data/ufo/testinput_tier_1/coolskin_fake_obs_2018041500.nc
-     simulated variables: [sea_surface_temperature]
+     simulated variables: [seaSurfaceTemperature]
 
 
 Insitu temperature
@@ -97,7 +97,7 @@ Examples of yaml:
        engine:
          type: H5File
          obsfile: Data/ufo/testinput_tier_1/profile_2018-04-15.nc
-     simulated variables: [sea_water_temperature]
+     simulated variables: [waterTemperature]
 
 Vertical Interpolation
 ----------------------
@@ -116,13 +116,14 @@ Examples of yaml:
 
    obs operator:
      name: MarineVertInterp
+     observation alias file: name_map.yaml
    obs space:
      name: InsituSalinity
      obsdatain:
        engine:
          type: H5File
          obsfile: Data/ufo/testinput_tier_1/profile_2018-04-15.nc
-     simulated variables: [sea_water_salinity]
+     simulated variables: [salinity]
 
 Sea ice thickness
 -----------------
@@ -159,7 +160,7 @@ Examples of yaml:
            engine:
              type: H5File
              obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
-         simulated variables: [sea_ice_thickness]
+         simulated variables: [iceThickness]
        obs operator:
          name: SeaIceThickness
 
@@ -169,7 +170,7 @@ Examples of yaml:
            engine:
              type: H5File
              obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
-         simulated variables: [sea_ice_freeboard]
+         simulated variables: [seaIceFreeboard]
        obs operator:
          name: SeaIceThickness
 
@@ -201,4 +202,4 @@ Examples of yaml:
        engine:
          type: H5File
          obsfile: Data/ufo/testinput_tier_1/icec-2018-04-15.nc
-     simulated variables: [sea_ice_area_fraction]
+     simulated variables: [seaIceFraction]
