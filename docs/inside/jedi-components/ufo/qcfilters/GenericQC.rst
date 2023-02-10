@@ -1492,8 +1492,12 @@ YAML file. Each element of this list can contain the following options:
 
 - :code:`channels`: (Optional) Set of channels to which new values should be assigned.
 
-- :code:`value`: Value to be assigned to the specified variable. Exactly one of the :code:`value`,
-  :code:`source variable` and :code:`function` options must be present.
+- :code:`value`: Value to be assigned to the specified variable. If this parameter is set to the
+  string :code:`missing`, the variable will be set to the relevant missing value at all locations that pass
+  the :code:`where` clause. The missing value to use is deduced from the type of the variable.
+  Note it is therefore not possible to assign the string :code:`missing` to a variable
+  because it will be automatically converted to the missing string signifier.
+  Exactly one of the :code:`value`, :code:`source variable` and :code:`function` options must be present.
 
 - :code:`source variable`: Variable that should be copied into the destination variable (specified
   in the :code:`name` option). Exactly one of the :code:`value`, :code:`source variable` and
@@ -1584,6 +1588,20 @@ Copy the variable :code:`height@MetaData` to :code:`geopotential_height@DerivedM
       - name: geopotential_height@DerivedMetaData
         type: float  # type must be specified if the variable doesn't already exist
         source variable: height@MetaData
+
+Example 5
+^^^^^^^^^
+
+Initialise the variable :code:`pressure@MetaData` to the missing floating-point value
+at all locations.
+
+.. code:: yaml
+
+    - filter: Variable Assignment
+      assignments:
+      - name: pressure@MetaData
+        type: float  # type must be specified if the variable doesn't already exist
+        value: missing
 
 Create Diagnostic Flags Filter
 ------------------------------
