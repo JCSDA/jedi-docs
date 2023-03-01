@@ -314,7 +314,7 @@ Next we demonstrate the use of bilinear interpolation of two variables:
                method: bilinear
 
 Example 5 (trilinear interpolation)
-..................................
+...................................
 The following example shows the use of trilinear interpolation of three variables
 (latitude, longitude and air pressure). The interpolation is performed log-linearly
 in pressure. Any out-of-bounds values are set to the value of the relevant bound

@@ -3,16 +3,9 @@
 Using spack-stack modules to build and run JEDI
 ===============================================
 
-The instructions in this section are specific to the use of spack-stack environment modules (``lmod/lua`` or ``tcl/tk``)
-for building and running JEDI applications. For general information on using spack-stack to build and run software,
-see the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.2.0>`_.
+The instructions in this section are specific to the use of spack-stack environment modules (``lmod/lua`` or ``tcl/tk``) for building and running JEDI applications. For general information on using spack-stack to build and run software, see the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.2.0>`_.
 
-One of the big advantages of spack-stack is that it automatically generates modules for all compiled packages and Python
-packages and works in exactly the same way on HPCs, on the cloud, and on a personal computer.
-Environment modules are available on basically all HPC systems and any modern macOS or Linux distribution,
-and are an easy and effective way to manage software libraries. There are two main flavors, the older ``tcl/tk`` modules
-and the newer ``lmod/lua`` modules, with the latter being superior and therefore preferred, if available.
-The two implementations share similar commands, such as:
+One of the big advantages of spack-stack is that it automatically generates modules for all compiled packages and Python packages and works in exactly the same way on HPCs, on the cloud, and on a personal computer. Environment modules are available on basically all HPC systems and any modern macOS or Linux distribution, and are an easy and effective way to manage software libraries. There are two main flavors, the older ``tcl/tk`` modules and the newer ``lmod/lua`` modules, with the latter being superior and therefore preferred, if available. The two implementations share similar commands, such as:
 
 .. code-block:: bash
 
@@ -31,30 +24,23 @@ The two implementations share similar commands, such as:
 
 and handle module dependencies, conflicts, loading and unloading better than ``tcl/tk`` modules.
 
-For further information (and more commands) you can refer to
-the `Lmod <https://lmod.readthedocs.io/en/latest/010_user.html>`_
-and `Environment Modules <https://modules.readthedocs.io/en/latest/>`_ documentation.
+For further information (and more commands) you can refer to the `Lmod <https://lmod.readthedocs.io/en/latest/010_user.html>`_ and `Environment Modules <https://modules.readthedocs.io/en/latest/>`_ documentation.
 
-We currently offer spack-stack modules for JEDI on several HPC systems, as described below.
-Consult the appropriate section for instructions on how to access the JEDI modules on each system.
+We currently offer spack-stack modules for JEDI on several HPC systems, as described below. Consult the appropriate section for instructions on how to access the JEDI modules on each system.
 
-These modules provide all of the software libraries necessary to build and run JEDI.
-It is highly recommended that users start with a clean environment, i.e. that they do not load modules or modify
-search paths etc. in the automatically source `.bashrc`, `.bash_profile` etc. scripts.
-After loading the appropriate modules, users can proceed to :doc:`compile and run the JEDI bundle of
-their choice </using/building_and_running/building_jedi>`.
+These modules provide all of the software libraries necessary to build and run JEDI. It is highly recommended that users start with a clean environment, i.e. that they do not load modules or modify search paths etc. in the automatically source `.bashrc`, `.bash_profile` etc. scripts. After loading the appropriate modules, users can proceed to :doc:`compile and run the JEDI bundle of their choice </using/building_and_running/building_jedi>`.
 
 
 General Tips for HPC Systems
 ----------------------------
 
-Many HPC systems do not allow you to run MPI jobs from the login nodes.  So, after building JEDI, you'll have to run the tests either in batch mode through a job submission program such as :code:`slurm` via :code:`sbatch` directives, or by accessing a batch compute node interactively through a program such as :code:`salloc`.  Often these batch nodes do not have access to the internet; after you build JEDI, you may need to run the following command from a login node:
+Many HPC systems do not allow you to run MPI jobs from the login nodes. So, after building JEDI, you'll have to run the tests either in batch mode through a job submission program such as :code:`slurm` via :code:`sbatch` directives, or by accessing a batch compute node interactively through a program such as :code:`salloc`. Often these batch nodes do not have access to the internet; after you build JEDI, you may need to run the following command from a login node:
 
 .. code-block:: bash
 
     ctest -R get_
 
-This runs several tests. The purpose of these tests is to download data files from the cloud that are then used by many of the other tests.  If the :code:`get_*` tests are successful, then the data was downloaded successfully and you can proceed to run the remainder of the tests in batch using :code:`sbatch`, :code:`salloc`, or the equivalent process management command on your system.
+This runs several tests. The purpose of these tests is to download data files from the cloud that are then used by many of the other tests. If the :code:`get_*` tests are successful, then the data was downloaded successfully and you can proceed to run the remainder of the tests in batch using :code:`sbatch`, :code:`salloc`, or the equivalent process management command on your system.
 
 
 Orion
@@ -101,7 +87,7 @@ For both Intel and GNU, proceed with loading the appropriate modules for your ap
 
 
 After loading the appropiate modules, you need to clone the jedi-bundle, create a build directory, configure, and build the bundle.
-   
+
 .. code-block:: bash
 
     git clone https://github.com/jcsda/<jedi-bundle>
@@ -109,9 +95,7 @@ After loading the appropiate modules, you need to clone the jedi-bundle, create 
     ecbuild <path-to-bundle>
     make -j4
 
-The next step is to run ctests. We do not recommand running the ctests on login nodes because of the computational requirements of these tests. Instead you can submit ctests
-as a batch job or use an interactive node. 
-Here is a sample `slurm <https://slurm.schedmd.com/>`_ batch script for running ctest. Note that you will need to add appropriate :code:`#SBATCH` directives for specifying a computing account, quality of service, job partition, and so on; please consult `the Orion Usage and Guidelines documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/cluster_guide.php#orion-use>`_.
+The next step is to run ctests. We do not recommand running the ctests on login nodes because of the computational requirements of these tests. Instead you can submit ctests as a batch job or use an interactive node. Here is a sample `slurm <https://slurm.schedmd.com/>`_ batch script for running ctest. Note that you will need to add appropriate :code:`#SBATCH` directives for specifying a computing account, quality of service, job partition, and so on; please consult `the Orion Usage and Guidelines documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/cluster_guide.php#orion-use>`_.
 
 .. code-block:: bash
 
@@ -180,8 +164,7 @@ Submit and monitor your jobs with these commands
 
 You can delete jobs with the :code:`scancel` command.  For further information please consult `the Orion Cluster Computing Basics documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/clusters_getting_started.php>`_.
 
-An alternative to using the batch script is to request an interactive session on Orion and run the ctests there.
-To request an interactive session you can run:
+An alternative to using the batch script is to request an interactive session on Orion and run the ctests there. To request an interactive session you can run:
 
 .. code-block:: bash
 
@@ -424,7 +407,7 @@ Because of space limitations on your home directory, it's a good idea to locate 
 
    Please do not use too many threads to speed up the compilation, Casper system administrator might terminate your login node.
 
-The system configuration on Casper will not allow you to run mpi jobs from the login node.  If you try to run :code:`ctest` from here, the mpi tests will fail.  To run the jedi unit tests you will have to either submit a batch job or request an interactive session with :code:`execcasper`. Invoking it without an argument will start an interactive shell on the *first available HTC node*. The default wall-clock time is 6 hours. To use another type of node, include a `select` statement specifying the resources you need. The :code:`execcasper` command accepts all ``PBS`` flags and resource specifications as detailed by ``man qsub``. The following is a sample batch script to run the unit tests for ``ufo-bundle``.  Note that some ctests require up to 24 MPI tasks.
+The system configuration on Casper will not allow you to run mpi jobs from the login node. If you try to run :code:`ctest` from here, the mpi tests will fail. To run the jedi unit tests you will have to either submit a batch job or request an interactive session with :code:`execcasper`. Invoking it without an argument will start an interactive shell on the *first available HTC node*. The default wall-clock time is 6 hours. To use another type of node, include a `select` statement specifying the resources you need. The :code:`execcasper` command accepts all ``PBS`` flags and resource specifications as detailed by ``man qsub``. The following is a sample batch script to run the unit tests for ``ufo-bundle``. Note that some ctests require up to 24 MPI tasks.
 
 .. code-block:: bash
 
@@ -454,7 +437,7 @@ S4
 
 S4 is the **Satellite Simulations and Data Assimilation Studies** supercomputer located at the University of Wisconsin-Madison's Space Science and Engineering Center.
 
-S4 uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs.  Though some slurm implementations allow you to use the usual mpi job scripts :code:`mpirun` or :code:`mpiexec`, these may not function properly on S4.  Instead, you are advised to use the slurm run script :code:`srun`.
+Although S4 uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs, users are advised to use :code:`mpirun` or :code:`mpiexec` instead of the slurm run script :code:`srun` due to problems with the mpich library with slurm.
 
 Once logged into S4, you must then log into s4-submit to load the spack-stack modules to build and run JEDI.
 
@@ -506,11 +489,11 @@ For both Intel and GNU, proceed with loading the appropriate modules for your ap
    module load jedi-ewok-env/1.0.0
    module load soca-env/1.0.0
 
-For Intel, use
+For Intel and GNU, use
 
 .. code-block:: bash
 
-   ecbuild -DCMAKE_CROSSCOMPILING_EMULATOR="/usr/bin/srun;-n;1" -DMPIEXEC_EXECUTABLE="/usr/bin/srun" -DMPIEXEC_NUMPROC_FLAG="-n" PATH_TO_SOURCE
+   ecbuild PATH_TO_SOURCE
 
 After building, you will want to run the ``get`` tests from the login node to download the test data:
 
@@ -518,7 +501,7 @@ After building, you will want to run the ``get`` tests from the login node to do
 
     ctest -R get_
 
-You can run the remaining tests from the login node, because ``srun`` will dispatch them on a compute node.  You can also run them interactively on a compute node after running
+You can run the remaining tests from the login node, because ``mpiexec``/``mpirun`` will dispatch them on a compute node.  You can also run them interactively on a compute node after running
 
 .. code-block:: bash
 
@@ -545,8 +528,6 @@ or you can submit a batch script to the queue through ``sbatch``. Here is a samp
 
    exit 0
 
-For GNU, simpy use ``ecbuild PATH_TO_SOURCE``, run the ``get`` tests on the login node, then gain access to a compute node or use a batch script to run the remaining tests on a compute node.
-
 Note that the options specified with ``#SBATCH`` above include the number of nodes but not the number of tasks needed.  This is most appropriate for running ``ctest`` because some tests require a different number of MPI tasks than others. However, if you run an application individually, you should specify ``#SBATCH --ntasks <number>`` instead of ``#SBATCH --nodes=<number>``, as shown in the following example.  The slurm job scheduler will properly determine how many nodes your job requires. Specifying ``--ntasks`` instead of ``--nodes`` in the ``#SBATCH`` header commands will mandate that your computing allocation will only be charged for what you use.  This is preferable for more computationally intensive jobs.
 
 .. code-block:: bash
@@ -560,7 +541,7 @@ Note that the options specified with ``#SBATCH`` above include the number of nod
 
    source /etc/bashrc
 
-   # Insert the module purge and load statements in here
+   # Insert the module purge and load statements here
 
    ulimit -s unlimited
    ulimit -v unlimited
@@ -570,13 +551,12 @@ Note that the options specified with ``#SBATCH`` above include the number of nod
 
    # make sure the number of tasks it requires matches the SBATCH --ntasks specification above
    cd <path-to-bundle-build-directory>
-   # Note that --ntasks=4 below is not needed in this case - srun will use what's in the SBATCH line above
-   srun --ntasks=4 --cpu_bind=core --distribution=block:block test_ufo_radiosonde_opr testinput/radiosonde.yaml
+   mpirun -np 4 test_ufo_radiosonde_opr testinput/radiosonde.yaml
 
    exit 0
 
 .. note::
-   JEDI applications (like most NWP applications) require a decent amount of memory, in which case asking for just a fraction of a node may fail with out of memory errors. This can be avoided by asking for an entire node (or, for larger jobs, more nodes) and running with fewer MPI tasks than each node provides by using ``#SBATCH --nodes=1`` and ``srun --ntasks=4``, for example.
+   JEDI applications (like most NWP applications) require a decent amount of memory, in which case asking for just a fraction of a node may fail with out-of-memory errors. This can be avoided by asking for an entire node (or, for larger jobs, more nodes) and running with fewer MPI tasks than each node provides by using ``#SBATCH --nodes=1`` and ``srun --ntasks=4``, for example.
 
 After submitting the batch script with :code:`sbatch name_of_script`, you can monitor your jobs with these commands:
 
@@ -591,6 +571,4 @@ AWS AMIs
 --------
 For more information about using Amazon Web Services please see :doc:`JEDI on AWS <./cloud/index>`.
 
-As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.2.0` environment
-for `skylab-3.0.0` pre-installed. For more information on how to find these AMIs,
-refer to https://spack-stack.readthedocs.io/en/1.2.0/Platforms.html.
+As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.2.0` environment for `skylab-3.0.0` pre-installed. For more information on how to find these AMIs, refer to https://spack-stack.readthedocs.io/en/1.2.0/Platforms.html.
