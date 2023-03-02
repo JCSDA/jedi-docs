@@ -4,9 +4,9 @@ SetSeaIceEmiss
 ==============
 From Fast Models for Land Surface Emissivity report (Hewison and English, 1999):
 
-This is a semi-empirical model that uses Fresnel’s formulae to calculate the specular reflectivity (emmisivity) of a dielectric surface, whose permittivity can be described by a single Debye relaxation, neglecting the ionic conductivity term, as this is negligible for frequencies above 20 GHz.
+This is a semi-empirical model that uses Fresnel’s formulae to calculate the specular reflectivity (emissivity) of a dielectric surface, whose permittivity can be described by a single Debye relaxation, neglecting the ionic conductivity term, as this is negligible for frequencies above 20 GHz.
 
-This obsfunction requires observation Metadata (surface classification) from AAPP and returns an emmisivity for applicable ice profiles. 
+This obsfunction requires observation Metadata (surface classification) from AAPP and returns an emissivity for applicable ice profiles. 
 
 Based on UK Met Office Ops_SatRad_SeaIceEmiss procedure.
 
@@ -39,7 +39,7 @@ Input parameters:
 .. _`channel frequency`:
 
 `channel frequency`_
-  | Array of channel frequencies, in GHz, to be used in the emmisivity calculation.
+  | Array of channel frequencies, in GHz, to be used in the emissivity calculation.
   | See yaml example for an appropriate array to use for a combined AMSU-A/B instrument (20 channels).
 
 .. _`orbit height`:
