@@ -149,7 +149,7 @@ Then, from that build directory, run :code:`ecbuild`, specifying the path to the
 
 Here we have used :code:`~/jedi/src` as our source directory and :code:`~jedi/build` as our build directory.  Feel free to change this as you wish, but just **make sure that your source and build directories are different**. This command should work for most bundles, and in particular when working on a preconfigured HPC or AWS instance. The ecbuild command may take several minutes to run.
 
-Note that the `-DPython3_EXECUTABLE=$(which python3)` uses a cmake flag to ensure that the python3 executable is set to the current shell session's Python 3 interpreter. As long as you are working in a shell with an activated `spack-stack` build environment this command ensures that linked Python code references the spack-stack version of Python and its C library. If you don't pass this argument, ecbuild may incorrectly reference the system Python interpreter or the interpreter installed by Homebrew (OSX).
+Note that :code:`-DPython3_EXECUTABLE=$(which python3)` uses a cmake flag to ensure that the :code:`python3` executable is set to the current shell session's Python 3 interpreter. This ensures that build targets are linking with the correct Python library (from spack-stack or from your Python virtual environment). If you don't pass this argument, ecbuild may target the wrong Python 3 version.
 
 .. warning::
 
