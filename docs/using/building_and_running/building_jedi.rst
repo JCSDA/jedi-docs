@@ -14,6 +14,7 @@ As described in detail :doc:`elsewhere </inside/developer_tools/cmake>`, the pro
 In terms of the actual commands you would enter, these steps will look something like this:
 
 .. code-block:: bash
+
     cd <src-directory>
     git clone https://github.com/JCSDA/fv3-bundle.git
     cd <build-directory>
