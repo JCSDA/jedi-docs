@@ -14,11 +14,11 @@ As described in detail :doc:`elsewhere </inside/developer_tools/cmake>`, the pro
 In terms of the actual commands you would enter, these steps will look something like this:
 
 .. code-block:: bash
-
+    
     cd <src-directory>
     git clone https://github.com/JCSDA/fv3-bundle.git
     cd <build-directory>
-    ecbuild <src-directory>/fv3-bundle
+    ecbuild -DPython3_EXECUTABLE=$(which python3) <src-directory>/fv3-bundle
     make update
     make -j4
     ctest
@@ -145,17 +145,16 @@ Then, from that build directory, run :code:`ecbuild`, specifying the path to the
 .. code-block:: bash
 
     cd ~/jedi/build
-    ecbuild ../src/fv3-bundle
+    ecbuild -DPython3_EXECUTABLE=$(which python3) ../src/fv3-bundle
 
-Here we have used :code:`~/jedi/src` as our source directory and :code:`~jedi/build` as our build directory.  Feel free to change this as you wish, but just **make sure that your source and build directories are different**.
+Here we have used :code:`~/jedi/src` as our source directory and :code:`~jedi/build` as our build directory.  Feel free to change this as you wish, but just **make sure that your source and build directories are different**. This command should work for most bundles, and in particular when working on a preconfigured HPC or AWS instance. The ecbuild command may take several minutes to run.
 
-This should work for most bundles, and in particular when working on a preconfigured HPC or AWS instance.
+Note that the `-DPython3_EXECUTABLE=$(which python3)` uses a cmake flag to ensure that the python3 executable is set to the current shell session's Python 3 interpreter. As long as you are working in a shell with an activated `spack-stack` build environment this command ensures that linked Python code references the spack-stack version of Python and its C library. If you don't pass this argument, ecbuild may incorrectly reference the system Python interpreter or the interpreter installed by Homebrew (OSX).
 
 .. warning::
 
     **Some bundles may require you to run a build script prior to or in lieu of running ecbuild, particularly if you are running on an HPC system. Check the README file in the top directory of the bundle repository to see if this is necessary, particularly if you encounter problems running ecbuild, cmake, or ctest.**
 
-After you enter the ecbuild command, remember to practice patience, dear `padawan <http://starwars.wikia.com/wiki/Padawan>`_.  The build process may take several minutes.
 
 As described :doc:`here </inside/developer_tools/cmake>`, ecbuild is a sophisticated interface to CMake.  So, if there are any CMake options or arguments you wish to invoke, you can pass them to ecbuild and it will kindly pass them on to CMake.  The general calling syntax is:
 
