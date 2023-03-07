@@ -26,7 +26,7 @@ The user can specify two options in the yaml: :code:`absolute threshold` and :co
               type: H5File
               obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
             obsgrouping:
-              group variables: [ "record_number" ]
+              group variables: [ "sequenceNumber" ]
               sort variable: "latitude"
               sort order: "descending"
           simulated variables: [variable]
@@ -36,7 +36,7 @@ The user can specify two options in the yaml: :code:`absolute threshold` and :co
           filter variables:
           - name: variable
           absolute threshold: 2.5
-      
+
 Note: The :code:`obsgrouping: group variables` option is necessary to identify which observations belong to a given profile.  The :code:`sort variable` and :code:`sort order` options are optional.
 
 Note: This is separate from the background check in :ref:`conventional profile processing  <profconcheck_background>`.
@@ -46,7 +46,7 @@ Note: This is separate from the background check in :ref:`conventional profile p
 Profile Few Observations Check
 ------------------------------
 
-This filter finds the number of valid observations within a profile.  If this number is less than the filter parameter :code:`threshold` then all observations in the profile are rejected.
+This filter finds the number of valid observations within a profile.  If this number is less than the filter parameter :code:`threshold` then all observations in the profile are rejected. If the optional :code:`fraction` parameter is set, then the check will instead flag the entire profile when more than this decimal fraction of the observations have been flagged. Either the :code:`threshold` or :code:`fraction` options must be set.
 
 .. code-block:: yaml
 
@@ -62,15 +62,57 @@ This filter finds the number of valid observations within a profile.  If this nu
               type: H5File
               obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
             obsgrouping:
-              group variables: ["record_number"]
+              group variables: ["sequenceNumber"]
           simulated variables: [variable]
         obs filters:
         - filter: Profile Few Observations Check
           filter variables:
           - name: variable
           threshold: 10
+        - filter: Profile Few Observations Check
+          filter variables:
+          - name: variable
+          fraction: 0.5
 
 Note: The :code:`obsgrouping: group variables` option is necessary to identify which observations belong to a given profile.
+
+.. _profunflagobscheck:
+
+Profile Unflag Observations Check
+---------------------------------
+
+This filter unflags isolated QC-failing observations if their neighbours pass QC and match to within an absolute tolerance. This tolerance is set by the :code:`absolute tolerance` parameter and can optionally be scaled with a given :code:`vertical coordinate` using a piece-wise linear scaling function defined by pairs of points given in the :code:`vertical tolerance scale` option.
+
+Uses the record number functionality defined by the :code:`obsgrouping` to identify which observations belong to a given profile (all members of a profile must share the same record number). Each observation in a profile is compared to those above and below. If both of these are unflagged and match the observation to within a tolerance, then the observation is marked. If the observation is the first or the last in the profile than a match with only the single adjacent observation is sufficient for unflagging. The marked observations can then be accepted using a "Filter Action" (see the :ref:`Filter Actions <filter-actions>` section for more detail). Observations can be included/excluded from this filter in the usual way using a "where" clause to the filter (see :ref:`"where" clauses <where-statement>` for more detail).
+
+.. code-block:: yaml
+
+    window begin: 2019-06-14T20:30:00Z
+    window end: 2019-06-15T03:30:00Z
+
+    observations:
+      observers:
+      - obs space:
+          name: Unflag obs check unflags based on piecewise absolute tolerance
+          obsdatain:
+            engine:
+              type: H5File
+              obsfile: "Data/ufo/testinput_tier_1/oceanprofile_fake_obsdata.nc4"
+            obsgrouping:
+              group variables: [ "stationIdentification" ]
+          simulated variables: [ "waterTemperature", "depthBelowWaterSurface" ]
+          observed variables: [ "waterTemperature", "depthBelowWaterSurface" ]
+        obs filters:
+        - filter: Profile Unflag Observations Check
+          filter variables:
+          - name: ObsValue/waterTemperature
+          absolute tolerance: 10
+          vertical tolerance scale: { "0": 1, "3": 1, "8": 0.00001}
+          vertical coordinate: "ObsValue/depthBelowWaterSurface"
+          actions:
+            - name: accept
+
+Note: The optional scaling function vertical coordinate and scale points should be specified as keys and values of a JSON-style map. Owing to a `limitation in the eckit YAML parser <https://github.com/ecmwf/eckit/pull/21>`_, the keys must be enclosed in quotes.
 
 Impact Height Check
 -------------------

@@ -16,7 +16,7 @@ Variables used
 Output Variable
 ---------------
 
-- Absolute Salinity (g/kg). The corresponding :code:`ObsError`, :code:`GrossErrorProbability` and :code:`QCFlags` are the same as those of the input salinity variable.
+- Absolute Salinity (g/kg). The corresponding observation error, :code:`GrossErrorProbability` and QC flag data are copied from the input salinity variable if available.
 
 ----------
 Parameters
@@ -64,7 +64,7 @@ Variables used
 Output Variable
 ---------------
 
-- Conservative temperature (deg.C). The corresponding :code:`ObsError`, :code:`GrossErrorProbability` and :code:`QCFlags` are the same as those of the input temperature variable.
+- Conservative temperature (deg.C). The corresponding observation error, :code:`GrossErrorProbability` and QC flag data are copied from the input temperature variable if available.
 
 ----------
 Parameters
@@ -114,7 +114,7 @@ Variables used
 Output Variable
 ---------------
 
-- Density (kg/m^3) - absolute rather than anomaly, i.e. 1000 kg/m^3 is not subtracted from it. The corresponding :code:`ObsError` is set to 1.0 (the user should :ref:`Perform Action: Assign Error <filter-actions>` if something different is required), :code:`QCFlags` are set to 0, and :code:`GrossErrorProbability` initialised to all missing.
+- Density (kg/m^3) - absolute rather than anomaly, i.e. 1000 kg/m^3 is not subtracted from it. The corresponding observation error is set to 1.0 (the user should :ref:`Perform Action: Assign Error <filter-actions>` if something different is required), QC flag data are set to 0.
 
 ----------
 Parameters
@@ -164,7 +164,7 @@ Variables used
 Output Variable
 ---------------
 
-- Potential temperature (deg.C), i.e. the temperature that a water parcel would have if moved adiabatically from the given pressure to the reference pressure (zero in this case, i.e. the surface). The corresponding :code:`ObsError`, :code:`GrossErrorProbability` and :code:`QCFlags` are the same as those of the input temperature variable.
+- Potential temperature (deg.C), i.e. the temperature that a water parcel would have if moved adiabatically from the given pressure to the reference pressure (zero in this case, i.e. the surface). The corresponding observation error data, :code:`GrossErrorProbability` and QC flag data are copied from the input temperature variable if available.
 
 ----------
 Parameters
@@ -213,7 +213,7 @@ Variables used
 Output Variable
 ---------------
 
-- Pressure (dbar). The corresponding :code:`ObsError` is set to 1.0 (the user should :ref:`Perform Action: Assign Error <filter-actions>` if something different is required), :code:`QCFlags` are set to 0, and :code:`GrossErrorProbability` initialised to all missing.
+- Pressure (dbar). The corresponding observation error data is set to 1.0 (the user should :ref:`Perform Action: Assign Error <filter-actions>` if something different is required) and the QC flag data are set to 0.
 
 ----------
 Parameters
