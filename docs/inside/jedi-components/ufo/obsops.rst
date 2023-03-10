@@ -207,13 +207,14 @@ Vertical Interpolation
 
 Description:
 ^^^^^^^^^^^^
-This observation operator implements linear interpolation in a vertical coordinate. If the vertical coordinate is :code:`air_pressure` or :code:`air_pressure_levels`, interpolation is done in the logarithm of air pressure. For all other vertical coordinates interpolation is done in the specified coordinate (no logarithm applied).
+This observation operator implements linear interpolation (including log-linear interpolation), and nearest-neighbor interpolation in a vertical coordinate when explicitly chosen. If choose automatic (which is same as choose default), then if the vertical coordinate is :code:`air_pressure` or :code:`air_pressure_levels`, interpolation is done in the logarithm of air pressure; if choose :code: `constant vertical coordinate values` :code:, then the default interpolation is nearest-neighbor. For all other vertical coordinates interpolation is done in the specified coordinate (no logarithm applied).
 
 This operator can be used as a component of the `Composite` operator.
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
 * :code:`vertical coordinate` [optional]: the vertical coordinate to use in interpolation. If set to :code:`air_pressure` or :code:`air_pressure_levels`, the interpolation is done in log(air pressure). The default value is :code:`air_pressure`.
+* :code:`constant vertical coordinate values` [optional]: use the (array) values as vertical coordinate in interpolation. If :code:`interpolation method` is not defined, then nearest-neighbor will be used in interpolation.
 * :code:`observation vertical coordinate` [optional]: name of the ObsSpace variable (from the :code:`MetaData` group) storing the vertical coordinate of observation locations. If not set, assumed to be the same as :code:`vertical coordinate`.
 * :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator (see the example below). This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
 
@@ -242,6 +243,19 @@ The observation operator in the above example does vertical interpolation in hei
     observation vertical coordinate: air_pressure
 
 The observation operator in the above example does vertical interpolation in log(air_pressure) on the levels taken from the :code:`air_pressure_levels` GeoVaL.
+
+.. code-block:: yaml
+
+  obs operator:
+      name: VertInterp
+      constant vertical coordinate values: [0.1, 0.5, 1.0, 2.0]
+      interpolation method: nearest-neighbor
+      observation vertical coordinate group: MetaData
+      observation vertical coordinate: depthBelowSoilSurface
+
+The observation operator in the above example choose array :code:`[0.1, 0.5, 1.0, 2.0]` as vertical coordinate in interpolation, :code:`interpolation method: nearest-neighbor` choose nearest-neighbor interpolation method.
+
+This is a newly added feature, which is mainly to server the soil moisture assimilation.
 
 .. code-block:: yaml
 
