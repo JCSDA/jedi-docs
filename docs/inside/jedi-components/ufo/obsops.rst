@@ -214,7 +214,7 @@ This operator can be used as a component of the `Composite` operator.
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
 * :code:`vertical coordinate` [optional]: the vertical coordinate to use in interpolation. If set to :code:`air_pressure` or :code:`air_pressure_levels`, the interpolation is done in log(air pressure). The default value is :code:`air_pressure`.
-* :code:`constant vertical coordinate values` [optional]: use the (array) values as vertical coordinate in interpolation. If :code:`interpolation method` is not defined, then nearest-neighbor will be used in interpolation.
+* :code:`constant vertical coordinate values` [optional]: use the (array) values as vertical coordinate in interpolation. If :code:`interpolation method` is not defined, then nearest-neighbor will be used in interpolation. If this option is chosen, the geovals for vertical coordinate are not requested and vertical coordinate option above shouldn't be used. The primary purpose of this option is to serve the requirement for soil moisture assimilation.
 * :code:`observation vertical coordinate` [optional]: name of the ObsSpace variable (from the :code:`MetaData` group) storing the vertical coordinate of observation locations. If not set, assumed to be the same as :code:`vertical coordinate`.
 * :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator (see the example below). This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
 
@@ -254,8 +254,6 @@ The observation operator in the above example does vertical interpolation in log
       observation vertical coordinate: depthBelowSoilSurface
 
 The observation operator in the above example choose array :code:`[0.1, 0.5, 1.0, 2.0]` as vertical coordinate in interpolation, :code:`interpolation method: nearest-neighbor` choose nearest-neighbor interpolation method.
-
-This is a newly added feature, which is mainly to server the soil moisture assimilation.
 
 .. code-block:: yaml
 
