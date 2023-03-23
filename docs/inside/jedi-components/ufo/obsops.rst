@@ -46,16 +46,16 @@ Configuration options
 Example 1
 ^^^^^^^^^
 
-In this example the Categorical operator uses :code:`station_id@MetaData` as the categorical variable.
+In this example the Categorical operator uses :code:`MetaData/stationIdentification` as the categorical variable.
 Both the :ref:`Identity <obsops_identity>` and :ref:`Composite <obsops_composite>` operators are used to produce H(x) vectors.
-Then, at each location in the ObsSpace, if :code:`station_id@MetaData` is equal to 54857 then the Identity H(x) is selected.
+Then, at each location in the ObsSpace, if :code:`MetaData/stationIdentification` is equal to 54857 then the Identity H(x) is selected.
 Otherwise, the H(x) produced by the fallback operator (i.e. Composite) is selected.
 
 .. code-block:: yaml
 
  obs operator:
    name: Categorical
-   categorical variable: station_id
+   categorical variable: stationIdentification
    fallback operator: "Composite"
    categorised operators: {"54857": "Identity"}
    operator configurations:
@@ -64,31 +64,31 @@ Otherwise, the H(x) produced by the fallback operator (i.e. Composite) is select
      components:
       - name: Identity
         variables:
-        - name: air_temperature
-        - name: surface_pressure
+        - name: airTemperature
+        - name: stationPressure
       - name: VertInterp
         variables:
-        - name: northward_wind
-        - name: eastward_wind
+        - name: windNorthward
+        - name: windEastward
 
 Example 2
 ^^^^^^^^^
 
-In this example the Categorical operator uses :code:`station_id@MetaData` as the categorical variable and has two
+In this example the Categorical operator uses :code:`MetaData/stationIdentification` as the categorical variable and has two
 :code:`Composite` operators and an :code:`Identity` operator. The fact that two operators are the same necessitates the use of the
 :code:`operator labels` section. The first :code:`Composite` operator is labelled :code:`Composite1`, and the second is labelled
 :code:`Composite2`. Note that the :code:`Identity` operator must also be labelled. There must be as many labels as there are operator
 configurations and the contents of the two sections must appear in the same order.
 
-At each location in the ObsSpace, if :code:`station_id@MetaData` is equal to 47418 or 54857 then the H(x) produced by :code:`Composite1` is used,
-and if :code:`station_id@MetaData` is equal to 94332 or 96935 then the H(x) produced by :code:`Composite2` is used.
+At each location in the ObsSpace, if :code:`MetaData/stationIdentification` is equal to 47418 or 54857 then the H(x) produced by :code:`Composite1` is used,
+and if :code:`MetaData/stationIdentification` is equal to 94332 or 96935 then the H(x) produced by :code:`Composite2` is used.
 Otherwise, the H(x) produced by the fallback operator (i.e. :code:`Identity`) is selected.
 
 .. code-block:: yaml
 
   obs operator:
     name: Categorical
-    categorical variable: station_id
+    categorical variable: stationIdentification
     fallback operator: "Identity"
     categorised operators: {"47418": "Composite1",
     "54857": "Composite1",
@@ -101,20 +101,20 @@ Otherwise, the H(x) produced by the fallback operator (i.e. :code:`Identity`) is
       components:
        - name: Identity
          variables:
-         - name: air_temperature
+         - name: airTemperature
        - name: VertInterp
          variables:
-         - name: northward_wind
-         - name: eastward_wind
+         - name: windNorthward
+         - name: windEastward
     - name: Composite
       components:
        - name: Identity
          variables:
-         - name: air_temperature
+         - name: airTemperature
        - name: VertInterp
          variables:
-         - name: northward_wind
-         - name: eastward_wind
+         - name: windNorthward
+         - name: windEastward
 
 .. _obsops_composite:
 
@@ -155,18 +155,18 @@ option; if this option is not present, all variables in the ObsSpace are simulat
       engine:
         type: H5File
         obsfile: Data/ioda/testinput_tier_1/sondes_obs_2018041500_s.nc4
-    simulated variables: [eastward_wind, northward_wind, surface_pressure, relative_humidity]
+    simulated variables: [windEastward, windNorthward, stationPressure, relativeHumidity]
   obs operator:
     name: Composite
     components:
     - name: VertInterp
       variables:
-      - name: relative_humidity
-      - name: eastward_wind
-      - name: northward_wind
+      - name: relativeHumidity
+      - name: windEastward
+      - name: windNorthward
     - name: Identity
       variables:
-      - name: surface_pressure
+      - name: stationPressure
 
 Example 2
 ^^^^^^^^^
@@ -184,21 +184,21 @@ vertical interpolation of the variables simulated by this operator.
       engine:
         type: H5File
         obsfile: Data/ufo/testinput_tier_1/met_office_composite_operator_sonde_obs.nc4
-    simulated variables: [eastward_wind, northward_wind, air_temperature]
+    simulated variables: [windEastward, windNorthward, airTemperature]
   obs operator:
     name: Composite
     components:
     - name: VertInterp
       variables:
-      - name: air_temperature
+      - name: airTemperature
       vertical coordinate: air_pressure
-      observation vertical coordinate: air_pressure
+      observation vertical coordinate: pressure
     - name: VertInterp
       variables:
-      - name: northward_wind
-      - name: eastward_wind
+      - name: windNorthward
+      - name: windEastward
       vertical coordinate: air_pressure_levels
-      observation vertical coordinate: air_pressure
+      observation vertical coordinate: pressure
 
 .. _obsops_vertinterp:
 
@@ -240,7 +240,7 @@ The observation operator in the above example does vertical interpolation in hei
   obs operator:
     name: VertInterp
     vertical coordinate: air_pressure_levels
-    observation vertical coordinate: air_pressure
+    observation vertical coordinate: pressure
 
 The observation operator in the above example does vertical interpolation in log(air_pressure) on the levels taken from the :code:`air_pressure_levels` GeoVaL.
 
@@ -262,11 +262,11 @@ The observation operator in the above example choose array :code:`[0.1, 0.5, 1.0
     components:
     - name: VertInterp
       variables:
-      - name: eastward_wind
-      - name: northward_wind
+      - name: windEastward
+      - name: windNorthward
     - name: Identity
       variables:
-      - name: surface_pressure
+      - name: stationPressure
 
 In the example above, the `VertInterp` operator is used to simulate only the wind components; the surface pressure is simulated using the `Identity` operator.
 
@@ -424,21 +424,21 @@ The geographic location of the observation, the satellite zenith angle and the R
 * At least one (in order of priority) from :code:`MetaData/elevation`, :code:`MetaData/surface_height`, :code:`MetaData/model_orography` or the :code:`surface_altitude` geoval [m]
 * :code:`MetaData/latitude` [degrees]
 * :code:`MetaData/longitude` [degrees, -180--180 or 0--360]
-* :code:`MetaData/sensor_zenith_angle` [degrees]
-* :code:`MetaData/surface_type` [0-2]
+* :code:`MetaData/sensorZenithZngle` [degrees]
+* :code:`MetaData/surfaceQualifier` [0-2]
 
   :code:`MetaData/surface_type` is used to specify whether RTTOV should treat an observation as having a land (0), sea (1) or sea-ice (2) surface. The :code:`SetSurfaceType` ObsFunction, may be called via the :code:`VariableAssignment` ObsFilter to generate this data according to rules used in operational processing at the Met Office.
 
 Optionally, the satellite azimuth angle and the solar zenith/azimuth angles may be supplied:
 
-* :code:`MetaData/sensor_azimuth_angle` (optional) [degrees]
-* :code:`MetaData/solar_zenith_angle` (optional) [degrees]
-* :code:`MetaData/solar_azimuth_angle` (optional) [degrees]
+* :code:`MetaData/sensorAzimuthAngle` (optional) [degrees]
+* :code:`MetaData/solarZenithAngle` (optional) [degrees]
+* :code:`MetaData/solarAzimuthAngle` (optional) [degrees]
 
 Outputs:
 ^^^^^^^^^^^^^^^^^^^^^
 
-| The interface returns brightness temperatures for any channels requested using the :code:`obs space.channels` YAML configuration key. The brightness temperature fields shall have a suffix to denote the channel and shall be stored in a one-dimensional dataset in the :code:`HofX` group in the output observation database (e.g. :code:`/HofX/brightness_temperature_5`.
+| The interface returns brightness temperatures for any channels requested using the :code:`obs space.channels` YAML configuration key. The brightness temperature fields shall be stored in a two-dimensional dataset in the :code:`HofX` group in the output observation database (e.g. :code:`/HofX/brightnessTemperature`.
 
 | The interface optionally returns observation diagnostics including those requiring the calculation of jacobians, through the :code:`obs diagnostics.variables` YAML configuration key . Specifically:
 
@@ -675,14 +675,14 @@ Examples of yaml:
             type: H5File
             obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_3prof.nc4
           obsgrouping:
-            group variable: "record_number"
-            sort variable: "impact_height"
+            group variable: "sequenceNumber"
+            sort variable: "impactHeightRO"
             sort order: "ascending"
         obsdataout:
           engine:
             type: H5File
             obsfile: Data/gnssro_bndnbam_2018041500_3prof_output.nc4
-        simulate variables: [bending_angle]
+        simulate variables: [bendingAngle]
       obs operator:
         name: GnssroBndNBAM
         obs options:
@@ -693,19 +693,19 @@ Examples of yaml:
       obs filters:
       - filter: Domain Check
         filter variables:
-        - name: [bending_angle]
+        - name: [bendingAngle]
         where:
         - variable:
-            name: impact_height@MetaData
+            name: MetaData/impactHeightRO
           minvalue: 0
           maxvalue: 50000
       - filter: ROobserror
         filter variables:
-        - name: bending_angle
+        - name: bendingAngle
         errmodel: NRL
       - filter: Background Check
         filter variables:
-        - name: [bending_angle]
+        - name: [bendingAngle]
         threshold: 3
 
 
@@ -751,32 +751,32 @@ Examples of yaml:
            type: H5File
            obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
          obsgrouping:
-           group variable: "record_number"
-           sort variable: "impact_height"
+           group variable: "sequenceNumber"
+           sort variable: "impactHeightRO"
        obsdataout:
          engine:
            type: H5File
            obsfile: Data/gnssro_bndropp1d_2018041500_m_output.nc4
-       simulate variables: [bending_angle]
+       simulate variables: [bendingAngle]
      obs operator:
         name:  GnssroBndROPP1D
         obs options:
      obs filters:
      - filter: Domain Check
        filter variables:
-       - name: [bending_angle]
+       - name: [bendingAngle]
        where:
        - variable:
-           name: impact_height@MetaData
+           name: MetaData/impactHeightRO
          minvalue: 0
          maxvalue: 50000
      - filter: ROobserror
        filter variables:
-       - name: bending_angle
+       - name: bendingAngle
        errmodel: NRL
      - filter: Background Check
        filter variables:
-       - name: [bending_angle]
+       - name: [bendingAngle]
        threshold: 3
 
 GNSS RO bending angle (ROPP 2D)
@@ -829,13 +829,13 @@ Examples of yaml:
            type: H5File
            obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_m.nc4
          obsgrouping:
-           group_variable: "record_number"
-           sort_variable: "impact_height"
+           group_variable: "sequenceNumber"
+           sort_variable: "impactHeightRO"
        obsdataout:
          engine:
            type: H5File
            obsfile: Data/gnssro_bndropp2d_2018041500_m_output.nc4
-       simulate variables: [bending_angle]
+       simulate variables: [bendingAngle]
      obs operator:
         name: GnssroBndROPP2D
         obs options:
@@ -845,20 +845,20 @@ Examples of yaml:
      obs filters:
      - filter: Domain Check
        filter variables:
-       - name: [bending_angle]
+       - name: [bendingAngle]
        where:
        - variable:
-           name: impact_height@MetaData
+           name: MetaData/impactHeightRO
          minvalue: 0
          maxvalue: 50000
      - filter: ROobserror
        n_horiz: 31
        filter variables:
-       - name: bending_angle
+       - name: bendingAngle
        errmodel: NRL
      - filter: Background Check
        filter variables:
-       - name: [bending_angle]
+       - name: [bendingAngle]
        threshold: 3
 
 GNSS RO bending angle (MetOffice)
@@ -906,13 +906,13 @@ Examples of yaml:
         engine:
           type: H5File
           obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2019050700_1obs.nc4
-      simulated variables: [bending_angle]
+      simulated variables: [bendingAngle]
     geovals:
       filename: Data/gnssro_geoval_2019050700_1obs.nc4
     obs filters:
     - filter: Background Check
       filter variables:
-      - name: bending_angle
+      - name: bendingAngle
       threshold: 3.0
     norm ref: MetOfficeHofX
     tolerance: 1.0e-5
@@ -975,26 +975,26 @@ Examples of yaml:
          engine:
            type: H5File
            obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2018041500_s.nc4
-       simulate variables: [refractivity]
+       simulate variables: [atmosphericRefractivity]
      obs operator:
        name: GnssroRefNCEP
        obs options:
      obs filters:
      - filter: Domain Check
        filter variables:
-       - name: [refractivity]
+       - name: [atmosphericRefractivity]
        where:
        - variable:
-           name: altitude@MetaData
+           name: MetaData/height
          minvalue: 0
          maxvalue: 30000
      - filter: ROobserror
        filter variables:
-       - name: refractivity
+       - name: atmosphericRefractivity
        errmodel: NCEP
      - filter: Background Check
        filter variables:
-       - name: [refractivity]
+       - name: [atmosphericRefractivity]
        threshold: 3
 
 Ground Based GNSS observation operator (Met Office)
@@ -1048,7 +1048,7 @@ Examples of yaml:
         engine:
           type: H5File
           obsfile: Data/ufo/testinput_tier_1/groundgnss_obs_2019123006_obs.nc
-      simulated variables: [total_zenith_delay] 
+      simulated variables: [zenithTotalDelay]
     geovals: 
       filename: Data/ufo/testinput_tier_1/groundgnss_geovals_20191230T0600Z.nc4
 
@@ -1223,11 +1223,11 @@ In the example above, the `Identity` operator is used to simulate all ObsSpace v
     components:
     - name: VertInterp
       variables:
-      - name: eastward_wind
-      - name: northward_wind
+      - name: windEastward
+      - name: windNorthward
     - name: Identity
       variables:
-      - name: surface_pressure
+      - name: stationPressure
 
 In the example above, the `Identity` operator is used to simulate only the surface pressure; the wind components are simulated using the `VertInterp` operator.
 
@@ -1300,7 +1300,7 @@ Examples of yaml:
           engine:
             type: H5File
             obsfile: Data/radar_rw_obs_2019052222.nc4
-        simulated variables: [radial_velocity]
+        simulated variables: [radialVelocity]
 
 Scatterometer neutral wind (Met Office)
 ---------------------------------------
@@ -1337,7 +1337,7 @@ Examples of yaml:
           engine:
             type: H5File
             obsfile: Data/scatwind_obs_1d_2020100106_opr_test_out.nc4
-        simulated variables: [eastward_wind, northward_wind]
+        simulated variables: [windEastward, windNorthward]
       geovals:
         filename: Data/ufo/testinput_tier_1/scatwind_geoval_20201001T0600Z.nc4
       vector ref: MetOfficeHofX
@@ -1449,7 +1449,7 @@ Examples of yaml:
         engine:
           type: H5File
           obsfile: sondes_ps_diag_2022082300.nc4
-      simulated variables: [surface_pressure]
+      simulated variables: [stationPressure]
     obs operator:
       name: SfcPCorrected
       da_psfc_scheme: GSI
@@ -1496,13 +1496,13 @@ Example
     # operators used to evaluate H(x)
     - name: VertInterp
       variables:
-      - name: air_temperature
-      - name: specific_humidity
-      - name: northward_wind
-      - name: eastward_wind
+      - name: airTemperature
+      - name: specificHumidity
+      - name: windNorthward
+      - name: windEastward
     - name: Identity
       variables:
-      - name: surface_pressure
+      - name: stationPressure
     # operators used to evaluate background errors
     - name: BackgroundErrorVertInterp
       variables:
@@ -1510,7 +1510,7 @@ Example
       - name: eastward_wind
       - name: air_temperature
       - name: specific_humidity
-      observation vertical coordinate: air_pressure
+      observation vertical coordinate: pressure
       vertical coordinate: background_error_air_pressure
     - name: BackgroundErrorIdentity
       variables:
@@ -1623,5 +1623,5 @@ Example
     # Operator used to calculate H(x) for averaged profiles
     - name: ProfileAverage
       model vertical coordinate: "air_pressure_levels"
-      pressure coordinate: air_pressure
+      pressure coordinate: pressure
       pressure group: MetaData
