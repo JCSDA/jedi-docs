@@ -1390,13 +1390,13 @@ History Check Filter
 --------------------
 
 This filter runs the Ship Track Check filter and/or the Stuck Check filter (depending on the
-observation type) on an auxiliary obs space. The auxiliary obs space is expected to be a superset of
-the original obs space, with an earlier start time than the assimilation window but the same end
-time. The equivalent observations to those which were flagged in the auxiliary obs space are then
+observation type) on an auxiliary obs space. The auxiliary obs space should be a superset of the original
+obs space, with an earlier start time than the assimilation window and either the same, or optionally a later,
+end time. The equivalent observations to those which were flagged in the auxiliary obs space are then
 flagged in the original obs space. This filter is motivated by the fact that the Ship Track Check
 and Stuck Check filters both rely on viewing observations within the context of their surrounding
-observations. Thus, this filter makes the underlying filters more reliable for observations early in
-the assimilation window. The filters are run independently: any observations within the assimilation
+observations. Thus, this filter makes the underlying filters more reliable for observations close to the 
+temporal boundaries of the assimilation window. The filters are run independently: any observations within the assimilation
 window flagged by either of the sub-filters will be flagged by this filter.
 
 The following YAML parameters are supported:
@@ -1407,6 +1407,10 @@ The following YAML parameters are supported:
 
 * :code:`time before start of window`: The duration of time before the start of the assimilation
   window to collect for the history check. This required parameter must be entered in ISO 8601
+  duration format.
+  
+* :code:`time after end of window`: The duration of time after the end of the assimilation
+  window to collect for the history check. This optional parameter must be entered in ISO 8601
   duration format.
 
 * :code:`ship track check parameters`: The options for running the ship track check filter, should
@@ -1428,10 +1432,10 @@ The following YAML parameters are supported:
   InefficientDistribution. This prevents the observations from distributing to different
   processors between the original obs space and the auxiliary obs space, which could cause
   in-window observations flagged in the auxiliary obs space to be left unflagged in the original
-  obs space.
+  obs space. Required parameter.
 
 * :code:`station_id_variable`: Variable storing string- or integer-valued station IDs. Observations
-  taken by each station are checked separately. Applies to assimilation observation space.
+  taken by each station are checked separately. Applies to assimilation observation space. Optional parameter.
 
   If not set and observations were grouped into records when the observation space was
   constructed, each record is assumed to consist of observations taken by a separate
