@@ -146,7 +146,7 @@ The .yaml file can also contain optional filter parameters, which override the d
 - :code:`bg error group` (:code:`BkgErrGroup`, default "ObsDiag"):
   group name which background errors for each variable are stored in;
   
-- :code:`save total pd` (:code:`SaveTotalPd`, default false): if true, save the total (combined) probability distribution to the :code:`GrossErrorProbabilityTotal` group.
+- :code:`save total pd` (:code:`SaveTotalPd`, default false): if true, save the total (combined) probability distribution to the :code:`GrossErrorProbabilityTotal` group. This is required as an input by the Bayesian Whole Report filter.
 
 - :code:`max error variance` (:code:`ErrVarMax`): a maximum value for the error variance. If not set, no maximum is applied.
 
@@ -246,6 +246,15 @@ to set the prior probability density of that variable being
 
 These are both optional parameters. If they are not specified,
 :code:`probability_density_bad` is used in their place, as for all other observation types.
+
+For each filter variable, the following groups must be available from the ObsSpace:
+
+* :code:`GrossErrorProbability/`: the latest value of GrossErrorProbability,
+* :code:`GrossErrorProbabilityInitial/`: the initial value of GrossErrorProbability before updates by any other filter, which can be saved using the Variable Assignment filter,
+* :code:`GrossErrorProbabilityTotal/`: the total (combined) probability distribution, which is optionally saved the Bayesian Background Check filter,
+* :code:`QCFlags/`: Met Office QC flags, which will eventually be replaced with Diagnostic Flags, must be initialized before this filter.
+      
+Additionally, the prior probability of gross error applying to the whole report must be available from :code:`MetaData/grossErrorProbabilityReport`. 
 
 Example:
 
