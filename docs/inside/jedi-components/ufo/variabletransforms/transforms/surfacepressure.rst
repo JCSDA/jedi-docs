@@ -10,7 +10,7 @@ Performs a variable conversion to presure at model surface height from:
 - Pressure reduced to sea level (pressureReducedToMeanSeaLevel)
 - The derived height of a standard pressure surface (standardPressure)
 
-:code:`Transform: ["PStar"]`
+:code:`Transform: PStar`
 
 .. code-block:: yaml
 
