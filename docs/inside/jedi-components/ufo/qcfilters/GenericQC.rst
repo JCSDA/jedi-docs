@@ -763,6 +763,24 @@ The following YAML parameters are supported:
 
     If omitted, a seed will be generated based on the current (calendar) time.
 
+  * :code:`select median`: If true, the retained observation is the one that has the median value
+    of the observations in the exclusion volume. If there is an even number of observations in the
+    exclusion volume, the first of the central pair is retained unless :code:`write median` is set
+    to true. The name of one (and only one) filter variable must be passed to the filter (see
+    example 3). Default: false.
+
+    Note: the overlap of exclusion volumes of retained observations may mean that the shape and size
+    of the exclusion volume from which the median is calculated is not consistent with what might be
+    expected. The code was implemented to enable consistency with a Met Office legacy code base and
+    is expected to be deprecated once this requirement no longer exists.
+
+  * :code:`write median`: If true, the median observation value in each exclusion volume is written
+    to the :code:`DerivedObsValue` group. Values that contributed to the median but which were not 
+    the median are set to missing. If there are an even number of observations contributing to the
+    median, the value that is written is the mean of the two central observations. Default: false.
+
+    Note: this can only be used if :code:`select median` is set to true.
+
 
 Example 1
 ^^^^^^^^^
@@ -802,6 +820,21 @@ position and time. The exclusion volumes are ellipsoidal. Shuffling is disabled.
       min_time_spacing: PT1H
       exclusion_volume_shape: ellipsoid
       shuffle: false
+
+Example 3
+^^^^^^^^^
+
+With the following parameters, observations are thinned by selecting the median observation within an
+exclusion volume.
+
+.. code-block:: yaml
+
+    - filter: Poisson Disk Thinning
+      filter variables:
+      - name: waterTemperature
+      min_horizontal_spacing: 50
+      shuffle: false
+      select median: true
 
 Stuck Check Filter
 ------------------
