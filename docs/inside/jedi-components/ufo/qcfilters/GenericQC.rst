@@ -603,6 +603,8 @@ Example 2 (thinning observations from multiple categories and with non-equal pri
       priority_variable:
         name: priority@MetaData
 
+.. _TemporalThinningFilter:
+
 Temporal Thinning Filter
 ------------------------
 
@@ -656,6 +658,8 @@ taken up to 20 min after the first qualifying observation if its quality score i
         name: call_sign@MetaData
       priority_variable:
         name: score@MetaData
+
+.. _PoissonDiskThinningFilter:
 
 Poisson Disk Thinning Filter
 ----------------------------
@@ -2088,3 +2092,37 @@ If either the satellite or channel are not identified, then ``MetaData/satwind_i
 has the form ``id<satellite identifier>_comp<cloud motion method>_freq<central frequency>``.
 For example, if the satellite is identified but the channel is not "GOES16_comp3_freq0.484317e14",
 if the satellite is not identified but the channel is "id270ir112".
+
+Met Office Duplicate Check Filter
+---------------------------------
+
+This filter can be used to thin data that are both spatially and temporally dense.
+The algorithm employed is designed to reproduce the operation of the Met Office OPS code; more generic thinning algorithms can be performed with the
+:ref:`Gaussian Thinning <GaussianThinningFilter>`, :ref:`Temporal Thinning <TemporalThinningFilter>` and :ref:`Poisson Disk Thinning <PoissonDiskThinningFilter>` filters.
+
+The duplicate check algorithm divides the globe into latitude bands of width :code:`latitude band width` (degrees).
+Observations in each latitude band are sorted on longitude from lowest to highest; for simplicity, the discontinuity at the edges is not considered.
+Starting at the band nearest to the North Pole, and moving southwards, the check determines whether any pairs of observations are colocated inside a volume defined by the parameters
+:code:`latitude bin half-width` (degrees), :code:`longitude bin half-width` (degrees), :code:`time bin half-width` (Pa) and :code:`pressure bin half-width` (s).
+
+If such a pair is found, the observation with the largest value of the priority variable is retained.
+The priority variable is in the :code:`MetaData` group and its name is governed by the parameter :code:`priority name`.
+In the event of a tie in values of priority, the observation with the lower value of longitude is retained.
+For a given latitude band the algorithm searches in that band and the adjacent one in order to avoid discontinuities at band edges.
+This filter is designed to reproduce the Met Office OPS code so the sorting by longitude is performed using the Met Office sorting algorithm.
+
+All of the parameters listed above are mandatory and none of them have default values.
+An example configuration of this filter is as follows:
+
+.. code:: yaml
+
+  - filter: Met Office Duplicate Check
+    priority name: thinningPriority
+    latitude band width: 1.5
+    latitude bin half-width: 1.0
+    longitude bin half-width: 1.0
+    time bin half-width: 30.0
+    pressure bin half-width: 250.0
+
+In this example the globe is divided into bands of width 1.5 degrees. The search volume spans 2 degrees in latitude, 2 degrees in longitude, 500 Pa in pressure and 60 seconds in time.
+The priority variable name is :code:`MetaData/thinningPriority`; observations with higher values of this variable are retained in preference to those with lower values.
