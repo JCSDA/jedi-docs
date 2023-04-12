@@ -95,9 +95,10 @@ HofX group
   Default: "HofX"
 
 background emissivity channels
-  Vector of channels to be mapped to surface emissivity error covariances
-  in the :math:`\mathbf{B}`-matrix (if present) - this set of channels must
-  not overlap with cost channels list
+  Vector of high transmittance channels for which surface emissivity error
+  covariances are defined in the :math:`\mathbf{B}`-matrix (if present) - this
+  set of channels should be separate and distinct from humidity sounding
+  channels defined by the required parameter cost channels list
 
   Example:
 
