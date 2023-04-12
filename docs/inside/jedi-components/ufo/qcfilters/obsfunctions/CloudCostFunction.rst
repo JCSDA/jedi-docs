@@ -96,9 +96,10 @@ HofX group
 
 background emissivity channels
   Vector of high transmittance channels for which surface emissivity error
-  covariances are defined in the :math:`\mathbf{B}`-matrix (if present) - this
-  set of channels should be separate and distinct from humidity sounding
-  channels defined by the required parameter cost channels list
+  covariances are defined in the :math:`\mathbf{B}`-matrix (if present) -
+  these channels are explicitly not used in the ObsFunction calculation and
+  so should be separate and distinct from humidity sounding channels
+  defined by the required parameter cost channels list
 
   Example:
 
