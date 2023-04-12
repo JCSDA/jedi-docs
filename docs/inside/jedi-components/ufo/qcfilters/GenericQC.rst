@@ -146,7 +146,7 @@ The .yaml file can also contain optional filter parameters, which override the d
 - :code:`bg error group` (:code:`BkgErrGroup`, default "ObsDiag"):
   group name which background errors for each variable are stored in;
   
-- :code:`save total pd` (:code:`SaveTotalPd`, default false): if true, save the total (combined) probability distribution to the :code:`GrossErrorProbabilityTotal` group.
+- :code:`save total pd` (:code:`SaveTotalPd`, default false): if true, save the total (combined) probability distribution to the :code:`GrossErrorProbabilityTotal` group. This is required as an input by the Bayesian Whole Report filter.
 
 - :code:`max error variance` (:code:`ErrVarMax`): a maximum value for the error variance. If not set, no maximum is applied.
 
@@ -246,6 +246,15 @@ to set the prior probability density of that variable being
 
 These are both optional parameters. If they are not specified,
 :code:`probability_density_bad` is used in their place, as for all other observation types.
+
+For each filter variable, the following groups must be available from the ObsSpace:
+
+* :code:`GrossErrorProbability/`: the latest value of GrossErrorProbability,
+* :code:`GrossErrorProbabilityInitial/`: the initial value of GrossErrorProbability before updates by any other filter, which can be saved using the Variable Assignment filter,
+* :code:`GrossErrorProbabilityTotal/`: the total (combined) probability distribution, which is optionally saved the Bayesian Background Check filter,
+* :code:`QCFlags/`: Met Office QC flags, which will eventually be replaced with Diagnostic Flags, must be initialized before this filter.
+      
+Additionally, the prior probability of gross error applying to the whole report must be available from :code:`MetaData/grossErrorProbabilityReport`. 
 
 Example:
 
@@ -594,6 +603,8 @@ Example 2 (thinning observations from multiple categories and with non-equal pri
       priority_variable:
         name: priority@MetaData
 
+.. _TemporalThinningFilter:
+
 Temporal Thinning Filter
 ------------------------
 
@@ -647,6 +658,8 @@ taken up to 20 min after the first qualifying observation if its quality score i
         name: call_sign@MetaData
       priority_variable:
         name: score@MetaData
+
+.. _PoissonDiskThinningFilter:
 
 Poisson Disk Thinning Filter
 ----------------------------
@@ -754,6 +767,24 @@ The following YAML parameters are supported:
 
     If omitted, a seed will be generated based on the current (calendar) time.
 
+  * :code:`select median`: If true, the retained observation is the one that has the median value
+    of the observations in the exclusion volume. If there is an even number of observations in the
+    exclusion volume, the first of the central pair is retained unless :code:`write median` is set
+    to true. The name of one (and only one) filter variable must be passed to the filter (see
+    example 3). Default: false.
+
+    Note: the overlap of exclusion volumes of retained observations may mean that the shape and size
+    of the exclusion volume from which the median is calculated is not consistent with what might be
+    expected. The code was implemented to enable consistency with a Met Office legacy code base and
+    is expected to be deprecated once this requirement no longer exists.
+
+  * :code:`write median`: If true, the median observation value in each exclusion volume is written
+    to the :code:`DerivedObsValue` group. Values that contributed to the median but which were not 
+    the median are set to missing. If there are an even number of observations contributing to the
+    median, the value that is written is the mean of the two central observations. Default: false.
+
+    Note: this can only be used if :code:`select median` is set to true.
+
 
 Example 1
 ^^^^^^^^^
@@ -793,6 +824,21 @@ position and time. The exclusion volumes are ellipsoidal. Shuffling is disabled.
       min_time_spacing: PT1H
       exclusion_volume_shape: ellipsoid
       shuffle: false
+
+Example 3
+^^^^^^^^^
+
+With the following parameters, observations are thinned by selecting the median observation within an
+exclusion volume.
+
+.. code-block:: yaml
+
+    - filter: Poisson Disk Thinning
+      filter variables:
+      - name: waterTemperature
+      min_horizontal_spacing: 50
+      shuffle: false
+      select median: true
 
 Stuck Check Filter
 ------------------
@@ -1381,13 +1427,13 @@ History Check Filter
 --------------------
 
 This filter runs the Ship Track Check filter and/or the Stuck Check filter (depending on the
-observation type) on an auxiliary obs space. The auxiliary obs space is expected to be a superset of
-the original obs space, with an earlier start time than the assimilation window but the same end
-time. The equivalent observations to those which were flagged in the auxiliary obs space are then
+observation type) on an auxiliary obs space. The auxiliary obs space should be a superset of the original
+obs space, with an earlier start time than the assimilation window and either the same, or optionally a later,
+end time. The equivalent observations to those which were flagged in the auxiliary obs space are then
 flagged in the original obs space. This filter is motivated by the fact that the Ship Track Check
 and Stuck Check filters both rely on viewing observations within the context of their surrounding
-observations. Thus, this filter makes the underlying filters more reliable for observations early in
-the assimilation window. The filters are run independently: any observations within the assimilation
+observations. Thus, this filter makes the underlying filters more reliable for observations close to the 
+temporal boundaries of the assimilation window. The filters are run independently: any observations within the assimilation
 window flagged by either of the sub-filters will be flagged by this filter.
 
 The following YAML parameters are supported:
@@ -1398,6 +1444,10 @@ The following YAML parameters are supported:
 
 * :code:`time before start of window`: The duration of time before the start of the assimilation
   window to collect for the history check. This required parameter must be entered in ISO 8601
+  duration format.
+  
+* :code:`time after end of window`: The duration of time after the end of the assimilation
+  window to collect for the history check. This optional parameter must be entered in ISO 8601
   duration format.
 
 * :code:`ship track check parameters`: The options for running the ship track check filter, should
@@ -1419,10 +1469,10 @@ The following YAML parameters are supported:
   InefficientDistribution. This prevents the observations from distributing to different
   processors between the original obs space and the auxiliary obs space, which could cause
   in-window observations flagged in the auxiliary obs space to be left unflagged in the original
-  obs space.
+  obs space. Required parameter.
 
 * :code:`station_id_variable`: Variable storing string- or integer-valued station IDs. Observations
-  taken by each station are checked separately. Applies to assimilation observation space.
+  taken by each station are checked separately. Applies to assimilation observation space. Optional parameter.
 
   If not set and observations were grouped into records when the observation space was
   constructed, each record is assumed to consist of observations taken by a separate
@@ -2042,3 +2092,37 @@ If either the satellite or channel are not identified, then ``MetaData/satwind_i
 has the form ``id<satellite identifier>_comp<cloud motion method>_freq<central frequency>``.
 For example, if the satellite is identified but the channel is not "GOES16_comp3_freq0.484317e14",
 if the satellite is not identified but the channel is "id270ir112".
+
+Met Office Duplicate Check Filter
+---------------------------------
+
+This filter can be used to thin data that are both spatially and temporally dense.
+The algorithm employed is designed to reproduce the operation of the Met Office OPS code; more generic thinning algorithms can be performed with the
+:ref:`Gaussian Thinning <GaussianThinningFilter>`, :ref:`Temporal Thinning <TemporalThinningFilter>` and :ref:`Poisson Disk Thinning <PoissonDiskThinningFilter>` filters.
+
+The duplicate check algorithm divides the globe into latitude bands of width :code:`latitude band width` (degrees).
+Observations in each latitude band are sorted on longitude from lowest to highest; for simplicity, the discontinuity at the edges is not considered.
+Starting at the band nearest to the North Pole, and moving southwards, the check determines whether any pairs of observations are colocated inside a volume defined by the parameters
+:code:`latitude bin half-width` (degrees), :code:`longitude bin half-width` (degrees), :code:`time bin half-width` (Pa) and :code:`pressure bin half-width` (s).
+
+If such a pair is found, the observation with the largest value of the priority variable is retained.
+The priority variable is in the :code:`MetaData` group and its name is governed by the parameter :code:`priority name`.
+In the event of a tie in values of priority, the observation with the lower value of longitude is retained.
+For a given latitude band the algorithm searches in that band and the adjacent one in order to avoid discontinuities at band edges.
+This filter is designed to reproduce the Met Office OPS code so the sorting by longitude is performed using the Met Office sorting algorithm.
+
+All of the parameters listed above are mandatory and none of them have default values.
+An example configuration of this filter is as follows:
+
+.. code:: yaml
+
+  - filter: Met Office Duplicate Check
+    priority name: thinningPriority
+    latitude band width: 1.5
+    latitude bin half-width: 1.0
+    longitude bin half-width: 1.0
+    time bin half-width: 30.0
+    pressure bin half-width: 250.0
+
+In this example the globe is divided into bands of width 1.5 degrees. The search volume spans 2 degrees in latitude, 2 degrees in longitude, 500 Pa in pressure and 60 seconds in time.
+The priority variable name is :code:`MetaData/thinningPriority`; observations with higher values of this variable are retained in preference to those with lower values.
