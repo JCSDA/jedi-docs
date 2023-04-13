@@ -480,12 +480,9 @@ For ``spack-stack-1.3.0`` with GNU, load the following modules after loading min
 
    module use /data/prod/jedi/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core
    module load stack-gcc/9.3.0
-   module load stack-mpich/4.0.2
+   module load stack-mpich/4.0.1
    module load stack-python/3.9.12
-   module unuse /data/prod/hpc-stack/modulefiles/compiler/gnu/9.3.0
    module available
-
-Note the additional ``module unuse`` command, that needs to be run after the stack metamodules are loaded. Loading the GNU compiler meta module loads the GNU compiler module provided by the sysadmins, which adds this directory to the module path. This directory contains duplicate libraries that are not compatible with our stack, such as ``sp`` or ``bufr``.
 
 For both Intel and GNU, proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
 
@@ -507,11 +504,14 @@ After building, you will want to run the ``get`` tests from the login node to do
 
     ctest -R get_
 
-You can run the remaining tests from the login node, because ``mpiexec``/``mpirun`` will dispatch them on a compute node.  You can also run them interactively on a compute node after running
+It is recommended to run the remaining tests interactively on a compute node using
 
 .. code-block:: bash
 
     salloc --nodes=1 --time=30 -I
+    # Required for Intel so that serial jobs of MPI-enabled executables
+    # run without having to call them through mpiexec/mpirun
+    unset "${!SLURM@}"
 
 or you can submit a batch script to the queue through ``sbatch``. Here is a sample slurm batch script:
 
@@ -528,6 +528,9 @@ or you can submit a batch script to the queue through ``sbatch``. Here is a samp
 
    export SLURM_EXPORT_ENV=ALL
    export HDF5_USE_FILE_LOCKING=FALSE
+    # Required for Intel so that serial jobs of MPI-enabled executables
+    # run without having to call them through mpiexec/mpirun
+    unset "${!SLURM@}"
 
    cd <path-to-bundle-build-directory>
    ctest -E get_
