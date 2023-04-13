@@ -29,7 +29,6 @@ The following example uses the ``skylab-4.0.0-redhat8”`` AMI.
 
 .. note:: Because the ``skylab`` AMIs come with a precompiled software stack and because ``spack`` optimizes the code for the hardware it is compiling on, instances of the same (processor) family or of a newer, compatible family are required for these AMIs. Here is a list of currently available ``skylab`` AMIs and the instance type they were built on:
 
-## TO DO update this table ##
 +-----------------------------------------+---------------------------------+--------------------------+
 | AMI name                                | Instance type used for building | Processor                |
 +=========================================+=================================+==========================+

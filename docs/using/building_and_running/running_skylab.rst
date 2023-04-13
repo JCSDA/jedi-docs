@@ -87,7 +87,6 @@ We call this directory ``JEDI_ROOT`` throughout this document.
 The next step is to clone the code bundle to a local directory:
 
 .. code-block:: bash
-## TO DO update the tag ##
   mkdir $JEDI_ROOT
   cd $JEDI_ROOT
   git clone --branch 4.0.0 https://github.com/jcsda/jedi-bundle
