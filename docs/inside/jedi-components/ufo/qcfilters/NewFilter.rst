@@ -29,12 +29,12 @@ All observation filters in UFO are tested with the :code:`ObsFilters` test from 
 
     compareVariables:
       - test:
-          name: eastward_wind@ObsValue
+          name: ObsValue/windEastward
         reference:
-          name: eastward_wind@TestReference
+          name: TestReference/eastward_wind
         absTol: 1e-5
       - test:
-          name: northward_wind@ObsValue
+          name: ObsValue/windNorthward
         reference:
-          name: northward_wind@TestReference
+          name: TestReference/northward_wind
         absTol: 1e-5
