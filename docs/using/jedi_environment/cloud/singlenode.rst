@@ -12,7 +12,7 @@ As described elsewhere in :doc:`this chapter <index>`, there are several steps y
 
 When you have completed these steps, you are ready to launch a single JEDI EC2 instance through the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ on the AWS console.
 
-As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.2.0` environment for `skylab-3.0.0` pre-installed. For more information on how to find these AMIs, refer to the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.2.0/Platforms.html>`_.
+As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.3.0` environment for `skylab-4.0.0` pre-installed. For more information on how to find these AMIs, refer to the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.3.0/Platforms.html>`_.
 
 .. _singlenode-launch:
 
@@ -21,14 +21,15 @@ Launching instance
 
 This section provides detailed instructions on how to build and use an EC2 instance based on an existing AMI. The AMI can be thought of as a pre-built template that provides a software stack, and just needs the configuration details of the EC2 instance (such as the number of cores, the amount of memory, etc.).
 
-The following example uses the ``skylab-3.0.0-ubuntu20`` AMI.
+The following example uses the ``skylab-4.0.0-redhat8”`` AMI.
 
-1. Log into the AWS Console and select the EC2 service. In the sidebar on the left, scroll down to the Images section and click on the "AMIs" option. Select ``skylab-3.0.0-ubuntu20`` from the list of AMIs. Click on "Launch instance from AMI".
+1. Log into the AWS Console and select the EC2 service. In the sidebar on the left, scroll down to the Images section and click on the "AMIs" option. Select ``skylab-4.0.0-redhat8”`` from the list of AMIs. Click on "Launch instance from AMI".
 2. Give your instance a meaningful name so that you can identify it later in the list of running instances.
-3. Select an instance type that has enough memory for your experiment. For available options see, https://aws.amazon.com/ec2/instance-types. Note that because you only have one node you will need a large amount of memory when running higher resolution experiments. For low resolution experiments, instances like t2.2xlarge may be sufficient, but for c96 experiments instances with at least 512GB memory are required.
+3. Select an instance type that has enough memory for your experiment. For available options see, https://aws.amazon.com/ec2/instance-types. Note that because you only have one node you will need a large amount of memory when running higher resolution experiments. For low resolution experiments, instances like c6i.2xlarge may be sufficient, but for c96 experiments instances with at least 512GB memory are required.
 
 .. note:: Because the ``skylab`` AMIs come with a precompiled software stack and because ``spack`` optimizes the code for the hardware it is compiling on, instances of the same (processor) family or of a newer, compatible family are required for these AMIs. Here is a list of currently available ``skylab`` AMIs and the instance type they were built on:
 
+## TO DO update this table ##
 +-----------------------------------------+---------------------------------+--------------------------+
 | AMI name                                | Instance type used for building | Processor                |
 +=========================================+=================================+==========================+
@@ -37,6 +38,8 @@ The following example uses the ``skylab-3.0.0-ubuntu20`` AMI.
 | ``skylab-2.0.0-{ubuntu20,redhat8}``     | t2.2xlarge                      | Intel Haswell E5-2676 v3 |
 +-----------------------------------------+---------------------------------+--------------------------+
 | ``skylab-3.0.0-{ubuntu20,redhat8}``     | c6i.4xlarge                     | Intel Ice Lake 8375C     |
++-----------------------------------------+---------------------------------+--------------------------+
+| ``skylab-4.0.0-{redhat8}``              | c6i.4xlarge                     | Intel Xeon 8375C         |
 +-----------------------------------------+---------------------------------+--------------------------+
 
 4. Select an existing key pair (for which you hold the private key on your machine) or create a new key pair and follow the process.
@@ -58,8 +61,17 @@ After launching the instance through the AWS console, select the instance and cl
       .. code-block:: bash
 
          [default]
-         aws_access_key_id=AKIAIOSFODNN7EXAMPLE
-         aws_secret_access_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+         aws_access_key_id=***
+         aws_secret_access_key=***
+
+         [jcsda-noaa-us-east-1]
+         aws_access_key_id=***
+         aws_secret_access_key=***
+
+         [jcsda-usaf-us-east-2]
+         aws_access_key_id=***
+         aws_secret_access_key=***
+
 
       Similarly, create/edit ``~/.aws/config`` and set your default region:
 
@@ -76,39 +88,25 @@ For AWS Red Hat 8:
 
    ulimit -s unlimited
    scl enable gcc-toolset-11 bash
-   module use /home/ec2-user/spack-stack-v1/envs/skylab-3.0.0-gcc-11.2.1/install/modulefiles/Core
+   module use /home/ec2-user/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core
    module load stack-gcc/11.2.1
    module load stack-openmpi/4.1.4
    module load stack-python/3.9.13
 
-   module load jedi-ewok-env/1.0.0
-   module load jedi-fv3-env/1.0.0
-   module load soca-env/1.0.0
+   module load jedi-ewok-env/unified-dev
+   module load soca-env/unified-dev
 
-For AWS Ubuntu 20.04:
-
-.. code-block:: bash
-
-   ulimit -s unlimited
-   module use /home/ubuntu/spack-stack-v1/envs/skylab-3.0.0-gcc-10.3.0/install/modulefiles/Core
-   module load stack-gcc/10.3.0
-   module load stack-mpich/4.0.2
-   module load stack-python/3.8.10
-
-   module load jedi-ewok-env/1.0.0
-   module load jedi-fv3-env/1.0.0
-   module load soca-env/1.0.0
 
 Suspending or terminating your compute node
 -------------------------------------------
 
 When an EC2 instance is running, it will incur charges to JCSDA.  So, it is requested that you not leave it running overnight or at other times when you are not actively working with it.
 
-When you are finished working with your instance for the day, you have the option of either stopping it temporarily or terminating it permanently.  You can do this by navigating to the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ on the AWS console.  You should see your node among the running instances. You should be able to identify it by the label that you assigned to it, the ssh key name and the launch time. 
+When you are finished working with your instance for the day, you have the option of either stopping it temporarily or terminating it permanently.  You can do this by navigating to the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ on the AWS console.  You should see your node among the running instances. You should be able to identify it by the label that you assigned to it, the ssh key name and the launch time.
 
 After selecting your node, you can stop or terminate it by selecting **Instance State** from the **Actions** drop-down menu at the top of the Dashboard display.  If you terminate your node, then the compute instance will be shut down and all changes you have made to the disks will be deleted.  You have permanently destroyed all compute resources and you will not be able to retrieve them.
 
-If you launched your instance using the :code:`--spot` option, then termination is currently your only option.  It is possible to define persistent spot instances that can be stopped but this needs careful attention because your instance may automatically start up again without you realizing it and this could incur unexpected charges.  So, the jedinode tool is currently configured to avoid this.
+If you launched your instance using the :code:`--spot` option, then termination is currently your only option.  It is possible to define persistent spot instances that can be stopped but this needs careful attention because your instance may automatically start up again without you realizing it and this could incur unexpected charges.  So, the jedi node tool is currently configured to avoid this.
 
 But, if you started an on-demand instance (without the :code:`--spot` option), then you have the option to come back to your instance at another time and pick up where you left off.  Just select :code:`Stop` from the **Actions->Instance State** drop-down menu.  This will shut down the compute instance and its associated hardware, but it will save the contents of the disks and preserve the current state of the computing environment.
 

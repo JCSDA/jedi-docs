@@ -8,27 +8,29 @@ List of spack, software, and AMIs
 
 Versions used:
 
-- spack-stack-1.2.0 from December 20, 2022
+- spack-stack-1.3.0 from April 10, 2023
 
-  * https://github.com/NOAA-EMC/spack-stack/tree/1.2.0 
+  * https://github.com/NOAA-EMC/spack-stack/tree/1.3.0
 
-  * https://spack-stack.readthedocs.io/en/1.2.0
+  * https://spack-stack.readthedocs.io/en/1.3.0/
 
 - AMIs available in us-east-1 region (N. Virginia)
 
-  - Ubuntu 20.04 with gnu-10.3.0 and mpich-4.0.2:
+  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.4:
 
-    AMI Name skylab-3.0.0-ubuntu20
+    AMI Name skylab-4.0.0-redhat8
 
-    AMI ID ami-0b112e4c34b83c3b2
+    AMI ID ami-098a3fdd801055c14
 
-    It is necessary to use c6i.2xlarge or larger instances of this family.
+
+- AMIs available in us-east-2 region (Ohio)
 
   - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.4:
 
-    AMI Name skylab-3.0.0-redhat8
+    AMI Name skylab-4.0.0-redhat8
 
-    AMI ID ami-0b7ee6595f9f79860
+    AMI ID ami-039759644cac741eb
+
 
     It is necessary to use c6i.2xlarge or larger instances of this family.
 
@@ -44,9 +46,31 @@ jedi-bundle, run ctests, and install solo/r2d2/ewok/simobs.
 
 Please note that currently we only support Orion, Discover, S4, and AWS platforms.
 If you are working on a system not specified below please follow the instructions on
-`JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.6.0/using/jedi_environment/index.html>`_.
+`JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.7.0/using/jedi_environment/index.html>`_.
 
 Users are responsible for setting up their GitHub and AWS credentials on the platform they are using.
+You will need to create or edit your ``~/.aws/credentials`` and ``~/.aws/config`` to make sure they contain:
+
+      .. code-block:: bash
+
+         [default]
+         aws_access_key_id=***
+         aws_secret_access_key=***
+
+         [jcsda-noaa-us-east-1]
+         aws_access_key_id=***
+         aws_secret_access_key=***
+
+         [jcsda-usaf-us-east-2]
+         aws_access_key_id=***
+         aws_secret_access_key=***
+
+
+      .. code-block:: bash
+
+         [default]
+         region = us-east-1
+
 
 The commands for loading the modules to compile and run Skylab are provided in separate sections for :doc:`HPC platforms <../jedi_environment/modules>` and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`. Users need to execute these commands before proceeding with the build of ``jedi-bundle`` below.
 
@@ -63,10 +87,10 @@ We call this directory ``JEDI_ROOT`` throughout this document.
 The next step is to clone the code bundle to a local directory:
 
 .. code-block:: bash
-
+## TO DO update the tag ##
   mkdir $JEDI_ROOT
   cd $JEDI_ROOT
-  git clone --branch 3.0.0 https://github.com/jcsda/jedi-bundle
+  git clone --branch 4.0.0 https://github.com/jcsda/jedi-bundle
 
 
 The example here is for jedi-bundle, the instructions apply to other bundles as well.
@@ -85,7 +109,9 @@ It is recommended these two directories are not one inside the other.
 
 - Discover: it’s recommended to use :code:`$JEDI_ROOT=/discover/nobackup/${USER}/jedi`.
 
-- On the preconfigured AWS AMIs, use ``$JEDI_ROOT=$HOME/jedi``
+- On AWS Parallel Cluster, use :code:`$JEDI_ROOT=/mnt/experiments-efs/USER.NAME/jedi`.
+
+- On the preconfigured AWS AMIs, use :code:`$JEDI_ROOT=$HOME/jedi`.
 
 
 Building JEDI then can be achieved with the following commands:
@@ -114,11 +140,11 @@ ctests. Please refer the `documentation <https://jointcenterforsatellitedataassi
 
   Even if you are a master builder and don’t need to check your build, if you
   intend to run experiments with ewok, you still need to run a few of the tests
-  that download data (this is temporary) and generate static files. You can run 
+  that download data (this is temporary) and generate static files. You can run
   these tests with:
 
   .. code-block:: bash
-    
+
         ctest -R get_
         ctest -R bumpparameters
 
@@ -128,7 +154,6 @@ We recommend that you use a python3 virtual environment (venv) for
 building solo/r2d2/ewok/simobs
 
 .. code-block:: bash
-
   cd $JEDI_SRC
   git clone --branch 1.1.0 https://github.com/jcsda-internal/solo
   git clone --branch 1.2.0 https://github.com/jcsda-internal/r2d2
@@ -136,9 +161,12 @@ building solo/r2d2/ewok/simobs
   git clone --branch 1.1.0 https://github.com/jcsda-internal/simobs
 
   cd $JEDI_ROOT
-  python3 -m venv --system-site-packages --without-pip venv
+  python3 -m venv --system-site-packages venv
   source venv/bin/activate
 
+You can then proceed with
+
+.. code-block:: bash
   cd $JEDI_SRC/solo
   python3 -m pip install -e .
   cd $JEDI_SRC/r2d2
@@ -234,10 +262,10 @@ Please don’t forget to source this script after creating it: :code:`source $JE
   fi
   export ECF_PORT=$((myid + 1500))
 
-  # The ecflow hostname (e.g. a specific login node) is different from the R2D2/EWOK general host (i.e. system) name 
+  # The ecflow hostname (e.g. a specific login node) is different from the R2D2/EWOK general host (i.e. system) name
   host=$(hostname | cut -f1 -d'.')
   export ECF_HOST=$host
-  
+
   if [[ x"${R2D2_HOST}" == "x" ]]; then
     export EWOK_STATIC_DATA=${JEDI_ROOT}/static
   else
