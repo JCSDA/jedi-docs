@@ -156,10 +156,10 @@ building solo/r2d2/ewok/simobs
 .. code-block:: bash
 
   cd $JEDI_SRC
-  git clone --branch 1.1.0 https://github.com/jcsda-internal/solo
-  git clone --branch 1.2.0 https://github.com/jcsda-internal/r2d2
-  git clone --branch 0.3.1 https://github.com/jcsda-internal/ewok
-  git clone --branch 1.1.0 https://github.com/jcsda-internal/simobs
+  git clone --branch 1.2.0 https://github.com/jcsda-internal/solo
+  git clone --branch 2.0.0 https://github.com/jcsda-internal/r2d2
+  git clone --branch 0.4.0 https://github.com/jcsda-internal/ewok
+  git clone --branch 1.2.0 https://github.com/jcsda-internal/simobs
 
   cd $JEDI_ROOT
   python3 -m venv --system-site-packages venv
