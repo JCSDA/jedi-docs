@@ -87,6 +87,7 @@ We call this directory ``JEDI_ROOT`` throughout this document.
 The next step is to clone the code bundle to a local directory:
 
 .. code-block:: bash
+
   mkdir $JEDI_ROOT
   cd $JEDI_ROOT
   git clone --branch 4.0.0 https://github.com/jcsda/jedi-bundle
@@ -153,6 +154,7 @@ We recommend that you use a python3 virtual environment (venv) for
 building solo/r2d2/ewok/simobs
 
 .. code-block:: bash
+
   cd $JEDI_SRC
   git clone --branch 1.1.0 https://github.com/jcsda-internal/solo
   git clone --branch 1.2.0 https://github.com/jcsda-internal/r2d2
@@ -166,6 +168,7 @@ building solo/r2d2/ewok/simobs
 You can then proceed with
 
 .. code-block:: bash
+
   cd $JEDI_SRC/solo
   python3 -m pip install -e .
   cd $JEDI_SRC/r2d2
