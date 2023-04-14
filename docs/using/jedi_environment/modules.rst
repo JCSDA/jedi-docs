@@ -576,6 +576,107 @@ After submitting the batch script with :code:`sbatch name_of_script`, you can mo
 
 You can delete jobs with the :code:`scancel` command.  For further information please consult `the S4 user documentation <https://groups.ssec.wisc.edu/groups/S4/>`_.
 
+Narwhal
+-------
+
+Narwhal is an HPE Cray EX system located at the Navy DSRC. It has 2,176 standard compute nodes (AMD 7H12 Rome, 128 cores, 238 GB) and 12 large-memory nodes (995 GB). It has 590 TB of memory and is rated at 12.8 peak PFLOPS.
+
+For ``skylab-4.0`` with the **Intel** ``spack-stack-1.3.0`` stack, load the following modules:
+
+.. code-block:: bash
+
+   module unload PrgEnv-cray
+   module load PrgEnv-intel/8.3.2
+   module unload intel
+   module load intel-classic/2021.4.0
+   module unload cray-mpich
+   module load cray-mpich/8.1.14
+   module unload cray-python
+   module load cray-python/3.9.7.1
+   module unload cray-libsci
+   module load cray-libsci/22.08.1.1
+   
+   module use /p/app/projects/NEPTUNE/spack-stack/modulefiles
+   module load ecflow/5.8.4
+   module load mysql/8.0.31
+   
+   module use /p/app/projects/NEPTUNE/spack-stack/spack-stack-1.3.0/envs/unified-env-intel-2021.4.0/install/modulefiles/Core
+   
+   module load stack-intel/2021.4.0
+   module load stack-cray-mpich/8.1.14
+   module load stack-python/3.9.7
+   
+   module load jedi-fv3-env jedi-ewok-env soca-env
+
+For ``skylab-4.0`` with the **GNU** ``spack-stack-1.3.0`` stack, load the following modules:
+
+.. code-block:: bash
+
+   module unload PrgEnv-cray
+   module load PrgEnv-gnu/8.3.2
+   module unload gcc
+   module load gcc/10.3.0
+   module unload cray-mpich
+   module load cray-mpich/8.1.14
+   module unload cray-python
+   module load cray-python/3.9.7.1
+   module unload cray-libsci
+   module load cray-libsci/22.08.1.1
+   
+   module use /p/app/projects/NEPTUNE/spack-stack/modulefiles
+   module load ecflow/5.8.4
+   module load mysql/8.0.31
+   
+   module use /p/app/projects/NEPTUNE/spack-stack/spack-stack-1.3.0/envs/unified-env-gcc-10.3.0/install/modulefiles/Core
+   
+   module load stack-gcc/10.3.0
+   module load stack-cray-mpich/8.1.14
+   module load stack-python/3.9.7
+   
+   module load jedi-fv3-env jedi-ewok-env soca-env
+
+Because of space limitations on your home directory, it's a good idea to build your code on Narwhal ``$WORKDIR: /p/work1/$USER``.
+
+Clone the jedi bundle:
+
+.. code-block:: bash
+
+   git clone https://github.com/JCSDA/jedi-bundle.git jedi-bundle
+
+For Intel and GNU, configure with:
+
+.. code-block:: bash
+
+   ecbuild -DMPIEXEC_EXECUTABLE=/opt/cray/pe/pals/1.2.2/bin/aprun -DMPIEXEC_NUMPROC_FLAG="-n" <path-to-bundle-source-directory>
+
+Compile with:
+
+.. code-block:: bash
+
+   make -j 6
+
+Download the additional data (CRTM coefficients, etc.) from a login node with:
+
+.. code-block:: bash
+
+   cd <path-to-bundle-build-directory>
+   ctest -E get_ 2>&1 |tee ctest_wget.out
+
+Request a full (compute) node in interactive mode:
+
+.. code-block:: bash
+
+   qsub -A <project_number> -q HIE -l select=1:ncpus=124:mpiprocs=124 -l walltime=06:00:00 -I
+
+Reload the modules as described above, go to the bundle build directory and run the tests:
+
+.. code-block:: bash
+
+   <reload the modules>
+   cd <path-to-bundle-build-directory>
+   ctest -E get_ 2>&1 |tee ctest.log
+
+
 AWS AMIs
 --------
 For more information about using Amazon Web Services please see :doc:`JEDI on AWS <./cloud/index>`.
