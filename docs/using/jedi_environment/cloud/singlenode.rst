@@ -91,7 +91,7 @@ For AWS Red Hat 8:
    module load stack-gcc/11.2.1
    module load stack-openmpi/4.1.4
    module load stack-python/3.9.13
-
+   module load jedi-fv3-env/unified-dev
    module load jedi-ewok-env/unified-dev
    module load soca-env/unified-dev
 
