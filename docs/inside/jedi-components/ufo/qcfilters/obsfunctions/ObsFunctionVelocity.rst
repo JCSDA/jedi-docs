@@ -3,15 +3,15 @@
 ObsFunctionVelocity
 -----------------------------------------------------------------
 
-This obsFunction is designed to compute wind speed based on u(eastward_wind) and v(northward_wind) components of wind. 
+This obsFunction is designed to compute wind speed based on u(windEastward) and v(windNorthward) components of wind. 
 
 Required input parameters:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-eastward_wind
+windEastward
   zonel velocity, i.e. the component of the horizontal wind TOWARDS EAST
   
-northward_wind
+windNorthward
   meridional velocity, i.e. the component of the horizontal wind TOWARDS NORTH
   
 Example configuration:
@@ -24,10 +24,10 @@ value is bigger than :code:`maxvalue`.
 
   - filter: Bounds Check
     filter variables:
-    - name: eastward_wind
-    - name: northward_wind
+    - name: windEastward
+    - name: windNorthward
     test variables:
-    - name: Velocity@ObsFunction
+    - name: ObsFunction/Velocity
     maxvalue: 135.0
     action:
       name: reject

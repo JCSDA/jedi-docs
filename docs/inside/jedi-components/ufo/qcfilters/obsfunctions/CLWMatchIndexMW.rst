@@ -36,18 +36,18 @@ Example configuration:
 .. code-block:: yaml
 
     clwmatchidx_function:
-      name: CLWMatchIndexMW@ObsFunction
+      name: ObsFunction/CLWMatchIndexMW
       channels: 1-15
       options:
         channels: 1-15
         clwobs_function:
-          name: CLWRetMW@ObsFunction
+          name: ObsFunction/CLWRetMW
           options:
             clwret_ch238: 1
             clwret_ch314: 2
             clwret_types: [ObsValue]
         clwbkg_function:
-          name: CLWRetMW@ObsFunction
+          name: ObsFunction/CLWRetMW
           options:
             clwret_ch238: 1
             clwret_ch314: 2

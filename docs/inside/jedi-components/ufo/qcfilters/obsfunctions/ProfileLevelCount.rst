@@ -31,20 +31,20 @@ Example
   - filter: Variable Assignment
     where:
     - variable:
-        name: fill@MetaData
+        name: MetaData/fill
       is_in: 2
     assignments:
-    - name: number_of_levels@DerivedMetaData
+    - name: DerivedMetaData/number_of_levels
       type: int
       function:
-        name: ProfileLevelCount@IntObsFunction
+        name: IntObsFunction/ProfileLevelCount
         options:
           where:
           - variable:
-              name: apply@MetaData
+              name: MetaData/apply
             is_in: 1
 
 In this example, the Variable Assignment filter is used in combination with the Profile Level Count
-ObsFunction to count the number of locations in each profile with :code:`apply@MetaData` equal to 1.
-The count is assigned to the variable :code:`number_of_levels@DerivedMetaData` in the profile for all
-locations at which :code:`fill@MetaData` is equal to 2.
+ObsFunction to count the number of locations in each profile with :code:`MetaData/apply` equal to 1.
+The count is assigned to the variable :code:`DerivedMetaData/number_of_levels` in the profile for all
+locations at which :code:`MetaData/fill` is equal to 2.

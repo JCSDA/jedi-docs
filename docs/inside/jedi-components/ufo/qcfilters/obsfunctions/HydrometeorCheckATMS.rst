@@ -34,10 +34,10 @@ ATMS Example (atms_qc_filters.yaml):
 
   - filter: Bounds Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *all_channels
     test variables:
-    - name: HydrometeorCheckATMS@ObsFunction
+    - name: ObsFunction/HydrometeorCheckATMS
       channels: *all_channels
       options:
         channels: *all_channels
@@ -47,18 +47,18 @@ ATMS Example (atms_qc_filters.yaml):
                             4.000,  4.000,  3.500,  3.000,  3.000,
                             3.000,  3.000]
         clwret_function:
-          name: CLWRetMW@ObsFunction
+          name: ObsFunction/CLWRetMW
           options:
             clwret_ch238: 1
             clwret_ch314: 2
             clwret_types: [ObsValue]
         obserr_function:
-          name: ObsErrorModelRamp@ObsFunction
+          name: ObsFunction/ObsErrorModelRamp
           channels: *all_channels
           options:
             channels: *all_channels
             xvar:
-              name: CLWRetSymmetricMW@ObsFunction
+              name: ObsFunction/CLWRetSymmetricMW
               options:
                 clwret_ch238: 1
                 clwret_ch314: 2

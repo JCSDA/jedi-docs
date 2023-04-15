@@ -21,10 +21,10 @@ Example configuration:
 
    - filter: Bounds Check
      filter variables:
-     - name: brightness_temperature
+     - name: brightnessTemperature
        channels: 4-6
      test variables:
-     - name: ChannelUseflagCheckRad@ObsFunction
+     - name: ObsFunction/ChannelUseflagCheckRad
        channels: 4-6
        options:
          channels: 4-6

@@ -23,15 +23,15 @@ Example:
 
   - filter: Background Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *all_channels
     function absolute threshold:
-    - name: ObsErrorBoundIR@ObsFunction
+    - name: ObsFunction/ObsErrorBoundIR
       channels: *all_channels
       options:
         channels: *all_channels
         obserr_bound_transmittop:
-          name: ObsErrorFactorTransmitTopRad@ObsFunction
+          name: ObsFunction/ObsErrorFactorTransmitTopRad
           channels: *all_channels
           options:
             channels: *all_channels

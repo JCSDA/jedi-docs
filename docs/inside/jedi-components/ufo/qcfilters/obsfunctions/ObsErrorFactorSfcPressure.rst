@@ -8,11 +8,11 @@ the observation error for surface pressure.  The purpose of the function is to i
 observational error from its initial value to a larger value based on large discrepancies
 between model and observations that would be expected when the model terrain (pressure)
 differs from the observed terrain, which is likely in coarse resolution model simulations.
-The filter variable must be :code:`surface_pressure` since this function is designed solely
+The filter variable must be :code:`stationPressure` since this function is designed solely
 to affect the assignment of ObsError on this variable alone.
 
-The following observed variables are required inside the code: :code:`station_elevation`,
-:code:`surface_pressure`, and :code:`air_temperature`, although this may contain missing data
+The following observed variables are required inside the code: :code:`stationElevation`,
+:code:`stationPressure`, and :code:`airTemperature`, although this may contain missing data
 at some locations.  In addition, the required model GeoVaLs variables are: :code:`surface_altitude`,
 :code:`surface_pressure`, and vertical profiles of :code:`air_pressure` and :code:`air_temperature`.
 Since some model interfaces may supply different variable names for :code:`surface_altitude` or
@@ -47,11 +47,11 @@ Example
 
      - filter: Perform Action
        filter variables:
-       - name: surface_pressure
+       - name: stationPressure
        action:
          name: inflate error
          inflation variable:
-           name: ObsErrorFactorSfcPressure@ObsFunction
+           name: ObsFunction/ObsErrorFactorSfcPressure
            options:
              error_min: 100         # 1 mb
              error_max: 300         # 3 mb

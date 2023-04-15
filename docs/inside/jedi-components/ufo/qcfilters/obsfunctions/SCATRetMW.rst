@@ -57,7 +57,7 @@ ATMS Example (atms_qc_filters.yaml):
 .. code-block:: yaml
 
   scatobs_function:
-    name: SCATRetMW@ObsFunction
+    name: ObsFunction/SCATRetMW
     options:
       scatret_ch238: 1
       scatret_ch314: 2
@@ -70,7 +70,7 @@ AMSUA Example (amsua_qc_filters.yaml):
 .. code-block:: yaml
 
   scatobs_function:
-    name: SCATRetMW@ObsFunction
+    name: ObsFunction/SCATRetMW
     options:
       scatret_ch238: 1
       scatret_ch314: 2

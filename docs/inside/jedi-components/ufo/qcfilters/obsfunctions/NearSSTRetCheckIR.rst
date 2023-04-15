@@ -38,16 +38,16 @@ test_qcflag
 Required fields from obs/geoval 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 geovals
-  :code:`water_area_fraction@GeoVaLs` , :code:`surface_temperature_where_sea@GeoVaLs`
+  :code:`GeoVaLs/water_area_fraction` , :code:`GeoVaLs/surface_temperature_where_sea`
 
 obsDiag
-  :code:`brightness_temperature_jacobian_surface_temperature@ObsDiag` , 
-  :code:`brightness_temperature_jacobian_air_temperature@ObsDiag`,
-  :code:`brightness_temperature_jacobian_humidity_mixing_ratio@ObsDiag`
+  :code:`ObsDiag/brightness_temperature_jacobian_surface_temperature` , 
+  :code:`ObsDiag/brightness_temperature_jacobian_air_temperature`,
+  :code:`ObsDiag/brightness_temperature_jacobian_humidity_mixing_ratio`
 
 from observation space:
-  :code:`brightness_temperature@ObsValue`, :code:`brightness_temperature@ObsError`,
-  :code:`sensor_band_central_radiation_wavenumber@VarMetaData`. 
+  :code:`ObsValue/brightnessTemperature`, :code:`ObsError/brightnessTemperature`,
+  :code:`MetaData/sensorCentralFrequency`. 
   In addition, brightness_temperature observation error, QC flags, and simulated
   values at the observatioin locations will come from JEDI default values or 
   or from the input defined by :code:`test_obserr`, :code:`test_qcflag` and :code:`test_hofx` 
@@ -63,10 +63,10 @@ this ObsFunction output value is bigger than maxvalue=1.0e-12.
 
   - filter: Bounds Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *all_channels
     test variables:
-    - name: NearSSTRetCheckIR@ObsFunction
+    - name: ObsFunction/NearSSTRetCheckIR
       channels: *all_channels
       options:
         channels: *all_channels
