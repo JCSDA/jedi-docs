@@ -132,7 +132,7 @@ the build was successful by running the tests (still from $JEDI_BUILD):
 
 If you are on an HPC you may need to provide additional flags to the ecbuild
 command, or login to a compute node, or submit a batch script for running the
-ctests. Please refer the `documentation <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.6.0/using/jedi_environment/modules.html#general-tips-for-hpc-systems>`_ for more details.
+ctests. Please refer the `documentation <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.7.0/using/jedi_environment/modules.html#general-tips-for-hpc-systems>`_ for more details.
 
 (You might have another coffee.) You have successfully built JEDI!
 
