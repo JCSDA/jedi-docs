@@ -605,12 +605,6 @@ Example 2 (thinning observations from multiple categories and with non-equal pri
 
 .. _TemporalThinningFilter:
 
-.. _TemporalThinningFilter:
-
-.. _TemporalThinningFilter:
-
-.. _TemporalThinningFilter:
-
 Temporal Thinning Filter
 ------------------------
 
@@ -664,12 +658,6 @@ taken up to 20 min after the first qualifying observation if its quality score i
         name: MetaData/call_sign
       priority_variable:
         name: MetaData/score
-
-.. _PoissonDiskThinningFilter:
-
-.. _PoissonDiskThinningFilter:
-
-.. _PoissonDiskThinningFilter:
 
 .. _PoissonDiskThinningFilter:
 
