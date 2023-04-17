@@ -176,6 +176,43 @@ The input file for the observation error correlations must have the following di
 
 If a particular assimilated variable or channel is missing from the input correlations file, its correlation with other variables or channels will be set to zero.
 
+Observation error covariance with correlations for observations within one record
+---------------------------------------------------------------------------------
+
+The observation error covariance can be set up to use correlations for observations of the same variable within one record. To use this capability, obsgrouping feature of ObsSpace needs to be used to group observations by records (see e.g. :doc:`an example here<../ioda/interface>`).
+Correlations are computed as a Gaspari-Cohn function with the lengthscale and coordinate specified in yaml. The same correlations are applied to all variables in one record. Correlations between locations in different records, and between different variables in the same record are considered to be zero.
+The full observation error covariance matrix is :math:`R = D^{1/2} * C * D^{1/2}` where :math:`D^{1/2}` is a diagonal matrix with the observation error standard deviations (:code:`ObsError` group) on the diagonal, and :math:`C` is the correlation matrix.
+
+This type of observation error covariance is set up using the following options:
+
+* :code:`correlation variable name`: variable in MetaData group used as a coordinate variable in the Gaspari-Cohn function;
+* :code:`correlation lengthscale`: Gaspari-Cohn lengthscale, correlation is zero at this value.
+
+.. code-block:: yaml
+
+ obs space:
+   name: Sondes (within group covariances for one variable)
+   obsdatain:
+     ...
+     obsgrouping:
+       group variables: [sequenceNumber]
+       sort variable: pressure
+       sort order: ascending
+   simulated variables: [airTemperature]
+ obs error:
+   covariance model: within group covariances
+   correlation variable name: pressure
+   correlation lengthscale: 15000.
+
+For testing and diagnostics purposes, `ufo_obserrorcov_diags.x` application is available. It saves the following diagnostics for one specified record in the netcdf file:
+
+- coordinate used for computing correlations (e.g. pressure in the example above),
+- correlation matrix :math:`C`,
+- random vector :math:`x` for the specified record,
+- result of :math:`C * x`.
+
+A Python script for plotting is provided in `ufo/tools/plots/plot_obserrorwithingroupcorr_diags.py`.
+
 Specifying observation error standard deviations
 ------------------------------------------------
 
