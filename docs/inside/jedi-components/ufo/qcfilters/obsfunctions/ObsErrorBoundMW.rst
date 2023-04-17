@@ -57,36 +57,36 @@ Example configuration:
 
     - filter: Background Check
       filter variables:
-      - name: brightness_temperature
+      - name: brightnessTemperature
         channels: 1-15
       function absolute threshold:
-      - name: ObsErrorBoundMW@ObsFunction
+      - name: ObsFunction/ObsErrorBoundMW
         channels: 1-15
         options:
           sensor: amsua_n19
           channels: 1-15
           obserr_bound_latitude:
-            name: ObsErrorFactorLatRad@ObsFunction
+            name: ObsFunction/ObsErrorFactorLatRad
             options:
               latitude_parameters: [25.0, 0.25, 0.04, 3.0]
           obserr_bound_transmittop:
-            name: ObsErrorFactorTransmitTopRad@ObsFunction
+            name: ObsFunction/ObsErrorFactorTransmitTopRad
             channels: 1-15
             options:
               channels: 1-15
           obserr_bound_topo:
-            name: ObsErrorFactorTopoRad@ObsFunction
+            name: ObsFunction/ObsErrorFactorTopoRad
             channels: 1-15
             options:
               channels: 1-15
               sensor: amsua_n19
           obserr_function:
-            name: ObsErrorModelRamp@ObsFunction
+            name: ObsFunction/ObsErrorModelRamp
             channels: 1-15
             options:
               channels: 1-15
               xvar:
-                name: CLWRetSymmetricMW@ObsFunction
+                name: ObsFunction/CLWRetSymmetricMW
                 options:
                   clwret_ch238: 1
                   clwret_ch314: 2

@@ -19,10 +19,10 @@ ErrobsMax
   maximum observation error bound (obserr_bound_max)
 
 Errflat
-  error factor as a function of latitude (ObsErrorFactorLatRad@ObsFunction)
+  error factor as a function of latitude (ObsFunction/ObsErrorFactorLatRad)
 
 Errtaotop
-  error factor as a function of transmittance at model top (ObsErrorFactorTransmitTopRad@ObsFunction)
+  error factor as a function of transmittance at model top (ObsFunction/ObsErrorFactorTransmitTopRad)
 
 The residual threshold is calculated as :math:`\min( (3.0 * ( 1 / Errflat )^2 * (1 / Errftaotop )^2), ErrobsMax )`.
 This function filters out data if :math:`|obs-h(x)| > Residual Threshold`.
@@ -34,19 +34,19 @@ Example:
 
   - filter: Background Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *all_channels
     function absolute threshold:
-    - name: ObsErrorBoundIR@ObsFunction
+    - name: ObsFunction/ObsErrorBoundIR
       channels: *all_channels
       options:
         channels: *all_channels
         obserr_bound_latitude:
-          name: ObsErrorFactorLatRad@ObsFunction
+          name: ObsFunction/ObsErrorFactorLatRad
           options:
             latitude_parameters: [25.0, 0.5, 0.04, 1.0]
         obserr_bound_transmittop:
-          name: ObsErrorFactorTransmitTopRad@ObsFunction
+          name: ObsFunction/ObsErrorFactorTransmitTopRad
           channels: *all_channels
           options:
             channels: *all_channels

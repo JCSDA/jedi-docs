@@ -42,14 +42,14 @@ Example yaml:
 ~~~~~~~~~~~~~
 
 Here is an example using this ObsFunction inside the Bounds Check filter for
-AMSR-2. The brightness_temperature filter variables are rejected if the output
+AMSR-2. The brightnessTemperature filter variables are rejected if the output
 value of this ObsFunction is larger than the example maxvalue = 5.
 
 .. code-block:: yaml
 
   - filter: Bounds Check
     test variables:
-    - name: BgdDepartureAnomaly@ObsFunction
+    - name: ObsFunction/BgdDepartureAnomaly
       options:
         channel_low_freq: 11
         channel_high_freq: 13

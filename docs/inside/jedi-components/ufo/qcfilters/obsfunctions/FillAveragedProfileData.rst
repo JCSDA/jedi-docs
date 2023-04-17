@@ -24,11 +24,11 @@ Example yaml
 
   - filter: Variable Assignment
     assignments:
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         type: float
         function:
-          name: FillAveragedProfileData@ObsFunction
+          name: ObsFunction/FillAveragedProfileData
           options:
-            variable to copy: latitude@MetaData
-            observation vertical coordinate: MetaData/air_pressure
+            variable to copy: MetaData/latitude
+            observation vertical coordinate: MetaData/pressure
             model vertical coordinate: air_pressure_levels

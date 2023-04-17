@@ -37,14 +37,14 @@ Here is an example to use this obsFunction to inflate observation errors of spec
 
   - filter: BlackList
     filter variables:
-    - name: specific_humidity
+    - name: specificHumidity
     action:
       name: inflate error
       inflation variable:
-        name: ObsErrorFactorConventional@ObsFunction
+        name: ObsFunction/ObsErrorFactorConventional
         options:
           test QCflag: PreQC
-          inflate variables: [specific_humidity]
+          inflate variables: [specificHumidity]
 
 Note: 
 If using this obs function in a filter (as shown in the example), please make sure :code:`name` of :code:`filter variables` and 
@@ -55,8 +55,8 @@ If using this obsFunction independely from any filters, for example, running tes
 
 Note: This obs function requires each of the obs profiles are sorted by pressure
 in descending order (from bottom to top levels). The following shows an 
-example configuration for grouping observations based on :code:`station_id` and :code:`datetime` and sort the data
-accordingly in descending :code:`air_pressure` order.
+example configuration for grouping observations based on :code:`stationIdentification` and :code:`dateTime` and sort the data
+accordingly in descending :code:`pressure` order.
 
 .. code-block:: yaml
 
@@ -69,7 +69,7 @@ accordingly in descending :code:`air_pressure` order.
           type: H5File
           obsfile: testdata
         obsgrouping:
-          group variables: ["station_id", "datetime"] # Choose parameteres to identify each of
-                                                      # the obs profiles
-          sort variable: "air_pressure"
+          group variables: ["stationIdentification", "dateTime"] # Choose parameteres to identify
+                                                                 # each of the obs profiles.
+          sort variable: "pressure"
           sort order: "descending"

@@ -149,13 +149,13 @@ This filter relies on the refractivity and model geopotential heights being save
             engine:
               type: H5File
               obsfile: Data/ioda/testinput_tier_1/gnssro_obs_2020050106_1dvar.nc4
-          simulated variables: [bending_angle]
+          simulated variables: [bendingAngle]
         geovals:
           filename: Data/ufo/testinput_tier_1/gnssro_geoval_2020050106_1dvar.nc4
         obs filters:
         - filter: GNSSRO Impact Height Check
           filter variables:
-          - name: bending_angle
+          - name: bendingAngle
           gradient threshold: -0.08
           sharp gradient offset: 600
           surface offset: 500
@@ -251,25 +251,25 @@ Filter variables
 
 The QC checks rely on a variety of physical observables. The value of :code:`filter variables` for each check should be:
 
-- Basic, SamePDiffT, Sign, UnstableLayer, Interpolation, Hydrostatic: :code:`air_temperature`, :code:`geopotential_height`.
+- Basic, SamePDiffT, Sign, UnstableLayer, Interpolation, Hydrostatic: :code:`airTemperature`, :code:`geopotentialHeight`.
 
-- UInterp: :code:`eastward_wind`, :code:`northward_wind`.
+- UInterp: :code:`windEastward`, :code:`windNorthward`.
 
-- RH: :code:`air_temperature`, :code:`relative_humidity`.
+- RH: :code:`airTemperature`, :code:`relativeHumidity`.
 
 - BackgroundX: :code:`air_temperature`, :code:`relative_humidity`, :code:`eastward_wind`, :code:`northward_wind`, :code:`geopotential_height` depending on the value of X.
 
-- Pressure: :code:`geopotential_height`.
+- Pressure: :code:`geopotentialHeight`.
 
-- Time, PermanentReject, SondeFlags, WindProfilerFlags: these routines act on QC flags so must be supplied with a dummy filter variable. Any variable that exists in the data set is acceptable; :code:`eastward_wind` would be a good choice.
+- Time, PermanentReject, SondeFlags, WindProfilerFlags: these routines act on QC flags so must be supplied with a dummy filter variable. Any variable that exists in the data set is acceptable; :code:`windEastward` would be a good choice.
 
 The :code:`obsgrouping` category should be set up in one of two ways. The first applies a descending sort to the air pressures:
 
 .. code-block:: yaml
 
         obsgrouping:
-          group variable: "station_id"
-          sort variable: "air_pressure"
+          group variable: "stationIdentification"
+          sort variable: "pressure"
           sort order: "descending"
 
 The second does not sort the air pressures:
@@ -277,7 +277,7 @@ The second does not sort the air pressures:
 .. code-block:: yaml
 
         obsgrouping:
-          group variable: "station_id"
+          group variable: "stationIdentification"
 
 The second formulation could be used if the pressures have been sorted prior to applying this filter.
 An ascending sort order is not valid; if this is selected the checks will throw an error.
@@ -828,8 +828,8 @@ This example runs the basic checks on the input data:
 
     - filter: Conventional Profile Processing
       filter variables:
-      - name: air_temperature
-      - name: geopotential_height
+      - name: airTemperature
+      - name: geopotentialHeight
       Checks: ["Basic"]
 
 This example runs the basic and SamePDiffT checks on the input data, using separate instances of the filter to do so:
@@ -838,13 +838,13 @@ This example runs the basic and SamePDiffT checks on the input data, using separ
 
     - filter: Conventional Profile Processing
       filter variables:
-      - name: air_temperature
-      - name: geopotential_height
+      - name: airTemperature
+      - name: geopotentialHeight
       Checks: ["Basic"]
     - filter: Conventional Profile Processing
       filter variables:
-      - name: air_temperature
-      - name: geopotential_height
+      - name: airTemperature
+      - name: geopotentialHeight
       Checks: ["SamePDiffT"]
       SPDTCheck_TThresh: 30.0 # This is an example modification of a check parameter
 
@@ -854,8 +854,8 @@ This example runs the basic and SamePDiffT checks on the input data, using the s
 
     - filter: Conventional Profile Processing
       filter variables:
-      - name: air_temperature
-      - name: geopotential_height
+      - name: airTemperature
+      - name: geopotentialHeight
       Checks: ["Basic", "SamePDiffT"]
       SPDTCheck_TThresh: 30.0 # This is an example modification of a check parameter
 
@@ -903,18 +903,18 @@ Note that a call to the Ocean Vertical Stability Check filter MUST be preceded b
             type: H5File
             obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
           obsgrouping:
-            group variables: [ "station_id", "dateTime", "latitude", "longitude" ]
-            sort variable: "ocean_pressure"
+            group variables: [ "stationIdentification", "dateTime", "latitude", "longitude" ]
+            sort variable: "waterPressure"
             sort group: "DerivedObsValue"
             sort order: "ascending"
-        simulated variables: [ocean_temperature, ocean_salinity, ocean_depth, ocean_pressure]
-        observed variables: [ocean_temperature, ocean_salinity]
-        derived variables: [ocean_depth, ocean_pressure]
+        simulated variables: [waterTemperature, salinity, depthBelowWaterSurface, waterPressure]
+        observed variables: [waterTemperature, salinity]
+        derived variables: [depthBelowWaterSurface, waterPressure]
       HofX: HofX
       obs filters:
       - filter: Create Diagnostic Flags
         filter variables:
-          - name: DerivedObsValue/ocean_depth
+          - name: DerivedObsValue/depthBelowWaterSurface
         flags:
         - name: DensitySpike
           initial value: false
@@ -924,11 +924,11 @@ Note that a call to the Ocean Vertical Stability Check filter MUST be preceded b
           initial value: false
       - filter: Ocean Vertical Stability Check
         filter variables:
-          - name: DerivedObsValue/ocean_depth
+          - name: DerivedObsValue/depthBelowWaterSurface
         variables:
-          temperature: ObsValue/ocean_temperature
-          salinity: ObsValue/ocean_salinity
-          pressure: DerivedObsValue/ocean_pressure
+          temperature: ObsValue/waterTemperature
+          salinity: ObsValue/salinity
+          pressure: DerivedObsValue/waterPressure
         count spikes: true
         count steps: true
         nominal tolerance: -0.05
@@ -938,7 +938,7 @@ Note that a call to the Ocean Vertical Stability Check filter MUST be preceded b
           flag: Superadiabat
         - name: reject
     
-In this example, the Diagnostic Flags are associated with the filter variable :code:`DerivedObsValue/ocean_depth`. This sets :code:`DiagnosticFlags/DensitySpike/ocean_depth` and :code:`DiagnosticFlags/DensityStep/ocean_depth`. Additionally, because a filter action is specified to set :code:`DiagnosticFlags/Superadiabat`, this flag is set (for :code:`ocean_depth` only) at every location that is flagged as a density spike or step (both levels of each step). These locations are rejected because that filter action has also been specified.
+In this example, the Diagnostic Flags are associated with the filter variable :code:`DerivedObsValue/depthBelowWaterSurface`. This sets :code:`DiagnosticFlags/DensitySpike/depthBelowWaterSurface` and :code:`DiagnosticFlags/DensityStep/depthBelowWaterSurface`. Additionally, because a filter action is specified to set :code:`DiagnosticFlags/Superadiabat`, this flag is set (for :code:`depthBelowWaterSurface` only) at every location that is flagged as a density spike or step (both levels of each step). These locations are rejected because that filter action has also been specified.
 
 This filter has only been tested for observations that have been grouped into records (profiles) by setting the :code:`obsgrouping.group variables` option. The :code:`sort variable`, :code:`sort group` and :code:`sort order` options are optional, though incorrect results will be obtained if the profiles are not sorted surface to depth.
 
@@ -951,14 +951,14 @@ Once the density spikes and steps have been flagged, it is possible to subsequen
   # create derived metadata counting levels:
     - filter: Variable Assignment
       assignments:
-      - name: DerivedMetaData/number_of_levels
+      - name: DerivedMetaData/numberOfLevels
         type: int
         function:
-          name: ProfileLevelCount@IntObsFunction
+          name: IntObsFunction/ProfileLevelCount
           options:
             where:
               - variable:
-                  name: ObsValue/ocean_temperature
+                  name: ObsValue/waterTemperature
                 is_defined:
   # create derived metadata counting spikes only:
     - filter: Variable Assignment
@@ -966,11 +966,11 @@ Once the density spikes and steps have been flagged, it is possible to subsequen
       - name: DerivedMetaData/ocean_density_spikes
         type: int
         function:
-          name: ProfileLevelCount@IntObsFunction
+          name: IntObsFunction/ProfileLevelCount
           options:
             where:
               - variable:
-                  name: DiagnosticFlags/DensitySpike/ocean_depth
+                  name: DiagnosticFlags/DensitySpike/depthBelowWaterSurface
                 is_true:
   # reject whole profile if num spikes >= numlev/4, so compute
   #  4*( num spikes ) minus numlev in order to check it against 0:
@@ -979,9 +979,9 @@ Once the density spikes and steps have been flagged, it is possible to subsequen
       - name: DerivedMetaData/ocean_density_rejections
         type: int
         function:
-          name: LinearCombination@IntObsFunction
+          name: IntObsFunction/LinearCombination
           options:
-            variables: [ocean_density_spikes@DerivedMetaData, number_of_levels@DerivedMetaData]
+            variables: [DerivedMetaData/ocean_density_spikes, DerivedMetaData/numberOfLevels]
             coefs: [4, -1]
   # reject whole profile if num spikes >= numlev/4 AND >= 2:
     - filter: Perform Action
@@ -1044,10 +1044,10 @@ The QC flags on model levels are set by this filter to be equal to those of the 
             type: H5File
             obsfile: Data/ufo/testinput_tier_1/profile_testdata.nc4  # not real
         obsgrouping:
-          group variables: [ "station_id" ]
-          sort variable: "ocean_depth"
+          group variables: [ "stationIdentification" ]
+          sort variable: "depthBelowWaterSurface"
           sort order: "ascending"
-        simulated variables: ["ocean_depth", "ocean_salinity"]
+        simulated variables: ["depthBelowWaterSurface", "salinity"]
 
         extension:
           allocate companion records with length: &num_levels 75
@@ -1055,14 +1055,14 @@ The QC flags on model levels are set by this filter to be equal to those of the 
           - "latitude"
           - "longitude"
           - "dateTime"
-          - "station_id"
-          - "observation_type“
+          - "stationIdentification"
+          - "observationTypeNum“
 
       geovals: Data/ufo/testinput_tier_1/profile_geovalsdata.nc4  # not real
 
       obs operator:
         name: Categorical
-        categorical variable: extended_obs_space
+        categorical variable: extendedObsSpace
         fallback operator: "CompositeOriginal"
         categorised operators: {"1": "CompositeAverage"}
         operator labels: ["CompositeOriginal", "CompositeAverage"]
@@ -1071,19 +1071,19 @@ The QC flags on model levels are set by this filter to be equal to those of the 
           components:
           - name: VertInterp
             variables:
-            - name: ocean_salinity
-            - name: ocean_depth
-            observation vertical coordinate: ocean_depth
+            - name: salinity
+            - name: depthBelowWaterSurface
+            observation vertical coordinate: depthBelowWaterSurface
             observation vertical coordinate group: DerivedObsValue
-            vertical coordinate: ocean_depth
+            vertical coordinate: depthBelowWaterSurface
         - name: Composite
           components:
           - name: ProfileAverage
             variables:
-            - name: ocean_salinity
-            - name: ocean_depth
+            - name: salinity
+            - name: depthBelowWaterSurface
             model vertical coordinate: "ocean_depth"
-            pressure coordinate: ocean_depth
+            pressure coordinate: depthBelowWaterSurface
             pressure group: DerivedObsValue
             require descending pressure sort: false
             number of intersection iterations: 0
@@ -1091,9 +1091,9 @@ The QC flags on model levels are set by this filter to be equal to those of the 
       obs post filters:
       - filter: Average Observations To Model Levels
         filter variables:
-        - name: ocean_salinity
-        observation vertical coordinate: DerivedObsValue/ocean_depth
-        model vertical coordinate: HofX/ocean_depth
+        - name: salinity
+        observation vertical coordinate: DerivedObsValue/depthBelowWaterSurface
+        model vertical coordinate: HofX/depthBelowWaterSurface
 
 In order for this filter to work correctly, the observations must be grouped into records (profiles) using the :code:`obsgrouping.group variables` option. The filter works whether the vertical coordinate is in increasing or decreasing order, but the model and observation vertical coordinates must both increase or both decrease, otherwise an error is thrown.
 
@@ -1101,6 +1101,6 @@ The ObsSpace must also have been extended with :code:`obs space.extension` as in
 
 It is expected that the :code:`model vertical coordinate` should contain values in its extended space - one way to achieve this is with the :ref:`ProfileAverage obsOperator <profileaverageoperator>` (see example above). ProfileAverage fills the extended space of an HofX variable (created by the :ref:`VertInterp obsOperator <obsops_vertinterp>` in the above example), with the GeoVaLs values appropriate to each profile's location. If the extended space of :code:`model vertical coordinate` is all zeroes (as would be the case if ProfileAverage had not been performed), an error is thrown when applying this filter. (The filter does not stop if the extended space of :code:`model vertical coordinate` is all missing for a profile, as some profiles may be missing all their data.)
 
-In the example above, a variable called :code:`DerivedObsValue/ocean_salinity` is created. It contains the same values as :code:`ObsValue/ocean_salinity` in its original space, while its extended space is filled with the values of :code:`ObsValue/ocean_salinity` averaged on to the model levels specified by :code:`model vertical coordinate`.
+In the example above, a variable called :code:`DerivedObsValue/salinity` is created. It contains the same values as :code:`ObsValue/salinity` in its original space, while its extended space is filled with the values of :code:`ObsValue/salinity` averaged on to the model levels specified by :code:`model vertical coordinate`.
 
 This filter supports use of :ref:`"where" statements <where-statement>`: any where-excluded observation locations are excluded from the calculation of the average increments.

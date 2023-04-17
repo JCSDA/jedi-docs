@@ -27,14 +27,14 @@ Example:
 
   - filter: Background Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *all_channels
     function absolute threshold:
-    - name: ObsErrorBoundIR@ObsFunction
+    - name: ObsFunction/ObsErrorBoundIR
       channels: *all_channels
       options:
         channels: *all_channels
         obserr_bound_latitude:
-          name: ObsErrorFactorLatRad@ObsFunction
+          name: ObsFunction/ObsErrorFactorLatRad
           options:
             latitude_parameters: [25.0, 0.5, 0.04, 1.0]

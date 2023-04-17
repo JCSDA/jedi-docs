@@ -44,10 +44,10 @@ Example configuration:
 
    - filter: Bounds Check
      filter variables:
-     - name: brightness_temperature
+     - name: brightnessTemperature
        channels: 12-18
      test variables:
-     - name: CLWRetMW_SSMIS@ObsFunction
+     - name: ObsFunction/CLWRetMW_SSMIS
        options:
          satellite: SSMIS
          ch19h: 12

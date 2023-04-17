@@ -17,18 +17,18 @@ coefs
 Example configuration:
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Here is an example to assign to a variable :code:`sea_level_anomaly@DerivedObsValue`, the linear combination: :code:`(1.0 * sea_surface_height@DerivedObsValue - 1.0 * mean_sea_height@HofX)`.
+Here is an example to assign to a variable :code:`DerivedObsValue/sea_level_anomaly`, the linear combination: :code:`(1.0 * DerivedObsValue/sea_surface_height - 1.0 * HofX/mean_sea_height)`.
 
 .. code-block:: yaml
 
   - filter: Variable Assignment
     assignments:
-    - name: sea_level_anomaly@DerivedObsValue
+    - name: DerivedObsValue/sea_level_anomaly
       type: float
       function:
-        name: LinearCombination@ObsFunction
+        name: ObsFunction/LinearCombination
         options:
-          variables: [sea_surface_height@DerivedObsValue, mean_sea_height@HofX]
+          variables: [DerivedObsValue/sea_surface_height, HofX/mean_sea_height]
           coefs: [1.0, -1.0]
 
 An example with multi-channel variables:
@@ -36,14 +36,14 @@ An example with multi-channel variables:
 .. code-block:: yaml
 
   obs function:
-    name: LinearCombination@ObsFunction
+    name: ObsFunction/LinearCombination
     channels: &select_chans 6-15, 18-22
     options:
       variables:
-      - name: var1@ObsValue
+      - name: ObsValue/var1
         channels: *select_chans
-      - name: var1@ObsError
+      - name: ObsError/var1
         channels: *select_chans
       coefs: [1.0, 0.5]
 
-This will return: :code:`sum over channels [6-15,18-22] of (1.0 * var1@ObsValue_<channel> + 0.5 * var1@ObsError_<channel>)`.
+This will return: :code:`sum over channels [6-15,18-22] of (1.0 * ObsValue/var1_<channel> + 0.5 * ObsError/var1_<channel>)`.

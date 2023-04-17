@@ -47,10 +47,10 @@ Required fields from obs/geoval:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 geovals
-  :code:`surface_geopotential_height@GeoVaLs`
+  :code:`GeoVaLs/surface_geopotential_height`
 
 obsDiag
-  :code:`transmittances_of_atmosphere_layer@ObsDiag`
+  :code:`ObsDiag/transmittances_of_atmosphere_layer`
 
 Example configurations:
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -59,12 +59,12 @@ Example configurations:
 
    - filter: BlackList
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: 1-15
     action:
       name: inflate error
       inflation variable:
-        name: ObsErrorFactorTopoRad@ObsFunction
+        name: ObsFunction/ObsErrorFactorTopoRad
         channels: 1-15
         options:
           sensor: amsua_n19

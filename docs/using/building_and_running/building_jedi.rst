@@ -61,7 +61,7 @@ Before building the jedi code, you should also make sure that git is configured 
 
 .. code-block:: bash
 
-    git lfs install
+    git lfs install --skip-repo
 
 This only needs to be done once, and it is required even if you are running in a container.
 

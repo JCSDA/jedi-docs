@@ -7,13 +7,13 @@ Converts heights to pressures using the ICAO atmosphere.
 The newly calculated variable is included in the same
 obs space.
 
-:code:`Transform: ["PressureFromHeightForICAO"]`
+:code:`Transform: PressureFromHeightForICAO`
 
 .. code-block:: yaml
 
     obs filters:
     - filter: Variable Transforms
-      Transform: ["PressureFromHeightForICAO"] 
+      Transform: PressureFromHeightForICAO
     
 **Observation parameters needed** (JEDI name)
 
@@ -38,13 +38,13 @@ Pressure from Height over a vertical profile
 Derive pressure from height for vertical profile (e.g. sonde report). This is especially needed for radiosonde using a 3 09 055 BUFR
 template.
 
-:code:`Transform: ["PressureFromHeightForProfile]`
+:code:`Transform: PressureFromHeightForProfile`
 
 .. code-block:: yaml
 
     obs filters:
     - filter: Variable Transforms
-      Transform: ["PressureFromHeightForProfile"]
+      Transform: PressureFromHeightForProfile
       Method: UKMO  
     
 **Observation parameters needed** (JEDI name)
