@@ -25,7 +25,7 @@ the example below:
            engine:
              type: H5File
              obsfile: Data/ioda/testinput_tier_1/sfc_obs_2018041500_metars_small.nc
-         simulated variables: [specific_humidity, air_temperature, surface_pressure]
+         simulated variables: [specific_humidity, airTemperature, surface_pressure]
        obs filters:
        - filter: Variable Transforms
          Transform: ["RelativeHumidity"] 
