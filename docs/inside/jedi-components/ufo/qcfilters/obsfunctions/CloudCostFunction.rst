@@ -36,7 +36,8 @@ BMatrix
 
 background fields
   List of geovals names describing fields required from the
-  :math:`\mathbf{B}`-matrix
+  :math:`\mathbf{B}`-matrix - to avoid ambiguity, this list must appear
+  in the same order as in the :math:`\mathbf{B}`-matrix file
 
 Optional parameters:
 ~~~~~~~~~~~~~~~~~~~~
@@ -93,6 +94,29 @@ HofX group
 
   Default: "HofX"
 
+background emissivity channels
+  Vector of high transmittance channels for which surface emissivity error
+  covariances are defined in the :math:`\mathbf{B}`-matrix (if present) -
+  these channels are explicitly not used in the ObsFunction calculation and
+  so should be separate and distinct from humidity sounding channels
+  defined by the required parameter cost channels list
+
+  Example:
+
+  .. code-block:: yaml
+
+    background emissivity channels: 1, 2, 3, 16, 17
+
+skin temperature error
+  Scale :math:`\mathbf{B}`-matrix skin temperature error covariance according
+  to this user-defined standard deviation
+
+  Example:
+
+  .. code-block:: yaml
+
+    skin temperature error: 2.5
+
 Reference:
 ~~~~~~~~~~
 
@@ -118,7 +142,7 @@ of this ObsFunction is larger than the example maxvalue = 69.8.
       channels: 18-20
     where:
     - variable:
-        name: MetaData/landOrSeaQualifier
+        name: MetaData/surfaceQualifier
       is_in: 0  # land=0, sea=1, ice=2
     test variables:
     - name: ObsFunction/CloudCostFunction
