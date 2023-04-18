@@ -191,7 +191,7 @@ vertical interpolation of the variables simulated by this operator.
     - name: VertInterp
       variables:
       - name: airTemperature
-      vertical coordinate: air_pressure
+      vertical coordinate: pressure
       observation vertical coordinate: pressure
     - name: VertInterp
       variables:
@@ -207,13 +207,13 @@ Vertical Interpolation
 
 Description:
 ^^^^^^^^^^^^
-This observation operator implements linear interpolation (including log-linear interpolation), and nearest-neighbor interpolation in a vertical coordinate when explicitly chosen. If choose automatic (which is same as choose default), then if the vertical coordinate is :code:`air_pressure` or :code:`air_pressure_levels`, interpolation is done in the logarithm of air pressure; if choose :code: `constant vertical coordinate values` :code:, then the default interpolation is nearest-neighbor. For all other vertical coordinates interpolation is done in the specified coordinate (no logarithm applied).
+This observation operator implements linear interpolation (including log-linear interpolation), and nearest-neighbor interpolation in a vertical coordinate when explicitly chosen. If choose automatic (which is same as choose default), then if the vertical coordinate is :code:`pressure` or :code:`air_pressure_levels`, interpolation is done in the logarithm of air pressure; if choose :code: `constant vertical coordinate values` :code:, then the default interpolation is nearest-neighbor. For all other vertical coordinates interpolation is done in the specified coordinate (no logarithm applied).
 
 This operator can be used as a component of the `Composite` operator.
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
-* :code:`vertical coordinate` [optional]: the vertical coordinate to use in interpolation. If set to :code:`air_pressure` or :code:`air_pressure_levels`, the interpolation is done in log(air pressure). The default value is :code:`air_pressure`.
+* :code:`vertical coordinate` [optional]: the vertical coordinate to use in interpolation. If set to :code:`pressure` or :code:`air_pressure_levels`, the interpolation is done in log(air pressure). The default value is :code:`pressure`.
 * :code:`constant vertical coordinate values` [optional]: use the (array) values as vertical coordinate in interpolation. If :code:`interpolation method` is not defined, then nearest-neighbor will be used in interpolation. If this option is chosen, the geovals for vertical coordinate are not requested and vertical coordinate option above shouldn't be used. The primary purpose of this option is to serve the requirement for soil moisture assimilation.
 * :code:`observation vertical coordinate` [optional]: name of the ObsSpace variable (from the :code:`MetaData` group) storing the vertical coordinate of observation locations. If not set, assumed to be the same as :code:`vertical coordinate`.
 * :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator (see the example below). This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
@@ -242,7 +242,7 @@ The observation operator in the above example does vertical interpolation in hei
     vertical coordinate: air_pressure_levels
     observation vertical coordinate: pressure
 
-The observation operator in the above example does vertical interpolation in log(air_pressure) on the levels taken from the :code:`air_pressure_levels` GeoVaL.
+The observation operator in the above example does vertical interpolation in log(pressure) on the levels taken from the :code:`air_pressure_levels` GeoVaL.
 
 .. code-block:: yaml
 
@@ -421,13 +421,13 @@ Additionally, for calculation of MW cloud-affected radiances using RTTOV-SCATT t
 
 The geographic location of the observation, the satellite zenith angle and the RTTOV surface type are also required from the ObsSpace:
 
-* At least one (in order of priority) from :code:`MetaData/elevation`, :code:`MetaData/surface_height`, :code:`MetaData/model_orography` or the :code:`surface_altitude` geoval [m]
+* At least one (in order of priority) from :code:`MetaData/heightOfSurface`, :code:`MetaData/heightOfSurface`, :code:`MetaData/model_orography` or the :code:`surface_altitude` geoval [m]
 * :code:`MetaData/latitude` [degrees]
 * :code:`MetaData/longitude` [degrees, -180--180 or 0--360]
 * :code:`MetaData/sensorZenithZngle` [degrees]
 * :code:`MetaData/surfaceQualifier` [0-2]
 
-  :code:`MetaData/surface_type` is used to specify whether RTTOV should treat an observation as having a land (0), sea (1) or sea-ice (2) surface. The :code:`SetSurfaceType` ObsFunction, may be called via the :code:`VariableAssignment` ObsFilter to generate this data according to rules used in operational processing at the Met Office.
+  :code:`MetaData/surfaceQualifier` is used to specify whether RTTOV should treat an observation as having a land (0), sea (1) or sea-ice (2) surface. The :code:`SetSurfaceType` ObsFunction, may be called via the :code:`VariableAssignment` ObsFilter to generate this data according to rules used in operational processing at the Met Office.
 
 Optionally, the satellite azimuth angle and the solar zenith/azimuth angles may be supplied:
 
@@ -449,7 +449,7 @@ Outputs:
 * :code:`brightness_temperature_assuming_clear_sky`
 * :code:`pressure_level_at_peak_of_weightingfunction`
 * :code:`toa_total_transmittance`
-* :code:`surface_emissivity`
+* :code:`emissivity`
 * :code:`brightness_temperature_jacobian_${any_active_variable}`
 
 Where an observation diagnostic is requested that is not recognised by the interface, **no error is returned**, but memory is still allocated for the named observation diagnostic and the array is initialised to :code:`missing`. This is to facilitate the subsequent creation of bias correction predictors using output from the observation operator.
@@ -464,7 +464,7 @@ The configurable options for the RTTOV observation operator interface are:
 
 * :code:`Absorbers` (string list, optional): *Additional* atmospheric absorber species that will be requested from geovals. Names must correspond to those specified in :code:`gas_name` array in the |rttov_const module|.
 
-  * :code:`Water_vapour` (the internal RTTOV name for water vapour, c.f. :code:`H2O` in CRTM) is mandatory and maps to :code:`specific_humidity` and it is not necessary to list it here explicitly.
+  * :code:`Water_vapour` (the internal RTTOV name for water vapour, c.f. :code:`H2O` in CRTM) is mandatory and maps to :code:`specificHumidity` and it is not necessary to list it here explicitly.
 
   * :code:`CLW` (cloud liquid water) is optional for clear-sky MW calculation but mandatory for MW scattering calculations and maps to :code:`mass_content_of_cloud_liquid_water_in_atmosphere_layer`.
 
@@ -645,7 +645,7 @@ Configuration options (ObsOperator):
 Configuration options (ObsSpace):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* :code:`obsgrouping`: applying record_number as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
+* :code:`obsgrouping`: applying sequenceNumber as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
 
 Configuration options (ObsFilters):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -723,7 +723,7 @@ angle data
 Configuration options (ObsSpace):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* :code:`obsgrouping`: applying record_number as a group_variable can get RO profiles in ufo. Otherwise RO data would be  treated as single observations.
+* :code:`obsgrouping`: applying sequenceNumber as a group_variable can get RO profiles in ufo. Otherwise RO data would be  treated as single observations.
 
 Configuration options (ObsFilters):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -803,7 +803,7 @@ Configuration options (ObsOperator):
 Configuration options (ObsSpace):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* :code:`obsgrouping`: applying record_number as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
+* :code:`obsgrouping`: applying sequenceNumber as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
 
 Configuration options (ObsFilter):
 
@@ -1016,7 +1016,7 @@ Where :math:`P` is pressure, :math:`e` is water vapour pressure, :math:`T` is te
 
 The Met Office Ground Based GNSS observation operator makes use of a generic refractivity calculator and for the tangent linear and adjoint it calculates the ZTD gradient with respect to both the pressure and specific humidity. 
 
-Model inputs for the forward operator are specific humidity, pressure, geopotential heights of air_pressure/full levels/theta and geopotential heights of air_pressure_levels/half levels/rho. 
+Model inputs for the forward operator are specific humidity, pressure, geopotential heights of pressure/full levels/potentialTemperature and geopotential heights of air_pressure_levels/half levels/rho. 
 
 Configuration options (ObsFilters):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1025,7 +1025,7 @@ The operator requires these values to be set to the default values to work corre
 
 :code:`vert_interp_ops`:
   If true, then perform vertical interpolation of pressure from half levels to full levels using ln(p), otherwise
-  use exner (air_pressure levels pressure) (default: true).
+  use exner (pressure levels pressure) (default: true).
 :code:`pseudo_ops`:
   If true, use pseudo-levels to improve the accuracy of the refractivity
   calculation (default: false).
@@ -1061,7 +1061,7 @@ Both pressure and humidity signals can be identified in the ZTD and so the gradi
 
 The operator works in the direction of surface to the model top.  
 
-In this operator, we assume ln(pressure) is linear with height and therefore :code:`vert_interp_ops` needs to be true (default), and use this assumption to interpolate pressure on rho levels :math:`P_{\rho}` (air_pressure_levels/half levels) to pressure on theta levels :math:`P_{\theta}` (air_pressure/full levels), such that:
+In this operator, we assume ln(pressure) is linear with height and therefore :code:`vert_interp_ops` needs to be true (default), and use this assumption to interpolate pressure on rho levels :math:`P_{\rho}` (air_pressure_levels/half levels) to pressure on potentialTemperature levels :math:`P_{\theta}` (pressure/full levels), such that:
 
 .. math::
   P_{\theta}=e^{((z_{weight})lnP_{\rho_{i}}+(1-z_{weight})lnP_{\rho_{i+1}} )}
@@ -1071,8 +1071,8 @@ Where
 .. math::
   z_{weight} =\frac{z_{\rho_{i+1}}-z_{\theta_{i}}}{z_{\rho_{i+1}}-z_{\rho_{i}}},
 
-with :math:`z_{\rho}` being the geopotential height of the rho levels and :math:`z_{\theta}` being the geopotential height of the theta levels. 
-Pressure on theta and rho levels, together with specific humidity on theta levels is then passed to the generic refractivity calculator, which calculates refractivity on theta levels. The partial derivative of the pressure on theta with regards to pressure on rho levels is required for the refractivity derivatives used in the ZTD TL/AD, and is
+with :math:`z_{\rho}` being the geopotential height of the rho levels and :math:`z_{\theta}` being the geopotential height of the potentialTemperature levels. 
+Pressure on potentialTemperature and rho levels, together with specific humidity on potentialTemperature levels is then passed to the generic refractivity calculator, which calculates refractivity on potentialTemperature levels. The partial derivative of the pressure on potentialTemperature with regards to pressure on rho levels is required for the refractivity derivatives used in the ZTD TL/AD, and is
 
 .. math::
   \frac{\partial P_{\theta_{i}}}{\partial P_{\rho_{i}}}=\frac{P_{\theta_{i}} z_{weight}}{P_{\rho_{i}}} 
@@ -1082,7 +1082,7 @@ And for the ZTD above the model top we require
 .. math::
   \frac{\partial P_{\theta_{i}}}{\partial P_{\rho_{i+1}}}=\frac{P_{\theta_{i}} (1-z_{weight})}{P_{\rho_{i+1}}} 
 
-The operator then loops through the theta levels, starting with the theta level directly above the station height, calculating the delay contribution for each layer bounded by the theta levels, assuming the refractivity decays exponentially between the model levels.
+The operator then loops through the potentialTemperature levels, starting with the potentialTemperature level directly above the station height, calculating the delay contribution for each layer bounded by the potentialTemperature levels, assuming the refractivity decays exponentially between the model levels.
 
 .. math::
   N_{i+1}=N_{i} e^{-c(z_{i+1}-z_{i})}
@@ -1111,7 +1111,7 @@ Delay for layer :math:`i` is then
   \frac{\partial ZTD_{i}}{\partial N_{i}}=\frac{-10^{-6}}{c_{i}}  e^{c_{i} z_{i} } (e^{-c_{i} z_{i+1} }-e^{-c_{i} z_{i} })
   
 The delay for each layer is added to the running total delay.
-The operator iterates up to the highest theta level, calculating the delay up to that point. 
+The operator iterates up to the highest potentialTemperature level, calculating the delay up to that point. 
 A further small correction must be made for the signal above the model top. An assumption of hydrostatic equilibrium is used to calculate the integral 
 
 .. math::
@@ -1241,7 +1241,7 @@ This operator calculates modeled particulate matter (PM) at monitoring stations,
 
 Unit conversion is included in the calculations.
 
-The users are allowed to select a vertical interpolation approach to: 1) match model height (above sea level, asl = height above ground level + surface height) to station elevation (also asl) which is required for the AirNow application; or 2) match model log(air_pressure) to observation log(air_pressure), likely suitable for use with other types of observational datasets that contain pressure information, e.g. aircraft, sonde, tower...
+The users are allowed to select a vertical interpolation approach to: 1) match model height (above sea level, asl = height above ground level + surface height) to station elevation (also asl) which is required for the AirNow application; or 2) match model log(pressure) to observation log(pressure), likely suitable for use with other types of observational datasets that contain pressure information, e.g. aircraft, sonde, tower...
 
 Currently this tool mainly supports the calculation from the NOAA FV3-CMAQ aerosol fields (user-defined, up to 70 individual species). Based on the user definition, the calculation can involve the usage of the model-based scaling factors for three modes of Aitken, accumulation, and coarse.
 
@@ -1506,15 +1506,15 @@ Example
     # operators used to evaluate background errors
     - name: BackgroundErrorVertInterp
       variables:
-      - name: northward_wind
-      - name: eastward_wind
-      - name: air_temperature
-      - name: specific_humidity
+      - name: windNorthward
+      - name: windEastward
+      - name: airTemperature
+      - name: specificHumidity
       observation vertical coordinate: pressure
       vertical coordinate: background_error_air_pressure
     - name: BackgroundErrorIdentity
       variables:
-      - name: surface_pressure
+      - name: stationPressure
 
 Background Error Identity
 -------------------------

@@ -198,7 +198,7 @@ above, which was written specifically with static bias correction in mind.
 Available Predictors
 ====================
 
-`cloud_liquid_water`
+`cloudWaterContent`
 ++++++++++++++++++++
 
 Cloud liquid water.
@@ -214,7 +214,7 @@ Example
 
 .. code-block:: yaml
 
-  name: cloud_liquid_water
+  name: cloudWaterContent
   satellite: SSMIS
   ch19h: 12
   ch19v: 13
@@ -327,7 +327,7 @@ and CSV file:
 
 .. code-block::
 
-    MetaData/stationIdentification, MetaData/pressure, ObsBias/air_temperature
+    MetaData/stationIdentification, MetaData/pressure, ObsBias/airTemperature
     string,float,float
     ABC,30000,0.1
     ABC,60000,0.2
@@ -432,9 +432,9 @@ The following options are supported:
 
 The Legendre polynomial :math:`P_n(x)` where `n` is the value of the :code:`order` option,
 
-    x = -1 + 2 * (scan_position - 1) / (n_scan_positions - 1),
+    x = -1 + 2 * (sensorScanPosition - 1) / (n_scan_positions - 1),
 
-:code:`n_scan_positions` is the value of the :code:`number of scan positions` option and :code:`scan_position` is the sensor scan position loaded from the :code:`scan_position@MetaData` variable (assumed to range from 1 to :code:`n_scan_positions`).
+:code:`n_scan_positions` is the value of the :code:`number of scan positions` option and :code:`sensorScanPosition` is the sensor scan position loaded from the :code:`MetaData/sensorScanPosition` variable (assumed to range from 1 to :code:`n_scan_positions`).
 
 The following options are supported:
 
@@ -453,7 +453,7 @@ Example
 `orbital_angle`
 +++++++++++++++
 
-A term of the Fourier series of the orbital angle :math:`\theta` (loaded from the :code:`satellite_orbital_angle@MetaData` variable), i.e. :math:`\sin(n\theta)` or :math:`\cos(n\theta)`.
+A term of the Fourier series of the orbital angle :math:`\theta` (loaded from the :code:`MetaData/satellite_orbital_angle` variable), i.e. :math:`\sin(n\theta)` or :math:`\cos(n\theta)`.
 
 The following options are supported:
 
@@ -476,7 +476,7 @@ nth power of the scan angle.
 
 The following options are supported:
 
-* :code:`var_name`: (Optional) Name of the ObsSpace variable (from the :code:`MetaData` group) storing the scan angle (in degrees). By default, :code:`sensor_view_angle`.
+* :code:`var_name`: (Optional) Name of the ObsSpace variable (from the :code:`MetaData` group) storing the scan angle (in degrees). By default, :code:`sensorViewAngle`.
 * :code:`order` (Optional) Power to which to raise the scan angle. By default, 1.
 
 Example
@@ -485,7 +485,7 @@ Example
 .. code-block:: yaml
 
   name: scan_angle
-  var_name: scan_position
+  var_name: sensorScanPosition
   order: 2
 
 `sine_of_latitude`

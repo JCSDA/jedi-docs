@@ -42,7 +42,7 @@ and ocean-air fluxes.
 Input variables:
 ^^^^^^^^^^^^^^^^
 
- - sea_surface_temperature
+ - seaSurfaceTemperature
  - net_downwelling_shortwave_radiation
  - upward_latent_heat_flux_in_air
  - upward_sensible_heat_flux_in_air
@@ -81,7 +81,7 @@ Input variables:
 ^^^^^^^^^^^^^^^^
 
  - sea_water_potential_temperature
- - sea_water_salinity
+ - salinity
  - sea_water_cell_thickness
 
 Examples of yaml:
