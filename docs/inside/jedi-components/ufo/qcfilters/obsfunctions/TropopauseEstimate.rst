@@ -29,23 +29,23 @@ to height because the code is making a tropopause **estimate** only.
 Example 1
 ^^^^^^^^^
 
-The most useful example of this obsfunction is to reject satellite-derived atmospheric motion vectors (satwinds) data when their vertical level information implies they exist well above the tropopause since clouds (which are tracked to provide a motion vector) are not likely to occur in the clear air of the stratosphere.  This is handled by a :code:`Difference Check` filter in which the :code:`air_pressure@MetaData` is more than some threshold lower (higher altitude) than the supposed tropopause.
+The most useful example of this obsfunction is to reject satellite-derived atmospheric motion vectors (satwinds) data when their vertical level information implies they exist well above the tropopause since clouds (which are tracked to provide a motion vector) are not likely to occur in the clear air of the stratosphere.  This is handled by a :code:`Difference Check` filter in which the :code:`MetaData/pressure` is more than some threshold lower (higher altitude) than the supposed tropopause.
 
 .. code-block:: yaml
 
     - filter: Difference Check
       filter variables:
-      - name: eastward_wind
-      - name: northward_wind
-      reference: TropopauseEstimate@ObsFunction
+      - name: windEastward
+      - name: windNorthward
+      reference: ObsFunction/TropopauseEstimate
       options:
         - tropo_equator: 13000         # 130 hPa
         - tropo_pole: 37000            # 370 hPa
-      value: air_pressure@MetaData
+      value: MetaData/pressure
       minvalue: -5000                  # 50 hPa above tropopause level, negative p-diff
 
 
 Example 2
 ^^^^^^^^^
 
-Another possible usage for this obsfunction is to inflate the observational error of water vapor (:code:`specific_humidity`) or satellite radiance data when above the tropopause where clouds are nearly impossible to form.
+Another possible usage for this obsfunction is to inflate the observational error of water vapor (:code:`specificHumidity`) or satellite radiance data when above the tropopause where clouds are nearly impossible to form.

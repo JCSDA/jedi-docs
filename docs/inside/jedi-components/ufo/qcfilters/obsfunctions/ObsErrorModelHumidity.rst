@@ -34,14 +34,14 @@ Example yaml
 
   - filter: Perform Action
     filter variables:
-    - name: specific_humidity
+    - name: specificHumidity
     action:
       name: assign error
       error function:
-        name: ObsErrorModelHumidity@ObsFunction
+        name: ObsFunction/ObsErrorModelHumidity
         options:
           xvar:
-            name: MetaData/air_pressure
+            name: MetaData/pressure
           xvals: [85000, 50000, 25000]   #Pressure (Pa)
           errors: [0.18, 0.19, 0.2]      #RH error
           Method: UKMO

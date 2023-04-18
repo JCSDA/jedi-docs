@@ -51,11 +51,11 @@ test_qcflag
 Required fields from obs/geoval 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 geovals
-  :code:`water_area_fraction@GeoVaLs` , 
-  :code:`surface_wind_speed@GeoVaLs` 
+  :code:`GeoVaLs/water_area_fraction` , 
+  :code:`GeoVaLs/surface_wind_speed` 
 
 observation space:
-  :code:`brightness_temperature@ObsValue`.
+  :code:`ObsValue/brightnessTemperature`.
   In addition, brightness_temperature observation error, QC flags, and simulated
   values at the observatioin locations will come from JEDI default values or 
   or from the input defined by :code:`test_obserr`, :code:`test_qcflag` and :code:`test_hofx` 
@@ -73,31 +73,31 @@ in this yaml, please refer to their specific documentations, respectively.
 
   - filter: Perform Action
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: &all_channels 1-15
     action:
       name: inflate error
       inflation variable:
-        name: ObsErrorFactorSituDependMW@ObsFunction
+        name: ObsFunction/ObsErrorFactorSituDependMW
         channels: *all_channels
         options:
           sensor: amsua_n19
           channels: *all_channels
           clwobs_function:
-            name: CLWRetMW@ObsFunction
+            name: ObsFunction/CLWRetMW
             options:
               clwret_ch238: 1
               clwret_ch314: 2
               clwret_types: [ObsValue]
           clwbkg_function:
-            name: CLWRetMW@ObsFunction
+            name: ObsFunction/CLWRetMW
             options:
               clwret_ch238: 1
               clwret_ch314: 2
               clwret_types: [HofX]
               bias_application: HofX
           scatobs_function:
-            name: SCATRetMW@ObsFunction
+            name: ObsFunction/SCATRetMW
             options:
               scatret_ch238: 1
               scatret_ch314: 2
@@ -105,18 +105,18 @@ in this yaml, please refer to their specific documentations, respectively.
               scatret_types: [ObsValue]
               bias_application: HofX
           clwmatchidx_function:
-            name: CLWMatchIndexMW@ObsFunction
+            name: ObsFunction/CLWMatchIndexMW
             channels: *all_channels
             options:
               channels: *all_channels
               clwobs_function:
-                name: CLWRetMW@ObsFunction
+                name: ObsFunction/CLWRetMW
                 options:
                   clwret_ch238: 1
                   clwret_ch314: 2
                   clwret_types: [ObsValue]
               clwbkg_function:
-                name: CLWRetMW@ObsFunction
+                name: ObsFunction/CLWRetMW
                 options:
                   clwret_ch238: 1
                   clwret_ch314: 2

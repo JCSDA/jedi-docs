@@ -33,20 +33,20 @@ string operation
 Example configuration:
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Here is an example for creating a new station_name variable from a ground based gnss station name processing name combination. In this example the :code:`full_site_name@MetaData` might look like AAAA-BBBB.  
+Here is an example for creating a new station_name variable from a ground based gnss station name processing name combination. In this example the :code:`MetaData/full_site_name` might look like AAAA-BBBB.  
 
 .. code-block:: yaml
 
   - filter: Variable Assignment
     assignments:
-    - name: station_name@MetaData
+    - name: MetaData/station_name
       type: string
       function:
-        name: StringManipulation@StringObsFunction
+        name: StringObsFunction/StringManipulation
         options:
           string operation: stringcut
-          variable: [full_site_name@MetaData]
+          variable: [MetaData/full_site_name]
           startIndex: 0 
           cutLength: 4 
   
-The output :code:`station_name@MetaData` would then look like AAAA. 
+The output :code:`MetaData/station_name` would then look like AAAA. 

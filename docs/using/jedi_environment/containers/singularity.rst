@@ -238,18 +238,14 @@ On a related note, you may have to run this in order for the JEDI code to build 
 
 .. code-block:: bash
 
-    git lfs install
+    git lfs install --skip-repo
 
 This only needs to be done once, and it can be done from either inside or outside
-the container.  The reason this is necessary is because Singularity does not change
-your user name, your user privileges, or your home directory - you're the same person
-inside and outside the container, and you have the same home directory.
-The :code:`git lfs install` command modifies the git configuration in order to properly
-process files that are stored on :doc:`git-lfs </inside/developer_tools/gitlfs>`.
-These configuration settings are stored in a file in your home directory called :code:`~/.gitconfig`.
-You would not want the container to automatically modify the files in your home
-directory so it is best to enter this manually. But, you only have to run this
-command once, even if you use multiple containers.
+the container.  This is because Singularity does not change your user name, your user privileges,
+or your home directory - you're the same user inside and outside the container.
+The :code:`git lfs install --skip-repo` command sets up global filters needed by
+:doc:`git-lfs </inside/developer_tools/gitlfs>`,
+by adding to your user-level git configuration in :code:`~/.gitconfig`.
 
 To exit the Singularity container at any time, simply type
 

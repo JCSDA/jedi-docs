@@ -8,13 +8,13 @@ This section describes how to configure each of the existing QC filters in UFO. 
 Bounds Check Filter
 -------------------
 
-This filter rejects observations whose values (:code:`@ObsValue` in the ioda files) lie outside specified limits:
+This filter rejects observations whose values (:code:`ObsValue/` in the ioda files) lie outside specified limits:
 
 .. code-block:: yaml
 
    - filter: Bounds Check
      filter variables:
-     - name: brightness_temperature
+     - name: brightnessTemperature
        channels: 4-6
      minvalue: 240.0
      maxvalue: 300.0
@@ -32,27 +32,27 @@ In this example, all observations from channel 3 will pass QC because the filter
 
    - filter: Bounds Check
      filter variables:
-     - name: air_temperature
+     - name: airTemperature
      minvalue: 230
    - filter: Bounds Check
      filter variables:
-     - name: eastward_wind
-     - name: northward_wind
+     - name: windEastward
+     - name: windNorthward
      minvalue: -40
      maxvalue:  40
 
 In the above example two filters are configured, one testing temperature, and the other testing wind components. The first filter would reject all temperature observations that are below 230. The second, all wind component observations whose magnitude is above 40.
 
-In practice, one would be more likely to want to filter out wind component observations based on the value of the wind speed :code:`sqrt(eastward_wind**2 + northward_wind**2)`. This can be done using the :code:`test variables` keyword, which rejects observations of a variable if the value of *another* lies outside specified bounds. The "test variable" does not need to be a simulated or observed variable; in particular, it can be an :ref:`ObsFunction <obs-function-and-obs-diagnostic-suffixes>`, i.e. a quantity derived from simulated variables. For example, the following snippet filters out wind component observations if the wind speed is above 40:
+In practice, one would be more likely to want to filter out wind component observations based on the value of the wind speed :code:`sqrt(windEastward**2 + windNorthward**2)`. This can be done using the :code:`test variables` keyword, which rejects observations of a variable if the value of *another* lies outside specified bounds. The "test variable" does not need to be a simulated or observed variable; in particular, it can be an :ref:`ObsFunction <obs-function-and-obs-diagnostic-suffixes>`, i.e. a quantity derived from simulated variables. For example, the following snippet filters out wind component observations if the wind speed is above 40:
 
 .. code-block:: yaml
 
    - filter: Bounds Check
      filter variables:
-     - name: eastward_wind
-     - name: northward_wind
+     - name: windEastward
+     - name: windNorthward
      test variables:
-     - name: Velocity@ObsFunction
+     - name: ObsFunction/Velocity
      maxvalue: 40
 
 If there is only one entry in the :code:`test variables` list, the same criterion is applied to all filter variables. Otherwise the number of test variables needs to match that of filter variables, and each filter variable is filtered according to the values of the corresponding test variable.
@@ -66,19 +66,19 @@ This filter checks for bias corrected distance between observation value and mod
 
    - filter: Background Check
      filter variables:
-     - name: air_temperature
+     - name: airTemperature
      threshold: 2.0
      absolute threshold: 1.0
      action:
        name: reject
    - filter: Background Check
      filter variables:
-     - name: eastward_wind
-     - name: northward_wind
+     - name: windEastward
+     - name: windNorthward
      threshold: 2.0
      where:
      - variable:
-         name: latitude@MetaData
+         name: MetaData/latitude
        minvalue: -60.0
        maxvalue: 60.0
      action:
@@ -106,7 +106,7 @@ There is an option for the background check filter to check for distance between
 
   - filter: Background Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: 1-24
     absolute threshold: 3.5
     bias correction parameter: 1.0
@@ -154,7 +154,7 @@ The .yaml file can also contain optional filter parameters, which override the d
 
      - filter: Variable Assignment
        assignments:
-       - name: ice_area_fraction@GrossErrorProbability
+       - name: GrossErrorProbability/ice_area_fraction
          type: float
          value: 0.04
      - filter: Bayesian Background Check
@@ -165,7 +165,7 @@ The .yaml file can also contain optional filter parameters, which override the d
        obs minus BG threshold: 100.0
 
 
-Note that this filter requires the background value (HofX) and background error. Unless a constant background error term 'bg error' is provided in the yaml, the latter is accessed from the obs diagnostics - as an interim measure, supplied in a separate .nc4 file (see .yaml snippet below), with variable name e.g. :code:`ice_area_fraction_background_error` (no @ group name) to go with :code:`ice_area_fraction`.
+Note that this filter requires the background value (HofX) and background error. Unless a constant background error term 'bg error' is provided in the yaml, the latter is accessed from the obs diagnostics - as an interim measure, supplied in a separate .nc4 file (see .yaml snippet below), with variable name e.g. :code:`ice_area_fraction_background_error` (no group name) to go with :code:`ice_area_fraction`.
 
 .. code-block:: yaml
 
@@ -180,10 +180,10 @@ By default, a filter variable is treated as scalar. But for vectors, such as win
 
      - filter: Bayesian Background Check
        filter variables:
-       - name: eastward_wind
+       - name: windEastward
          options:
              first_component_of_two: true
-       - name: northward_wind
+       - name: windNorthward
 
 
 Bayesian Background check currently only works for single-level observations, not profiles.
@@ -210,9 +210,9 @@ An example yaml section is as follows:
 .. code-block:: yaml
 
      - filter: Bayesian Background QC Flags
-       filter variables: [air_temperature, eastward_wind, northward_wind]
+       filter variables: [airTemperature, windEastward, windNorthward]
        PGE threshold: 0.8
-       PGE variable name substitutions: {"eastward_wind", "northward_wind"}
+       PGE variable name substitutions: {"windEastward", "windNorthward"}
 
 Air temperature QC flags are set if the temperature PGE is greater than 0.8.
 Due to the use of the variable name substitutions, both eastward and northward wind flags are set if the northward wind PGE is greater than 0.8.
@@ -238,7 +238,7 @@ the latter case the two components need to be specified one after the other in t
 
 For each variable, the optional parameter :code:`probability_density_bad` (default value :code:`0.1`) is used
 to set the prior probability density of that variable being
-"bad". The filter can also apply a specific prior probability density of bad observations for the following observation types, identified by the integer ID :code:`ObsType@MetaData`:
+"bad". The filter can also apply a specific prior probability density of bad observations for the following observation types, identified by the integer ID :code:`MetaData/ObsType`:
 
 * Bogus :code:`bogus_probability_density_bad`
 * Synop (SynopManual, SynopAuto, MetarManual, MetarAuto, SynopMob,
@@ -269,16 +269,16 @@ Example:
      - name: air_temperature_at_2m
        options:
          probability_density_bad: 0.1
-     - name: eastward_wind
+     - name: windEastward
        options:
          probability_density_bad: 0.1
          synop_probability_density_bad: 0.1
          bogus_probability_density_bad: 0.1
-     - name: northward_wind
+     - name: windNorthward
        options:
          not_used_in_whole_report: true
          second_component_of_two: true
-     - name: relative_humidity_at_2m
+     - name: relativeHumidityAt2M
        options:
          not_used_in_whole_report: true
          probability_density_bad: 0.1
@@ -291,24 +291,24 @@ This filter retains all observations selected by the :ref:`"where" statement <wh
 * taken at locations where the sea surface temperature retrieved from the model is between 200 and 300 K (inclusive)
 * with valid :code:`height` metadata (not set to "missing value")
 * taken by stations with IDs 3, 6 or belonging to the range 11-120
-* without valid :code:`air_pressure` metadata.
+* without valid :code:`pressure` metadata.
 
 .. code-block:: yaml
 
    - filter: Domain Check
      where:
      - variable:
-         name: sea_surface_temperature@GeoVaLs
+         name: GeoVaLs/sea_surface_temperature
        minvalue: 200
        maxvalue: 300
      - variable:
-         name: height@MetaData
+         name: MetaData/height
        is_defined:
      - variable:
-         name: station_id@MetaData
+         name: MetaData/stationIdentification
        is_in: 3, 6, 11-120
      - variable:
-         name: air_pressure@MetaData
+         name: MetaData/pressure
        is_not_defined:
 
 BlackList Filter
@@ -321,7 +321,7 @@ This filter behaves like the exact opposite of Domain Check: it rejects all obse
    - filter: BlackList
      where:
      - variable:
-         name: station_id@MetaData
+         name: MetaData/stationIdentification
        is_in: 1, 7, 100-199
 
 RejectList Filter
@@ -342,7 +342,7 @@ Below, the filter is configured to accept only observations taken by stations wi
    - filter: AcceptList  # accept back selected observations
      where:
      - variable:
-         name: station_id@MetaData
+         name: MetaData/stationIdentification
        is_in: 1, 7, 100-199
 
 Perform Action Filter
@@ -486,7 +486,7 @@ The following YAML parameters are supported:
     :code:`vertical_mesh` starting from :code:`vertical_min`. Default: 110,000 (Pa).
 
   * :code:`vertical_coordinate`: Name of the observation vertical coordinate.
-    Default: :code:`air_pressure`.
+    Default: :code:`pressure`.
 
 - Temporal grid:
 
@@ -599,9 +599,15 @@ Example 2 (thinning observations from multiple categories and with non-equal pri
       time_min: 2018-04-14T21:00:00Z
       time_max: 2018-04-15T03:00:00Z
       category_variable:
-        name: instrument_id@MetaData
+        name: MetaData/instrument_id
       priority_variable:
-        name: priority@MetaData
+        name: MetaData/thinningPriority
+
+.. _TemporalThinningFilter:
+
+.. _TemporalThinningFilter:
+
+.. _TemporalThinningFilter:
 
 .. _TemporalThinningFilter:
 
@@ -643,7 +649,7 @@ starting from the observation closest to seed time):
       min_spacing: PT01H30M
       seed_time: 2018-04-15T00:00:00Z
       category_variable:
-        name: call_sign@MetaData
+        name: MetaData/call_sign
 
 Example 2 (selecting at most one observation taken by each station per 1 h,
 starting from the earliest observation, and allowing the filter to retain an observation
@@ -655,9 +661,15 @@ taken up to 20 min after the first qualifying observation if its quality score i
       min_spacing: PT01H
       tolerance: PT20M
       category_variable:
-        name: call_sign@MetaData
+        name: MetaData/call_sign
       priority_variable:
-        name: score@MetaData
+        name: MetaData/score
+
+.. _PoissonDiskThinningFilter:
+
+.. _PoissonDiskThinningFilter:
+
+.. _PoissonDiskThinningFilter:
 
 .. _PoissonDiskThinningFilter:
 
@@ -797,9 +809,9 @@ volume size depends on the observation priority. Each scan is thinned separately
     - filter: Poisson Disk Thinning
       min_horizontal_spacing: {"0": 600, "1": 200} # priority -> km
       category_variable:
-        name: scan_index@MetaData
+        name: MetaData/scan_index
       priority_variable:
-        name: priority@MetaData
+        name: MetaData/thinningPriority
       random_seed: 12345
 
 .. figure:: images/poisson-disk-thinning.png
@@ -889,7 +901,7 @@ full set of observations from the station.
 .. code-block:: yaml
 
   - filter: Stuck Check:
-    filter variables: [air_temperature]
+    filter variables: [airTemperature]
     number stuck tolerance: 2
     time stuck tolerance: PT2H
 
@@ -903,7 +915,7 @@ as "stuck": air temperature and air pressure.
 .. code-block:: yaml
 
   - filter: Stuck Check:
-    filter variables: [air_temperature, air_pressure]
+    filter variables: [airTemperature, pressure]
     number stuck tolerance: 2
     time stuck tolerance: PT2H
 
@@ -920,7 +932,7 @@ identical air temperature measured values. A streak is rejected if it is longer 
 .. code-block:: yaml
 
   - filter: Stuck Check:
-    filter variables: [air_temperature]
+    filter variables: [airTemperature]
     percentage stuck tolerance: 50
     
 Say we have 5 observations in one record: 274, 274, 274, 275, 275; and 4 in another: 274, 274, 275, 275. The first 3 observations in the first record form a streak and are rejected (3 is greater than 50 % of 5). They are the only ones rejected. This is because the next record comprises 2 streaks each 2 observations long, and 2 is exactly 50 % of 4, not greater than 50 % of 4; therefore neither clear the threshold for rejection.
@@ -936,14 +948,14 @@ For example:
 .. code-block:: yaml
 
    - filter: Difference Check
-     reference: brightness_temperature_8@ObsValue
-     value: brightness_temperature_9@ObsValue
+     reference: ObsValue/brightnessTemperature_8
+     value: ObsValue/brightnessTemperature_9
      minvalue: 0
 
-The above YAML is checking the difference between :code:`brightness_temperature_9@ObsValue` and :code:`brightness_temperature_8@ObsValue` and rejecting negative values.
+The above YAML is checking the difference between :code:`ObsValue/brightnessTemperature_9` and :code:`ObsValue/brightnessTemperature_8` and rejecting negative values.
 
 In psuedo-code form:
-:code:`if (brightness_temperature_9@ObsValue - brightness_temperature_8@ObsValue < minvalue) reject_obs()`
+:code:`if (ObsValue/brightnessTemperature_9 - ObsValue/brightnessTemperature_8 < minvalue) reject_obs()`
 
 The options for YAML include:
  - :code:`minvalue`: the minimum value the difference :code:`value - reference` can be. Set this to 0, for example, and all negative differences will be rejected.
@@ -977,12 +989,12 @@ An example:
 
    - filter: Derivative Check
      independent: datetime
-     dependent: air_pressure
+     dependent: pressure
      minvalue: -50
      maxvalue: 0
      passedBenchmark:  238      # number of passed obs
 
-The above YAML is checking the derivative of :code:`air_pressure` with respect to :code:`datetime` for a radiosonde profile and rejecting observations where the derivative is positive or less than -50 Pa/sec.
+The above YAML is checking the derivative of :code:`pressure` with respect to :code:`datetime` for a radiosonde profile and rejecting observations where the derivative is positive or less than -50 Pa/sec.
 
 The options for YAML include:
  - :code:`independent`: the name of the independent variable (:code:`dx`)
@@ -1041,8 +1053,8 @@ A call to Spike and Step Check MUST be preceded by creating Diagnostic Flags for
 
   - filter: Create Diagnostic Flags
     filter variables:
-      - name: ocean_temperature
-      - name: ocean_salinity
+      - name: waterTemperature
+      - name: salinity
     flags:
     - name: spike
       initial value: false
@@ -1057,9 +1069,9 @@ An example of applying the Spike and Step Check filter:
 
   - filter: Spike and Step Check
     filter variables:
-      - name: ObsValue/ocean_temperature
-    dependent: ObsValue/ocean_temperature  # dy/
-    independent: MetaData/ocean_depth      # dx
+      - name: ObsValue/waterTemperature
+    dependent: ObsValue/waterTemperature  # dy/
+    independent: MetaData/depthBelowWaterSurface      # dx
     count spikes: true
     count steps: true
     tolerance:
@@ -1075,7 +1087,7 @@ An example of applying the Spike and Step Check filter:
     action:
       name: reject
 
-In this case, both spikes and steps are counted for :code:`ocean_temperature` profiles, and rejected for :code:`ocean_temperature` only, since that is the only :code:`filter variable` listed. If other filter variables were listed, they would all be rejected at locations where spikes and steps in :code:`ocean_temperature` (the dependent variable) are found. If looking for spikes and steps in other variables, the Spike and Step Check needs to be called again on each of them as the dependent variable separately.
+In this case, both spikes and steps are counted for :code:`waterTemperature` profiles, and rejected for :code:`waterTemperature` only, since that is the only :code:`filter variable` listed. If other filter variables were listed, they would all be rejected at locations where spikes and steps in :code:`waterTemperature` (the dependent variable) are found. If looking for spikes and steps in other variables, the Spike and Step Check needs to be called again on each of them as the dependent variable separately.
 
 .. figure:: images/spikestepQC_img.png
    :alt: The tolerance function specified by 'tolerance.factors' and 'tolerance.x boundaries': straight line segments joining (0, 1.0), (200, 1.0), (300, 0.5), (600, 0.5), (600, 0.1), and constant at 0.1 subsequently.
@@ -1197,7 +1209,7 @@ Example:
      max_climb_rate: 200 # Pa/s
      max_speed_interpolation_points: {"0": 1000, "20000": 400, "110000": 200} # Pa: m/s
      rejection_threshold: 0.5
-     station_id_variable: station_id@MetaData
+     station_id_variable: MetaData/stationIdentification
 
 Ship Track Check Filter
 -----------------------
@@ -1273,7 +1285,7 @@ Example:
     max speed (m/s): 3.0
     rejection threshold: 0.5
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
     records_are_single_obs: true
 
 Met Office Buddy Check Filter
@@ -1290,11 +1302,11 @@ The YAML parameters supported by this filter are listed below.
     .. code:: yaml
 
       filter variables:
-      - name: air_temperature
-      - name: eastward_wind
+      - name: airTemperature
+      - name: windEastward
         options:
           first_component_of_two: true
-      - name: northward_wind
+      - name: windNorthward
 
   - :code:`rejection_threshold`: Observations will be rejected if the gross error probability lies at or above this threshold. Default: 0.5.
 
@@ -1391,11 +1403,11 @@ Example:
 
   - filter: Met Office Buddy Check:
     filter variables:
-    - name: eastward_wind
+    - name: windEastward
       options:
         first_component_of_two: true
-    - name: northward_wind
-    - name: air_temperature
+    - name: windNorthward
+    - name: airTemperature
     rejection_threshold: 0.5
     traced_boxes: # trace all observations
     - min_latitude: -90
@@ -1404,7 +1416,7 @@ Example:
       max_longitude:  180
     search_radius: 100 # km
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
     num_zonal_bands: 24
     sort_by_pressure: false
     max_total_num_buddies: 15
@@ -1494,7 +1506,7 @@ range present in the auxiliary obs space).
    - filter: History Check
      input category: 'SHPSYN'
      time before start of window: PT3H
-     filter variables: [air_temperature]
+     filter variables: [airTemperature]
      stuck check parameters:
        number stuck tolerance: 2
        time stuck tolerance: PT2H
@@ -1505,11 +1517,11 @@ range present in the auxiliary obs space).
        rejection threshold: 0.5
        early break check: false
      station_id_variable:
-       name: station_id@MetaData
+       name: MetaData/stationIdentification
      obs space:
        name: Ship
        distribution: InefficientDistribution
-       simulated variables: [air_temperature]
+       simulated variables: [airTemperature]
        generate:
          list:
            lats: [-37.1, -37.2, -37.3]
@@ -1573,41 +1585,41 @@ observed value has been assigned. Conversely, QC flags previously set to :code:`
 Example 1
 ^^^^^^^^^
 
-Create new variables :code:`air_temperature@GrossErrorProbability` and
-:code:`relative_humidity@GrossErrorProbability` and set them to 0.1 at all locations.
+Create new variables :code:`GrossErrorProbability/airTemperature` and
+:code:`GrossErrorProbability/relativeHumidity` and set them to 0.1 at all locations.
 
 .. code:: yaml
 
     - filter: Variable Assignment
       assignments:
-      - name: air_temperature@GrossErrorProbability
+      - name: GrossErrorProbability/airTemperature
         type: float  # type must be specified if the variable doesn't already exist
         value: 0.1
-      - name: relative_humidity@GrossErrorProbability
+      - name: GrossErrorProbability/relativeHumidity
         type: float
         value: 0.1
 
 Example 2
 ^^^^^^^^^
 
-Set :code:`air_temperature@GrossErrorProbability` to 0.05 at all locations in the tropics.
+Set :code:`GrossErrorProbability/airTemperature` to 0.05 at all locations in the tropics.
 
 .. code:: yaml
 
     - filter: Variable Assignment
       where:
       - variable:
-          name: latitude@MetaData
+          name: MetaData/latitude
         minvalue: -30
         maxvalue:  30
       assignments:
-      - name: air_temperature@GrossErrorProbability
+      - name: GrossErrorProbability/airTemperature
         value: 0.05
 
 Example 3
 ^^^^^^^^^
 
-Set :code:`relative_humidity@GrossErrorProbability` to values computed by an ObsFunction
+Set :code:`GrossErrorProbability/relativeHumidity` to values computed by an ObsFunction
 (0.1 in the southern extratropics and 0.05 in the northern extratropics, with a linear
 transition in between).
 
@@ -1615,12 +1627,12 @@ transition in between).
 
     - filter: Variable Assignment
       assignments:
-      - name: relative_humidity@GrossErrorProbability
+      - name: GrossErrorProbability/relativeHumidity
         function:
-          name: ObsErrorModelRamp@ObsFunction
+          name: ObsFunction/ObsErrorModelRamp
           options:
             xvar:
-              name: latitude@MetaData
+              name: MetaData/latitude
             x0: [-30]
             x1: [30]
             err0: [0.1]
@@ -1629,27 +1641,27 @@ transition in between).
 Example 4
 ^^^^^^^^^
 
-Copy the variable :code:`height@MetaData` to :code:`geopotential_height@DerivedMetaData`.
+Copy the variable :code:`MetaData/height` to :code:`DerivedMetaData/geopotentialHeight`.
 
 .. code:: yaml
 
     - filter: Variable Assignment
       assignments:
-      - name: geopotential_height@DerivedMetaData
+      - name: DerivedMetaData/geopotentialHeight
         type: float  # type must be specified if the variable doesn't already exist
-        source variable: height@MetaData
+        source variable: MetaData/height
 
 Example 5
 ^^^^^^^^^
 
-Initialise the variable :code:`pressure@MetaData` to the missing floating-point value
+Initialise the variable :code:`MetaData/pressure` to the missing floating-point value
 at all locations.
 
 .. code:: yaml
 
     - filter: Variable Assignment
       assignments:
-      - name: pressure@MetaData
+      - name: MetaData/pressure
         type: float  # type must be specified if the variable doesn't already exist
         value: missing
 
@@ -1683,17 +1695,17 @@ The following YAML snippet creates diagnostic flags :code:`Duplicate` and :code:
     - name: Duplicate
     - name: ExtremeValue
 
-For instance, if the list of observed variables in the ObsSpace is :code:`[air_temperature, relative_humidity]`, the filter will create the following Boolean variables: :code:`DiagnosticFlags/Duplicate/air_temperature`, :code:`DiagnosticFlags/Duplicate/relative_humidity`, :code:`DiagnosticFlags/ExtremeValue/air_temperature` and :code:`DiagnosticFlags/ExtremeValue/relative_humidity`.
+For instance, if the list of observed variables in the ObsSpace is :code:`[airTemperature, relativeHumidity]`, the filter will create the following Boolean variables: :code:`DiagnosticFlags/Duplicate/airTemperature`, :code:`DiagnosticFlags/Duplicate/relativeHumidity`, :code:`DiagnosticFlags/ExtremeValue/airTemperature` and :code:`DiagnosticFlags/ExtremeValue/relativeHumidity`.
 
 Example 2
 ^^^^^^^^^
 
-The following YAML snippet creates a diagnostic flag :code:`OriginallyMeasuredInMmHg` for the observed variable :code:`surface_pressure` and initializes it to :code:`true`, overwriting any current values if this flag already exists:
+The following YAML snippet creates a diagnostic flag :code:`OriginallyMeasuredInMmHg` for the observed variable :code:`stationPressure` and initializes it to :code:`true`, overwriting any current values if this flag already exists:
 
 .. code:: yaml
 
   - filter: Create Diagnostic Flags
-    filter variables: [surface_pressure]
+    filter variables: [stationPressure]
     flags:
     - name: OriginallyMeasuredInMmHg
       initial value: true
@@ -1717,7 +1729,7 @@ This filter requires the following YAML parameters:
 * :code:`nlevels`:  the number of levels used in the retrieval profile.
 * :code:`retrieval variables`:  list of retrieval variables (e.g. temperature etc) which form the 1D-Var retrieval vector (x).  This needs to match the b-matrix file.
 * :code:`ModOptions`: options needed for the observation operator (RTTOV only at the moment).
-* :code:`filter variables`:  list of variables (brightness_temperature) and channels which form the 1D-Var observation vector (y).
+* :code:`filter variables`:  list of variables (brightnessTemperature) and channels which form the 1D-Var observation vector (y).
 
 The following are optional YAML parameters with appropriate defaults:
 
@@ -1750,13 +1762,13 @@ Example:
       RMatrix: ../resources/rmatrix/rttov/atms_noaa_20_rmatrix_test.nc4
       nlevels: 70
       retrieval variables:
-      - air_temperature
-      - specific_humidity
+      - airTemperature
+      - specificHumidity
       - mass_content_of_cloud_liquid_water_in_atmosphere_layer
       - mass_content_of_cloud_ice_in_atmosphere_layer
       - surface_temperature
-      - specific_humidity_at_two_meters_above_surface
-      - skin_temperature
+      - specificHumidityAt2M
+      - skinTemperature
       - air_pressure_at_two_meters_above_surface
       ModOptions:
       Absorbers: [Water_vapour, CLW, CIW]
@@ -1766,7 +1778,7 @@ Example:
         Sensor_ID: noaa_20_atms
         CoefficientPath: Data/
       filter variables:
-      - name: brightness_temperature
+      - name: brightnessTemperature
         channels: 1-22
       qtotal: true
 
@@ -1810,11 +1822,11 @@ Example
 
     - filter: ModelOb Threshold
       model profile:
-        name: relative_humidity@GeoVaLs
+        name: GeoVaLs/relative_humidity
       model vertical coordinate:
-        name: air_pressure@GeoVaLs
+        name: GeoVaLs/air_pressure
       observation height:
-        name: air_pressure@MetaData
+        name: MetaData/pressure
       thresholds: [50,50,40,30]
       coordinate values: [100000,80000,50000,20000]
       threshold type: min
@@ -1866,7 +1878,7 @@ Example:
 
     - filter: Satwind Inversion Correction
       observation pressure:
-        name: air_pressure@MetaData
+        name: MetaData/pressure
       RH threshold: 50
       maximum pressure: 96000
 
@@ -1903,7 +1915,7 @@ Example
     Delta_ct2: 1
     Delta_factor: 0.01
     filter variables:
-    - name: bending_angle
+    - name: bendingAngle
     min_temp_grad: 1.0e-6
     n_iteration_test: 20
     OB_test: 2.5
@@ -1920,7 +1932,7 @@ The model best-fit pressure is defined as the model pressure (Pa) with the small
 
 Checking if the pressure is well-constrained:
 
-* Remove any winds where the minimum vector difference between the AMV u (eastward_wind) and v (northward_wind) and the background column u and v is greater than the threshold specified in the upper vector diff parameter. This check aims to remove cases where there is no good agreement between the AMV and the winds at any level in the background wind column.
+* Remove any winds where the minimum vector difference between the AMV u (windEastward) and v (windNorthward) and the background column u and v is greater than the threshold specified in the upper vector diff parameter. This check aims to remove cases where there is no good agreement between the AMV and the winds at any level in the background wind column.
 * Remove any winds where the vector difference is less than the lower vector diff anywhere outside the band of width 2 * pressure band half-width centered around the best-fit pressure level. This aims to catch cases where there are secondary minima or very broad minima. In both cases the best-fit pressure is not well constrained.
 
 This filter accepts the following YAML parameters:
@@ -1933,7 +1945,7 @@ This filter accepts the following YAML parameters:
 * :code:`lower vector diff`: Min vector difference allowed, for calculating constraint. Default: :code:`2.` m/s.
 * :code:`tolerance vector diff`: Tolerance for vec_diff comparison. Default: :code:`1.0e-8` m/s.
 * :code:`tolerance pressure`: Tolerance for pressure comparison. Default: :code:`0.01` Pa.
-* :code:`calculate bestfit winds`: To calculate best-fit winds by linear interpolation. Output stored in "model_bestfit_eastward_wind@DerivedValue" and "model_bestfit_northward_wind@DerivedValue". Default: :code:`false`
+* :code:`calculate bestfit winds`: To calculate best-fit winds by linear interpolation. Output stored in "DerivedValue/model_bestfit_eastward_wind" and "DerivedValue/model_bestfit_northward_wind". Default: :code:`false`
 
 Example
 
@@ -1941,9 +1953,9 @@ Example
 
     - filter: Model Best Fit Pressure
     observation pressure:
-      name: air_pressure@MetaData
+      name: MetaData/pressure
     model pressure:
-      name: air_pressure_levels@GeoVaLs
+      name: GeoVaLs/air_pressure_levels
     top pressure: 10000
     pressure band half-width: 10000
     upper vector diff: 4
@@ -1957,7 +1969,7 @@ Process AMV QI
 
 This "filter" (it is not a true filter; rather, a "processing step") converts AMV Quality Index (QI) values stored in the 3-10-077 BUFR template into variables with names corresponding to the wind generating application number.
 
-If not present, new QI variables are created. Created QI variables depend on "wind_generating_application_<number>" and fills them with the values found in "percent_confidence_<number>".
+If not present, new QI variables are created. Created QI variables depend on "windGeneratingApplication_<number>" and fills them with the values found in "windPercentConfidence_<number>".
 
 The wind generating application numbers are associated as below:
 
@@ -1976,16 +1988,16 @@ The wind generating application numbers are associated as below:
      - QI_weighted_mixture_exc_forecast_comparison
    * - 3
      - Recursive filter function
-     - QI_recursive_filter_function
+     - qiRecursiveFilterFunction
    * - 4
      - Common quality index (QI) without forecast
      - QI_common
    * - 5
      - QI without forecast
-     - QI_without_forecast
+     - qiWithoutForecast
    * - 6
      - QI with forecast
-     - QI_with_forecast
+     - qiWithForecast
    * - 7
      - Estimated Error (EE) in m/s converted to a percent confidence
      - QI_estimated_error
@@ -2037,9 +2049,9 @@ satellites or channels.
 
 Required variables:
 
-* ``MetaData/sensor_central_frequency``
-* ``MetaData/satellite_identifier``
-* ``MetaData/wind_computation_method``
+* ``MetaData/sensorCentralFrequency``
+* ``MetaData/satelliteIdentifier``
+* ``MetaData/windComputationMethod``
 
 Outputs variables:
 

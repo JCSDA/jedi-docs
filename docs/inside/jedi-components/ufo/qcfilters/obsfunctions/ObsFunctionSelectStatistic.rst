@@ -42,7 +42,7 @@ An example with a multi-channel variable:
 .. code-block:: yaml
 
   obs function:
-    name: SelectStatistic@IntObsFunction
+    name: IntObsFunction/SelectStatistic
     options:
       where:
       - variable:
@@ -72,7 +72,7 @@ E.g.2. in a :ref:`"where" <where-statement>` clause to pick out a particular val
     - name: DerivedMetaData/bottom_level
       type: int
       function:
-        name: SelectStatistic@IntObsFunction
+        name: IntObsFunction/SelectStatistic
         options:
           variable:
           - name: MetaData/ocean_depth
@@ -108,17 +108,17 @@ E.g.3. to un-flag certain locations after a QC filter has been applied:
 
   - filter: Variable Assignment # un-flag surface level in each profile
     assignments:
-    - name: surface_level@DerivedMetaData
+    - name: DerivedMetaData/surface_level
       type: int
       function:
-        name: SelectStatistic@IntObsFunction
+        name: IntObsFunction/SelectStatistic
         options:
-          variable: ocean_depth@MetaData
+          variable: MetaData/ocean_depth
           select minimum: true
   - filter: Perform Action
     where:
     - variable:
-        name: surface_level@DerivedMetaData
+        name: DerivedMetaData/surface_level
       is_in: 1
     actions:
     - name: unset

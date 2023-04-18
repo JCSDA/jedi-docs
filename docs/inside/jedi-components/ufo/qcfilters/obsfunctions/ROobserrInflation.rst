@@ -23,6 +23,6 @@ Example:
 
   - filter: Background Check RONBAM
     filter variables:
-    - name: bending_angle
+    - name: bendingAngle
     action:
       name: RONBAMErrInflate

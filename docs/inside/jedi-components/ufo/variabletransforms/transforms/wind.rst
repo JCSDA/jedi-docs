@@ -7,13 +7,13 @@ Eastward (u) and northward (v) wind component
 Performs a variable conversion from wind speed and direction to 
 the eastward (u) and northward (v) wind component. 
 
-:code:`Transform: ["WindComponents"]`
+:code:`Transform: WindComponents`
 
 .. code-block:: yaml
 
     obs filters:
     - filter: Variable Transforms
-      Transform: ["WindComponents"]
+      Transform: WindComponents
     
 **Observation parameters needed** (JEDI name)
 
@@ -34,7 +34,7 @@ For example the surface wind speed and direction can be transformed using the fo
 
     obs filters:
     - filter: Variable Transforms
-      Transform: ["WindComponents"]
+      Transform: WindComponents
       wind speed variable: windSpeedAt10M
       wind direction variable: windDirectionAt10M
 
@@ -67,13 +67,13 @@ Wind speed and direction
 Performs a variable conversion from eastward (u) and northward (v) wind components to
 wind speed and direction. 
 
-:code:`Transform: ["WindSpeedAndDirection"]`
+:code:`Transform: WindSpeedAndDirection`
 
 .. code-block:: yaml
 
     obs filters:
     - filter: Variable Transforms
-      Transform: ["WindSpeedAndDirection"]
+      Transform: WindSpeedAndDirection
     
 **Observation parameters needed** (JEDI name)
 
@@ -94,7 +94,7 @@ For example the surface wind speed and direction can be transformed using the fo
 
     obs filters:
     - filter: Variable Transforms
-      Transform: ["WindSpeedAndDirection"]
+      Transform: WindSpeedAndDirection
       eastward wind variable: windEastwardAt10M
       northward wind variable: windNorthwardAt10M
 

@@ -8,13 +8,13 @@ Performs a variable conversion from specific_humidity (or mixing ratio), tempera
 pressure to relative humidity. The newly calculated variable is included in the same
 obs space.
 
-:code:`Transform: ["RelativeHumidity"]`
+:code:`Transform: RelativeHumidity`
 
 .. code-block:: yaml
 
     obs filters:
     - filter: Variable Transforms
-      Transform: ["RelativeHumidity"]
+      Transform: RelativeHumidity
       Method: UKMO            
       Formulation: Sonntag    
 
@@ -73,13 +73,13 @@ Performs a variable conversion from relative humidity, temperature, and
 pressure to specific humidity. The newly calculated variable is included in the same
 obs space.
 
-:code:`Transform: ["SpecificHumidity"]`
+:code:`Transform: SpecificHumidity`
 
 .. code-block:: yaml
 
     obs filters:
     - filter: Variable Transforms
-      Transform: ["SpecificHumidity"]
+      Transform: SpecificHumidity
       Method: UKMO            
       Formulation: Sonntag  
     

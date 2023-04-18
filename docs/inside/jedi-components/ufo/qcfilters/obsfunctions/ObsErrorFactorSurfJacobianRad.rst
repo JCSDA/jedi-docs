@@ -47,14 +47,14 @@ test_qcflag
 Required fields from obs/geoval:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 geovals
-  :code:`water_area_fraction@GeoVaLs`,
-  :code:`land_area_fraction@GeoVaLs`,
-  :code:`ice_area_fraction@GeoVaLs`,
-  :code:`surface_snow_area_fraction@GeoVaLs`
+  :code:`GeoVaLs/water_area_fraction`,
+  :code:`GeoVaLs/land_area_fraction`,
+  :code:`GeoVaLs/ice_area_fraction`,
+  :code:`GeoVaLs/surface_snow_area_fraction`
 
 obsDiag
-  :code:`brightness_temperature_jacobian_surface_temperature@ObsDiag`,
-  :code:`brightness_temperature_jacobian_surface_emissivity@ObsDiag`
+  :code:`ObsDiag/brightness_temperature_jacobian_surface_temperature`,
+  :code:`ObsDiag/brightness_temperature_jacobian_surface_emissivity`
 
 In addition, brightness_temperature observation error and QC flags will come from
 prior filters or from the input files defined by :code:`test_obserr` and :code:`test_qcflag`.
@@ -68,12 +68,12 @@ Here is an example to use this obsFunction inside a fiter to inflate obs errors.
 
   - filter: Perform Action
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *all_channels
     action:
       name: inflate error
       inflation variable:
-        name: ObsErrorFactorSurfJacobianRad@ObsFunction
+        name: ObsFunction/ObsErrorFactorSurfJacobianRad
         channels: *all_channels
         options:
           channels: *all_channels

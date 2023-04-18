@@ -131,14 +131,14 @@ Example yaml:
 ~~~~~~~~~~~~~
 
 Here is an example using this ObsFunction inside the Bounds Check filter.
-The brightness_temperature filter variables are rejected if the output value
+The brightnessTemperature filter variables are rejected if the output value
 of this ObsFunction is larger than the example maxvalue = 69.8.
 
 .. code-block:: yaml
 
   - filter: Bounds Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: 18-20
     where:
     - variable:
@@ -156,8 +156,8 @@ of this ObsFunction is larger than the example maxvalue = 69.8.
         - mass_content_of_cloud_liquid_water_in_atmosphere_layer
         - mass_content_of_cloud_ice_in_atmosphere_layer
         - surface_temperature
-        - specific_humidity_at_two_meters_above_surface
-        - skin_temperature
+        - specific_humidity_at_two_meters_above_surface 
+        - skin_temperature 
         - air_pressure_at_two_meters_above_surface
         qtotal: true
         qtotal split rain: true

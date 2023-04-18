@@ -29,3 +29,10 @@ VADER's "Cookbook"
 ^^^^^^^^^^^^^^^^^^
 
 An important concept to understand in order to use VADER is its **cookbook**. As mentioned earlier, the individual variable change algorithms that VADER can use are coded into classes called *recipes*. Each recipe produces one and only one variable. (The code for all the recipes is `here <https://github.com/JCSDA/vader/tree/develop/src/vader/recipes>`_.) When ``changeVar`` or ``changeVarTraj`` is called, VADER uses its recipe-search algorithm on *only the recipes that are in the cookbook* in order to attempt to create as many of the desired variables as possible. Models can define which recipes are in VADER's cookbook by passing the cookbook as a parameter when VADER is constructed. If no cookbook is passed to the constructor, VADER will use a default cookbook. Since the default cookbook will get updated as new recipes are created, the advanatage of passing the cookbook as a parameter when VADER is constructed is that VADER's behavior is less likely to change at an unexpected time.
+
+.. _vader_configvars:
+
+VADER's Configuration Variables 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Certain recipes require values, other than the ingredients, that must be provided by the model. One example of this is the model's air pressure at the model top is required for some pressure-related recipes. When a recipe is executed it will generate an error if a needed value has not been provided to Vader. These values are passed to the Vader constructor via a ``VaderConstructConfig`` object. (See the fv3-jedi code for an example of how to populate these values.) These values have been documented for the recipes which require them. If a recipe does not get used it is not necessary to populate these values.

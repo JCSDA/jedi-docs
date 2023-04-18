@@ -47,20 +47,20 @@ Required fields from obs/geoval
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 geovals
-  :code:`water_area_fraction@GeoVaLs` , :code:`ice_area_fraction@GeoVaLs`,
-  :code:`land_area_fraction@GeoVaLs` , :code:`surface_snow_area_fraction@GeoVaLs`
-  :code:`average_surface_temperature_within_field_of_view@GeoVaLs` , :code:`air_pressure@GeoVaLs`
-  :code:`air_temperature@GeoVaLs` , :code:`tropopause_pressure@GeoVaLs`
+  :code:`GeoVaLs/water_area_fraction` , :code:`GeoVaLs/ice_area_fraction`,
+  :code:`GeoVaLs/land_area_fraction` , :code:`GeoVaLs/surface_snow_area_fraction`
+  :code:`GeoVaLs/average_surface_temperature_within_field_of_view` , :code:`GeoVaLs/air_pressure`
+  :code:`GeoVaLs/air_temperature` , :code:`GeoVaLs/tropopause_pressure`
 
 obsDiag
-  :code:`brightness_temperature_jacobian_surface_temperature@ObsDiag` , 
-  :code:`brightness_temperature_jacobian_air_temperature@ObsDiag`,
-  :code:`transmittances_of_atmosphere_layer@ObsDiag`,
-  :code:`pressure_level_at_peak_of_weightingfunction@ObsDiag`
+  :code:`ObsDiag/brightness_temperature_jacobian_surface_temperature` , 
+  :code:`ObsDiag/brightness_temperature_jacobian_air_temperature`,
+  :code:`ObsDiag/transmittances_of_atmosphere_layer`,
+  :code:`ObsDiag/pressure_level_at_peak_of_weightingfunction`
 
 from observation space:
-  :code:`brightness_temperature@ObsValue`, :code:`brightness_temperature@ObsError`.
-  In addition, brightness_temperature observation error, QC flags, and simulated
+  :code:`ObsValue/brightnessTemperature`, :code:`ObsError/brightnessTemperature`.
+  In addition, brightnessTemperature observation error, QC flags, and simulated
   values at the observatioin locations will come from JEDI default values or 
   or from the input defined by :code:`test_obserr`, :code:`test_qcflag` and :code:`test_hofx` 
 
@@ -68,17 +68,17 @@ Example configurations:
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Here is an example to use this obsFunction inside the Bounds Check filter.
-The brightness_temperature is rejected if the QC flags from 
+The brightnessTemperature is rejected if the QC flags from 
 this ObsFunction output value is bigger than maxvalue=1.0e-12. 
 
 .. code-block:: yaml
 
   - filter: Bounds Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *all_channels
     test variables:
-    - name: CloudDetectMinResidualIR@ObsFunction
+    - name: ObsFunction/CloudDetectMinResidualIR
       channels: *all_channels
       options:
         channels: *all_channels

@@ -28,10 +28,10 @@ For application in satellite-derived wind quality control, a difference of wind 
 
      - filter: Bounds Check
        filter variables:
-       - name: eastward_wind
-       - name: northward_wind
+       - name: windEastward
+       - name: windNorthward
        test variables:
-       - name: WindDirAngleDiff@ObsFunction
+       - name: ObsFunction/WindDirAngleDiff
          options:
            minimum_uv: 1.0        # Wind components less than this value are ignored in the wind angle difference check
            #test_hofx: GsiHofX     # Only if testing against pre-existing hofx data; otherwise reference is hofx
