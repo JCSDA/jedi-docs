@@ -139,9 +139,9 @@ JEDI test files, many of which are in NetCDF format, are not stored directly on 
 
 .. code-block:: bash
 
-   git lfs install
+   git lfs install --skip-repo
 
-You can run this command from anywhere, though ``git`` might give you a warning if you are not in a git repository.  It sets up global filters which you can see by running ``cat ~/.gitconfig`` or ``git config --list``.  So, you only need to do it once.  But, after enabling it, we recommend that you delete your bundle source directory, re-clone it from GitHub, and rebuild the bundle.
+You can run this command from anywhere.  This command adds global filters to your ``~/.gitconfig`` file which are then used by ``git-lfs``. So only need to run this command once. After installing ``git-lfs``, we highly recommend that you delete your bundle source directory, re-clone it from GitHub, and rebuild the bundle.
 
 My test/application is running very slowly
 ------------------------------------------

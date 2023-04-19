@@ -38,9 +38,9 @@ channels (required)
   A string of channel numbers to be used in the obs function.
 output group (optional with default value = :code:`MetaData`)
   The group in the ObsSpace to write the cloud top pressure and effective cloud amount arrays to.
-output name for cloud top pressure (optional with default value = :code:`initial_cloud_top_pressure`)
+output name for cloud top pressure (optional with default value = :code:`pressureAtTopOfCloud`)
   The output variable name for the solution cloud top pressure.  The values are output in Pa.
-output name for cloud fraction (optional with default value = :code:`initial_cloud_fraction`)
+output name for cloud fraction (optional with default value = :code:`cloudAmount`)
   The output variable name for the solution effective cloud amount.
 minimum cloud top pressure (optional with default value = :code:`10000.0`)
   The minimum cloud top pressure, in Pa, which can be used to evaluate the minimum residual.  This prevents
@@ -56,7 +56,7 @@ Example configuration:
 .. code-block:: yaml
 
     function:
-      name: CloudFirstGuessMinimumResidual@ObsFunction
+      name: ObsFunction/CloudFirstGuessMinimumResidual
       options:
         channels: 1, 16, 24-26
         output group: CloudFirstGuess

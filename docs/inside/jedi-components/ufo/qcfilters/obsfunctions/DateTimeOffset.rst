@@ -37,7 +37,7 @@ Example yaml
     - name: DerivedMetaData/dateTime
       type: datetime
       function:
-        name: DateTimeOffset@DateTimeObsFunction
+        name: DateTimeObsFunction/DateTimeOffset
         options:
           offset variable name: MetaData/time_offset
           offset unit: seconds

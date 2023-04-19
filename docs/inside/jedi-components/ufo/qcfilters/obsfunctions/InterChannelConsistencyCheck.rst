@@ -33,10 +33,10 @@ Example configuration:
 
     - filter: Bounds Check
       filter variables:
-      - name: brightness_temperature
+      - name: brightnessTemperature
         channels: 1-15
       test variables:
-      - name: InterChannelConsistencyCheck@ObsFunction
+      - name: ObsFunction/InterChannelConsistencyCheck
         channels: 1-15
         options:
           channels: 1-15

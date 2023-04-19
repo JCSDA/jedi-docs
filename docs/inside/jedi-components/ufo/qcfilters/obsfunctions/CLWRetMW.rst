@@ -73,10 +73,10 @@ AMSU-A Example (amsua_qc_clwretmw.yaml):
 
   - filter: Bounds Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: 1-6, 15
     test variables:
-    - name: CLWRetMW@ObsFunction
+    - name: ObsFunction/CLWRetMW
       options:
         clwret_ch238: 1
         clwret_ch314: 2

@@ -14,10 +14,10 @@ used in the :code:`where` statement. The possible values are :code:`and` (the de
 Note that it is possible to use the :code:`where operator` option without the :code:`where` statement. The option has no impact in that case.
 
 This is a templated function which can be used to produce different types of output arrays:
- * `Conditional@ObsFunction` produces floats
- * `Conditional@IntObsFunction` produces ints
- * `Conditional@StringObsFunction` produces strings
- * `Conditional@DateTimeObsFunction` produces datetimes.
+ * `ObsFunction/Conditional` produces floats
+ * `IntObsFunction/Conditional` produces ints
+ * `StringObsFunction/Conditional` produces strings
+ * `DateTimeObsFunction/Conditional` produces datetimes.
 
 Input parameters:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,28 +41,28 @@ Example configuration:
 .. code-block:: yaml
 
     function:
-      name: Conditional@ObsFunction
+      name: ObsFunction/Conditional
       options:
         defaultvalue: 9.0
         firstmatchingcase: true
         cases:
         - where:
           - variable:
-              name: float_variable_1@MetaData
+              name: MetaData/float_variable_1
             minvalue: 4
           - variable:
-              name: float_variable_2@MetaData
+              name: MetaData/float_variable_2
             minvalue: -11.75
           value: 75.5
         - where:
           - variable:
-              name: int_variable_1@MetaData
+              name: MetaData/int_variable_1
             is_in: 1
           value: 3.0
 
-In the above example, the return value of the obs function is initialised to 9.0.  The first case tests where :code:`float_variable_1@MetaData`
-has a minimum value of 4.0 and also where :code:`float_variable_2@MetaData` has a minimum value of -11.75, assigning a return value of 75.5 if
+In the above example, the return value of the obs function is initialised to 9.0.  The first case tests where :code:`MetaData/float_variable_1`
+has a minimum value of 4.0 and also where :code:`MetaData/float_variable_2` has a minimum value of -11.75, assigning a return value of 75.5 if
 these where clauses both evaluate to true. Since firstmatchingcase is set to true, these values are not overwritten by subsequent cases.
-The second case tests where :code:`int_variable_1@MetaData` is equal to 1 and if so assigns a return value of 3.0.
+The second case tests where :code:`MetaData/int_variable_1` is equal to 1 and if so assigns a return value of 3.0.
 
 For further examples see the unit test yaml in ufo which can be found `here <https://github.com/JCSDA-internal/ufo/blob/develop/test/testinput/unit_tests/function_conditional.yaml>`_.

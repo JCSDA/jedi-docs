@@ -24,20 +24,20 @@ Example
 
      - Filter: Bounds Check
        filter variables:
-       - name: air_temperature
+       - name: airTemperature
        action:
          name: reject
        maxvalue: 3.6
        test variables:
-       - name: ObsErrorFactorQuotient@ObsFunction
+       - name: ObsFunction/ObsErrorFactorQuotient
            options:
              numerator:
-               name: air_temperature@ObsErrorData   # After inflation step
+               name: ObsErrorData/airTemperature   # After inflation step
              denominator:
-               name: air_temperature@ObsError
+               name: ObsError/airTemperature
        defer to post: true                          # Likely necessary for order of filters
 
-In this example, the observations of :code:`air_temperature` are rejected when the final
+In this example, the observations of :code:`airTemperature` are rejected when the final
 ObsError is 3.6 times larger than the original ObsError due to one or more prior series
 of error inflation steps.  The usage of :code:`defer to post` option helps to ensure that
 earlier QC steps in the yaml that may inflate the ObsError will occur before this filter is run.

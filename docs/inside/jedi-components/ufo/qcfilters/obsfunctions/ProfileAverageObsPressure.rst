@@ -20,10 +20,10 @@ Example yaml
 
   - filter: Variable Assignment
     assignments:
-      - name: air_pressure@MetaData
+      - name: MetaData/pressure
         type: float
         function:
-          name: ProfileAverageObsPressure@ObsFunction
+          name: ObsFunction/ProfileAverageObsPressure
           options:
-            model vertical coordinate: air_pressure
-            observation vertical coordinate: MetaData/air_pressure
+            model vertical coordinate: pressure
+            observation vertical coordinate: MetaData/pressure

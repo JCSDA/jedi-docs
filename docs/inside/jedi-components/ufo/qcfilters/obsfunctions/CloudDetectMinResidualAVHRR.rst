@@ -54,10 +54,10 @@ AVHRR3 Metop-A Example (from avhrr3_metop-a.yaml)
 
   - filter: Bounds Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *avhrr3_metop-a_channels
     test variables:
-    - name: CloudDetectMinResidualAVHRR@ObsFunction
+    - name: ObsFunction/CloudDetectMinResidualAVHRR
       channels: *avhrr3_metop-a_channels
       options:
         channels: *avhrr3_metop-a_channels

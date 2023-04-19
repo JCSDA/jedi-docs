@@ -55,11 +55,11 @@ Example
     - variable: MetaData/latitude
     - variable: MetaData/longitude
     - variable: MetaData/dateTime
-    - variable: ObsValue/air_temperature
-    - variable: DerivedObsValue/air_temperature
-    - variable: ObsErrorData/air_temperature
-    - variable: HofX/air_temperature
-    - variable: QCflagsData/air_temperature
+    - variable: ObsValue/airTemperature
+    - variable: DerivedObsValue/airTemperature
+    - variable: ObsErrorData/airTemperature
+    - variable: HofX/airTemperature
+    - variable: QCflagsData/airTemperature
     - variable: GeoVaLs/air_temperature
       levels: 0, 1-3, 17
     - variable: ObsDiag/air_temperature_background_error

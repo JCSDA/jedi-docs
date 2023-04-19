@@ -43,18 +43,18 @@ Most filters are written once and used with many observation types; several such
           engine:
             type: H5File
             obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 1-15
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-15
         minvalue: 100.0
         maxvalue: 500.0
       - filter: Background Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-15
         threshold: 3.0
 
@@ -93,7 +93,7 @@ The first example uses the automatic determination of filter ordering. The Thinn
     obs filters:
     - filter: Background Check
       filter variables:
-      - name: air_temperature
+      - name: airTemperature
       absolute threshold: 2.0
     - filter: Thinning
       amount: 0.5
@@ -110,7 +110,7 @@ There is also a Variable Transforms filter that runs at the pre-filter stage.
     obs post filters:
     - filter: Background Check
       filter variables:
-      - name: air_temperature
+      - name: airTemperature
       absolute threshold: 2.0
     - filter: Thinning
       amount: 0.5

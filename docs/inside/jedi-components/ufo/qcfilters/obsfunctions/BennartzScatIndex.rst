@@ -9,7 +9,7 @@ two satellite microwave channels.
 An offset is computed which varies with satellite zenith angle as
 
 .. math::
-  \text{Offset = bennartz_coeff_1 + bennartz_coeff_2*sensor_zenith_angle}
+  \text{Offset = bennartz_coeff_1 + bennartz_coeff_2*sensorZenithAngle}
 
 A scattering index is then computed as the difference between two channel
 brightness temperatures (BTs) minus the offset:
@@ -58,21 +58,21 @@ Example yaml:
 ~~~~~~~~~~~~~
 
 Here is an example using this ObsFunction inside the Bounds Check filter for
-ATMS. The brightness_temperature filter variables are rejected if the output
+ATMS. The brightnessTemperature filter variables are rejected if the output
 value of this ObsFunction is larger than the example maxvalue = -1.0.
 
 .. code-block:: yaml
 
   - filter: Bounds Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: 1-7, 16-22
     where:
     - variable:
-        name: land_sea@MetaData
+        name: MetaData/landOrSeaQualifier
       is_in: 0  # land=0, sea=1, ice=2
     test variables:
-    - name: BennartzScatIndex@ObsFunction
+    - name: ObsFunction/BennartzScatIndex
       options:
         channel_89ghz: 16    # ATMS 89.5 GHz channel
         channel_150ghz: 17   # ATMS 165.5 GHz channel

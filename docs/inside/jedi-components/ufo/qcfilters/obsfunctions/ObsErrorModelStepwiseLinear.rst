@@ -25,7 +25,7 @@ and increasing again in the upper atmosphere.
 If the optional "scale_factor_var" exists, then the final output obserr is
 calculated as a result of linear interpolation of errors times the scale_factor_var.
 An example of such usage is RH obserror values between zero and one multiplied by
-specific_humidity@ObsValue for final ObsError.
+ObsValue/specificHumidity for final ObsError.
 
 ::
 
@@ -48,7 +48,7 @@ specific_humidity@ObsValue for final ObsError.
 
 There can also be times when it is useful to apply a scaling factor variable (optional yaml
 parameter :code:`scale_factor_var`) to the ObsError calculated by this function.  The best
-example is for :code:`specific_humidity` which is difficult to assign the exact number for
+example is for :code:`specificHumidity` which is difficult to assign the exact number for
 ObsError whereas Relative Humidity is easier, such as 20% RH ObsError applied between 400
 and 200 hPa.  This is shown in Example 2 below.
 
@@ -62,18 +62,18 @@ Example 1
 
      - filter: Perform Action
        filter variables:
-       - name: air_temperature
+       - name: airTemperature
        action:
          name: assign error
          error function:
-           name: ObsErrorModelStepwiseLinear@ObsFunction
+           name: ObsFunction/ObsErrorModelStepwiseLinear
            options:
              xvar:
-               name: air_pressure@ObsValue
+               name: ObsValue/pressure
              xvals: [110000, 85000, 50000, 25000, 10000, 1]   #Pressure (Pa)
              errors: [1.1, 1.3, 1.8, 2.4, 4.0, 4.5]
 
-In this example, the assignment of :code:`air_temperature@ObsError` will be 1.1 K (constant) for pressures greater than 1100 hPa (none really), linearly increasing from 1.1 K to 1.3 K for pressures between 1100 and 850 hPa, increasing again in the next step from 1.3 to 1.8 K going from pressure of 850 to 500 hPa, etc., until reaching 4.5K by 1 Pa and holding constant for any pressure lower than 1 Pa.
+In this example, the assignment of :code:`ObsError/airTemperature` will be 1.1 K (constant) for pressures greater than 1100 hPa (none really), linearly increasing from 1.1 K to 1.3 K for pressures between 1100 and 850 hPa, increasing again in the next step from 1.3 to 1.8 K going from pressure of 850 to 500 hPa, etc., until reaching 4.5K by 1 Pa and holding constant for any pressure lower than 1 Pa.
 
 Example 2
 ^^^^^^^^^
@@ -82,15 +82,15 @@ Example 2
 
      - filter: Perform Action
        filter variables:
-       - name: specific_humidity
+       - name: specificHumidity
        action:
          name: assign error
          error function:
-           name: ObsErrorModelStepwiseLinear@ObsFunction
+           name: ObsFunction/ObsErrorModelStepwiseLinear
            options:
-             scale_factor_var: specific_humidity@ObsValue
+             scale_factor_var: ObsValue/specificHumidity
              xvar:
-               name: surface_pressure@ObsValue
+               name: ObsValue/sstationPressure
              xvals: [110000, 105000, 100000, 95000, 90000, 85000, 80000, 75000, 70000, 65000, 60000, 55000,
                       50000, 45000, 40000, 35000, 30000, 25000, 20000, 15000, 10000, 7500, 5000, 4000, 3000]
              errors: [.19455, .19062, .18488, .17877, .17342, .16976, .16777, .16696, .16605, .16522, .16637, .17086,

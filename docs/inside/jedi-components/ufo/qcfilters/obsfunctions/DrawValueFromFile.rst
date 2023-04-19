@@ -10,9 +10,9 @@ themselves can be defined as `float`, `int`, `std::string` or `util::DateTime`.
 
 Note that the return type of the obsfunction is specified in the group name::
 
-    DrawValueFromFile@ObsFunction -> Float return
-    DrawValueFromFile@IntObsFunction -> Integer return
-    DrawValueFromFile@StringObsFunction -> String return
+    ObsFunction/DrawValueFromFile -> Float return
+    IntObsFunction/DrawValueFromFile -> Integer return
+    StringObsFunction/DrawValueFromFile -> String return
 
 Example 1 (minimal)
 ...................
@@ -26,33 +26,33 @@ is chosen in the examples below).
        assignments:
        - name: <some-new-variable-name>
          function:
-           name: DrawValueFromFile@ObsFunction
+           name: ObsFunction/DrawValueFromFile
            options:
              file: <path-to-input>    # path to the CSV/NetCDF file
              group: DerivedObsValue   # group with the payload variable
              interpolation:
-             - name: satellite_id@MetaData
+             - name: MetaData/satelliteIdentifier
                method: exact
 
 and the CSV file, located at :code:`<path-to-input>`, might look like this:
 
 .. code-block::
 
-   station_id@MetaData,air_temperature@DerivedObsValue
+   MetaData/stationIdentification,DerivedObsValue/airTemperature
    string,float
    ABC,0.1
    DEF,0.2
    GHI,0.3
 
-The input file is loaded and at each location, the value of `air_temperature@DerivedObsValue` is extracted by
+The input file is loaded and at each location, the value of `DerivedObsValue/airTemperature` is extracted by
 
-* selecting the row of the CSV file in which the value in the :code:`station_id@MetaData` column
-  matches exactly the value of the :code:`station_id@MetaData` ObsSpace variable at that location and
-* taking the value of the :code:`air_temperature@DerivedObsValue` column from the selected row.
+* selecting the row of the CSV file in which the value in the :code:`MetaData/stationIdentification` column
+  matches exactly the value of the :code:`MetaData/stationIdentification` ObsSpace variable at that location and
+* taking the value of the :code:`DerivedObsValue/airTemperature` column from the selected row.
 
 It is possible to customize this process in several ways by
 
-* making the `air_temperature@DerivedObsValue` dependent on more than one variable (see :ref:`interpolate example 2` below).
+* making the `DerivedObsValue/airTemperature` dependent on more than one variable (see :ref:`interpolate example 2` below).
 * using other interpolation methods than exact match (for example nearest-neighbor match or linear interpolation).
 * using a NetCDF rather than a CSV input file via the :code:`file` option.
 
@@ -95,7 +95,7 @@ required, the nearest match is used, or piecewise linear interpolation is perfor
 Notes:
 
 * A column containing channel numbers (which aren't stored in a separate ObsSpace variable)
-  should be labelled :code:`channel_number@MetaData` or :code:`MetaData/channel_number`.
+  should be labelled :code:`sensorChannelNumber@MetaData` or :code:`MetaData/sensorChannelNumber`.
 
 * Single underscores serve as placeholders for missing values; for example, the following row
 
@@ -112,18 +112,18 @@ ioda-v1 and ioda-v2-style NetCDF files are supported. ioda-v1-style files should
 following structure:
 
 * They contain a 1D, 2D or 3D payload array of type :code:`float` or :code:`int` or
-  :code:`std::string` with unique group name (that is, a name ending with :code:`@<groupname>`).
+  :code:`std::string` with unique group name (that is, a name beginning with :code:`<groupname>/`).
 
 * Each dimension of this array should be indexed by at least one 1D coordinate array. Coordinates
   can be of type :code:`float`, :code:`int` or :code:`string`. Datetimes should be represented as
   ISO-8601 strings (e.g. "2001-01-01T00:00:00Z"). Coordinate names should correspond to names of ObsSpace variables. Use the name
-  :code:`channel_number@MetaData` for channel numbers (for which there is no dedicated ObsSpace
+  :code:`MetaData/sensorChannelNumber` for channel numbers (for which there is no dedicated ObsSpace
   variable).
 
 ioda-v2-style files are similar except that
 
 * Our payload array should be placed in the :code:`<groupname>` group (rather than
-  with a :code:`@<groupname>` suffix).
+  with a :code:`<groupname>/` suffix).
 * Coordinate variables should be placed in appropriate groups, e.g. :code:`MetaData`. Because
   of the limitations of the NetCDF file format, these variables can only be used as auxiliary
   coordinates of the payload variable (listed in its :code:`coordinates` attribute).
@@ -207,7 +207,7 @@ result is an empty range of slices or (unless linear interpolation is used for t
 variable) a range containing more than one slice.
 
 Note: If the :code:`channels` option has been specified, the channel number is implicitly used as the
-first criterion variable and needs to match exactly a value from the :code:`channel_number@MetaData` coordinate.
+first criterion variable and needs to match exactly a value from the :code:`MetaData/sensorChannelNumber` coordinate.
 
 The following examples illustrate more advanced usage of this obsfunction.
 
@@ -224,29 +224,29 @@ channels as well as additional variables over which the payload varies.
        assignments:
        - name: <some-new-variable-name>
          function:
-           name: DrawValueFromFile@ObsFunction
+           name: ObsFunction/DrawValueFromFile
            channels: &all_channels 1-3
            options:
              file: <path-to-input>    # path to the CSV/NetCDF file
              channels: *all_channels
              group: DerivedObsValue   # group with the payload variable
              interpolation:
-             - name: satellite_id@MetaData
+             - name: MetaData/satelliteIdentifier
                method: exact
-             - name: processing_center@MetaData
+             - name: MetaData/dataProviderOrigin
                method: exact
-             - name: air_pressure@MetaData
+             - name: MetaData/pressure
                method: linear
 
 Note the channel selection, using standard yaml syntax.  Internally, channel number
 extraction is an 'exact' match step, done before any user defined interpolation takes place.
 Since there is no channel number variable in ObsSpace, we instead expect input data containing
-channel information to be described by the name `channel_number@MetaData` as mentioned in
+channel information to be described by the name `MetaData/sensorChannelNumber` as mentioned in
 :ref:`here <DataExtractorInputFileFormats>`.
 
 This might be described by a CSV similar to: ::
 
-    station_id@MetaData,air_pressure@MetaData,channel_number@MetaData,mydata@DerivedObsValue
+    MetaData/stationIdentification,MetaData/pressure,MetaData/sensorChannelNumber,DerivedObsValue/mydata
     string,float,int,float
     ABC,30000,0, 0.1
     ABC,60000,0, 0.2
@@ -258,11 +258,11 @@ Our NetCDF might look something like: ::
     dimensions:
         index = 10 ;
     variables:
-        float mydata@DerivedObsValue(index) ;
+        float DerivedObsValue/mydata(index) ;
         int index(index) ;
-        int channel_number@MetaData(index) ;
-        int satellite_id@MetaData(index) ;
-        float air_pressure@MetaData(index) ;
+        int MetaData/sensorChannelNumber(index) ;
+        int MetaData/satelliteIdentifier(index) ;
+        float MetaData/pressure(index) ;
     ...
     }
 
@@ -278,18 +278,18 @@ steps:
        assignments:
        - name: <some-new-variable-name>
          function:
-           name: DrawValueFromFile@ObsFunction
+           name: ObsFunction/DrawValueFromFile
            options:
              file: <path-to-input>    # path to the CSV/NetCDF file
              group: DerivedObsValue      # group with the payload variable
              interpolation:
-             - name: satellite_id@MetaData
+             - name: MetaData/satelliteIdentifier
                method: exact
                extrapolation mode: error
-             - name: longitude@MetaData
+             - name: MetaData/longitude
                method: nearest
                extrapolation mode: missing
-             - name: latitude@MetaData
+             - name: MetaData/latitude
                method: nearest
                extrapolation mode: nearest
 
@@ -303,18 +303,18 @@ Next we demonstrate the use of bilinear interpolation of two variables:
        assignments:
        - name: <some-new-variable-name>
          function:
-           name: DrawValueFromFile@ObsFunction
+           name: ObsFunction/DrawValueFromFile
            options:
              file: <path-to-input>    # path to the CSV/NetCDF file
              group: DerivedObsValue      # group with the payload variable
              interpolation:
-             - name: longitude@MetaData
+             - name: MetaData/longitude
                method: bilinear
-             - name: latitude@MetaData
+             - name: MetaData/latitude
                method: bilinear
 
 Example 5 (trilinear interpolation)
-..................................
+...................................
 The following example shows the use of trilinear interpolation of three variables
 (latitude, longitude and air pressure). The interpolation is performed log-linearly
 in pressure. Any out-of-bounds values are set to the value of the relevant bound

@@ -119,7 +119,7 @@ To use the bias correction in an observation operator, add the :code:`obs bias` 
     - obs space:
         name: AMSUA-NOAA19
         ...
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: &channels 1-15
       obs operator:
         name: CRTM
@@ -179,17 +179,17 @@ Static bias correction is handled very similarly to variational bias correction.
     predictors:
     - name: interpolate_data_from_file
       corrected variables:
-      - name: air_temperature
+      - name: airTemperature
         file: air_temperature_static_bc.csv
         interpolation:
-        - name: station_id@MetaData
+        - name: MetaData/stationIdentification
           method: exact
-      - name: relative_humidity
+      - name: relativeHumidity
         file: relative_humidity_static_bc.csv
         interpolation:
-        - name: station_id@MetaData
+        - name: MetaData/stationIdentification
           method: exact
-        - name: air_pressure@MetaData
+        - name: MetaData/pressure
           method: least upper bound
 
 See the :ref:`interpolate_data_from_file` section for more information about the predictor used
@@ -256,17 +256,17 @@ Consider a simple example first and suppose this predictor is configured as foll
 
   name: interpolate_data_from_file
   corrected variables:
-  - name: air_temperature
+  - name: airTemperature
     file: myfolder/example_1.csv
     interpolation:
-    - name: station_id@MetaData
+    - name: MetaData/stationIdentification
       method: exact
 
 and the :code:`example_1.csv` file looks like this:
 
 .. code-block::
 
-    station_id@MetaData,air_temperature@ObsBias
+    MetaData/stationIdentification, ObsBias/airTemperature
     string,float
     ABC,0.1
     DEF,0.2
@@ -274,8 +274,8 @@ and the :code:`example_1.csv` file looks like this:
 
 The predictor will load this file and at each location compute the bias correction of air temperature by
 
-* selecting the row of the CSV file in which the value in the :code:`station_id@MetaData` column matches exactly the value of the :code:`station_id@MetaData` ObsSpace variable at that location and
-* taking the value of the :code:`air_temperature@ObsBias` column from the selected row.
+* selecting the row of the CSV file in which the value in the :code:`MetaData/stationIdentification` column matches exactly the value of the :code:`MetaData/stationIdentification` ObsSpace variable at that location and
+* taking the value of the :code:`ObsBias/airTemperature` column from the selected row.
 
 It is possible to customize this process in several ways by
 
@@ -315,19 +315,19 @@ To make the air-temperature bias correction depend not only on the station ID, b
 
   name: interpolate_data_from_file
   corrected variables:
-  - name: air_temperature
+  - name: airTemperature
     file: example_2.csv
     interpolation:
-    - name: station_id@MetaData
+    - name: MetaData/stationIdentification
       method: exact
-    - name: air_pressure@MetaData
+    - name: MetaData/pressure
       method: linear
 
 and CSV file:
 
 .. code-block::
 
-    station_id@MetaData,air_pressure@MetaData,air_temperature@ObsBias
+    MetaData/stationIdentification, MetaData/pressure, ObsBias/air_temperature
     string,float,float
     ABC,30000,0.1
     ABC,60000,0.2
@@ -338,9 +338,9 @@ and CSV file:
 For an observation taken by station XYZ at pressure 60000 the bias correction would be evaluated in
 the following way:
 
-* First, find all rows in the CSV file with a value of :code:`XYZ` in the :code:`station_id@MetaData`
+* First, find all rows in the CSV file with a value of :code:`XYZ` in the :code:`MetaData/stationIdentification`
   column.
-* Then take the values of the :code:`air_pressure@MetaData` and :code:`air_temperature@ObsBias` columns
+* Then take the values of the :code:`MetaData/pressure` and :code:`ObsBias/airTemperature` columns
   in these rows and use them to construct a piecewise linear interpolant. Evaluate this
   interpolant at pressure 60000. This produces the value of 0.45.
 
@@ -356,18 +356,18 @@ we could use the following YAML snippet
 
   name: interpolate_data_from_file
   corrected variables:
-  - name: brightness_temperature
+  - name: brightnessTemperature
     channels: 1-2, 4-6
     file: example_3.csv
     interpolation:
-    - name: scan_position@MetaData
+    - name: MetaData/sensorScanPosition
       method: nearest
 
 and CSV file:
 
 .. code-block::
 
-    channel_number@MetaData,scan_position@MetaData,brightness_temperature@ObsBias
+    MetaData/sensorChannelNumber,MetaData/sensorScanPosition,ObsBias/brightnessTemperature
     int,int,float
     1,25,0.01
     2,25,0.02
@@ -395,19 +395,19 @@ and 0.0 to all other observations, we could use the following YAML snippet
 
   name: interpolate_data_from_file
   corrected variables:
-  - name: air_temperature
+  - name: airTemperature
     file: example_4.csv
     interpolation:
-    - name: station_id@MetaData
+    - name: MetaData/stationIdentification
       method: exact
-    - name: latitude@MetaData
+    - name: MetaData/latitude
       method: least upper bound
 
 and CSV file:
 
 .. code-block::
 
-    station_id@MetaData,latitude@MetaData,air_temperature@ObsBias
+    MetaData/stationIdentification,MetaData/latitude,ObsBias/airTemperature
     string,float,float
     _,_,0
     XYZ,0,0

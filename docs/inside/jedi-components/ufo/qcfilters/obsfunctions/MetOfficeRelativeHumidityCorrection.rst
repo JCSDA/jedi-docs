@@ -49,13 +49,13 @@ The following yaml block shows how the ObsFunction can be used.
       - name: HofXCorrection/relative_humidity
         type: float
         function:
-          name: MetOfficeRelativeHumidityCorrection@ObsFunction
+          name: ObsFunction/MetOfficeRelativeHumidityCorrection
           options:
             model pressure: air_pressure
             model specific humidity: specific_humidity
             model relative humidity: relative_humidity
             model temperature: air_temperature
-            observed pressure: MetaData/air_pressure
+            observed pressure: MetaData/pressure
 
 The correction variable, :code:`HofXCorrection/relative_humidity`, can be added to the RH observation
 values prior to using other filters that use RH O-B.

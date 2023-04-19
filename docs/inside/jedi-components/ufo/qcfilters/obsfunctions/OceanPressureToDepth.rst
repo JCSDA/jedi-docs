@@ -10,25 +10,25 @@ Required input parameters:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 pressure variable
-  The variable containing the ocean pressure values. (Note that it accepts a variable name from the user because the pressure values might be in a non-obvious variable, e.g. :code:`height@ObsValue`. However, the latitude is always assumed to be in :code:`latitude@MetaData`.) There are no optional input parameters.
+  The variable containing the ocean pressure values. (Note that it accepts a variable name from the user because the pressure values might be in a non-obvious variable, e.g. :code:`ObsValue/height`. However, the latitude is always assumed to be in :code:`MetaData/latitude`.) There are no optional input parameters.
 
   
 Example configuration:
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Here is an example that assigns to :code:`ocean_depth@DerivedObsValue`, the depth computed by the ObsFunction, in locations where :code:`argo_identifier@MetaData` is not missing. It takes the ocean pressure from :code:`height@ObsValue`.
+Here is an example that assigns to :code:`DerivedObsValue/depthBelowWaterSurface`, the depth computed by the ObsFunction, in locations where :code:`MetaData/argo_identifier` is not missing. It takes the ocean pressure from :code:`ObsValue/height`.
 
 .. code-block:: yaml
 
   - filter: Variable Assignment  # calculate cool-skin correction
     where:
     - variable:
-        name: argo_identifier@MetaData
+        name: MetaData/argo_identifier
       is_defined:
     assignments:
-    - name: ocean_depth@DerivedObsValue
+    - name: DerivedObsValue/depthBelowWaterSurface
       type: float
       function:
-        name: OceanPressureToDepth@ObsFunction
+        name: ObsFunction/OceanPressureToDepth
         options:
-          pressure variable: height@ObsValue
+          pressure variable: ObsValue/height

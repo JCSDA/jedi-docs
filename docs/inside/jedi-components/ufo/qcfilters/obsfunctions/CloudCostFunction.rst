@@ -36,7 +36,8 @@ BMatrix
 
 background fields
   List of geovals names describing fields required from the
-  :math:`\mathbf{B}`-matrix
+  :math:`\mathbf{B}`-matrix - to avoid ambiguity, this list must appear
+  in the same order as in the :math:`\mathbf{B}`-matrix file
 
 Optional parameters:
 ~~~~~~~~~~~~~~~~~~~~
@@ -93,6 +94,29 @@ HofX group
 
   Default: "HofX"
 
+background emissivity channels
+  Vector of high transmittance channels for which surface emissivity error
+  covariances are defined in the :math:`\mathbf{B}`-matrix (if present) -
+  these channels are explicitly not used in the ObsFunction calculation and
+  so should be separate and distinct from humidity sounding channels
+  defined by the required parameter cost channels list
+
+  Example:
+
+  .. code-block:: yaml
+
+    background emissivity channels: 1, 2, 3, 16, 17
+
+skin temperature error
+  Scale :math:`\mathbf{B}`-matrix skin temperature error covariance according
+  to this user-defined standard deviation
+
+  Example:
+
+  .. code-block:: yaml
+
+    skin temperature error: 2.5
+
 Reference:
 ~~~~~~~~~~
 
@@ -107,21 +131,21 @@ Example yaml:
 ~~~~~~~~~~~~~
 
 Here is an example using this ObsFunction inside the Bounds Check filter.
-The brightness_temperature filter variables are rejected if the output value
+The brightnessTemperature filter variables are rejected if the output value
 of this ObsFunction is larger than the example maxvalue = 69.8.
 
 .. code-block:: yaml
 
   - filter: Bounds Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: 18-20
     where:
     - variable:
-        name: land_sea@MetaData
+        name: MetaData/surfaceQualifier
       is_in: 0  # land=0, sea=1, ice=2
     test variables:
-    - name: CloudCostFunction@ObsFunction
+    - name: ObsFunction/CloudCostFunction
       options:
         cost channels list: 18, 20, 22
         RMatrix: ../resources/rmatrix/rttov/atms_noaa_20_rmatrix_test.nc4
@@ -132,8 +156,8 @@ of this ObsFunction is larger than the example maxvalue = 69.8.
         - mass_content_of_cloud_liquid_water_in_atmosphere_layer
         - mass_content_of_cloud_ice_in_atmosphere_layer
         - surface_temperature
-        - specific_humidity_at_two_meters_above_surface
-        - skin_temperature
+        - specific_humidity_at_two_meters_above_surface 
+        - skin_temperature 
         - air_pressure_at_two_meters_above_surface
         qtotal: true
         qtotal split rain: true

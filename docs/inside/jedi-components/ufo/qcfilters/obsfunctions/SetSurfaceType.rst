@@ -10,20 +10,20 @@ Required input variables:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 GeoVaLs
-  :code:`surface_altitude@GeoVaLs`
-  :code:`ice_area_fraction@GeoVaLs`
+  :code:`GeoVaLs/surface_altitude`
+  :code:`GeoVaLs/ice_area_fraction`
 
 ObsSpace
-  :code:`latitude@MetaData`
+  :code:`MetaData/latitude`
   
 Optional input variables:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ObsSpace
- |  :code:`land_sea@MetaData` (required if UseReportSurface_ is true)
- |  :code:`surface_height@MetaData` (required if UseReportElevation_ is true)
- |  :code:`surface_class@MetaData` (required if UseAAPPSurfaceClass_ is true)
- |  :code:`water_area_fraction@MetaData` (required if UseSurfaceWaterFraction_ is true)
+ |  :code:`MetaData/landOrSeaQualifier` (required if UseReportSurface_ is true)
+ |  :code:`MetaData/heightOfSurface` (required if UseReportElevation_ is true)
+ |  :code:`MetaData/surfaceClassAAPP` (required if UseAAPPSurfaceClass_ is true)
+ |  :code:`MetaData/waterAreaFraction` (required if UseSurfaceWaterFraction_ is true)
 
 Input parameters:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -99,9 +99,9 @@ ATMS Example (atms_qc_filters.yaml):
 
   - filter: Variable Assignment
     assignments:
-    - name: surface_type@MetaData
+    - name: MetaData/landOrSeaQualifier
       function: 
-        name: SetSurfaceType@ObsFunction
+        name: ObsFunction/SetSurfaceType
         options:
           UseReportSurface:        true  # non-default
           UseReportElevation:      true  # non-default

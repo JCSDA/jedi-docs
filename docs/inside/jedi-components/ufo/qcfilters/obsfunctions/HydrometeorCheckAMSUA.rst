@@ -34,10 +34,10 @@ AMSU-A Example (amsua_qc_filters.yaml):
 
   - filter: Bounds Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *all_channels
     test variables:
-    - name: HydrometeorCheckAMSUA@ObsFunction
+    - name: ObsFunction/HydrometeorCheckAMSUA
       channels: *all_channels
       options:
         channels: *all_channels
@@ -45,18 +45,18 @@ AMSU-A Example (amsua_qc_filters.yaml):
                            0.230, 0.230, 0.250, 0.250, 0.350,
                            0.400, 0.550, 0.800, 3.000, 3.500]
         clwret_function:
-          name: CLWRetMW@ObsFunction
+          name: ObsFunction/CLWRetMW
           options:
             clwret_ch238: 1
             clwret_ch314: 2
             clwret_types: [ObsValue]
         obserr_function:
-          name: ObsErrorModelRamp@ObsFunction
+          name: ObsFunction/ObsErrorModelRamp
           channels: *all_channels
           options:
             channels: *all_channels
             xvar:
-              name: CLWRetSymmetricMW@ObsFunction
+              name: ObsFunction/CLWRetSymmetricMW
               options:
                 clwret_ch238: 1
                 clwret_ch314: 2

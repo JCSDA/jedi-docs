@@ -48,14 +48,14 @@ Required parameters:
 
 :code:`wind component`
   String containing the name of the wind component we are calculating the error for.
-  Must be one of :code:`eastward_wind` or :code:`northward_wind`.
+  Must be one of :code:`windEastward` or :code:`windNorthward`.
 
 :code:`observation vertical coordinate`
   String containing the observation vertical coordinate.
 
 :code:`vertical coordinate`
   String containing the vertical coordinate to use for the model wind component.
-  Must be one of :code:`air_pressure` or :code:`air_pressure_levels`.
+  Must be one of :code:`pressure` or :code:`pressure_levels`.
 
 :code:`pressure error`
   Name of the variable containing the input pressure error estimates. Units Pa.
@@ -83,18 +83,18 @@ Example
   - filter: Perform Action
     defer to post: true
     filter variables:
-    - name: eastward_wind
+    - name: windEastward
     action:
       name: assign error
       error function:
-        name: SatwindIndivErrors@ObsFunction
+        name: ObsFunction/SatwindIndivErrors
         options:
           verror add: 15.0
           verror mult: -10.0
-          wind component: eastward_wind
-          observation vertical coordinate: air_pressure
-          vertical coordinate: air_pressure_levels
+          wind component: windEastward
+          observation vertical coordinate: pressure
+          vertical coordinate: pressure_levels
           pressure error:
-            name: air_pressure@MetaDataError
+            name: MetaDataError/pressure
           quality index:
-            name: QI_without_forecast@MetaData
+            name: MetaData/qiWithoutForecast

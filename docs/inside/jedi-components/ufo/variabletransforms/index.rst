@@ -118,6 +118,34 @@ The variable transforms available are:
 
    transforms/surfacepressure
 
+**Remap scan position**
+
+.. toctree::
+   :maxdepth: 1
+
+   transforms/remapscanposition
+
+**Satellite brightness temperature from radiance**
+
+.. toctree::
+   :maxdepth: 1
+
+   transforms/btfromrad
+
+**Satellite radiance from scaled radiance**
+
+.. toctree::
+   :maxdepth: 1
+
+   transforms/radfromscaledrad
+
+**Satellite zenith angle correction**
+
+.. toctree::
+   :maxdepth: 1
+
+   transforms/satzencorrection
+
 **Wind**
 
 .. toctree::

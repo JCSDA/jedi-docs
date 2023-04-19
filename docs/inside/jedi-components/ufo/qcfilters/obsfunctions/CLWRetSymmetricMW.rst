@@ -42,12 +42,12 @@ AMSU-A Example (function_clwretmean.yaml), see "obs function" section below:
           engine:
             type: H5File
             obsfile: Data/ufo/testinput_tier_1/amsua_n19_obs_2018041500_m_qc.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 1, 2
       geovals:
         filename: Data/ufo/testinput_tier_1/amsua_n19_geoval_2018041500_m_qc.nc4
       obs function:
-        name: CLWRetSymmetricMW@ObsFunction
+        name: ObsFunction/CLWRetSymmetricMW
         options:
           clwret_ch238: 1
           clwret_ch314: 2

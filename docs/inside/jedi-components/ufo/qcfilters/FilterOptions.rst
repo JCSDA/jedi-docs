@@ -1,4 +1,4 @@
-Additional QC Filter Options 
+Additional QC Filter Options
 ============================
 
 
@@ -17,7 +17,7 @@ Consider the following set of observations:
     * - Obs. index
         - latitude
         - longitude
-        - air_temperature (K)
+        - airTemperature (K)
     * - 0
         - 0
         - 50
@@ -44,17 +44,17 @@ and suppose that we want to reject air temperature observations below 230 K take
 .. code-block:: yaml
     
     - filter: Bounds Check
-      filter variables: air_temperature
+      filter variables: airTemperature
       minvalue: 230
       action:
         name: reject # this is the default action, specified explicitly for clarity
       where:
       - variable:
-          name: latitude@MetaData
+          name: MetaData/latitude
         minvalue: -30
         maxvalue:  30
     
-This would cause the filter to be applied only to air temperature observations `selected` by the :code:`where` statement, i.e. meeting the specified condition :code:`-30 <= latitude@MetaData <= 30`. Please note this does not mean all these observations would be rejected; rather, it means the Bounds Check filter would inspect only these observations and apply its usual criteria (in this case, "is the air temperature below the minimum allowed value of 230 K?") to decide whether any of them should be rejected. In our example, only observation 1 would be rejected, since this is the only observation (a) taken in the range of latitudes selected by the :code:`where` statement and (b) with a value lying below the minimum value passed to the Bounds Check filter.
+This would cause the filter to be applied only to air temperature observations `selected` by the :code:`where` statement, i.e. meeting the specified condition :code:`-30 <= MetaData/latitude <= 30`. Please note this does not mean all these observations would be rejected; rather, it means the Bounds Check filter would inspect only these observations and apply its usual criteria (in this case, "is the air temperature below the minimum allowed value of 230 K?") to decide whether any of them should be rejected. In our example, only observation 1 would be rejected, since this is the only observation (a) taken in the range of latitudes selected by the :code:`where` statement and (b) with a value lying below the minimum value passed to the Bounds Check filter.
 
 The list passed to the :code:`where` keyword can contain more than one item, each representing a separate condition imposed on a particular variable. The filter is applied only to observations meeting all of these conditions. The following kinds of conditions are accepted:
 
@@ -86,17 +86,17 @@ Example 1
     
     where:
     - variable:
-        name: sea_surface_temperature@GeoVaLs
+        name: GeoVaLs/sea_surface_temperature
       minvalue: 200
       maxvalue: 300
     - variable:
-        name: latitude@MetaData
+        name: MetaData/latitude
       maxvalue: 60.
     - variable:
-        name: height@MetaData
+        name: MetaData/height
       is_defined:
     - variable:
-        name: station_id@MetaData
+        name: MetaData/stationIdentification
       is_in: 3, 6, 11-120
     
 In this example, the filter will be applied only to observations for which all of the following four criteria are met:
@@ -115,11 +115,11 @@ Example 2
     
     where:
     - variable:
-        name:  datetime@MetaData
+        name: MetaData/datetime
       minvalue: "****-01-01T00:00:00Z"
       maxvalue: "****-25-05T00:00:00Z"
     - variable:
-        name:  datetime@MetaData
+        name: MetaData/datetime
       minvalue: "****-**-**T09:00:00Z"
       maxvalue: "****-**-**T18:00:00Z"
     
@@ -132,10 +132,10 @@ Example 3
     
     where:
     - variable:
-        name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
+        name: PreQC/chlorophyllMassConcentration
       any_bit_set_of: 0, 1
     
-In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 0 and/or position 1. (Position 0 denotes the least significant bit -- in other words, bits are numbered "from right to left".)
+In this example, the filter will be applied only to observations for which the :code:`PreQC/chlorophyllMassConcentration` variable is an integer whose binary representation has a 1 at position 0 and/or position 1. (Position 0 denotes the least significant bit -- in other words, bits are numbered "from right to left".)
     
 Example 4
 ^^^^^^^^^
@@ -144,13 +144,13 @@ Example 4
     
     where:
     - variable:
-        name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
+        name: PreQC/chlorophyllMassConcentration
       any_bit_set_of: 4
     - variable:
-        name: mass_concentration_of_chlorophyll_in_sea_water@PreQC
+        name: PreQC/chlorophyllMassConcentration
       any_bit_unset_of: 10-12
     
-In this example, the filter will be applied only to observations for which the :code:`mass_concentration_of_chlorophyll_in_sea_water@PreQC` variable is an integer whose binary representation has a 1 at position 4 and a 0 at any of positions 10 to 12.
+In this example, the filter will be applied only to observations for which the :code:`PreQC/chlorophyllMassConcentration` variable is an integer whose binary representation has a 1 at position 4 and a 0 at any of positions 10 to 12.
     
 Example 5
 ^^^^^^^^^
@@ -159,7 +159,7 @@ Example 5
     
     where:
     - variable:
-        name: station_id@MetaData
+        name: MetaData/stationIdentification
       matches_regex: 'EUR[A-Z]*'
     
 In this example, the filter will be applied only to observations taken by stations whose IDs match the regular expression :code:`EUR[A-Z]*`, i.e. consist of the string :code:`EUR` followed by any number of capital letters.
@@ -171,7 +171,7 @@ Example 6
     
     where:
     - variable:
-        name: station_id@MetaData
+        name: MetaData/stationIdentification
       matches_wildcard: 'EUR??TEST*'
     
 In this example, the filter will be applied only to observations taken by stations whose IDs match the wildcard pattern :code:`EUR??TEST*`, i.e. consist of the string :code:`EUR` followed by two arbitrary characters, the string :code:`TEST` and any number of arbitrary characters.
@@ -183,10 +183,10 @@ Example 7
     
     where:
     - variable:
-        name: observation_type@MetaData
+        name: MetaData/observationTypeNum
       matches_any_wildcard: ['102*', '103*']
     
-In this example, assuming that :code:`observation_type@MetaData` is an integer variable, the filter will be applied only to observations whose types have decimal representations starting with :code:`102` or :code:`103`.
+In this example, assuming that :code:`MetaData/observationTypeNum` is an integer variable, the filter will be applied only to observations whose types have decimal representations starting with :code:`102` or :code:`103`.
 
 Example 8
 ^^^^^^^^^
@@ -195,11 +195,11 @@ Example 8
     
     where:
     - variable:
-        name: model_elevation@GeoVaLs
+        name: GeoVaLs/model_elevation
       is_close_to_any_of: [0.0, 1.0]
       absolute_tolerance: 1.0e-12
     
-In this example, assuming that :code:`model_elevation@GeoVaLs` is a float variable, the filter will be applied only to observations whose :code:`model_elevation` is within :code:`1.0e-12` of either :code:`0.0` or :code:`1.0`.
+In this example, assuming that :code:`GeoVaLs/model_elevation` is a float variable, the filter will be applied only to observations whose :code:`model_elevation` is within :code:`1.0e-12` of either :code:`0.0` or :code:`1.0`.
 
 Example 9
 ^^^^^^^^^
@@ -208,11 +208,11 @@ Example 9
     
     where:
     - variable:
-        name: model_elevation@GeoVaLs
+        name: GeoVaLs/model_elevation
       is_not_close_to_any_of: [100.0, 200.0]
       relative_tolerance: 0.1
     
-In this example, assuming that :code:`model_elevation@GeoVaLs` is a float variable, the filter will be applied only to observations whose :code:`model_elevation` is not within 10 % of either :code:`100.0` or :code:`200.0`.
+In this example, assuming that :code:`GeoVaLs/model_elevation` is a float variable, the filter will be applied only to observations whose :code:`model_elevation` is not within 10 % of either :code:`100.0` or :code:`200.0`.
 
 Example 10
 ^^^^^^^^^^
@@ -221,10 +221,10 @@ Example 10
 
     where:
     - variable:
-        name: DiagnosticFlags/ExtremeValue/air_temperature
+        name: DiagnosticFlags/ExtremeValue/airTemperature
       is_true:
     - variable:
-        name: DiagnosticFlags/ExtremeValue/relative_humidity
+        name: DiagnosticFlags/ExtremeValue/relativeHumidity
       is_false:
 
 In this example, the filter will be applied only to observations with the :code:`ExtremeValue` diagnostic flag set for the air temperature, but not for the relative humidity.
@@ -238,10 +238,10 @@ Example 11
 
     where:
     - variable:
-        name: latitude@MetaData
+        name: MetaData/latitude
       minvalue: 60.
     - variable:
-        name: latitude@MetaData
+        name: MetaData/latitude
       maxvalue: -60.
     where operator: or
 
@@ -256,30 +256,30 @@ In this example, the filter will be applied only to observations for which eithe
 ObsFunction and ObsDiagnostic Suffixes
 --------------------------------------
 
-In addition to, e.g., :code:`@GeoVaLs`, :code:`@MetaData`, :code:`@ObsValue`, :code:`@HofX`, there are two new suffixes that can be used.
+In addition to, e.g., :code:`GeoVaLs/`, :code:`MetaData/`, :code:`ObsValue/`, :code:`HofX/`, there are two new suffixes that can be used.
 
-- :code:`@ObsFunction` indicates that a particular variable should be a registered :code:`ObsFunction` (:code:`ObsFunction` classes are defined in the :code:`ufo/src/ufo/filters/obsfunctions` folder).  One example of an :code:`ObsFunction` is :code:`Velocity@ObsFunction`, which uses the 2 wind components to produce wind speed and can be used as follows:
+- :code:`ObsFunction/` indicates that a particular variable should be a registered :code:`ObsFunction` (:code:`ObsFunction` classes are defined in the :code:`ufo/src/ufo/filters/obsfunctions` folder).  One example of an :code:`ObsFunction` is :code:`ObsFunction/Velocity`, which uses the 2 wind components to produce wind speed and can be used as follows:
 
 .. code-block:: yaml
 
     - filter: Domain Check
       filter variables:
-      - name: eastward_wind
-      - name: northward_wind
+      - name: windEastward
+      - name: windNorthward
       where:
-      - variable: Velocity@ObsFunction
+      - variable: ObsFunction/Velocity
         maxvalue: 20.0
 
 Warning: ObsFunctions are evaluated for all observations, including those that have been unselected by previous elements of the :code:`where` list or rejected by filters run earlier. This can lead to problems if these ObsFunctions incorrectly assume they will always be given valid inputs.
 
-- :code:`@ObsDiagnostic` will be used to store non-H(x) diagnostic values from the :code:`simulateObs` function in individual :code:`ObsOperator` classes.  The :code:`ObsDiagnostics` interface class in OOPS is used to pass those diagnostics to the :code:`ObsFilters`.  Because the diagnostics are provided by :code:`simulateObs`, they can only be used in filters that implement the :code:`postFilter` function (currently only Background Check and Met Office Buddy Check).  The :code:`simulateObs` interface to :code:`ObsDiagnostics` will be first demonstrated in CRTM.
+- :code:`ObsDiagnostic/` will be used to store non-H(x) diagnostic values from the :code:`simulateObs` function in individual :code:`ObsOperator` classes.  The :code:`ObsDiagnostics` interface class in OOPS is used to pass those diagnostics to the :code:`ObsFilters`.  Because the diagnostics are provided by :code:`simulateObs`, they can only be used in filters that implement the :code:`postFilter` function (currently only Background Check and Met Office Buddy Check).  The :code:`simulateObs` interface to :code:`ObsDiagnostics` will be first demonstrated in CRTM.
 - In order to set up :code:`ObsDiagnostics` for use in a filter, the following changes need to be made:
 
-  - In the constructor of the filter, ensure that the diagnostic is added to the :code:`allvars_` variable.  For instance: :code:`allvars_ += Variable("refractivity@ObsDiag");`.  This step informs the code to set up the object, ready for use in the operator.
+  - In the constructor of the filter, ensure that the diagnostic is added to the :code:`allvars_` variable.  For instance: :code:`allvars_ += Variable("ObsDiag/refractivity");`.  This step informs the code to set up the object, ready for use in the operator.
   - In the observation operator, make sure that the :code:`ObsDiagnostics` object is received, check that this contains the variables that you are expecting to save, and save the variables.  An example of this (in Fortran) is in `Met Office GNSS-RO operator <https://github.com/JCSDA-internal/ufo/blob/develop/src/ufo/gnssro/BendMetOffice/ufo_gnssro_bendmetoffice_mod.F90#L95>`_
   - Use the variable in the filter via the :code:`data_.get()` routine.  For instance add::
   
-      Variable refractivityVariable = Variable("refractivity@ObsDiag");
+      Variable refractivityVariable = Variable("ObsDiag/refractivity");
       data_.get(refractivityVariable, iLevel, inputData);
 
     in the main filter body
@@ -315,18 +315,18 @@ Example 1 - rejection, error inflation and assignment
     
     - filter: Background Check
       filter variables:
-      - name: air_temperature
+      - name: airTemperature
       threshold: 2.0
       absolute threshold: 1.0
       action:
         name: reject
     - filter: Background Check
       filter variables:
-      - name: eastward_wind
-      - name: northward_wind
+      - name: windEastward
+      - name: windNorthward
       threshold: 2.0
       where:
-      - variable: latitude@MetaData
+      - variable: MetaData/latitude
         minvalue: -60.0
         maxvalue: 60.0
       action:
@@ -334,17 +334,17 @@ Example 1 - rejection, error inflation and assignment
         inflation: 2.0
     - filter: BlackList
       filter variables:
-      - name: brightness_temperature
+      - name: brightnessTemperature
       channels: *all_channels
       action:
         name: assign error
         error function:
-          name: ObsErrorModelRamp@ObsFunction
+          name: ObsFunction/ObsErrorModelRamp
           channels: *all_channels
           options:
             channels: *all_channels
             xvar:
-              name: CLWRetSymmetricMW@ObsFunction
+              name: ObsFunction/CLWRetSymmetricMW
               options:
                 clwret_ch238: 1
                 clwret_ch314: 2
@@ -363,7 +363,7 @@ Example 1 - rejection, error inflation and assignment
                     0.400,  0.550,  0.800,  3.000, 18.000]
 
 
-Example 2 - error assignment using :code:`DrawObsErrorFromFile@ObsFunction`
+Example 2 - error assignment using :code:`ObsFunction/DrawObsErrorFromFile`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Next we demonstrate deriving the observation error from a NetCDF file which defines the variance/covariance:
 
@@ -371,19 +371,19 @@ Next we demonstrate deriving the observation error from a NetCDF file which defi
 
     - filter: Perform Action
       filter variables:
-      - name: air_temperature
+      - name: airTemperature
       action:
         name: assign error
         error function:
-          name: DrawObsErrorFromFile@ObsFunction
+          name: ObsFunction/DrawObsErrorFromFile
           options:
             file: <filepath>
             interpolation:
-            - name: satellite_id@MetaData
+            - name: MetaData/satelliteIdentifier
               method: exact
-            - name: processing_center@MetaData
+            - name: MetaData/dataProviderOrigin
               method: exact
-            - name: air_pressure@MetaData
+            - name: MetaData/pressure
               method: linear
 
 
@@ -394,7 +394,7 @@ Example 3 - setting and unsetting a diagnostic flag
 
     - filter: Bounds Check
       filter variables:
-      - name: air_temperature
+      - name: airTemperature
       min value: 250
       max value: 350
       # Set the ExtremeValue diagnostic flag at particularly
@@ -404,13 +404,13 @@ Example 3 - setting and unsetting a diagnostic flag
         flag: ExtremeValue
     - filter: Perform Action
       filter variables:
-      - name: air_temperature
+      - name: airTemperature
       where:
       - variable:
-          name: latitude@MetaData
+          name: MetaData/latitude
         maxvalue: -60
       - variable:
-          name: air_temperature@ObsValue
+          name: ObsValue/airTemperature
         maxvalue: 250
       # Unset the ExtremeValue diagnostic flag at cold observations
       # in the Antarctic
@@ -429,12 +429,12 @@ In this example, a Domain Check filter rejecting observations outside the 60°S-
     - filter: Domain Check
       where:
       - variable:
-          name: latitude@MetaData
+          name: MetaData/latitude
         minvalue: -60
         maxvalue:  60
     - filter: Bounds Check
       filter variables:
-      - name: air_temperature
+      - name: airTemperature
       min value: 250
       max value: 350
       # Reject particularly hot and cold observations
@@ -456,7 +456,7 @@ In this example, observations taken in the zonal band 30°S--30°N that have pre
     - filter: AcceptList
       where:
       - variable:
-          name: latitude@MetaData
+          name: MetaData/latitude
         minvalue: -30
         maxvalue: 30
       actions:
@@ -503,7 +503,7 @@ automatically flag the equivalent averaged profiles, the following yaml block ca
     - filter: Gaussian Thinning
       where:
       - variable:
-          name: MetaData/extended_obs_space
+          name: MetaData/extendedObsSpace
         is_in: 0
       action:
         name: flag original and averaged profiles
@@ -521,7 +521,7 @@ Technically this is a UFO filter and not a filter action. The intention is that 
     - filter: Bayesian Background Check
       where:
       - variable:
-          name: MetaData/extended_obs_space
+          name: MetaData/extendedObsSpace
         is_in: 1
       ...
 
@@ -547,15 +547,15 @@ Note that any diagnostic flags in the original space that are already set remain
     - filter: Copy Flags From Extended To Original Space
       where:
         - variable:
-            name: ObsValue/ocean_potential_temperature
+            name: ObsValue/waterPotentialTemperature
           is_defined:
       filter variables:
-        - name: DiagnosticFlags/BayBgCheckReject/ocean_salinity
-        - name: DiagnosticFlags/BayBgCheckReject/ocean_potential_temperature
-      observation vertical coordinate: DerivedObsValue/ocean_depth
-      model vertical coordinate: HofX/ocean_depth
+        - name: DiagnosticFlags/BayBgCheckReject/salinity
+        - name: DiagnosticFlags/BayBgCheckReject/waterPotentialTemperature
+      observation vertical coordinate: DerivedObsValue/depthBelowWaterSurface
+      model vertical coordinate: HofX/depthBelowWaterSurface
 
-The example above matches up each observation level in the original space of :code:`DerivedObsValue/ocean_depth` with its corresponding model level in the extended space of :code:`HofX/ocean_depth`; for every unset observation-level flag in :code:`DiagnosticFlags/BayBgCheckReject/ocean_salinity` and :code:`DiagnosticFlags/BayBgCheckReject/ocean_potential_temperature`, for which :code:`ObsValue/ocean_potential_temperature` is non-missing (due to the 'where' statement), the flag value at the corresponding model-level overwrites it. Be wary when using 'where' statements with this filter, because the 'where' statement covers all the filter variables listed - any where-excluded locations' flag values remain unchanged.
+The example above matches up each observation level in the original space of :code:`DerivedObsValue/depthBelowWaterSurface` with its corresponding model level in the extended space of :code:`HofX/depthBelowWaterSurface`; for every unset observation-level flag in :code:`DiagnosticFlags/BayBgCheckReject/salinity` and :code:`DiagnosticFlags/BayBgCheckReject/waterPotentialTemperature`, for which :code:`ObsValue/waterPotentialTemperature` is non-missing (due to the 'where' statement), the flag value at the corresponding model-level overwrites it. Be wary when using 'where' statements with this filter, because the 'where' statement covers all the filter variables listed - any where-excluded locations' flag values remain unchanged.
 
 
 Outer Loop Iterations

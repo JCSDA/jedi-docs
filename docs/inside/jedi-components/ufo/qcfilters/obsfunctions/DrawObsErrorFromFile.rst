@@ -21,25 +21,25 @@ attribute for our payload variable, then when true, we collapse the first dimens
 Example
 .......
 The following NetCDF metadata describes the dependence of a full covariance matrix (with rows and columns
-corresponding to channel numbers) on multiple variables (`latitude_band@MetaData`,
-`processing_center@MetaData` and `satellite_id@MetaData(index)`): ::
+corresponding to channel numbers) on multiple variables (`MetaData/latitude_band`,
+`MetaData/dataProviderOrigin` and `MetaData/satelliteIdentifier(index)`): ::
 
     netcdf mydata {
     dimensions:
       channel_number = 10 ;
-      channel_number@MetaData = 10 ;
+      MetaData/sensorChannelNumber = 10 ;
       index = 8 ;
     variables:
-      float air_temperature@ErrorVariance(channel_number, channel_number@MetaData, index) ;
-        air_temperature@ErrorVariance:coordinates = "latitude_band@MetaData \
-            processing_center@MetaData satellite_id@MetaData" ;
-        string air_temperature@ErrorVariance:full = "true" ;
+      float ErrorVariance/airTemperature(channel_number, MetaData/sensorChannelNumber, index) ;
+        ErrorVariance/airTemperature:coordinates = "MetaData/latitude_band \
+            MetaData/dataProviderOrigin MetaData/satelliteIdentifier" ;
+        string ErrorVariance/airTemperature:full = "true" ;
       int index(index) ;
       int channel_number(channel_number) ;
-      int channel_number@MetaData(channel_number@MetaData) ;
-      int latitude_band@MetaData(index) ;
-      int processing_center@MetaData(index) ;
-      int satellite_id@MetaData(index) ;
+      int MetaData/sensorChannelNumber(MetaData/sensorChannelNumber) ;
+      int MetaData/latitude_band(index) ;
+      int MetaData/dataProviderOrigin(index) ;
+      int MetaData/satelliteIdentifier(index) ;
     ...
     }
 
@@ -48,7 +48,7 @@ dimension is collapsed and discarded after extracting the diagonal elements of t
 matrices, so its name can be arbitrary. This allows us to conform to CF conventions,
 which forbids multiple axes of an array to be indexed by the same coordinate.
 The name of the dimension that remains after the collapse needs to match a variable name or be
-set to `channel_number@MetaData` if this dimension is indexed by channel numbers (which aren't
+set to `MetaData/sensorChannelNumber` if this dimension is indexed by channel numbers (which aren't
 represented by an ObsSpace variable).
 
 Now we illustrate how we might read and interpolate this data to derive our observation error.  This
@@ -59,22 +59,22 @@ channel number:
 
     - Filter: Perform Action
       filter variables:
-      - name: air_temperature
+      - name: airTemperature
         channels: &all_channels 1-3
       action:
         name: assign error
         error function:
-          name: DrawObsErrorFromFile@ObsFunction
+          name: ObsFunction/DrawObsErrorFromFile
           channels: *all_channels
           options:
             file: <path-to-input>
             channels: *all_channels
             interpolation:
-            - name: satellite_id@MetaData
+            - name: MetaData/satelliteIdentifier
               method: exact
-            - name: processing_center@MetaData
+            - name: MetaData/dataProviderOrigin
               method: exact
-            - name: latitude_band@MetaData
+            - name: MetaData/latitude_band
               method: nearest
 
 The `DrawObsErrorFromFile` ObsFunction can read either standard deviations or variances from a file.

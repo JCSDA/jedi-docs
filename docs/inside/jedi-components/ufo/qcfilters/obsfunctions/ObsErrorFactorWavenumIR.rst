@@ -23,12 +23,12 @@ Example:
 
   - filter: BlackList
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *all_channels
     action:
       name: inflate error
       inflation variable:
-        name: ObsErrorFactorWavenumIR@ObsFunction
+        name: ObsFunction/ObsErrorFactorWavenumIR
         channels: *all_channels
         options:
           channels: *all_channels
