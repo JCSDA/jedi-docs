@@ -11,11 +11,11 @@ spack-stack currently requires a basic Python version 3.8-3.10 that has nothing 
 
 Supported in this release are macOS with ``clang`` (``ewok`` graphics dependencies don’t build with ``gcc``), Red Hat with ``gcc``, Ubuntu with ``gcc``.
 
-Before building the spack-stack modules on macOS, you must first install homebrew and update the local path to your homebrew installation. See https://brew.sh/ and https://spack-stack.readthedocs.io/en/latest/Platforms.html#homebrew-notes for more specific information on this task. It is recommended to start with a fresh homebrew installation before setting up the spack-stack prerequisites. See https://docs.brew.sh/FAQ#how-do-i-uninstall-homebrew for information on how to uninstall homebrew from your current environment.
+Before building the spack-stack modules on macOS, you must first install homebrew and update the local path to your homebrew installation. See https://brew.sh/ and https://spack-stack.readthedocs.io/en/latest/NewSiteConfigs.html#homebrew-notes for more specific information on this task. It is recommended to start with a fresh homebrew installation before setting up the spack-stack prerequisites. See https://docs.brew.sh/FAQ#how-do-i-uninstall-homebrew for information on how to uninstall homebrew from your current environment.
 
 Install the prerequisites:
 
-Go to https://spack-stack.readthedocs.io/en/latest/Platforms.html#prerequisites-one-off for instructions.
+Go to https://spack-stack.readthedocs.io/en/latest/NewSiteConfigs.html#prerequisites-one-off for instructions.
 
 Check out the code:
 
