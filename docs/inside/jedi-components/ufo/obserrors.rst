@@ -193,7 +193,7 @@ This type of observation error covariance is set up using the following options:
  obs space:
    name: Sondes (within group covariances for one variable)
    obsdatain:
-     ...
+     # input/output files and other options
      obsgrouping:
        group variables: [sequenceNumber]
        sort variable: pressure
