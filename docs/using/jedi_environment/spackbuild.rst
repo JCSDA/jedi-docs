@@ -52,6 +52,6 @@ Export ``SPACK_SYSTEM_CONFIG_PATH``:
 
 Build the ``skylab-4.0`` spack-stack environment:
 
-Go to https://spack-stack.readthedocs.io/en/latest/Platforms.html#creating-a-new-environment for instructions starting with Step 3.
+Go to https://spack-stack.readthedocs.io/en/latest/NewSiteConfigs.html#creating-a-new-environment for instructions starting with Step 3.
 
 In the :doc:`next section <modules>` we describe in details how to use spack-stack modules to build and run JEDI on different platforms.
