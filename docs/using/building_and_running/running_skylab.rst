@@ -294,6 +294,14 @@ Please don’t forget to source this script after creating it: :code:`source $JE
     esac
   fi
 
+Note: On AWS pcluster users will need to update the python version referenced in the above :code:`source $JEDI_ROOT/activate.sh` script. The following lines under :code:`# ecflow and pyioda Python bindings` should be:
+
+.. code-block:: bash
+
+    # ecflow and pyioda Python bindings
+    PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:2]; print("{0}.{1}".format(*version))'`
+    export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}/pyioda:/home/ubuntu/jedi/ecflow-5.8.4/lib/python3.8/site-packages:${PYTHONPATH}"
+
 5- Run SkyLab
 ^^^^^^^^^^^^^
 Now you are ready to start an ecflow server and run an experiment. Make sure you are in your python virtual environment (venv).
