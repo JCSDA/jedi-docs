@@ -3,7 +3,7 @@
 Using spack-stack modules to build and run JEDI
 ===============================================
 
-The instructions in this section are specific to the use of spack-stack environment modules (``lmod/lua`` or ``tcl/tk``) for building and running JEDI applications. For general information on using spack-stack to build and run software, see the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.3.0>`_.
+The instructions in this section are specific to the use of spack-stack environment modules (``lmod/lua`` or ``tcl/tk``) for building and running JEDI applications. For general information on using spack-stack to build and run software, see the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.3.1>`_.
 
 One of the big advantages of spack-stack is that it automatically generates modules for all compiled packages and Python packages and works in exactly the same way on HPCs, on the cloud, and on a personal computer. Environment modules are available on basically all HPC systems and any modern macOS or Linux distribution, and are an easy and effective way to manage software libraries. There are two main flavors, the older ``tcl/tk`` modules and the newer ``lmod/lua`` modules, with the latter being superior and therefore preferred, if available. The two implementations share similar commands, such as:
 
@@ -48,37 +48,7 @@ Orion
 
 Orion is an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
 
-The following bash shell commands are necessary to access the installed spack-stack modules (substitute equivalent csh shell commands as appropriate):
-
-.. code-block:: bash
-
-   module purge
-   module use /work/noaa/da/role-da/spack-stack/modulefiles
-   module load miniconda/3.9.7
-   module load ecflow/5.8.4
-   module load mysql/8.0.31
-
-For ``spack-stack-1.3.0`` with Intel, load the following modules after loading miniconda and ecflow:
-
-.. code-block:: bash
-
-   module use /work/noaa/epic-ps/role-epic-ps/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core
-   module load stack-intel/2022.0.2
-   module load stack-intel-oneapi-mpi/2021.5.1
-   module load stack-python/3.9.7
-   module available
-
-For ``spack-stack-1.3.0`` with GNU, load the following modules after loading miniconda and ecflow:
-
-.. code-block:: bash
-
-   module use /work/noaa/epic-ps/role-epic-ps/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core
-   module load stack-gcc/10.2.0
-   module load stack-openmpi/4.0.4
-   module load stack-python/3.9.7
-   module available
-
-For both Intel and GNU, proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#msu-orion to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
 
 .. code-block:: bash
 
@@ -179,38 +149,7 @@ Discover
 
 `Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.
 
-The following bash shell commands are necessary to access the installed spack-stack modules (substitute equivalent csh shell commands as appropriate):
-
-
-.. code-block:: bash
-
-   module purge
-   module use /discover/swdev/jcsda/spack-stack/modulefiles
-   module load miniconda/3.9.7
-   module load ecflow/5.8.4
-   module load mysql/8.0.31
-
-For ``spack-stack-1.3.0`` with Intel, load the following modules after loading miniconda and ecflow:
-
-.. code-block:: bash
-
-   module use /gpfsm/dswdev/jcsda/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core
-   module load stack-intel/2022.0.1
-   module load stack-intel-oneapi-mpi/2021.5.0
-   module load stack-python/3.9.7
-   module available
-
-For ``spack-stack-1.3.0`` with GNU, load the following modules after loading miniconda and ecflow:
-
-.. code-block:: bash
-
-   module use /gpfsm/dswdev/jcsda/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core
-   module load stack-gcc/10.1.0
-   module load stack-openmpi/4.1.3
-   module load stack-python/3.9.7
-   module available
-
-For both Intel and GNU, proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#nasa-discover to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
 
 .. code-block:: bash
 
@@ -230,46 +169,20 @@ To run the remaining tests, particularly those that require MPI, you'll need to 
 
 .. code-block:: bash
 
-    salloc --nodes=1 --time=30
+    salloc --nodes=1 --time=30 --constraint="cas"
 
 Or, you can submit a batch script to the queue through ``sbatch`` as described in the Orion instructions above.
 
 For GNU, when using ``ecbuild``, use ``ecbuild -DMPIEXEC_EXECUTABLE="/usr/bin/srun" -DMPIEXEC_NUMPROC_FLAG="-n"``. Then run all tests directly from the login node.
+
+Discover is a heterogeneous system with different CPU architectures and operating systems on the login and compute nodes. The default login node is of the newest Intel Cascade Lake generation, and we recommend requesting the same node type when running interactive jobs or batch jobs, which is accomplished by the argument ``--constraint="cas"``. If older node types are used (Skylake, Haswell), users may see warnings like "no version information available" for certain libraries in the default location ``/usr/lib64``. For more information, see https://www.nccs.nasa.gov/nccs-users/instructional/using-slurm/best-practices.
 
 Hera
 -----
 
 Hera is an HPC system located in NOAA's NESCC facility in Fairmont, WV. The following bash shell commands are necessary to access the installed spack-stack modules (substitute equivalent csh shell commands as appropriate):
 
-.. code-block:: bash
-
-   module purge
-   module use /scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulefiles
-   module load miniconda/3.9.12
-   module load ecflow/5.5.3
-   module load mysql/8.0.31
-
-For ``spack-stack-1.3.0`` with Intel, load the following modules after loading miniconda and ecflow:
-
-.. code-block:: bash
-
-   module use /scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.3.0/envs/unified-dev/install/modulefiles/Core
-   module load stack-intel/2021.5.0
-   module load stack-intel-oneapi-mpi/2021.5.1
-   module load stack-python/3.9.12
-   module available
-
-For ``spack-stack-1.3.0`` with GNU, load the following modules after loading miniconda and ecflow:
-
-.. code-block:: bash
-
-   module use /scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.3.0/envs/unified-dev/install/modulefiles/Core
-   module load stack-gcc/9.2.0
-   module load stack-openmpi/3.1.4
-   module load stack-python/3.9.12
-   module available
-
-For both Intel and GNU, proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#noaa-rdhpcs-hera to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
 
 .. code-block:: bash
 
@@ -297,38 +210,7 @@ Cheyenne
 
 `Cheyenne <https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/cheyenne>`_ is a 5.34-petaflops, high-performance computer built for NCAR by SGI.
 
-The following bash shell commands are necessary to access the installed spack-stack modules (substitute equivalent csh shell commands as appropriate):
-
-.. code-block:: bash
-
-   module purge
-   export LMOD_TMOD_FIND_FIRST=yes
-   module use /glade/work/jedipara/cheyenne/spack-stack/modulefiles/misc
-   module load miniconda/3.9.12
-   module load ecflow/5.8.4
-   module load mysql/8.0.31
-
-For ``spack-stack-1.3.0`` with Intel, load the following modules after loading miniconda and ecflow:
-
-.. code-block:: bash
-
-   module use /glade/work/epicufsrt/contrib/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core
-   module load stack-intel/19.1.1.217
-   module load stack-intel-mpi/2019.7.217
-   module load stack-python/3.9.12
-   module available
-
-For ``spack-stack-1.3.0`` with GNU, load the following modules after loading miniconda and ecflow:
-
-.. code-block:: console
-
-   module use /glade/work/epicufsrt/contrib/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core
-   module load stack-gcc/10.1.0
-   module load stack-openmpi/4.1.1
-   module load stack-python/3.9.12
-   module available
-
-For both Intel and GNU, proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#ncar-wyoming-cheyenne to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
 
 .. code-block:: bash
 
@@ -372,28 +254,7 @@ Casper
 
 The `Casper <https://www2.cisl.ucar.edu/resources/computational-systems/casper>`_ cluster is a heterogeneous system of specialized data analysis and visualization resources, large-memory, multi-GPU nodes, and high-throughput computing nodes.
 
-The following bash shell commands are necessary to access the installed spack-stack modules (substitute equivalent csh shell commands as appropriate):
-
-.. code-block:: bash
-
-   module purge
-   export LMOD_TMOD_FIND_FIRST=yes
-   module use /glade/work/jedipara/cheyenne/spack-stack/modulefiles/misc
-   module load miniconda/3.9.12
-   module load ecflow/5.8.4
-   module load mysql/8.0.31
-
-For ``spack-stack-1.3.0`` with Intel, load the following modules after loading miniconda and ecflow:
-
-.. code-block:: bash
-
-   module use /glade/work/epicufsrt/contrib/spack-stack/spack-stack-1.3.0-casper/envs/unified-env/install/modulefiles/Core
-   module load stack-intel/19.1.1.217
-   module load stack-intel-mpi/2019.7.217
-   module load stack-python/3.9.12
-   module available
-
-Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#ncar-wyoming-casper to load the basic spack-stack modules for Intel. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
 
 .. code-block:: bash
 
@@ -450,41 +311,7 @@ Once logged into S4, you must then log into s4-submit to load the spack-stack mo
 
    ssh -Y s4-submit
 
-The following bash shell commands are necessary to access the installed spack-stack modules (substitute equivalent csh shell commands as appropriate):
-
-.. code-block:: bash
-
-   module purge
-   module use /data/prod/jedi/spack-stack/modulefiles
-   module load miniconda/3.9.12
-   module load ecflow/5.8.4
-   module load mysql/8.0.31
-
-For ``spack-stack-1.3.0`` with Intel, load the following modules after loading miniconda and ecflow:
-
-.. code-block:: bash
-
-   module use /data/prod/jedi/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core
-   module load stack-intel/2021.5.0
-   module load stack-intel-oneapi-mpi/2021.5.0
-   module load stack-python/3.9.12
-   module unuse /opt/apps/modulefiles/Compiler/intel/non-default/22
-   module unuse /opt/apps/modulefiles/Compiler/intel/22
-   module available
-
-Note the two ``module unuse`` statements, that need to be run after the stack metamodules are loaded. Loading the Intel compiler meta module loads the Intel compiler module provided by the sysadmins, which adds those two directories to the module path. These contain duplicate libraries that are not compatible with our stack, such as ``hdf4``.
-
-For ``spack-stack-1.3.0`` with GNU, load the following modules after loading miniconda and ecflow:
-
-.. code-block:: bash
-
-   module use /data/prod/jedi/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core
-   module load stack-gcc/9.3.0
-   module load stack-mpich/4.0.1
-   module load stack-python/3.9.12
-   module available
-
-For both Intel and GNU, proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#uw-univ-of-wisconsin-s4 to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
 
 .. code-block:: bash
 
@@ -581,59 +408,13 @@ Narwhal
 
 Narwhal is an HPE Cray EX system located at the Navy DSRC. It has 2,176 standard compute nodes (AMD 7H12 Rome, 128 cores, 238 GB) and 12 large-memory nodes (995 GB). It has 590 TB of memory and is rated at 12.8 peak PFLOPS.
 
-For ``skylab-4.0`` with the **Intel** ``spack-stack-1.3.0`` stack, load the following modules:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#navy-hpcmp-narwhal to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
 
 .. code-block:: bash
 
-   module unload PrgEnv-cray
-   module load PrgEnv-intel/8.3.2
-   module unload intel
-   module load intel-classic/2021.4.0
-   module unload cray-mpich
-   module load cray-mpich/8.1.14
-   module unload cray-python
-   module load cray-python/3.9.7.1
-   module unload cray-libsci
-   module load cray-libsci/22.08.1.1
-   
-   module use /p/app/projects/NEPTUNE/spack-stack/modulefiles
-   module load ecflow/5.8.4
-   module load mysql/8.0.31
-   
-   module use /p/app/projects/NEPTUNE/spack-stack/spack-stack-1.3.0/envs/unified-env-intel-2021.4.0/install/modulefiles/Core
-   
-   module load stack-intel/2021.4.0
-   module load stack-cray-mpich/8.1.14
-   module load stack-python/3.9.7
-   
-   module load jedi-fv3-env jedi-ewok-env soca-env
-
-For ``skylab-4.0`` with the **GNU** ``spack-stack-1.3.0`` stack, load the following modules:
-
-.. code-block:: bash
-
-   module unload PrgEnv-cray
-   module load PrgEnv-gnu/8.3.2
-   module unload gcc
-   module load gcc/10.3.0
-   module unload cray-mpich
-   module load cray-mpich/8.1.14
-   module unload cray-python
-   module load cray-python/3.9.7.1
-   module unload cray-libsci
-   module load cray-libsci/22.08.1.1
-   
-   module use /p/app/projects/NEPTUNE/spack-stack/modulefiles
-   module load ecflow/5.8.4
-   module load mysql/8.0.31
-   
-   module use /p/app/projects/NEPTUNE/spack-stack/spack-stack-1.3.0/envs/unified-env-gcc-10.3.0/install/modulefiles/Core
-   
-   module load stack-gcc/10.3.0
-   module load stack-cray-mpich/8.1.14
-   module load stack-python/3.9.7
-   
-   module load jedi-fv3-env jedi-ewok-env soca-env
+   module load jedi-fv3-env/unified-dev
+   module load jedi-ewok-env/unified-dev
+   module load soca-env/unified-dev
 
 Because of space limitations on your home directory, it's a good idea to build your code on Narwhal ``$WORKDIR: /p/work1/$USER``.
 
@@ -681,4 +462,4 @@ AWS AMIs
 --------
 For more information about using Amazon Web Services please see :doc:`JEDI on AWS <./cloud/index>`.
 
-As part of this release, an Amazon Media Image (AMI) is available that has the necessary `spack-stack-1.3.0` environment for `skylab-4.0.0` pre-installed. For more information on how to find this AMI, refer to https://spack-stack.readthedocs.io/en/1.3.0/PreConfiguredSites.html.
+As part of this release, an Amazon Media Image (AMI) is available that has the necessary `spack-stack-1.3.1` environment for `skylab-4.0.0` pre-installed. For more information on how to find this AMI, refer to https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html.
