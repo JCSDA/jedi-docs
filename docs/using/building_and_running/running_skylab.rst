@@ -294,7 +294,7 @@ Please don’t forget to source this script after creating it: :code:`source $JE
     esac
   fi
 
-Note: On AWS pcluster users will need to update the python version referenced in the above :code:`source $JEDI_ROOT/activate.sh` script. The following lines under :code:`# ecflow and pyioda Python bindigs` should be:
+Note: On AWS pcluster users will need to update the python version referenced in the above :code:`source $JEDI_ROOT/activate.sh` script. The following lines under :code:`# ecflow and pyioda Python bindings` should be:
 
 .. code-block:: bash
 
