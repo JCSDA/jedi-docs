@@ -198,7 +198,7 @@ above, which was written specifically with static bias correction in mind.
 Available Predictors
 ====================
 
-`cloudWaterContent`
+`cloud_liquid_water`
 ++++++++++++++++++++
 
 Cloud liquid water.
@@ -214,7 +214,7 @@ Example
 
 .. code-block:: yaml
 
-  name: cloudWaterContent
+  name: cloud_liquid_water
   satellite: SSMIS
   ch19h: 12
   ch19v: 13
