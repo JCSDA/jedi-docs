@@ -25,7 +25,7 @@ For many observation types, the observation uncertainties (also known as observa
           - name: MetaData/pressure
             method: linear
 
-Also, within filters there is the ability to set observation uncertainties using the :doc:`assign_error filter action <qcfilters/FilterOptions>`.  An example of this, from the surface observation code when assigning errors to ``surface_pressure``, is included here:
+Also, within filters there is the ability to set observation uncertainties using the :doc:`assign_error filter action <qcfilters/FilterOptions>`.  An example of this, from the surface observation code when assigning errors to ``stationPressure``, is included here:
 
 .. code-block:: yaml
 

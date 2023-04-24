@@ -242,7 +242,7 @@ The observation operator in the above example does vertical interpolation in hei
     vertical coordinate: air_pressure_levels
     observation vertical coordinate: pressure
 
-The observation operator in the above example does vertical interpolation in log(air_pressure) on the levels taken from the :code:`air_pressure_levels` GeoVaL.
+The observation operator in the above example does vertical interpolation in log(pressure) on the levels taken from the :code:`air_pressure_levels` GeoVaL.
 
 .. code-block:: yaml
 
@@ -421,13 +421,13 @@ Additionally, for calculation of MW cloud-affected radiances using RTTOV-SCATT t
 
 The geographic location of the observation, the satellite zenith angle and the RTTOV surface type are also required from the ObsSpace:
 
-* At least one (in order of priority) from :code:`MetaData/elevation`, :code:`MetaData/surface_height`, :code:`MetaData/model_orography` or the :code:`surface_altitude` geoval [m]
+* At least one (in order of priority) from :code:`MetaData/heightOfSurface`, :code:`MetaData/heightOfSurface`, :code:`MetaData/model_orography` or the :code:`surface_altitude` geoval [m]
 * :code:`MetaData/latitude` [degrees]
 * :code:`MetaData/longitude` [degrees, -180--180 or 0--360]
 * :code:`MetaData/sensorZenithZngle` [degrees]
 * :code:`MetaData/surfaceQualifier` [0-2]
 
-  :code:`MetaData/surface_type` is used to specify whether RTTOV should treat an observation as having a land (0), sea (1) or sea-ice (2) surface. The :code:`SetSurfaceType` ObsFunction, may be called via the :code:`VariableAssignment` ObsFilter to generate this data according to rules used in operational processing at the Met Office.
+  :code:`MetaData/surfaceQualifier` is used to specify whether RTTOV should treat an observation as having a land (0), sea (1) or sea-ice (2) surface. The :code:`SetSurfaceType` ObsFunction, may be called via the :code:`VariableAssignment` ObsFilter to generate this data according to rules used in operational processing at the Met Office.
 
 Optionally, the satellite azimuth angle and the solar zenith/azimuth angles may be supplied:
 
@@ -449,7 +449,7 @@ Outputs:
 * :code:`brightness_temperature_assuming_clear_sky`
 * :code:`pressure_level_at_peak_of_weightingfunction`
 * :code:`toa_total_transmittance`
-* :code:`surface_emissivity`
+* :code:`emissivity`
 * :code:`brightness_temperature_jacobian_${any_active_variable}`
 
 Where an observation diagnostic is requested that is not recognised by the interface, **no error is returned**, but memory is still allocated for the named observation diagnostic and the array is initialised to :code:`missing`. This is to facilitate the subsequent creation of bias correction predictors using output from the observation operator.
@@ -464,7 +464,7 @@ The configurable options for the RTTOV observation operator interface are:
 
 * :code:`Absorbers` (string list, optional): *Additional* atmospheric absorber species that will be requested from geovals. Names must correspond to those specified in :code:`gas_name` array in the |rttov_const module|.
 
-  * :code:`Water_vapour` (the internal RTTOV name for water vapour, c.f. :code:`H2O` in CRTM) is mandatory and maps to :code:`specific_humidity` and it is not necessary to list it here explicitly.
+  * :code:`Water_vapour` (the internal RTTOV name for water vapour, c.f. :code:`H2O` in CRTM) is mandatory and maps to :code:`specificHumidity` and it is not necessary to list it here explicitly.
 
   * :code:`CLW` (cloud liquid water) is optional for clear-sky MW calculation but mandatory for MW scattering calculations and maps to :code:`mass_content_of_cloud_liquid_water_in_atmosphere_layer`.
 
@@ -645,7 +645,7 @@ Configuration options (ObsOperator):
 Configuration options (ObsSpace):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* :code:`obsgrouping`: applying record_number as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
+* :code:`obsgrouping`: applying sequenceNumber as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
 
 Configuration options (ObsFilters):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -723,7 +723,7 @@ angle data
 Configuration options (ObsSpace):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* :code:`obsgrouping`: applying record_number as a group_variable can get RO profiles in ufo. Otherwise RO data would be  treated as single observations.
+* :code:`obsgrouping`: applying sequenceNumber as a group_variable can get RO profiles in ufo. Otherwise RO data would be  treated as single observations.
 
 Configuration options (ObsFilters):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -803,7 +803,7 @@ Configuration options (ObsOperator):
 Configuration options (ObsSpace):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* :code:`obsgrouping`: applying record_number as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
+* :code:`obsgrouping`: applying sequenceNumber as group_variable can get RO profiles in ufo. Otherwise RO data would be treated as single observations.
 
 Configuration options (ObsFilter):
 
@@ -1241,7 +1241,7 @@ This operator calculates modeled particulate matter (PM) at monitoring stations,
 
 Unit conversion is included in the calculations.
 
-The users are allowed to select a vertical interpolation approach to: 1) match model height (above sea level, asl = height above ground level + surface height) to station elevation (also asl) which is required for the AirNow application; or 2) match model log(air_pressure) to observation log(air_pressure), likely suitable for use with other types of observational datasets that contain pressure information, e.g. aircraft, sonde, tower...
+The users are allowed to select a vertical interpolation approach to: 1) match model height (above sea level, asl = height above ground level + surface height) to station elevation (also asl) which is required for the AirNow application; or 2) match model log(pressure) to observation log(pressure), likely suitable for use with other types of observational datasets that contain pressure information, e.g. aircraft, sonde, tower...
 
 Currently this tool mainly supports the calculation from the NOAA FV3-CMAQ aerosol fields (user-defined, up to 70 individual species). Based on the user definition, the calculation can involve the usage of the model-based scaling factors for three modes of Aitken, accumulation, and coarse.
 
@@ -1506,15 +1506,15 @@ Example
     # operators used to evaluate background errors
     - name: BackgroundErrorVertInterp
       variables:
-      - name: northward_wind
-      - name: eastward_wind
-      - name: air_temperature
-      - name: specific_humidity
+      - name: windNorthward
+      - name: windEastward
+      - name: airTemperature
+      - name: specificHumidity
       observation vertical coordinate: pressure
       vertical coordinate: background_error_air_pressure
     - name: BackgroundErrorIdentity
       variables:
-      - name: surface_pressure
+      - name: stationPressure
 
 Background Error Identity
 -------------------------
