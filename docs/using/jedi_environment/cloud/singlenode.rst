@@ -12,7 +12,7 @@ As described elsewhere in :doc:`this chapter <index>`, there are several steps y
 
 When you have completed these steps, you are ready to launch a single JEDI EC2 instance through the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ on the AWS console.
 
-As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.3.0` environment for `skylab-4.0.0` pre-installed. For more information on how to find these AMIs, refer to the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.3.0/Platforms.html>`_.
+As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.3.1` environment for `skylab-4.0.0` pre-installed. For more information on how to find these AMIs, refer to the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.3.1/Platforms.html>`_.
 
 .. _singlenode-launch:
 
@@ -38,7 +38,7 @@ The following example uses the ``skylab-4.0.0-redhat8”`` AMI.
 +-----------------------------------------+---------------------------------+--------------------------+
 | ``skylab-3.0.0-{ubuntu20,redhat8}``     | c6i.4xlarge                     | Intel Ice Lake 8375C     |
 +-----------------------------------------+---------------------------------+--------------------------+
-| ``skylab-4.0.0-{redhat8}``              | c6i.4xlarge                     | Intel Xeon 8375C         |
+| ``skylab-4.0.0-redhat8``                | c6i.4xlarge                     | Intel Ice Lake 8375C     |
 +-----------------------------------------+---------------------------------+--------------------------+
 
 4. Select an existing key pair (for which you hold the private key on your machine) or create a new key pair and follow the process.
@@ -79,22 +79,13 @@ After launching the instance through the AWS console, select the instance and cl
          [default]
          region = us-east-1
 
-After logging in, follow the instructions below to set up the environment for compiling and running Skylab experiments.
-
-For AWS Red Hat 8:
+**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
 
 .. code-block:: bash
 
-   ulimit -s unlimited
-   scl enable gcc-toolset-11 bash
-   module use /home/ec2-user/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core
-   module load stack-gcc/11.2.1
-   module load stack-openmpi/4.1.4
-   module load stack-python/3.10.8
    module load jedi-fv3-env/unified-dev
    module load jedi-ewok-env/unified-dev
    module load soca-env/unified-dev
-
 
 Suspending or terminating your compute node
 -------------------------------------------

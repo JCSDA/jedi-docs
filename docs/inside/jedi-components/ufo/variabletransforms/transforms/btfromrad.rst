@@ -18,7 +18,7 @@ using an input spectral radiance and a choice of frequency, wavenumber or wavele
         name: ObsValue/radiance
         channels: 1-22
       spectral variable:
-        name: MetaData/wavenumber
+        name: MetaData/sensorCentralWavenumber
         channels: 1-22
       radiance units: wavenumber
 
@@ -26,7 +26,7 @@ using an input spectral radiance and a choice of frequency, wavenumber or wavele
 
 * :code:`transform from` is a required parameter and is of type :code:`ufo::Variable`.  This type requires a name and usually a list of channels.
 * :code:`spectral variable` is a required parameter and is of type :code:`ufo::Variable`.  This type requires a name and usually a list of channels.
-* :code:`radiance units` is a required parameter and takes a string variable which must be :code:`wavenumber`, :code:`wavelength` or :code:`frequency`.  In ufo, wavenumbers are in :math:`m^{-1}`, wavelengths are in :math:`\mu m` and frequencies are in Hz.
+* :code:`radiance units` is a required parameter and takes a string variable which must be :code:`sensorCentralWavenumber`, :code:`sensorCentralWavelength` or :code:`sensorCentralFrequency`.  In ufo, wavenumbers are in :math:`m^{-1}`, wavelengths are in :math:`\mu m` and frequencies are in Hz.
 * :code:`minimum value` is an optional parameter and specifies the minimum tolerable output value.  Any values below this are filled with the missing value indicator.
 * :code:`maximum value` is an optional parameter and specifies the maximum tolerable output value.  Any values above this are filled with the missing value indicator.
 * :code:`planck1` is a parameter which species the value of of the first planck constant, :math:`c_1` in the formula below.  The default value is 1.191042972e-16. This option is only included to allow backwards compatibility and is not recommended to use.
@@ -44,7 +44,7 @@ The below yaml extract shows how all the filter options can be used:
         name: ObsValue/radiance
         channels: 1-22
       spectral variable:
-        name: MetaData/frequency
+        name: MetaData/sensorCentralFrequency
         channels: 1-22
       radiance units: frequency
       minimum value: 150.0

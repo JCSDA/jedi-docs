@@ -8,28 +8,28 @@ List of spack, software, and AMIs
 
 Versions used:
 
-- spack-stack-1.3.0 from April 10, 2023
+- spack-stack-1.3.1 from April 21, 2023
 
-  * https://github.com/NOAA-EMC/spack-stack/tree/1.3.0
+  * https://github.com/NOAA-EMC/spack-stack/tree/1.3.1
 
-  * https://spack-stack.readthedocs.io/en/1.3.0/
+  * https://spack-stack.readthedocs.io/en/1.3.1/
 
 - AMIs available in us-east-1 region (N. Virginia)
 
   - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.4:
 
-    AMI Name skylab-4.0.0-redhat8
+    AMI Name skylab-4.0.0-redhat8-update-20230419
 
-    AMI ID ami-098a3fdd801055c14
+    AMI ID ami-01e025b0334795ffa
 
 
 - AMIs available in us-east-2 region (Ohio)
 
   - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.4:
 
-    AMI Name skylab-4.0.0-redhat8
+    AMI Name skylab-4.0.0-redhat8-update-20230419
 
-    AMI ID ami-039759644cac741eb
+    AMI ID ami-094361e081de18589
 
 
     It is necessary to use c6i.2xlarge or larger instances of this family.
