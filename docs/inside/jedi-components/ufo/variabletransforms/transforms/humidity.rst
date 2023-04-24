@@ -4,7 +4,7 @@
 =================
 Relative Humidity
 =================
-Performs a variable conversion from specific_humidity (or mixing ratio), temperature, and
+Performs a variable conversion from specificHumidity (or mixing ratio), temperature, and
 pressure to relative humidity. The newly calculated variable is included in the same
 obs space.
 
@@ -20,10 +20,10 @@ obs space.
 
 **Observation parameters needed** (JEDI name)
 
-- specific_humidity (:math:`q`)
-- air_temperature (:math:`T`)
-- air_pressure or surface_pressure (:math:`P`)
-- humidity_mixing_ratio (:math:`w`) (needed when using Method: UKMOmixingratio)
+- specificHumidity (:math:`q`)
+- airTemperature (:math:`T`)
+- pressure or stationPressure (:math:`P`)
+- waterVaporMixingRatio (:math:`w`) (needed when using Method: UKMOmixingratio)
 
 **Method(s) available**
 
@@ -85,9 +85,9 @@ obs space.
     
 **Observation parameters needed** (JEDI name)
 
-- relative_humidity (:math:`Rh`)
-- air_temperature (:math:`T`)
-- air_pressure or surface_pressure (:math:`P`)
+- relativeHumidity (:math:`Rh`)
+- airTemperature (:math:`T`)
+- pressure or stationPressure (:math:`P`)
 
 **Method(s) available**
 

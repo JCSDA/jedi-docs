@@ -17,7 +17,7 @@ obs space.
     
 **Observation parameters needed** (JEDI name)
 
-- geopotential_height (:math:`Z`)
+- geopotentialHeight (:math:`Z`)
 
 
 **Method(s) available**
@@ -49,9 +49,9 @@ template.
     
 **Observation parameters needed** (JEDI name)
 
-- geopotential_height (:math:`Z`)
-- air_temperature  (:math:`T`)
-- dew_point_temperature (:math:`T_{d}`) or relative_humidity (:math:`Rh`)
+- geopotentialHeight (:math:`Z`)
+- airTemperature  (:math:`T`)
+- dewPointTemperature (:math:`T_{d}`) or relativeHumidity (:math:`Rh`)
 
 
 **Method(s) available**

@@ -34,7 +34,7 @@ Example yaml block
       Method: UKMO
       height coordinate: height
       height group: ObsValue
-      pressure coordinate: air_pressure
+      pressure coordinate: pressure
       pressure group: MetaData
 
 ------

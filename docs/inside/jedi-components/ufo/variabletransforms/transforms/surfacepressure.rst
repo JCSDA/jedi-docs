@@ -30,8 +30,8 @@ The following GeoVaLs are also required:
 
 - surf_param_a (:math:`A`)
 - surf_param_b (:math:`B`)
-- surface_altitude
-- surface_pressure (:math:`P_{*b}`)
+- height
+- stationPressure (:math:`P_{*b}`)
  
 **Method(s) available**
 
