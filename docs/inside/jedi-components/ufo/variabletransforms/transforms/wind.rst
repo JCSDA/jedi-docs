@@ -19,8 +19,8 @@ the eastward (u) and northward (v) wind component.
 
 The default option for this transform requires the following variables:
 
-- wind_speed (:math:`V_{s}`)
-- wind_from_direction (:math:`V_{d}`)
+- windSpeed (:math:`V_{s}`)
+- windDirection (:math:`V_{d}`)
 
 It is possible to change the default variables by setting the following options in the yaml: 
 
@@ -79,8 +79,8 @@ wind speed and direction.
 
 The default option for this transform requires the following variables:
 
-- eastward_wind (:math:`u`)
-- northward_wind (:math:`v`)
+- windEastward (:math:`u`)
+- windNorthward (:math:`v`)
 
 It is possible to change the default variables by setting the following options in the yaml: 
 

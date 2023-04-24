@@ -41,7 +41,7 @@ valid data only flag from the base class is used is shown below.
 
 The updated scan position (:code:`scan_position_new`) is calculated using the following calculation.
 
-    :code:`scan_position_new` = round down (:code:`scan_position` / :code:`number of fields of view`)
+    :code:`scan_position_new` = round down (:code:`sensorScanPosition` / :code:`number of fields of view`)
 
 where the the part in brackets is treated as floating point division which is then rounded down to the
 nearest integer value.  :code:`scan_position_new` is written back to :code:`MetaData/sensorScanPosition`.
