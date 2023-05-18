@@ -83,7 +83,7 @@ Example:
        engine:
          type: H5File
          obsfile: Data/sondes_obs_2018041500.nc4
-     simulated variables: [air_temperature, eastward_wind, northward_wind]
+     simulated variables: [airTemperature, windEastward, windNorthward]
    # Example 2: radiances (note channels specification)
    obs space:
      name: amsua_n19
@@ -95,7 +95,7 @@ Example:
        engine:
          type: H5File
          obsfile: Data/amsua_n19_obs_2018041500_out.nc4
-     simulated variables: [brightness_temperature]
+     simulated variables: [brightnessTemperature]
      channels: 1-10,15
    # Example 3: derived variables. Suppose the input file contains wind speeds and directions,
    # but we want to assimilate the eastward and northward wind velocity components (which could
@@ -106,11 +106,11 @@ Example:
        engine:
          type: H5File
          obsfile: Data/sondes_obs_2018041500.nc4
-     simulated variables: [air_temperature, eastward_wind, northward_wind]
-     derived variables: [eastward_wind, northward_wind]
+     simulated variables: [airTemperature, windEastward, windNorthward]
+     derived variables: [windEastward, windNorthward]
    # Example 4: observed and derived variables. Suppose the input file contains station_pressure  
    # and mean_sea_level_pressure which need to be quality controlled before being used to derive 
-   # surface_pressure which is the variable to be assimialted. 
+   # stationPressure which is the variable to be assimialted. 
    obs space:
      name: Surface
      obsdatain:
@@ -118,8 +118,8 @@ Example:
          type: H5File
          obsfile: Data/ufo/testinput_tier_1/PStar_obs_20210521T1200Z.nc4
      observed variables: [station_pressure, mean_sea_level_pressure]
-     derived variables: [surface_pressure]
-     simulated variables: [surface_pressure]
+     derived variables: [stationPressure]
+     simulated variables: [stationPressure]
 
 If the observations have been divided into records then it is possible to extend the observation space such that a companion record is produced for each original record in the data set. The companion records are all produced with a (configurable) fixed number of levels. This can be invoked as follows in the configuration file:
 
@@ -134,26 +134,26 @@ If the observations have been divided into records then it is possible to extend
             type: H5File
             obsfile: sonde.odb
           obsgrouping:
-            group variables: [ "station_id" ]
+            group variables: [ "stationIdentification" ]
         extension:
           allocate companion records with length: 10
           variables filled with non-missing values:
           - "latitude"
           - "longitude"
           - "dateTime"
-          - "air_pressure"
+          - "pressure"
           - "air_pressure_levels"
-          - "station_id"
+          - "stationIdentification"
 
 The number of locations allocated to each companion profile is governed by the :code:`allocate companion records with length` option. In the example this is set to 10, but any integer value greater than zero can be used. If an invalid number is selected then the extension is not performed. The companion records are only produced if the option :code:`obsdatain.obsgrouping.group variables` has been set.
 
 Assume the original data set has :code:`nlocs` locations and :code:`nrecs` records and that we wish to add companion records with :code:`ncomplocs` locations each. The extension procedure will allocate space for the companion records by adding another :code:`ncomplocs` * :code:`nrecs` locations to the observation space. The companion records can be accessed in a predictable fashion in the C++ code; given an original record has index :code:`k`, the equivalent companion record will have index :code:`k + nrecs` on the same MPI processor as the original.
 
-A subset of variables are copied from the original profiles into the companion profiles; all other variables are filled with missing values. The value at the first entry in each profile is copied to all of the entries in the companion profile. For example, if the first value of :code:`MetaData/air_pressure` in an original profile is 1000 hPa then each of the 10 entries in the companion profile will be assigned values of 1000 hPa. It is expected that the user will refine these values as necessary (e.g. with the :code:`FillAveragedProfileData` or :code:`ProfileAverageObsPressure` ObsFunctions).
+A subset of variables are copied from the original profiles into the companion profiles; all other variables are filled with missing values. The value at the first entry in each profile is copied to all of the entries in the companion profile. For example, if the first value of :code:`MetaData/pressure` in an original profile is 1000 hPa then each of the 10 entries in the companion profile will be assigned values of 1000 hPa. It is expected that the user will refine these values as necessary (e.g. with the :code:`FillAveragedProfileData` or :code:`ProfileAverageObsPressure` ObsFunctions).
 The variables copied can be customised with the :code:`variables filled with non-missing values` option. All variables copied in this way must be in the :code:`MetaData` group.
 The values shown in the example above are the defaults.
 
-Extending the observation space automatically produces a variable called :code:`MetaData/extended_obs_space`. That variable is equal to 0 for the original data and 1 for the extended data and can be used to classify records with the :code:`where` statement.
+Extending the observation space automatically produces a variable called :code:`MetaData/extendedObsSpace`. That variable is equal to 0 for the original data and 1 for the extended data and can be used to classify records with the :code:`where` statement.
 
 * **obs operator**: describes observation operator and its options (required)
 
