@@ -15,13 +15,13 @@ Before building the spack-stack modules on macOS, you must first install homebre
 
 Install the prerequisites:
 
-Go to https://spack-stack.readthedocs.io/en/latest/NewSiteConfigs.html#prerequisites-one-off for instructions.
+For macOS follow the instructions `in the spack-stack docs <https://spack-stack.readthedocs.io/en/latest/NewSiteConfigs.html#prerequisites-one-off>`_. Later in the same document you can find prerequisite install instructions for `Ubuntu <https://spack-stack.readthedocs.io/en/latest/NewSiteConfigs.html#prerequisites-ubuntu-20-04-one-off>`_ and `Red Hat <https://spack-stack.readthedocs.io/en/latest/NewSiteConfigs.html##prerequisites-red-hat-centos-8-one-off>`_.
 
 Check out the code:
 
 .. code-block:: bash
 
-   git clone -b 1.3.1 --recursive https://github.com/noaa-emc/spack-stack spack-stack-1.3.1
+   git clone -b 1.3.1 --recursive https://github.com/JCSDA/spack-stack spack-stack-1.3.1
 
 Go into the ``spack-stack-1.3.1`` directory and source the spack-stack ``setup.sh`` script:
 
