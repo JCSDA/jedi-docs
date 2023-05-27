@@ -220,18 +220,18 @@ Please don’t forget to source this script after creating it: :code:`source $JE
 
   # Set host name for R2D2/EWOK
 
-  # On Orion:
+  # On Orion
   export R2D2_HOST=orion
-  # On Discover:
+  # On Discover
   export R2D2_HOST=discover
-  # On Cheyenne:
+  # On Cheyenne
   export R2D2_HOST=cheyenne
-  # On S4:
+  # On S4
   export R2D2_HOST=s4
   # On AWS Parallel Cluster
   export R2D2_HOST=aws-pcluster
   # On your local machine / AWS single node
-  unset R2D2_HOST
+  export R2D2_HOST=localhost
 
   # Most users won't need to change the following settings
 
