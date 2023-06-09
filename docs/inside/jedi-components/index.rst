@@ -14,3 +14,4 @@ JEDI Components
    mpas-jedi/index.rst
    soca/index.rst
    configuration/index.rst
+   skylab/index.rst

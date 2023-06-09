@@ -72,7 +72,7 @@ You will need to create or edit your ``~/.aws/credentials`` and ``~/.aws/config`
          region = us-east-1
 
 
-The commands for loading the modules to compile and run Skylab are provided in separate sections for :doc:`HPC platforms <../jedi_environment/modules>` and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`. Users need to execute these commands before proceeding with the build of ``jedi-bundle`` below.
+The commands for loading the modules to compile and run SkyLab are provided in separate sections for :doc:`HPC platforms <../jedi_environment/modules>` and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`. Users need to execute these commands before proceeding with the build of ``jedi-bundle`` below.
 
 2- Build jedi-bundle
 ^^^^^^^^^^^^^^^^^^^^
@@ -345,3 +345,20 @@ To start your ewok experiment:
 .. code-block:: bash
 
   create_experiment.py $JEDI_SRC/ewok/experiments/your-experiment.yaml
+
+
+6- Existing SkyLab experiments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+At the moment there are four SkyLab flagship experiments:
+
+* skylab-aero.yaml
+
+* skylab-atm-land.yaml
+
+* skylab-marine.yaml
+
+* skylab-trace-gas.yaml
+
+To read a more in depth description of the parameters available and the setup for these experiments,
+please read our page on the :doc:`SkyLab experiments description </inside/jedi-components/skylab/skylab_description>`.
