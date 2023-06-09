@@ -12,7 +12,8 @@ As described elsewhere in :doc:`this chapter <index>`, there are several steps y
 
 When you have completed these steps, you are ready to launch a single JEDI EC2 instance through the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ on the AWS console.
 
-As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.3.1` environment for `skylab-4.0.0` pre-installed. For more information on how to find these AMIs, refer to the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html>`_.
+As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.4.0` environment for `skylab-4.0.0` pre-installed. For more information on how to find these AMIs, refer to the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html>`_.
+
 
 .. _singlenode-launch:
 
@@ -79,13 +80,18 @@ After launching the instance through the AWS console, select the instance and cl
          [default]
          region = us-east-1
 
-**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
    module load jedi-fv3-env/unified-dev
-   module load jedi-ewok-env/unified-dev
+   module load ewok-env/unified-dev
    module load soca-env/unified-dev
+
+Note the skylab-v5 static data is not synced yet to tehe AWS EC2 AMIs. You will need to run this command before running skylab-v5 experiments. Be sure to use your own username. 
+
+.. code-block:: bash
+   rsync --delete --exclude='staticb_aero/c96' --exclude='c768' --exclude='c384' --exclude='c192' -av USERNAME@hercules-login.hpc.msstate.edu:/work/noaa/da/jedipara/static/skylab-5.0.0/ ~/jedi/static/skylab-5.0.0/
 
 Suspending or terminating your compute node
 -------------------------------------------

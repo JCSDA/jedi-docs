@@ -8,11 +8,11 @@ List of spack, software, and AMIs
 
 Versions used:
 
-- spack-stack-1.3.1 from April 21, 2023
+- spack-stack-1.4.0 from May 2023
 
-  * https://github.com/NOAA-EMC/spack-stack/tree/1.3.1
+  * https://github.com/JCSDA/spack-stack/tree/1.4.0
 
-  * https://spack-stack.readthedocs.io/en/1.3.1/
+  * https://spack-stack.readthedocs.io/en/1.4.0/
 
 - AMIs available in us-east-1 region (N. Virginia)
 
