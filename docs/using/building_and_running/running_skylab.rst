@@ -252,7 +252,7 @@ Please don’t forget to source this script after creating it: :code:`source $JE
 
   # Add ioda python bindings to PYTHONPATH
   PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:2]; print("{0}.{1}".format(*version))'`
-  export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}/pyioda:${PYTHONPATH}"
+  export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}:${PYTHONPATH}"
 
   # necessary user directories for ewok and ecFlow files
   mkdir -p $EWOK_WORKDIR $EWOK_FLOWDIR
