@@ -12,7 +12,7 @@ As described elsewhere in :doc:`this chapter <index>`, there are several steps y
 
 When you have completed these steps, you are ready to launch a single JEDI EC2 instance through the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ on the AWS console.
 
-As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.4.0` environment for `skylab-4.0.0` pre-installed. For more information on how to find these AMIs, refer to the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html>`_.
+As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.4.0` environment for `skylab-5.0.0` pre-installed. For more information on how to find these AMIs, refer to :doc:`Building and running SkyLab <../building_and_running/running_skylab>` in this documentation.
 
 
 .. _singlenode-launch:
@@ -22,9 +22,9 @@ Launching instance
 
 This section provides detailed instructions on how to build and use an EC2 instance based on an existing AMI. The AMI can be thought of as a pre-built template that provides a software stack, and just needs the configuration details of the EC2 instance (such as the number of cores, the amount of memory, etc.).
 
-The following example uses the ``skylab-4.0.0-redhat8”`` AMI.
+The following example uses the ``skylab-5.0.0-redhat8”`` AMI.
 
-1. Log into the AWS Console and select the EC2 service. In the sidebar on the left, scroll down to the Images section and click on the "AMIs" option. Select ``skylab-4.0.0-redhat8”`` from the list of AMIs. Click on "Launch instance from AMI".
+1. Log into the AWS Console and select the EC2 service. In the sidebar on the left, scroll down to the Images section and click on the "AMIs" option. Select ``skylab-5.0.0-redhat8”`` from the list of AMIs. Click on "Launch instance from AMI".
 2. Give your instance a meaningful name so that you can identify it later in the list of running instances.
 3. Select an instance type that has enough memory for your experiment. For available options see, https://aws.amazon.com/ec2/instance-types. Note that because you only have one node you will need a large amount of memory when running higher resolution experiments. For low resolution experiments, instances like c6i.2xlarge may be sufficient, but for c96 experiments instances with at least 512GB memory are required.
 
@@ -40,6 +40,8 @@ The following example uses the ``skylab-4.0.0-redhat8”`` AMI.
 | ``skylab-3.0.0-{ubuntu20,redhat8}``     | c6i.4xlarge                     | Intel Ice Lake 8375C     |
 +-----------------------------------------+---------------------------------+--------------------------+
 | ``skylab-4.0.0-redhat8``                | c6i.4xlarge                     | Intel Ice Lake 8375C     |
++-----------------------------------------+---------------------------------+--------------------------+
+| ``skylab-5.0.0-{ubuntu20,redhat8}``     | c6i.4xlarge                     | Intel Ice Lake 8375C     |
 +-----------------------------------------+---------------------------------+--------------------------+
 
 4. Select an existing key pair (for which you hold the private key on your machine) or create a new key pair and follow the process.
@@ -80,7 +82,7 @@ After launching the instance through the AWS console, select the instance and cl
          [default]
          region = us-east-1
 
-**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
+**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Please note that the AMI IDs in the spack-stack 1.4.0 release documentation are incorrect - they are correct in these JEDI docs release notes. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
@@ -88,10 +90,15 @@ After launching the instance through the AWS console, select the instance and cl
    module load ewok-env/unified-dev
    module load soca-env/unified-dev
 
-Note the skylab-v5 static data is not synced yet to tehe AWS EC2 AMIs. You will need to run this command before running skylab-v5 experiments. Be sure to use your own username. 
+**For AWS Ubuntu 20:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#amazon-web-services-ubuntu-20 to load the basic spack-stack modules for GNU. Please note that the AMI IDs in the spack-stack 1.4.0 release documentation are incorrect - they are correct in these JEDI docs release notes. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
-   rsync --delete --exclude='staticb_aero/c96' --exclude='c768' --exclude='c384' --exclude='c192' -av USERNAME@hercules-login.hpc.msstate.edu:/work/noaa/da/jedipara/static/skylab-5.0.0/ ~/jedi/static/skylab-5.0.0/
+
+   module load jedi-fv3-env/unified-dev
+   module load ewok-env/unified-dev
+   module load soca-env/unified-dev
+
+Note the skylab-v5 static data is synced to both AWS EC2 AMIs in directory ``~/jedi/static/skylab-5.0.0/``.
 
 Suspending or terminating your compute node
 -------------------------------------------

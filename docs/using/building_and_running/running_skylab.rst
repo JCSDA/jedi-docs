@@ -16,23 +16,33 @@ Versions used:
 
 - AMIs available in us-east-1 region (N. Virginia)
 
-  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.4:
+  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
 
-    AMI Name skylab-4.0.0-redhat8-update-20230419
+    AMI Name skylab-5.0.0-redhat8
 
-    AMI ID ami-01e025b0334795ffa
+    AMI ID ami-0e9479372af5b5b8d (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-0e9479372af5b5b8d)
 
+  - Ubuntu 20 with gnu-10.3.0 and openmpi-4.1.5:
+
+    AMI Name skylab-5.0.0-ubuntu20
+
+    AMI ID ami-09743c63b8bf95c2e (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-09743c63b8bf95c2e)
 
 - AMIs available in us-east-2 region (Ohio)
 
-  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.4:
+  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
 
-    AMI Name skylab-4.0.0-redhat8-update-20230419
+    AMI Name skylab-5.0.0-redhat8
 
-    AMI ID ami-094361e081de18589
+    AMI ID ami-06082db161bf0769d (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-06082db161bf0769d)
 
+  - Ubuntu 20 with gnu-10.3.0 and openmpi-4.1.5:
 
-    It is necessary to use c6i.2xlarge or larger instances of this family.
+    AMI Name skylab-5.0.0-ubuntu20
+
+    AMI ID ami-0e10ae1b5232c08fc (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-0e10ae1b5232c08fc)
+
+Note. It is necessary to use c6i.2xlarge or larger instances of this family.
 
 Developer section
 -----------------
