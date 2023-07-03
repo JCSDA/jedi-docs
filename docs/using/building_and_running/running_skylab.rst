@@ -156,7 +156,13 @@ ctests. Please refer the `documentation <https://jointcenterforsatellitedataassi
   .. code-block:: bash
 
         ctest -R get_
-        ctest -R bumpparameters
+
+  If you are running on your own machine you will also need to clone the static-data repo for some skylab experiments. 
+
+  .. code-block:: bash
+
+    cd $JEDI_SRC
+    git clone https://github.com/jcsda-internal/static-data
 
 3- Clone and install solo/r2d2/ewok/simobs, clone skylab only
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -280,7 +286,7 @@ Please don’t forget to source this script after creating it: :code:`source $JE
   export ECF_HOST=$host
 
   if [[ x"${R2D2_HOST}" == "x" ]]; then
-    export EWOK_STATIC_DATA=${JEDI_ROOT}/static
+    export EWOK_STATIC_DATA=${JEDI_SRC}/static-data/static
   else
     case $R2D2_HOST in
       orion)
