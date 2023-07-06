@@ -31,7 +31,7 @@ If the first block has the key :code:`saber central block` activated, then it is
    :align: center
    :scale: 20%
 
-For localization matrices, a single SABER block is specified:
+For localization matrices, a single SABER block is specified [TODO(Mayeul): update]:
 
   .. code-block:: yaml
 
@@ -48,18 +48,30 @@ Interfaces
 ^^^^^^^^^^
 All SABER blocks have a constructor that takes as input arguments:
 
-- a geometry,
-- a set of parameters (see next section),
+- a oops GeometryData,
+- a list of outer variables,
+- a configuration with elements on the SABER error covariance,
+- a set of SABER block parameters (see next section),
 - a background,
-- a first guess.
+- a first guess,
+- a valide time.
 
-A single ATLAS FieldSet is passed as argument for all the SABER block methods, which makes them interoperable in any order. The five methods are:
+A single Atlas FieldSet is passed as argument for all the SABER block application methods, which makes them interoperable in any order. These four methods are:
 
-- :code:`randomize`: apply the square-root of the block to a random vector of centered Gaussian distribution of unit variance. Required for all blocks.
-- :code:`multiply`: apply the block to an input ATLAS FieldSet. Required for all blocks.
-- :code:`inverseMultiply`: apply the inverse of the block to an input ATLAS FieldSet. Not required if the :code:`saber central block` and :code:`iterative inverse` keys are activated.
-- :code:`multiplyAD`: apply the adjoint of the block to an input ATLAS FieldSet. Not required if the :code:`saber central block` key is activated.
-- :code:`inverseMultiplyAD`: apply the adjoint of the inverse of the block to an input ATLAS FieldSet. Not required if the :code:`saber central block` key is activated.
+- :code:`randomize`: Fill the input Atlas FieldSet with a a random vector of centered Gaussian distribution of unit variance and multiply by the "square-root" of the block. For central blocks only. 
+- :code:`multiply`: apply the block to an input Atlas FieldSet. Required for all blocks.
+- :code:`multiplyAD`: apply the adjoint of the block to an input Atlas FieldSet. For outer blocks only.
+- :code:`leftInverseMultiply`: apply the inverse of the block to an input Atlas FieldSet. For outer blocks only.
+
+Other methods are used to glue the blocks together when building a SABER error covariance, from the outermost block to the innermost: 
+
+- :code:`innerGeometryData()`: returns the oops GeometryData for the next block. For outer blocks only. 
+- :code:`innerVars()`: returns the oops Variables for the next block. For outer blocks only. 
+
+
+Methods that are only used to calibrate an error covariance model are presented in the :ref:`section on calibration <calibration>`. 
+
+Among the other methods, note that the :code:`read()` method should be used to read any calibration data, i.e. block data that can be estimated from an ensemble of forecasts.
 
 Base parameters
 ^^^^^^^^^^^^^^^
@@ -67,9 +79,13 @@ Base parameters
 
 All SABER blocks share some common base parameters, and have their own specific parameters (see :ref:`SABER components <SABER_components>`). These base parameters are:
 
-- :code:`saber block name`: the name of the SABER block.
-- :code:`input variables`: input variables.
-- :code:`output variables`: output variables.
-- :code:`active variables` [optional]: active variables modified by the block. This should be a subset of the input variables, the default value is the input variables.
-- :code:`saber central block` [optional]: boolean to use this block as auto-adjoint (for the first block only). Default is :code:`false`.
-- :code:`iterative inverse` [optional]: boolean to use an iterative solver to apply the inverse of this block (if :code:`saber central block` is also activated).  Default is :code:`false`.
+- :code:`saber block name`: the name of the SABER block. Only parameter that is not optional.
+- :code:`active variables`: variables modified by the block. This should include at least the variables returned by the :code:`mandatoryActiveVars()` block method.
+- :code:`read`: a configuration to be used by the block at construction time. If a configuration is given, the block is used in read mode. Cannot be used with :code:`calibration`.
+- :code:`calibration`: a configuration to be used by the block at construction time. If a configuration is given, the block is used in calibration mode. Cannot be used with :code:`read`.
+- :code:`ensemble transform`: transform parameters, for the :code:`Ensemble` block only.
+- :code:`localization`: localization parameters, for the :code:`Ensemble` block only.
+- :code:`skip inverse`: boolean flag to skip application of the inverse in calibration mode. Defaults is :code:`fase`.
+- :code:`state variables to inverse`: state variables to be interpolated at construction time from one functionSpace to another. To be used for interpolation blocks only, when the outer and inner Geometry differ. Default is no variables.
+
+Other parameters related to testing are listed in :ref:`SABER block testing <saber_testing>`.

@@ -34,6 +34,16 @@ SABER blocks can encapsulate various components:
    SPECTRALB: spectral covariance/correlation<SPECTRALB>
    StdDev: standard-deviation application<StdDev>
 
+Calibration of SABER error covariance
+-------------------------------------
+
+A SABER error covariance can be calibrated from ensemble data:
+
+.. toctree:: 
+   :maxdepth: 1
+
+   calibration.rst
+
 SABER testing
 -------------
 
@@ -45,6 +55,7 @@ More details here:
    :maxdepth: 1
 
    QUENCH
+   SABER block testing<SABER_testing>
 
 A low-level description of the classes, functions, and subroutines is also available, produced by means of the `Doxygen document generator <https://www.doxygen.nl/index.html>`_.
 
