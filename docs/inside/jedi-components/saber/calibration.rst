@@ -8,13 +8,16 @@ Two options are available to calibrate a SABER error covariance: direct calibrat
 Direct calibration
 ------------------
 
-The SABER block method used for direct calibration is :code:`directCalibration`. It receives a vector of Atlas FieldSets, which are all loaded in memory to calibrate the block.
+The SABER block method used for direct calibration is :code:`directCalibration`.
+It receives a vector of Atlas FieldSets, which are all loaded in memory to calibrate the block.
+There is no enforced assumption on whether the ensemble mean has already been removed from the ensemble or not, this is a choice to be made for each block by the developers.
 
 Iterative calibration
 ---------------------
 
 The Atlas FieldSets are loaded in memory one after another, which allows a possibly much larger ensemble to be used. 
-The process is done in a single pass for both estimation of the mean and of covariances. 
+In this context, it **cannot** be assumed that the mean has already been removed from the ensemble. 
+The process is done in a single pass for both estimation of the mean and of covariances (see section 3 of `this technical note <https://github.com/benjaminmenetrier/covariance_filtering/blob/master/covariance_filtering.pdf>`_ for details on how this can be done). 
 The SABER blocks are calibrated one after another, so that the full ensemble must be read for each SABER blocks. 
 
 Iterative calibration is activated with the flag `iterative ensemble loading` at the error covariance level. 

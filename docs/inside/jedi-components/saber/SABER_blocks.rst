@@ -11,24 +11,6 @@ A sequence of SABER blocks can be specified in the yaml configuration file:
   .. code-block:: yaml
 
     covariance model: SABER
-    saber outer blocks:
-    - {saber block 1
-      ...}
-    - ...
-    - {saber block N
-      ...}
-
-First, the adjoints of the blocks are applied in reverse order. Then, the direct blocks are applied in forward order:
-
-.. image:: fig/figure_saber_blocks_1.jpg
-   :align: center
-   :scale: 20%
-
-If a block is given to the :code:`saber central block` yaml key, then it is considered as auto-adjoint:
-
-  .. code-block:: yaml
-
-    covariance model: SABER
     saber central block:
       {saber block 1
       ...}
@@ -39,9 +21,23 @@ If a block is given to the :code:`saber central block` yaml key, then it is cons
     - {saber block N
       ...}
 
+First, the adjoints of the outer blocks are applied in reverse order. 
+Then, the central block, which is considered as auto-adjoint, is applied.
+Then, the direct outer blocks are applied in forward order:
+
 .. image:: fig/figure_saber_blocks_2.jpg
    :align: center
    :scale: 20%
+
+Each covariance model should have at least a central block. 
+The simplest SABER covariance model is thus the Identity matrix:
+
+.. code-block:: yaml
+
+  covariance model: SABER
+  saber central block: 
+  - saber block name: ID
+
 
 The examples above are for a covariance matrix, but the behavior is identical for a localization matrix:
 
