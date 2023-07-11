@@ -5,15 +5,14 @@ SABER blocks
 
 Specification
 ^^^^^^^^^^^^^
-A SABER block encapsulates a linear operator that can be used to model covariance or localization matrices. For covariance matrices, a sequence of SABER blocks can be specified in the yaml configuration file:
+A SABER block encapsulates a linear operator that can be used to model covariance or localization matrices.
+A sequence of SABER blocks can be specified in the yaml configuration file:
 
   .. code-block:: yaml
 
     covariance model: SABER
-    saber blocks:
+    saber outer blocks:
     - {saber block 1
-      ...}
-    - {saber block 2
       ...}
     - ...
     - {saber block N
@@ -25,23 +24,54 @@ First, the adjoints of the blocks are applied in reverse order. Then, the direct
    :align: center
    :scale: 20%
 
-If the first block has the key :code:`saber central block` activated, then it is considered as auto-adjoint:
+If a block is given to the :code:`saber central block` yaml key, then it is considered as auto-adjoint:
+
+  .. code-block:: yaml
+
+    covariance model: SABER
+    saber central block:
+      {saber block 1
+      ...}
+    saber outer blocks:
+    - {saber block 2
+      ...}
+    - ...
+    - {saber block N
+      ...}
 
 .. image:: fig/figure_saber_blocks_2.jpg
    :align: center
    :scale: 20%
 
-For localization matrices, a single SABER block is specified [TODO(Mayeul): update]:
+The examples above are for a covariance matrix, but the behavior is identical for a localization matrix:
 
   .. code-block:: yaml
 
     covariance model: ensemble
     localization:
        localization method: SABER
-       saber block:
-         {saber block
-         ...}
+       saber central block:
+         {...}
+       saber outer blocks:
+         {...}
 
+In some specific cases, a chain of SABER blocks can be nested within a SABER block. 
+For instance, the :code:`Ensemble` SABER block uses a localization matrix prescribed as follows:
+
+  .. code-block:: yaml
+
+    covariance model: SABER
+    saber central block:
+      block name: Ensemble      
+      localization:
+        saber central block:
+          {...}
+        saber outer blocks:
+          {...}
+    saber outer blocks:
+      {...}
+        
+  
 The list of available SABER blocks can be found in :ref:`SABER components <SABER_components>`.
 
 Interfaces
@@ -54,7 +84,7 @@ All SABER blocks have a constructor that takes as input arguments:
 - a set of SABER block parameters (see next section),
 - a background,
 - a first guess,
-- a valide time.
+- a valid time.
 
 A single Atlas FieldSet is passed as argument for all the SABER block application methods, which makes them interoperable in any order. These four methods are:
 
@@ -85,7 +115,7 @@ All SABER blocks share some common base parameters, and have their own specific 
 - :code:`calibration`: a configuration to be used by the block at construction time. If a configuration is given, the block is used in calibration mode. Cannot be used with :code:`read`.
 - :code:`ensemble transform`: transform parameters, for the :code:`Ensemble` block only.
 - :code:`localization`: localization parameters, for the :code:`Ensemble` block only.
-- :code:`skip inverse`: boolean flag to skip application of the inverse in calibration mode. Defaults is :code:`fase`.
+- :code:`skip inverse`: boolean flag to skip application of the inverse in calibration mode. Defaults is :code:`false`.
 - :code:`state variables to inverse`: state variables to be interpolated at construction time from one functionSpace to another. To be used for interpolation blocks only, when the outer and inner Geometry differ. Default is no variables.
 
 Other parameters related to testing are listed in :ref:`SABER block testing <saber_testing>`.
