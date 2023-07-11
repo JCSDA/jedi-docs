@@ -40,9 +40,9 @@ Note. To follow this section, one needs read access to the JCSDA-internal GitHub
 
 1- Load modules
 ^^^^^^^^^^^^^^^
-First, you need to load all the modules needed to build jedi-bundle and solo/r2d2/ewok.
-Note loading modules only set up the environment for you. You still need to build
-jedi-bundle, run ctests, and install solo/r2d2/ewok/simobs.
+First, you need to load all the modules needed to build jedi-bundle and solo/r2d2/ewok/simobs/skylab.
+Note that loading modules only sets up the environment for you. You still need to build
+jedi-bundle, run ctests, install solo/r2d2/ewok/simobs and download skylab.
 
 Please note that currently we only support Orion, Discover, S4, and AWS platforms.
 If you are working on a system not specified below please follow the instructions on
@@ -148,8 +148,8 @@ ctests. Please refer the `documentation <https://jointcenterforsatellitedataassi
         ctest -R get_
         ctest -R bumpparameters
 
-3- Build solo/r2d2/ewok/simobs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3- Clone and install solo/r2d2/ewok/simobs, clone skylab only
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 We recommend that you use a python3 virtual environment (venv) for
 building solo/r2d2/ewok/simobs
 
@@ -160,6 +160,7 @@ building solo/r2d2/ewok/simobs
   git clone --branch 2.0.0 https://github.com/jcsda-internal/r2d2
   git clone --branch 0.4.0 https://github.com/jcsda-internal/ewok
   git clone --branch 1.2.0 https://github.com/jcsda-internal/simobs
+  git clone --branch 1.0.0 https://github.com/jcsda-internal/skylab
 
   cd $JEDI_ROOT
   python3 -m venv --system-site-packages venv
@@ -344,8 +345,7 @@ To start your ewok experiment:
 
 .. code-block:: bash
 
-  create_experiment.py $JEDI_SRC/ewok/experiments/your-experiment.yaml
-
+  create_experiment.py $JEDI_SRC/skylab/experiments/your-experiment.yaml
 
 6- Existing SkyLab experiments
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
