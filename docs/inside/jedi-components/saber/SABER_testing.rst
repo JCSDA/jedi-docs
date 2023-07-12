@@ -13,7 +13,7 @@ SABER Error Covariance parameters used for testing
 
 - :code:`adjoint test`: boolean flag to run adjoint test on all SABER blocks in the error covariance. Default is false.
 - :code:`adjoint tolerance`: Relative tolerance for adjoint test. Default is 1e-12.
-- :code:`inverse test`: boolean flag to run inverse tests (inner and outer, see below) on all SABER block. Default is false.
+- :code:`inverse test`: boolean flag to run inverse tests (inner and outer, see below) on all outer SABER block. Default is false.
 - :code:`inverse tolerance`: Relative tolerance for inverse test. Default is 1e-12.
 
 SABER block parameters used for testing
@@ -28,6 +28,7 @@ In general, these parameters at block level should not be used unless one knows 
 - :code:`inner variables to compare`: list of variables that are compared during **outer** inverse test TU (Tx) == (Tx). Default is all inner active variables.  
 - :code:`outer variables to compare`: list of variables that are compared during **inner** inverse test TU (Tx) == (Tx). Default is all outer active variables. 
 
+
 Example yaml configuration
 --------------------------
 We detail here an example testing configuration.
@@ -41,9 +42,9 @@ The tests actually run for each block and the tolerance used are shown in commen
   adjoint tolerance: 1e-13
   saber central block:
     saber block name: spectral covariance
-    adjoint tolerance: 1e-12
+    adjoint tolerance: 1e-11
     {...}
-    # Self-adjoint test runs with 1e-12 relative tolerance.
+    # Self-adjoint test runs with 1e-11 relative tolerance.
   saber outer blocks:
   - saber block name: spectral to gauss
     outer inverse tolerance: 1e-8
