@@ -462,5 +462,5 @@ AWS AMIs
 --------
 For more information about using Amazon Web Services please see :doc:`JEDI on AWS <./cloud/index>`.
 
-As part of this release, Amazon Media Images (AMI) are available that have the necessary ``spack-stack-1.4.0`` environment for ``skylab-5.0`` pre-installed. For more information on how to find these AMIs, refer to :doc:`Building and running SkyLab <../../building_and_running/running_skylab>` in this documentation.
+As part of this release, Amazon Media Images (AMI) are available that have the necessary ``spack-stack-1.4.0`` environment for ``skylab-5.0`` pre-installed. For more information on how to find these AMIs, refer to :doc:`Building and running SkyLab <../building_and_running/running_skylab>` in this documentation.
 

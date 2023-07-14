@@ -12,7 +12,7 @@ As described elsewhere in :doc:`this chapter <index>`, there are several steps y
 
 When you have completed these steps, you are ready to launch a single JEDI EC2 instance through the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ on the AWS console.
 
-As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.4.0` environment for `skylab-5.0.0` pre-installed. For more information on how to find these AMIs, refer to :doc:`Building and running SkyLab <../building_and_running/running_skylab>` in this documentation.
+As part of this release, two Amazon Media Images (AMIs) are available that have the necessary `spack-stack-1.4.0` environment for `skylab-5.0.0` pre-installed. For more information on how to find these AMIs, refer to :doc:`Building and running SkyLab <../../building_and_running/running_skylab>` in this documentation.
 
 
 .. _singlenode-launch:
