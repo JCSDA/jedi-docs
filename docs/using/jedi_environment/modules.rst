@@ -48,7 +48,7 @@ Orion
 
 Orion is an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#msu-orion to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#msu-orion to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
@@ -149,7 +149,7 @@ Discover
 
 `Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#nasa-discover to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#nasa-discover to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
@@ -182,7 +182,7 @@ Hera
 
 Hera is an HPC system located in NOAA's NESCC facility in Fairmont, WV. The following bash shell commands are necessary to access the installed spack-stack modules (substitute equivalent csh shell commands as appropriate):
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#noaa-rdhpcs-hera to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#noaa-rdhpcs-hera to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
@@ -210,7 +210,7 @@ Cheyenne
 
 `Cheyenne <https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/cheyenne>`_ is a 5.34-petaflops, high-performance computer built for NCAR by SGI.
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#ncar-wyoming-cheyenne to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#ncar-wyoming-cheyenne to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
@@ -254,7 +254,7 @@ Casper
 
 The `Casper <https://www2.cisl.ucar.edu/resources/computational-systems/casper>`_ cluster is a heterogeneous system of specialized data analysis and visualization resources, large-memory, multi-GPU nodes, and high-throughput computing nodes.
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#ncar-wyoming-casper to load the basic spack-stack modules for Intel. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#ncar-wyoming-casper to load the basic spack-stack modules for Intel. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
@@ -311,7 +311,7 @@ Once logged into S4, you must then log into s4-submit to load the spack-stack mo
 
    ssh -Y s4-submit
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#uw-univ-of-wisconsin-s4 to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#uw-univ-of-wisconsin-s4 to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
@@ -408,7 +408,7 @@ Narwhal
 
 Narwhal is an HPE Cray EX system located at the Navy DSRC. It has 2,176 standard compute nodes (AMD 7H12 Rome, 128 cores, 238 GB) and 12 large-memory nodes (995 GB). It has 590 TB of memory and is rated at 12.8 peak PFLOPS.
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#navy-hpcmp-narwhal to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#navy-hpcmp-narwhal to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
@@ -462,5 +462,5 @@ AWS AMIs
 --------
 For more information about using Amazon Web Services please see :doc:`JEDI on AWS <./cloud/index>`.
 
-As part of this release, Amazon Media Images (AMI) are available that have the necessary `spack-stack-1.4.0` environment for `skylab-5.0.0` pre-installed. For more information on how to find these AMIs, refer to :doc:`Building and running SkyLab <../building_and_running/running_skylab>` in this documentation.
+As part of this release, Amazon Media Images (AMI) are available that have the necessary ``spack-stack-1.4.0`` environment for ``skylab-5.0`` pre-installed. For more information on how to find these AMIs, refer to :doc:`Building and running SkyLab <../../building_and_running/running_skylab>` in this documentation.
 

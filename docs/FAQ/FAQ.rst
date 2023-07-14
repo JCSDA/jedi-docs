@@ -168,9 +168,9 @@ This question is relevant if you see warnings like the following when running ``
 
 This is often accompanied by failure of the python tests in ``ioda``.  A likely cause of this is the use of ``anaconda`` or ``miniconda3`` for python package management.
 
-Conda installs its own packages like ``hdf5``, ``NetCDF``, and ``openssl`` that can conflict with libraries installed via the `spack-stack <https://github.com/noaa-emc/spack-stack.git>`_. This applies in particular to the `IODA Python API <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/develop/learning/tutorials/level3/ioda-python-api.html>`_, which is now enabled by default in ``ioda``.
+Conda installs its own packages like ``hdf5``, ``NetCDF``, and ``openssl`` that can conflict with libraries installed via the `spack-stack <https://github.com/noaa-emc/spack-stack.git>`_. This applies in particular to the `IODA Python API <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.3.0/learning/tutorials/level3/ioda-python-api.html>`_, which is now enabled by default in ``ioda``.
 
-These conflicts are not easily addressed since the dependencies are built into ``conda`` through `rpaths <https://en.wikipedia.org/wiki/Rpath>`_.  At this time we recommend that you avoid using conda if possible when building and running JEDI applications, and use alternative methods described in the `spack-stack documentation <https://spack-stack.readthedocs.io/en/spack-stack-1.0.1/MaintainersSection.html#testing-adding-packages-outside-of-spack>`_ instead.
+These conflicts are not easily addressed since the dependencies are built into ``conda`` through `rpaths <https://en.wikipedia.org/wiki/Rpath>`_.  At this time we recommend that you avoid using conda if possible when building and running JEDI applications, and use alternative methods described in the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.4.0/MaintainersSection.html#testing-adding-packages-outside-of-spack>`_ instead.
 
 Git LFS Smudge error when running ``ecbuild``
 ---------------------------------------------

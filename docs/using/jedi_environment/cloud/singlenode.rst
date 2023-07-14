@@ -82,7 +82,7 @@ After launching the instance through the AWS console, select the instance and cl
          [default]
          region = us-east-1
 
-**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Please note that the AMI IDs in the spack-stack 1.4.0 release documentation are incorrect - they are correct in these JEDI docs release notes. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
+**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Please note that the AMI IDs in the spack-stack 1.4.0 release documentation are incorrect - they are correct in these JEDI docs release notes. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0.0`` release:
 
 .. code-block:: bash
 
@@ -90,7 +90,7 @@ After launching the instance through the AWS console, select the instance and cl
    module load ewok-env/unified-dev
    module load soca-env/unified-dev
 
-**For AWS Ubuntu 20:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#amazon-web-services-ubuntu-20 to load the basic spack-stack modules for GNU. Please note that the AMI IDs in the spack-stack 1.4.0 release documentation are incorrect - they are correct in these JEDI docs release notes. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
+**For AWS Ubuntu 20:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#amazon-web-services-ubuntu-20 to load the basic spack-stack modules for GNU. Please note that the AMI IDs in the spack-stack 1.4.0 release documentation are incorrect - they are correct in these JEDI docs release notes. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0.0`` release:
 
 .. code-block:: bash
 
@@ -124,6 +124,6 @@ Choosing a different EC2 Instance Type
 
 AWS offers `a variety of EC2 instance types <https://aws.amazon.com/ec2/instance-types/>`_ that differ in the number of compute cores, memory, disk storage, and network bandwidth.  Not surprisingly, higher-performance nodes are more expensive, so JEDI users are encouraged to **choose an instance that is no less but no more than what you need for your application or workflow.**
 
-The recommended and most tested option for this release is type ``c6i.2xlarge``. Always consult `the AWS documentation <https://aws.amazon.com/ec2/pricing/on-demand/>`_ for the most up-to-date pricing information.
+The recommended and most tested option for this release is type ``c6i.4xlarge``. Always consult `the AWS documentation <https://aws.amazon.com/ec2/pricing/on-demand/>`_ for the most up-to-date pricing information.
 
 There are also a number of other nodes available that optimize compute and or memory and or IO bandwidth: See the `AWS documentation <https://aws.amazon.com/ec2/instance-types/>`_ for details.

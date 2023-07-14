@@ -42,7 +42,7 @@ Versions used:
 
     AMI ID ami-0e10ae1b5232c08fc (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-0e10ae1b5232c08fc)
 
-Note. It is necessary to use c6i.2xlarge or larger instances of this family.
+Note. It is necessary to use c6i.2xlarge or larger instances of this family (recommended: c6i.4xlarge).
 
 Developer section
 -----------------
@@ -56,7 +56,7 @@ jedi-bundle, run ctests, install solo/r2d2/ewok/simobs and download skylab.
 
 Please note that currently we only support Orion, Discover, S4, and AWS platforms.
 If you are working on a system not specified below please follow the instructions on
-`JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.7.0/using/jedi_environment/index.html>`_.
+`JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/5.0.0/using/jedi_environment/index.html>`_.
 
 Users are responsible for setting up their GitHub and AWS credentials on the platform they are using.
 You will need to create or edit your ``~/.aws/credentials`` and ``~/.aws/config`` to make sure they contain:
@@ -142,7 +142,7 @@ the build was successful by running the tests (still from $JEDI_BUILD):
 
 If you are on an HPC you may need to provide additional flags to the ecbuild
 command, or login to a compute node, or submit a batch script for running the
-ctests. Please refer the `documentation <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.7.0/using/jedi_environment/modules.html#general-tips-for-hpc-systems>`_ for more details.
+ctests. Please refer the `documentation <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/5.0.0/using/jedi_environment/modules.html#general-tips-for-hpc-systems>`_ for more details.
 
 (You might have another coffee.) You have successfully built JEDI!
 
@@ -156,6 +156,7 @@ ctests. Please refer the `documentation <https://jointcenterforsatellitedataassi
   .. code-block:: bash
 
         ctest -R get_
+        ctest -R bumpparameters
 
   If you are running on your own machine you will also need to clone the static-data repo for some skylab experiments. 
 
@@ -213,11 +214,10 @@ or use the default template in the sample script below. Note that :code:`JEDI_SR
 :code:`JEDI_BUILD` and :code:`EWOK_WORKDIR` are experiment specific, i.e. you can run several
 experiments at the same time, each having their own definition for these variables.
 
-The user further has to set the environment variable :code:`R2D2_HOST` in the script
-on pre-configured platforms, or unset this variable on generic platforms.
+The user further has to set the environment variable :code:`R2D2_HOST` in the script.
 :code:`R2D2_HOST` is required by r2d2, ewok, and to determine the location :code:`EWOK_STATIC_DATA`
 of the static data used by ewok. This data is staged on the preconfigured platforms.
-On generic platforms, the script sets :code:`EWOK_STATIC_DATA` to :code:`${JEDI_ROOT}/static`.
+On generic platforms, the script sets :code:`EWOK_STATIC_DATA` to :code:`${JEDI_SRC}/static-data/static`.
 
 Please don’t forget to source this script after creating it: :code:`source $JEDI_ROOT/activate.sh`
 
@@ -285,31 +285,30 @@ Please don’t forget to source this script after creating it: :code:`source $JE
   host=$(hostname | cut -f1 -d'.')
   export ECF_HOST=$host
 
-  if [[ x"${R2D2_HOST}" == "x" ]]; then
-    export EWOK_STATIC_DATA=${JEDI_SRC}/static-data/static
-  else
-    case $R2D2_HOST in
-      orion)
-        export EWOK_STATIC_DATA=/work/noaa/da/role-da/static
-        ;;
-      discover)
-        export EWOK_STATIC_DATA=/discover/nobackup/projects/jcsda/s2127/static
-        ;;
-      cheyenne)
-        export EWOK_STATIC_DATA=/glade/p/mmm/jedipara/static
-        ;;
-      s4)
-        export EWOK_STATIC_DATA=/data/prod/jedi/static
-        ;;
-      aws-pcluster)
-        export EWOK_STATIC_DATA=${JEDI_ROOT}/static
-        ;;
-      *)
-        echo "Unknown host name $R2D2_HOST"
-        exit 1
-        ;;
-    esac
-  fi
+  case $R2D2_HOST in
+    localhost)
+      export EWOK_STATIC_DATA=${JEDI_SRC}/static-data/static
+      ;;
+    orion)
+      export EWOK_STATIC_DATA=/work/noaa/da/role-da/static
+      ;;
+    discover)
+      export EWOK_STATIC_DATA=/discover/nobackup/projects/jcsda/s2127/static
+      ;;
+    cheyenne)
+      export EWOK_STATIC_DATA=/glade/p/mmm/jedipara/static
+      ;;
+    s4)
+      export EWOK_STATIC_DATA=/data/prod/jedi/static
+      ;;
+    aws-pcluster)
+      export EWOK_STATIC_DATA=${JEDI_ROOT}/static
+      ;;
+    *)
+      echo "Unknown host name '$R2D2_HOST'"
+      exit 1
+      ;;
+  esac
 
 Note: On AWS pcluster users will need to update the python version referenced in the above :code:`source $JEDI_ROOT/activate.sh` script. The following lines under :code:`# ecflow and pyioda Python bindings` should be:
 
