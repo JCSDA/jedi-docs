@@ -4,8 +4,6 @@ Horizontal localization in spectral space
 =========================================
 
 This block relies on the fact that convolution on the physical space is equivalent to multiplication on the spectral space. 
-More details on spectral covariance modeling can be found for instance in 
-
 
 Example yaml
 ~~~~~~~~~~~~
