@@ -1,9 +1,32 @@
-.. _spectralb_horizontal_localization:
+.. _spectralb_analytical_filter:
 
-Horizontal localization in spectral space
-=========================================
+Spectral Analytical Filter
+==========================
 
-This block relies on the fact that convolution on the physical space is equivalent to multiplication on the spectral space. 
+This block performs multiplication in spectral space by an analytical function depending only on the total wavenumber. 
+Typical use cases include horizontal localization and frequency filters.
+
+Example yaml
+~~~~~~~~~~~~
+
+.. code-block:: yaml
+ 
+  saber outer blocks:
+  - (...)
+  - saber block name: spectral analytical filter
+    normalize filter variance: false  # Optional. Default is true (for localization)
+    function:
+      shape: gaussian                 # Optional. Default is gaussian.
+      horizontal daley length: 2000e3
+  - (...)
+
+The parameter `normalize filter variance` decides whether the analytical function should be normalized to act as a localization function.
+The only function shape currently implemented is `gaussian`.
+
+Usage for horizontal localization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This block can be used for horizontal localization, relying on the fact that convolution on the physical space is equivalent to multiplication on the spectral space.
 
 To model convolution by a Gaussian localization function :math:`f(d)` in physical space (where :math:`d` is the great circle separation distance), we multiply by a Gaussian localization function :math:`\widehat{f}(n)`` in spectral space (where :math:`n` is the total wavenumber). 
 If the physical space Gaussian is given by
@@ -26,24 +49,15 @@ where :math:`\sigma_n = 1/ \sigma_\lambda = R / L` and :math:`C` is some normali
 The normalization constant :math:`C` is computed by ensuring the total variance of the localization function in spectral space is 1. 
 
 
-
-Example yaml
-~~~~~~~~~~~~
-
 .. code-block:: yaml
- 
-  saber central block:
-    saber block name: horizontal localization in spectral space
-    horizontal daley length: 6000e3
-    read:
-      uut consistency test: true    # Default is false
-      consistency tolerance: 1e-13  # Default is 1e-12
-      adjoint tolerance: 1e-13      # Default is 1e-12
 
-The localization is modeled as a Gaussian with Daley length specified from the yaml, in meters.
+  - saber block name: spectral analytical filter
+    function:
+      horizontal daley length: 2000e3
+
+
+Here, the localization is modeled as a Gaussian with Daley length specified from the yaml, in meters.
 For a Gaussian function, the Daley length :math:`\sqrt{-f(0) / f''(0)}` is parameter :math:`L` in the equations above (see for instance Pannekoucke *et al.*, 2008).
-
-The :code:`read` section is optional, and is only used to trigger internal testing.
 
 .. _references:
 
