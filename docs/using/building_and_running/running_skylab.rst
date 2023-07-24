@@ -316,7 +316,7 @@ Note: On AWS pcluster users will need to update the python version referenced in
 
     # ecflow and pyioda Python bindings
     PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:2]; print("{0}.{1}".format(*version))'`
-    export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}/pyioda:/home/ubuntu/jedi/ecflow-5.8.4/lib/python3.8/site-packages:${PYTHONPATH}"
+    export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}:/home/ubuntu/jedi/ecflow-5.8.4/lib/python3.8/site-packages:${PYTHONPATH}"
 
 5- Run SkyLab
 ^^^^^^^^^^^^^
