@@ -39,7 +39,7 @@ Installing CMake and CTest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This step is only necessary if you are working outside preconfigured JEDI environments or containers, and when not following the
-`spack-stack <https://spack-stack.readthedocs.io/en/1.3.0/>`_ instructions to set up your environment.
+`spack-stack <https://spack-stack.readthedocs.io/en/1.4.0/>`_ instructions to set up your environment.
 
 For the Mac, use `homebrew <https://brew.sh/>`_ to install CMake.
 
@@ -198,7 +198,7 @@ source directories.
 Installing ecbuild
 ^^^^^^^^^^^^^^^^^^
 
-As before, the steps shown in this section are only necessary if you are working outside preconfigured JEDI environments or containers, and when not following the recommendation to use `spack-stack <https://spack-stack.readthedocs.io/en/1.3.0/>`_ to set up your environment.
+As before, the steps shown in this section are only necessary if you are working outside preconfigured JEDI environments or containers, and when not following the recommendation to use `spack-stack <https://spack-stack.readthedocs.io/en/1.4.0/>`_ to set up your environment.
 
 For all systems, you need to have CMake, eigen3 installed before installing ecbuild.
 To install these on the Mac:
