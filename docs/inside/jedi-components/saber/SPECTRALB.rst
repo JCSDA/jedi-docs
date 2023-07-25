@@ -20,7 +20,7 @@ Central blocks
 
 Outer blocks
 ~~~~~~~~~~~~
-
+- :code:`square root of spectral covariance`: the outer block equivalent of `spectral covariance`.  To be typically used with central block 'ID' for generating random increments.
 - :code:`spectral to gauss`: interpolation block from spectral space to Gauss grid.
 - :code:`spectral to spectral`: change of resolution in spectral space, by truncation or zero-padding.
 - :ref:`spectral analytical filter <spectralb_analytical_filter>`: multiplication by analytical 2D function in spectral space. Used for horizontal localization.
