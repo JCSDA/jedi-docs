@@ -1704,11 +1704,11 @@ The following YAML snippet creates a diagnostic flag :code:`OriginallyMeasuredIn
 RTTOV 1D-Var Check (RTTOVOneDVar) Filter
 ----------------------------------------
 
-This filter performs a 1-dimensional variational assimilation (1D-Var) that produces optimal retrievals of physical parameters that describe the atmosphere and surface and on which there is information in the measurement. It takes as input a set of observations (brightness temperatures) and model background fields which are used to initialise the retrieval profile.  A retrieval (or analysis) is performed using an iterative procedure that attempts to find the minimum of a cost function that represents the most likely profile vector given the error characteristics of the two data sources.
+This filter performs a 1-dimensional variational assimilation (1D-Var) that produces optimal retrievals of physical parameters that describe the atmosphere and surface on which there is information in the measurement. It takes as input a set of observations (brightness temperatures) and model background fields which are used to initialise the retrieval profile.  A retrieval (or analysis) is performed using an iterative procedure that attempts to find the minimum of a cost function that represents the most likely profile vector given the error characteristics of the two data sources.
 
 The elements contained in the retrieval profile depend on the sensitivity of the measuring instruments to atmospheric and surface properties and also what can be modelled with a relatively high degree of accuracy. Most retrieval profiles will consist of atmospheric temperature and humidity, and surface skin temperature, with other possible constituents being liquid and ice water or some other cloud parameter measure, and emissivity parameters.
 
-The filter provides some retrieval parameters to the assimilation which may be missing in the background or insufficiently accurate, such as surface skin temperature, and to filter out observations for which a retrieval could not be performed and thus may be difficult to assimilate in the full variational assimilation.
+The filter provides some retrieval parameters to the main assimilation which may be missing in the background or insufficiently accurate, such as surface skin temperature, and to filter out observations for which a retrieval could not be performed and thus may be difficult to assimilate in the full variational assimilation.
 
 The filter is a port of the Met Office OPS 1D-Var and makes use of the Fortran RTTOV interface within JEDI.  The code is written predominantly in Fortran.  Files containing the observation error covariance (R) and the background error covariance (B) are expected as inputs.
 
@@ -1717,60 +1717,172 @@ This filter requires the following YAML parameters:
 * :code:`BMatrix`:  path to the b-matrix file.
 * :code:`RMatrix`:  path to the r-matrix file.
 * :code:`nlevels`:  the number of levels used in the retrieval profile.
-* :code:`retrieval variables`:  list of retrieval variables (e.g. temperature etc) which form the 1D-Var retrieval vector (x).  This needs to match the b-matrix file.
+* :code:`retrieval variables from geovals`:  list of retrieval variables (e.g. temperature etc) which form the 1D-Var retrieval vector (x) and are provided by the model interface.  These need to be in the b-matrix file.
 * :code:`ModOptions`: options needed for the observation operator (RTTOV only at the moment).
 * :code:`filter variables`:  list of variables (brightnessTemperature) and channels which form the 1D-Var observation vector (y).
 
-The following are optional YAML parameters with appropriate defaults:
+The following are optional YAML parameters with defaults listed where a variable has a default value:
 
+* :code:`retrieval variables not from geovals`:  list of retrieval variables (e.g. pressureAtCloudTop etc) which form the 1D-Var retrieval vector (x) and are not provided by the model interface.  These need to be in the :code:`ObsSpace` and b-matrix file.
 * :code:`ModName`:  forward model name (only RTTOV at the moment). Default: :code:`RTTOV`.
+* :code:`surface emissivity`:  there is a parameter section which includes all the options required for the surface emissivity.  There is a separate section below which describes all the available options.
 * :code:`qtotal`:  flag for total humidity (qt = q + qclw + qi). If this is true the b-matrix must include qt or the code will abort. If this is false then the b-matrix must not contain qt or the code will abort. Default: :code:`false`.
 * :code:`UseQtSplitRain`:  flag to choose if rain is included in the non-vapour part of qtotal when split. e.g. qnv = ql + qi + qr. Default: :code:`true`.
-* :code:`UseMLMinimization`:  flag to turn on Marquardt-Levenberg minimizer otherwise a Newton minimizer is used Default: :code:`false`.
-* :code:`UseJforConvergence`:  flag to use J for the measure of convergence. Default is comparison of the profile absolute differences to background error multiplied by :code:`ConvergenceFactor`. Default: :code:`false`.
+* :code:`RTTOVMWScattSwitch`:  flag to make sure the retrieval profile is setup for use with output with RTTOV-Scatt. Default: :code:`false`.
+* :code:`RTTOVUseTotalIce`:  flag to use the total ice option for cloud ice water with RTTOV-Scatt.  This will only have an effect if the above :code:`RTTOVMWScattSwitch` is true. Default: :code:`true`.
+* :code:`UseMLMinimization`:  flag to turn on the Marquardt-Levenberg minimizer otherwise a Newton minimizer is used.  Default: :code:`false`.
+* :code:`UseJforConvergence`:  flag to use the cost function value (J) for the measure of convergence. Default is comparison of the profile absolute differences to background error multiplied by :code:`ConvergenceFactor`. Default: :code:`false`.
 * :code:`UseRHwaterForQC`:  flag to use liquid water in the q saturation calculations. Default: :code:`true`.
 * :code:`UseColdSurfaceCheck`:  flag to reset low level temperatures over sea ice and cold low land. Default: :code:`false`.
-* :code:`Store1DVarLWP`:  flag to store the liquid water path to the observation database evaluated after convergence of the 1D-Var. Default: :code:`false`.
-* :code:`FullDiagnostics`:  flag to turn on full diagnostics. Default: :code:`false`.
+* :code:`Store1DVarLWP`:  flag to write the retrieved liquid water path to the observation database. Default: :code:`false`.
+* :code:`Store1DVarIWP`:  flag to write the retrieved ice water path to the observation database. Default: :code:`false`.
+* :code:`Store1DVarCLW`:  flag to write the retrieved liquid water profiles to the observation database. Default: :code:`false`.
+* :code:`Store1DVarTransmittance`:  flag to write the retrieved surface to space transmittance to the observation database. Default: :code:`false`.
+* :code:`RecalculateBT`:  flag to recalculate the brightness temperatures using retrieved surface variables (emissivity, skin temperature) and retrieved cloud layer variables (CTP, ECA). Default: :code:`false`.
 * :code:`Max1DVarIterations`:  maximum number of iterations. Default: :code:`7`.
-* :code:`JConvergenceOption`:  integer to select convergence option.  1 equals percentage change in cost tested between iterations.  Otherwise the absolute change in cost is tested between iterations. Default: :code:`1`.
+* :code:`JConvergenceOption`:  integer to select convergence option.  1 equals percentage change in cost function value tested between iterations.  Otherwise the absolute change in cost function value is tested between iterations. Default: :code:`1`.
 * :code:`IterNumForLWPCheck`:  choose which iteration to start checking the liquid water path. Default: :code:`2`.
 * :code:`MaxMLIterations`:  the maximum number of iterations for the internal Marquardt-Levenberg loop. Default: :code:`7`.
+* :code:`ConvergeCheckChansAfterIteration`:  if the iteration number is greater than this value then the channels specified by :code:`ConvergeCheckChans` have the observation error inflated to 100000.0.  Default: :code:`3`.
+* :code:`ConvergeCheckChans`:  a vector of channels which will have there error inflated to 100000.0 after the number of iterations specified by :code:`ConvergeCheckChansAfterIteration` is exceeded.
+* :code:`RetrievedErrorFactor`:  a float value which is multiplied by the ObsError to provide a bounds check for the retrieved brightness temperatures.  If any of the channels used in the retrieval fail this check the profile is rejected.  When retrieving pressureAtTopOfCloud only those channels which are active after the cloudy channel selection are evaluated in this test.  If this value is less than zero then this check is not performed.  Default: :code:`4.0`.
+* :code:`ConvergenceFactor`:  the factor used when the absolute difference in the profile is used to determine convergence. Default: :code:`0.4`.
+* :code:`CostConvergenceFactor`:  the cost function threshold used for convergence check when cost function value is used for convergence. Default: :code:`0.01`.
+* :code:`IRCloud_Threshold` the fraction of the air_temperature Jacobian (:math:`\partial BT_i/ \partial T_j`) integrated (in ln(pressure)) from the top of the atmosphere to the surface that is permitted to be below the retrieved pressureAtTopOfCloud when retrieving a cloud layer in the IR.  Default :code:`0.01`.
+* :code:`SkinTempErrorLand` the value to scale the skin temperature error over land.  If less than zero no scaling is applied.  Default :code:`-1.0`.
+* :code:`MaxLWPForCloudyCheck` the maximum value, in kg/m\ :sup:`2`, of the liquid water path when checking the profile during the minimization.  Default :code:`2.0`.
+* :code:`MaxIWPForCloudyCheck` the maximum value, in kg/m\ :sup:`2`, of the ice water path when checking the profile during the minimization.  Default :code:`2.0`.
+
+The following are the options contained in the :code:`surface emissivity` section of the YAML parameters.  For all options, if the :code:`emissivity` is set to zero, rttov will calculate the value when called.
+
+* :code:`type`:  there are five different options which setup how the surface emissivity will be initialized and in some cases how it will be retrieved.  The default method is :code:`fixed`.
+
+  #. :code:`rttovtocalculate`: this specifies that rttov will calculate the :code:`emissivity` for all surface types.  The model used can be specified in the :code:`ModOptions` or the RTTOV default will be used.
+  #. :code:`fixed`: The :code:`emissivity` values specified by :code:`EmissSeaDefault`, :code:`EmissLandDefault` and :code:`EmissSeaIceDefault` will be used for a given surface type.
+  #. :code:`readfromdb`:  The :code:`emissivity` values are read from the :code:`ObsSpace` from the group specified by the :code:`group in obs space` option within this parameter.
+  #. :code:`readfromdbwitherror`:  The :code:`emissivity` and associated :code:`emissivityError` are read from the :code:`ObsSpace`.  The values should both be present in the group specified by the :code:`group in obs space` option within this parameter.
+  #. :code:`principalcomponent`:  This will setup the principal component object within the code which is needed when retrieving principal component emissivity.  Initial values are set depending on the presence of an atlas.
+
+* :code:`EmissSeaDefault`:  the default emissivity value to use over sea surface types. Default: :code:`0.0`.
+* :code:`EmissLandDefault`:  the default emissivity value to use over land surface types. Default: :code:`0.95`.
+* :code:`EmissSeaIceDefault`:  the default emissivity value to use over seaice surface types. Default: :code:`0.92`.
+* :code:`group in obs space`:  the group in the :code:`ObsSpace` where the :code:`emissivity` (and :code:`emissivityError` if requested) are read from.  This is relevant for the :code:`readfromdb` and :code:`readfromdbwitherror` types.
+* :code:`EmisEigVecPath`:  the filename for the eigenvector file needed when the :code:`type` is :code:`principalcomponent`.
+* :code:`EmisAtlas`:  the filename for the emissivity eigenvector atlas to setup the first values of the emissivity.  This is used with the :code:`principalcomponent` type and is optional.  If this file is not included a first guess value for each channel is available from the file specified by the `EmisEigVecPath`.
+* :code:`mwEmissRetrieval`:  a flag to set the emissivity retrieval as active for the mw instruments.  The b-matrix file must contain entries for this retrieval to work correctly.  Default is :code:`false`.
+* :code:`number of surface emissivity retrieval elements`:  the number of emissivity channels to retieve.  This must match the number in the b-matrix file.  This option is used if :code:`mwEmissRetrieval` is true.  Default is :code:`5`.
+* :code:`emissivity to channel mapping`:  a vector of channels corresponding to the emissivity channels to be retrieved.  The size of this vector must match the :code:`number of surface emissivity retrieval elements`.  This option is used if :code:`mwEmissRetrieval` is true.  Default is :code:`1, 2, 3, 16, 17`.
+* :code:`channel to emissivity mapping`:  a vector of emissivity elements.  This needs to be the same size as the number of channels used in the 1d-var.  This option is used if :code:`mwEmissRetrieval` is true.  Default is :code:`1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5, 5`.
+
+The following are optional YAML parameters to provide diagnostics for developers:
+
+* :code:`FullDiagnostics`:  flag to turn on full diagnostics. Default: :code:`false`.
 * :code:`StartOb`:  the starting observation number for the main loop over all observations.  This has been added for testing to allow a subset of observations in an ObsSpace to be evaluated by the filter. Default: :code:`0`.
 * :code:`FinishOb`:  the finishing observation number for the main loop over all observations.  This has been added for testing to allow a subset of observations in an ObsSpace to be evaluated by the filter. Default: :code:`0`.
-* :code:`ConvergenceFactor`:  cost factor used when the absolute difference in the profile is used to determine convergence. Default: :code:`0.4`.
-* :code:`CostConvergenceFactor`:  the cost threshold used for convergence check when cost function value is used for convergence. Default: :code:`0.01`.
-* :code:`EmissLandDefault`:  the default emissivity value to use over land. Default: :code:`0.95`.
-* :code:`EmissSeaIceDefault`:  the default emissivity value to use over seaice. Default: :code:`0.92`.
+* :code:`obs bias group for testing`:  specify the group which contains the ObsBias value.  This allows for testing without an obs bias section.  If this is not specified then the ObsBias passed into the filter is used.
 
-Example:
+`Follow this hyperlink for example 1 in a test yaml <https://github.com/JCSDA-internal/ufo/blob/develop/test/testinput/unit_tests/filters/iasi_rttov_ops_qc_rttovonedvarcheck.yaml>`_.
 
 .. code:: yaml
 
+    ### Example 1 for IASI hyperspectral IR ###
     - filter: RTTOV OneDVar Check
-      BMatrix: ../resources/bmatrix/rttov/atms_bmatrix_70_test.dat
-      RMatrix: ../resources/rmatrix/rttov/atms_noaa_20_rmatrix_test.nc4
-      nlevels: 70
-      retrieval variables:
-      - airTemperature
-      - specificHumidity
-      - mass_content_of_cloud_liquid_water_in_atmosphere_layer
-      - mass_content_of_cloud_ice_in_atmosphere_layer
-      - surface_temperature
-      - specificHumidityAt2M
-      - skinTemperature
-      - air_pressure_at_two_meters_above_surface
       ModOptions:
-      Absorbers: [Water_vapour, CLW, CIW]
-      obs options:
-        RTTOV_default_opts: OPS
-        SatRad_compatibility: false # done in filter
-        Sensor_ID: noaa_20_atms
-        CoefficientPath: Data/
+        Absorbers: *rttov_absorbers
+        obs options:
+          RTTOV_default_opts: UKMO_PS45
+          SatRad_compatibility: false # done in filter
+          RTTOV_GasUnitConv: *gasunitconv
+          UseRHwaterForQC: false
+          UseColdSurfaceCheck: false
+          RTTOV_ScaleRefOzone: *RTTOV_ScaleRefOzone
+          WMO_ID: *wmo_id
+          Sat_ID: *sat_id
+          Instrument_Name: *instrument_id
+          CoefficientPath: *coefpath
+          RTTOV_clw_data: false
+      BMatrix: ../resources/bmatrix/rttov/iasi_bmatrix_70_test.dat
+      RMatrix: ../resources/rmatrix/rttov/iasi_metopb_rmatrix_test.nc4
       filter variables:
       - name: brightnessTemperature
-        channels: 1-22
+        channels: *1dvarchannels
+      retrieval variables from geovals:
+      - air_temperature # 1
+      - specific_humidity  # 2
+      - surface_temperature # 3
+      - specific_humidity_at_two_meters_above_surface # 4
+      - skin_temperature # 5
+      - surface_pressure # 6
+      retrieval variables not from geovals:
+      - cloud_top_pressure # 16
+      - cloud_fraction # 17
+      - emissivity_pc # 18
+      nlevels: 70
+      UseMLMinimization: true
+      obs bias group for testing: ObsBias
+      Max1DVarIterations: 10
+      MaxMLIterations: 10
+      SkinTempErrorLand: 5.0
+      surface emissivity:
+        type: principalcomponent
+        EmisEigVecPath: ../resources/auxillary/IASI_EmisEigenVec.dat
+      RecalculateBT: true
+
+`Follow this hyperlink for example 2 in a test yaml <https://github.com/JCSDA-internal/ufo/blob/develop/test/testinput/unit_tests/filters/atovs_rttovonedvar_multiplatform.yaml>`_.
+
+.. code:: yaml
+
+    ### Example 2 for ATOVs mw sounder ###
+    - filter: RTTOV OneDVar Check
+      ModOptions:
+        Absorbers: *rttov_absorbers
+        obs options:
+          RTTOV_default_opts: UKMO_PS45
+          SatRad_compatibility: false
+          RTTOV_GasUnitConv: true 
+          UseRHwaterForQC: false
+          UseColdSurfaceCheck: false
+          Do_MW_Scatt: true
+          RTTOV_clw_data: *rttovclwdata
+          WMO_ID: *wmo_id
+          Sat_ID: *sat_id
+          Instrument_Name: *inst_name
+          QtSplitRain: *qtsplitrain
+          CoefficientPath: Data/
+      BMatrix: ../resources/bmatrix/rttov/atms_bmatrix_70_test.dat   #using atms to ignore emiss for now
+      RMatrix: ../resources/rmatrix/rttov/atovs_metopb_rmatrix_test.nc4
+      filter variables:
+      - name: brightnessTemperature
+        channels: *all_channels
+      retrieval variables from geovals:
+      - air_temperature # 1
+      - specific_humidity  # 10
+      - mass_content_of_cloud_liquid_water_in_atmosphere_layer
+      - mass_content_of_cloud_ice_in_atmosphere_layer
+      - surface_temperature # 3
+      - specific_humidity_at_two_meters_above_surface # 4
+      - skin_temperature # 5
+      - surface_pressure # 6
+      surface emissivity:
+        type: fixed # default
+        EmissSeaDefault: 0.0 # default
+        EmissLandDefault: 0.95 # default
+        EmissSeaIceDefault: 0.92 # default
+      nlevels: 70
       qtotal: true
+      UseQtSplitRain: false
+      UseJforConvergence: true
+      JConvergenceOption: 2
+      CostConvergenceFactor: 0.05
+      Max1DVarIterations: 20
+      MaxLWPForCloudyCheck: 6.0
+      MaxIWPForCloudyCheck: 6.0
+      RTTOVMWScattSwitch: true
+      UseRHwaterForQC: *UseRHwaterForQC
+      UseColdSurfaceCheck: *UseColdSurfaceCheck
+      Store1DVarLWP: true
+      Store1DVarIWP: true
+      Store1DVarTransmittance: true
 
 ModelOb Threshold Filter
 ----------------------------------------

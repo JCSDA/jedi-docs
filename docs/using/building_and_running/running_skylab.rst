@@ -8,31 +8,41 @@ List of spack, software, and AMIs
 
 Versions used:
 
-- spack-stack-1.3.1 from April 21, 2023
+- spack-stack-1.4.0 from May 2023
 
-  * https://github.com/NOAA-EMC/spack-stack/tree/1.3.1
+  * https://github.com/JCSDA/spack-stack/tree/1.4.0
 
-  * https://spack-stack.readthedocs.io/en/1.3.1/
+  * https://spack-stack.readthedocs.io/en/1.4.0/
 
 - AMIs available in us-east-1 region (N. Virginia)
 
-  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.4:
+  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
 
-    AMI Name skylab-4.0.0-redhat8-update-20230419
+    AMI Name skylab-5.0.0-redhat8
 
-    AMI ID ami-01e025b0334795ffa
+    AMI ID ami-0e9479372af5b5b8d (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-0e9479372af5b5b8d)
 
+  - Ubuntu 20 with gnu-10.3.0 and openmpi-4.1.5:
+
+    AMI Name skylab-5.0.0-ubuntu20
+
+    AMI ID ami-09743c63b8bf95c2e (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-09743c63b8bf95c2e)
 
 - AMIs available in us-east-2 region (Ohio)
 
-  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.4:
+  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
 
-    AMI Name skylab-4.0.0-redhat8-update-20230419
+    AMI Name skylab-5.0.0-redhat8
 
-    AMI ID ami-094361e081de18589
+    AMI ID ami-06082db161bf0769d (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-06082db161bf0769d)
 
+  - Ubuntu 20 with gnu-10.3.0 and openmpi-4.1.5:
 
-    It is necessary to use c6i.2xlarge or larger instances of this family.
+    AMI Name skylab-5.0.0-ubuntu20
+
+    AMI ID ami-0e10ae1b5232c08fc (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-0e10ae1b5232c08fc)
+
+Note. It is necessary to use c6i.2xlarge or larger instances of this family (recommended: c6i.4xlarge).
 
 Developer section
 -----------------
@@ -40,13 +50,13 @@ Note. To follow this section, one needs read access to the JCSDA-internal GitHub
 
 1- Load modules
 ^^^^^^^^^^^^^^^
-First, you need to load all the modules needed to build jedi-bundle and solo/r2d2/ewok.
-Note loading modules only set up the environment for you. You still need to build
-jedi-bundle, run ctests, and install solo/r2d2/ewok/simobs.
+First, you need to load all the modules needed to build jedi-bundle and solo/r2d2/ewok/simobs/skylab.
+Note that loading modules only sets up the environment for you. You still need to build
+jedi-bundle, run ctests, install solo/r2d2/ewok/simobs and download skylab.
 
 Please note that currently we only support Orion, Discover, S4, and AWS platforms.
 If you are working on a system not specified below please follow the instructions on
-`JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.7.0/using/jedi_environment/index.html>`_.
+`JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/5.0.0/using/jedi_environment/index.html>`_.
 
 Users are responsible for setting up their GitHub and AWS credentials on the platform they are using.
 You will need to create or edit your ``~/.aws/credentials`` and ``~/.aws/config`` to make sure they contain:
@@ -72,7 +82,7 @@ You will need to create or edit your ``~/.aws/credentials`` and ``~/.aws/config`
          region = us-east-1
 
 
-The commands for loading the modules to compile and run Skylab are provided in separate sections for :doc:`HPC platforms <../jedi_environment/modules>` and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`. Users need to execute these commands before proceeding with the build of ``jedi-bundle`` below.
+The commands for loading the modules to compile and run SkyLab are provided in separate sections for :doc:`HPC platforms <../jedi_environment/modules>` and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`. Users need to execute these commands before proceeding with the build of ``jedi-bundle`` below.
 
 2- Build jedi-bundle
 ^^^^^^^^^^^^^^^^^^^^
@@ -132,7 +142,7 @@ the build was successful by running the tests (still from $JEDI_BUILD):
 
 If you are on an HPC you may need to provide additional flags to the ecbuild
 command, or login to a compute node, or submit a batch script for running the
-ctests. Please refer the `documentation <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.7.0/using/jedi_environment/modules.html#general-tips-for-hpc-systems>`_ for more details.
+ctests. Please refer the `documentation <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/5.0.0/using/jedi_environment/modules.html#general-tips-for-hpc-systems>`_ for more details.
 
 (You might have another coffee.) You have successfully built JEDI!
 
@@ -148,8 +158,15 @@ ctests. Please refer the `documentation <https://jointcenterforsatellitedataassi
         ctest -R get_
         ctest -R bumpparameters
 
-3- Build solo/r2d2/ewok/simobs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  If you are running on your own machine you will also need to clone the static-data repo for some skylab experiments. 
+
+  .. code-block:: bash
+
+    cd $JEDI_SRC
+    git clone https://github.com/jcsda-internal/static-data
+
+3- Clone and install solo/r2d2/ewok/simobs, clone skylab only
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 We recommend that you use a python3 virtual environment (venv) for
 building solo/r2d2/ewok/simobs
 
@@ -160,6 +177,7 @@ building solo/r2d2/ewok/simobs
   git clone --branch 2.0.0 https://github.com/jcsda-internal/r2d2
   git clone --branch 0.4.0 https://github.com/jcsda-internal/ewok
   git clone --branch 1.2.0 https://github.com/jcsda-internal/simobs
+  git clone --branch 1.0.0 https://github.com/jcsda-internal/skylab
 
   cd $JEDI_ROOT
   python3 -m venv --system-site-packages venv
@@ -196,11 +214,10 @@ or use the default template in the sample script below. Note that :code:`JEDI_SR
 :code:`JEDI_BUILD` and :code:`EWOK_WORKDIR` are experiment specific, i.e. you can run several
 experiments at the same time, each having their own definition for these variables.
 
-The user further has to set the environment variable :code:`R2D2_HOST` in the script
-on pre-configured platforms, or unset this variable on generic platforms.
+The user further has to set the environment variable :code:`R2D2_HOST` in the script.
 :code:`R2D2_HOST` is required by r2d2, ewok, and to determine the location :code:`EWOK_STATIC_DATA`
 of the static data used by ewok. This data is staged on the preconfigured platforms.
-On generic platforms, the script sets :code:`EWOK_STATIC_DATA` to :code:`${JEDI_ROOT}/static`.
+On generic platforms, the script sets :code:`EWOK_STATIC_DATA` to :code:`${JEDI_SRC}/static-data/static`.
 
 Please don’t forget to source this script after creating it: :code:`source $JEDI_ROOT/activate.sh`
 
@@ -252,7 +269,7 @@ Please don’t forget to source this script after creating it: :code:`source $JE
 
   # Add ioda python bindings to PYTHONPATH
   PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:2]; print("{0}.{1}".format(*version))'`
-  export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}/pyioda:${PYTHONPATH}"
+  export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}:${PYTHONPATH}"
 
   # necessary user directories for ewok and ecFlow files
   mkdir -p $EWOK_WORKDIR $EWOK_FLOWDIR
@@ -268,31 +285,38 @@ Please don’t forget to source this script after creating it: :code:`source $JE
   host=$(hostname | cut -f1 -d'.')
   export ECF_HOST=$host
 
-  if [[ x"${R2D2_HOST}" == "x" ]]; then
-    export EWOK_STATIC_DATA=${JEDI_ROOT}/static
-  else
-    case $R2D2_HOST in
-      orion)
-        export EWOK_STATIC_DATA=/work/noaa/da/role-da/static
-        ;;
-      discover)
-        export EWOK_STATIC_DATA=/discover/nobackup/projects/jcsda/s2127/static
-        ;;
-      cheyenne)
-        export EWOK_STATIC_DATA=/glade/p/mmm/jedipara/static
-        ;;
-      s4)
-        export EWOK_STATIC_DATA=/data/prod/jedi/static
-        ;;
-      aws-pcluster)
-        export EWOK_STATIC_DATA=${JEDI_ROOT}/static
-        ;;
-      *)
-        echo "Unknown host name $R2D2_HOST"
-        exit 1
-        ;;
-    esac
-  fi
+  case $R2D2_HOST in
+    localhost)
+      export EWOK_STATIC_DATA=${JEDI_SRC}/static-data/static
+      ;;
+    orion)
+      export EWOK_STATIC_DATA=/work/noaa/da/role-da/static
+      ;;
+    discover)
+      export EWOK_STATIC_DATA=/discover/nobackup/projects/jcsda/s2127/static
+      ;;
+    cheyenne)
+      export EWOK_STATIC_DATA=/glade/p/mmm/jedipara/static
+      ;;
+    s4)
+      export EWOK_STATIC_DATA=/data/prod/jedi/static
+      ;;
+    aws-pcluster)
+      export EWOK_STATIC_DATA=${JEDI_ROOT}/static
+      ;;
+    *)
+      echo "Unknown host name '$R2D2_HOST'"
+      exit 1
+      ;;
+  esac
+
+Note: On AWS pcluster users will need to update the python version referenced in the above :code:`source $JEDI_ROOT/activate.sh` script. The following lines under :code:`# ecflow and pyioda Python bindings` should be:
+
+.. code-block:: bash
+
+    # ecflow and pyioda Python bindings
+    PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:2]; print("{0}.{1}".format(*version))'`
+    export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}:/home/ubuntu/jedi/ecflow-5.8.4/lib/python3.8/site-packages:${PYTHONPATH}"
 
 5- Run SkyLab
 ^^^^^^^^^^^^^
@@ -336,4 +360,20 @@ To start your ewok experiment:
 
 .. code-block:: bash
 
-  create_experiment.py $JEDI_SRC/ewok/experiments/your-experiment.yaml
+  create_experiment.py $JEDI_SRC/skylab/experiments/your-experiment.yaml
+
+6- Existing SkyLab experiments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+At the moment there are four SkyLab flagship experiments:
+
+* skylab-aero.yaml
+
+* skylab-atm-land.yaml
+
+* skylab-marine.yaml
+
+* skylab-trace-gas.yaml
+
+To read a more in depth description of the parameters available and the setup for these experiments,
+please read our page on the :doc:`SkyLab experiments description </inside/jedi-components/skylab/skylab_description>`.

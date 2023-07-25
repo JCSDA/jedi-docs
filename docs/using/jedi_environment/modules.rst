@@ -3,7 +3,7 @@
 Using spack-stack modules to build and run JEDI
 ===============================================
 
-The instructions in this section are specific to the use of spack-stack environment modules (``lmod/lua`` or ``tcl/tk``) for building and running JEDI applications. For general information on using spack-stack to build and run software, see the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.3.1>`_.
+The instructions in this section are specific to the use of spack-stack environment modules (``lmod/lua`` or ``tcl/tk``) for building and running JEDI applications. For general information on using spack-stack to build and run software, see the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.4.0>`_.
 
 One of the big advantages of spack-stack is that it automatically generates modules for all compiled packages and Python packages and works in exactly the same way on HPCs, on the cloud, and on a personal computer. Environment modules are available on basically all HPC systems and any modern macOS or Linux distribution, and are an easy and effective way to manage software libraries. There are two main flavors, the older ``tcl/tk`` modules and the newer ``lmod/lua`` modules, with the latter being superior and therefore preferred, if available. The two implementations share similar commands, such as:
 
@@ -48,12 +48,12 @@ Orion
 
 Orion is an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#msu-orion to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#msu-orion to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
    module load jedi-fv3-env/unified-dev
-   module load jedi-ewok-env/unified-dev
+   module load ewok-env/unified-dev
    module load soca-env/unified-dev
 
 
@@ -149,12 +149,12 @@ Discover
 
 `Discover <https://www.nccs.nasa.gov/systems/discover>`_ is 90,000 core supercomputing cluster capable of delivering 3.5 petaflops of high-performance computing for Earth system applications from weather to seasonal to climate predictions.
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#nasa-discover to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#nasa-discover to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
    module load jedi-fv3-env/unified-dev
-   module load jedi-ewok-env/unified-dev
+   module load ewok-env/unified-dev
    module load soca-env/unified-dev
 
 Note that the existing toolchain for Discover in ``jedi-cmake`` is outdated and cannot be used. Also, different methods are needed for Intel and GNU.
@@ -182,12 +182,12 @@ Hera
 
 Hera is an HPC system located in NOAA's NESCC facility in Fairmont, WV. The following bash shell commands are necessary to access the installed spack-stack modules (substitute equivalent csh shell commands as appropriate):
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#noaa-rdhpcs-hera to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#noaa-rdhpcs-hera to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
    module load jedi-fv3-env/unified-dev
-   module load jedi-ewok-env/unified-dev
+   module load ewok-env/unified-dev
    module load soca-env/unified-dev
 
 It is recommended that you specify :code:`srun` as your mpi process manager when building, like so:
@@ -210,12 +210,12 @@ Cheyenne
 
 `Cheyenne <https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/cheyenne>`_ is a 5.34-petaflops, high-performance computer built for NCAR by SGI.
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#ncar-wyoming-cheyenne to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#ncar-wyoming-cheyenne to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
    module load jedi-fv3-env/unified-dev
-   module load jedi-ewok-env/unified-dev
+   module load ewok-env/unified-dev
    module load soca-env/unified-dev
 
 Because of space limitations on your home directory, it's a good idea to build your code on the `glade <https://www2.cisl.ucar.edu/resources/storage-and-file-systems/glade-file-spaces>`_ filesystems (`work` or `scratch`):
@@ -254,12 +254,12 @@ Casper
 
 The `Casper <https://www2.cisl.ucar.edu/resources/computational-systems/casper>`_ cluster is a heterogeneous system of specialized data analysis and visualization resources, large-memory, multi-GPU nodes, and high-throughput computing nodes.
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#ncar-wyoming-casper to load the basic spack-stack modules for Intel. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#ncar-wyoming-casper to load the basic spack-stack modules for Intel. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
    module load jedi-fv3-env/unified-dev
-   module load jedi-ewok-env/unified-dev
+   module load ewok-env/unified-dev
    module load soca-env/unified-dev
 
 Because of space limitations on your home directory, it's a good idea to locate your build directory on the `glade <https://www2.cisl.ucar.edu/resources/storage-and-file-systems/glade-file-spaces>`_ filesystems:
@@ -311,12 +311,12 @@ Once logged into S4, you must then log into s4-submit to load the spack-stack mo
 
    ssh -Y s4-submit
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#uw-univ-of-wisconsin-s4 to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#uw-univ-of-wisconsin-s4 to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
    module load jedi-fv3-env/unified-dev
-   module load jedi-ewok-env/unified-dev
+   module load ewok-env/unified-dev
    module load soca-env/unified-dev
 
 For Intel and GNU, use
@@ -408,12 +408,12 @@ Narwhal
 
 Narwhal is an HPE Cray EX system located at the Navy DSRC. It has 2,176 standard compute nodes (AMD 7H12 Rome, 128 cores, 238 GB) and 12 large-memory nodes (995 GB). It has 590 TB of memory and is rated at 12.8 peak PFLOPS.
 
-Follow the instructions in https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html#navy-hpcmp-narwhal to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-4.0`` release:
+Follow the instructions in https://spack-stack.readthedocs.io/en/1.4.0/PreConfiguredSites.html#navy-hpcmp-narwhal to load the basic spack-stack modules for Intel or GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-5.0`` release:
 
 .. code-block:: bash
 
    module load jedi-fv3-env/unified-dev
-   module load jedi-ewok-env/unified-dev
+   module load ewok-env/unified-dev
    module load soca-env/unified-dev
 
 Because of space limitations on your home directory, it's a good idea to build your code on Narwhal ``$WORKDIR: /p/work1/$USER``.
@@ -462,4 +462,5 @@ AWS AMIs
 --------
 For more information about using Amazon Web Services please see :doc:`JEDI on AWS <./cloud/index>`.
 
-As part of this release, an Amazon Media Image (AMI) is available that has the necessary `spack-stack-1.3.1` environment for `skylab-4.0.0` pre-installed. For more information on how to find this AMI, refer to https://spack-stack.readthedocs.io/en/1.3.1/PreConfiguredSites.html.
+As part of this release, Amazon Media Images (AMI) are available that have the necessary ``spack-stack-1.4.0`` environment for ``skylab-5.0`` pre-installed. For more information on how to find these AMIs, refer to :doc:`Building and running SkyLab <../building_and_running/running_skylab>` in this documentation.
+
