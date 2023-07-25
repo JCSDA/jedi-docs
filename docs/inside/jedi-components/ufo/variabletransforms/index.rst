@@ -111,7 +111,7 @@ The variable transforms available are:
 
    transforms/profilehorizontaldrift
 
-**PStar**
+**Surface pressure**
 
 .. toctree::
    :maxdepth: 2
