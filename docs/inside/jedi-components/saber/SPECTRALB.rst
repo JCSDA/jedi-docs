@@ -16,7 +16,6 @@ The blocks currently implemented are listed here by their block names.
 Central blocks
 ~~~~~~~~~~~~~~
 
-- :code:`SPCTRL_COV`: first try of a spectral covariance, to be removed.
 - :code:`spectral covariance`: 3D covariance or correlation in spectral space.
 
 Outer blocks
