@@ -1653,6 +1653,8 @@ at all locations.
         type: float  # type must be specified if the variable doesn't already exist
         value: missing
 
+.. _create-diagnostic-flags-filter:
+
 Create Diagnostic Flags Filter
 ------------------------------
 
