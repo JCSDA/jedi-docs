@@ -35,6 +35,13 @@ where you can download a binary implementation for windows and install it using 
 Windows package manager. After installing Vagrant, you may wish to return to this
 document for tips on how to configure it for JEDI (skipping Step A of the next section).
 
+.. warning::
+
+    On macOS at least, the virtualization that underpins the container environments can have heavily
+    degraded performance with MPI oversubscription (running more tasks than cores (virtual cores in
+    this case)). As an example, a ctest using 12 MPI processes on a VM providing 6 virtual cores can
+    take hundreds of times longer to run than in a native environment.
+
 Installing and Configuring Vagrant
 ----------------------------------
 
