@@ -1329,11 +1329,12 @@ The YAML parameters supported by this filter are listed below.
     Note: the variable used to group observations into records can be set with the
     :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option. An example of its use can be found in the :ref:`Profile consistency checks <profconcheck_filtervars>` section above.
 
-  - :code:`override_obs_grouping`: Override observation space grouping. Optional parameter.
+  - :code:`override_obs_grouping`: Override observation space grouping (default :code:`true`).
 
     If the observation space has been divided into records according to at least one grouping variable then, by default, the multi-level buddy check will be performed.
-    To override this choice, i.e. to treat each observation in each profile separately, the :code:`override_obs_grouping` option can be set to :code:`true`.
-    Setting this parameter to :code:`true` is only permitted if :code:`num_levels` has been set to 1. If :code:`num_levels` has not been set then this parameter will be ignored.
+    However, if the parameter `num_levels` is equal to 1, the division into records is disregarded if the parameter `override_obs_grouping` is set to `true`.
+    In that case individual observations are treated separately in the buddy check.
+    The value of `override_obs_grouping` only has an effect if `num_levels` has been set to 1. In all other cases it is ignored.
 
   - :code:`num_zonal_bands`: Number of zonal bands to split the Earth's surface into when building a search data structure.
 
