@@ -31,7 +31,7 @@ Doxygen is included in the JEDI containers and may already be installed on your 
 
   doxygen --help
 
-If it is not already installed, you can obtain executable binary files for Mac OS X, Linux, and Windows through the
+If it is not already installed, you can obtain executable binary files for macOS, Linux, and Windows through the
 `Doxygen web page <http://www.doxygen.nl/download.html>`_ or you can download the source code from
 `GitHub <https://github.com/doxygen/doxygen>`_ and build it yourself.
 

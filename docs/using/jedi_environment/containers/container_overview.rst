@@ -81,8 +81,8 @@ However, there is one distinguishing feature of Docker is that is worth mentioni
 it does not rely on the linux user namespaces and other features
 (for example, SetUID) that Singularity requires. This is what makes it unsuitable
 for HPC since it achieves containerization instead by means of the root daemon.
-However, these linux features are not yet supported by Mac OS and Windows. So,
-in short, Docker can run natively on laptops and PCs running Mac OS or Windows
+However, these linux features are not yet supported by macOS and Windows. So,
+in short, Docker can run natively on laptops and PCs running macOS or Windows
 whereas Singularity cannot.
 Our recommendation for these systems is to use JEDI docker image directly.
 The images are publicly hosted on the `Docker Hub <https://hub.docker.com/>`_.
