@@ -28,7 +28,7 @@ By *working machine* we mean whatever machine you plan to compile and run JEDI o
 
 You *do* need Vagrant and VirtualBox (or something equivalent) if you wish to
 run JEDI from a Mac or Windows machine. Though you can use Vagrant for both platforms,
-we focus here on Mac OS X.
+we focus here on macOS.
 
 We refer Windows users to the `Vagrant download page <https://www.vagrantup.com/downloads.html>`_
 where you can download a binary implementation for windows and install it using the
@@ -357,7 +357,7 @@ File transfer between your Mac and the VM
 
 In Step B above we created a directory called :code:`vagrant_data`.
 The JEDI Vagrantfile is configured to use this directory to transfer files between
-your host machine (which may be running Mac OS or Windows) and your VM.
+your host machine (which may be running macOS or Windows) and your VM.
 Within the VM, this directory is mounted as :code:`$HOME/vagrant_data`.
 
 To change this, you can edit the Vagrantfile and find the section for a **synced folder**:

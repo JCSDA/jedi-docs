@@ -49,9 +49,9 @@ As noted :ref:`above <top-Singularity>`, Singularity is not a virtual machine so
 it does not build its own operating system. Instead, it must work with the host operating system.
 Singularity relies on Linux mount namespaces in order to set up application
 environments that are isolated from the host.
-Neither Mac OS X nor Windows currently supports mount namespaces.
+Neither macOS nor Windows currently supports mount namespaces.
 
-So, if you are running Mac OS or Windows, then you must first set up a Linux environment.
+So, if you are running macOS or Windows, then you must first set up a Linux environment.
 This requires a proper virtual machine (VM).
 The recommended VM provider is `Vagrant <https://www.vagrantup.com/intro/index.html>`_ by HashiCorp,
 which can build and configure an appropriate Linux operating system using

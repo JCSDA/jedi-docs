@@ -1,4 +1,4 @@
-## Minimum steps for working with JEDI natively on Mac OS
+## Minimum steps for working with JEDI natively on macOS
 
 Tested on *MacOS 10.15.7 (Catalina).*
 **Note:** Some steps of this process require administrator privileges for the Mac. If you do not have administrator privileges, you will need to work closely with someone who does, both for the initial installation and for ongoing jedi-stack maintenance. You might instead consider [installing vagrant](https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/using/jedi_environment/vagrant.html) and then using the [JEDI Singularity containers](https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/using/jedi_environment/singularity.html) for JEDI on your Mac, as this will be an easier environment to maintain without administrator privileges.
