@@ -1,7 +1,7 @@
 Homebrew (Mac only)
 ===================
 
-If you use have an Apple computer running Mac OS X we highly recommend that you install
+If you use have an Apple computer running macOS we highly recommend that you install
 `Homebrew <https://brew.sh/>`_.  This will make it much easier to install a number of other
 software tools that are indispensable for JEDI developers, including vagrant, git-flow, doxygen,
 and many more.

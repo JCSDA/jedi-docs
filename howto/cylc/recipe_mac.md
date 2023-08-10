@@ -1,4 +1,4 @@
-# Installing Cylc on Mac OS for the less patient
+# Installing Cylc on macOS for the less patient
 
 *MacOS 10.15.7 (Catalina).*
 

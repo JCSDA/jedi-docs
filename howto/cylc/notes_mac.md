@@ -1,4 +1,4 @@
-# Installing Cylc on Mac OS
+# Installing Cylc on macOS
 
 *I did this on macOS 10.15.7 (Catalina).*
 
@@ -37,7 +37,7 @@ cd ~/cylc-run
 cylc start tutorial/oneoff/basic
 ```
 
-Cylc 7.9.1 uses python2, ideally python 2.7. This is where I started to have problems as my preinstalled Mac OS python 2.7 was not correct for this. The symptom was an exception complaining about POLLIN not being defined in the select module (not sure anymore if it was obvious or I had to dig). If you try: 
+Cylc 7.9.1 uses python2, ideally python 2.7. This is where I started to have problems as my preinstalled macOS python 2.7 was not correct for this. The symptom was an exception complaining about POLLIN not being defined in the select module (not sure anymore if it was obvious or I had to dig). If you try: 
 
 ```python
 python2
@@ -151,7 +151,7 @@ ERROR: No hosts currently compatible with this global configuration:
   suite servers -> run host select -> thresholds:
 ```
 
-I debugged the code backwards from where the error was displayed in the code, I saw that it had to do with the network module, Mac OS and IPV6. I spare you the details, after a lot of experimenting I eventually found (back where it all started):
+I debugged the code backwards from where the error was displayed in the code, I saw that it had to do with the network module, macOS and IPV6. I spare you the details, after a lot of experimenting I eventually found (back where it all started):
 https://github.com/cylc/cylc-flow/issues/2689 where Oliver Sanders gives the solution.
 
 On MacOS, whether ipv6 is enable or not, socket.getfqdn() does not return the hostname. To fix it I modified the function _get_host_info.
