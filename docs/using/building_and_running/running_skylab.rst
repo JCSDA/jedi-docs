@@ -150,13 +150,11 @@ ctests. Please refer the `documentation <https://jointcenterforsatellitedataassi
 
   Even if you are a master builder and don’t need to check your build, if you
   intend to run experiments with ewok, you still need to run a few of the tests
-  that download data (this is temporary) and generate static files. You can run
-  these tests with:
+  that download data (this is temporary). You can run these tests with:
 
   .. code-block:: bash
 
         ctest -R get_
-        ctest -R bumpparameters
 
   If you are running on your own machine you will also need to clone the static-data repo for some skylab experiments. 
 

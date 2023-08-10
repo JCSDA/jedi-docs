@@ -85,8 +85,16 @@ However, these linux features are not yet supported by Mac OS and Windows. So,
 in short, Docker can run natively on laptops and PCs running Mac OS or Windows
 whereas Singularity cannot.
 Our recommendation for these systems is to use JEDI docker image directly.
-The images are publicly hosted on the `Docker Hub <https://hub.docker.com/>`_.
 Users can also use Singularity within a virtual machine such as :doc:`Vagrant <vagrant>`.
+
+.. warning::
+
+    On macOS at least, the virtualization that underpins the container environments can have heavily
+    degraded performance with MPI oversubscription (running more tasks than cores (virtual cores in
+    this case)). As an example, a ctest using 12 MPI processes on a VM providing 6 virtual cores can
+    take hundreds of times longer to run than in a native environment.
+
+The images are publicly hosted on the `Docker Hub <https://hub.docker.com/>`_.
 
 .. code-block:: bash
 
