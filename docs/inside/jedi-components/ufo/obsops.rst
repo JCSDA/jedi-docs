@@ -1317,7 +1317,9 @@ from the lowest model level winds.
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
-* none
+
+* :code:`surface_type_check`: logical, true by default, indicating whether to check if the surface type is sea before calculating H(x).
+* :code:`surface_type_sea`: integer, 0 by default, the value of surfaceQualifier used to denote sea in the surface type check.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
