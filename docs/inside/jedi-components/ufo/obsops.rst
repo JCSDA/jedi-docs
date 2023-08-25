@@ -1237,7 +1237,7 @@ Product observation operator
 Description:
 ^^^^^^^^^^^^
 
-A simple observation operator based on the identity operator that allows scaling by another GeoVaL. The operator performs :math:`H(x) = x * a` where `x` is a variable at the lowest model level and `a` is some other customizable scaling GeoVaLs that is two dimensional. The scaling variable may optionally be raised to a power.
+A simple observation operator based on the identity operator that allows scaling by another GeoVaL. The operator performs :math:`H(x) = x * a` where `x` is a variable at the lowest model level and `a` is some other customizable scaling GeoVaL that is two dimensional. The scaling variable may optionally be raised to a power.
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
