@@ -81,8 +81,20 @@ You will need to create or edit your ``~/.aws/credentials`` and ``~/.aws/config`
          [default]
          region = us-east-1
 
-
 The commands for loading the modules to compile and run SkyLab are provided in separate sections for :doc:`HPC platforms <../jedi_environment/modules>` and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`. Users need to execute these commands before proceeding with the build of ``jedi-bundle`` below.
+
+.. warning::
+
+  If you are using ``spack-stack 1.4.0`` or ``spack-stack 1.4.1`` you need to unload the CRTM v2.4.1-jedi module after loading the Spack-Stack modules.
+
+  .. code-block:: bash
+
+        module unload crtm
+
+
+  Make sure you are building CRTMV3 within the jedi-bundle using the `ecbuild_bundle command <https://github.com/JCSDA-internal/jedi-bundle/blob/5.0.0/CMakeLists.txt#L38>`_. 
+
+
 
 2- Build jedi-bundle
 ^^^^^^^^^^^^^^^^^^^^
