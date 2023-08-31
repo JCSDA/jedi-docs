@@ -81,8 +81,20 @@ You will need to create or edit your ``~/.aws/credentials`` and ``~/.aws/config`
          [default]
          region = us-east-1
 
-
 The commands for loading the modules to compile and run SkyLab are provided in separate sections for :doc:`HPC platforms <../jedi_environment/modules>` and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`. Users need to execute these commands before proceeding with the build of ``jedi-bundle`` below.
+
+.. warning::
+
+  If you are using ``spack-stack 1.4.0`` or ``spack-stack 1.4.1`` you need to unload the CRTM v2.4.1-jedi module after loading the Spack-Stack modules.
+
+  .. code-block:: bash
+
+        module unload crtm
+
+
+  Make sure you are building CRTMV3 within the jedi-bundle using the `ecbuild_bundle command <https://github.com/JCSDA-internal/jedi-bundle/blob/5.0.0/CMakeLists.txt#L38>`_. 
+
+
 
 2- Build jedi-bundle
 ^^^^^^^^^^^^^^^^^^^^
@@ -100,7 +112,7 @@ The next step is to clone the code bundle to a local directory:
 
   mkdir $JEDI_ROOT
   cd $JEDI_ROOT
-  git clone --branch 4.0.0 https://github.com/jcsda/jedi-bundle
+  git clone https://github.com/jcsda/jedi-bundle
 
 
 The example here is for jedi-bundle, the instructions apply to other bundles as well.
@@ -171,11 +183,11 @@ building solo/r2d2/ewok/simobs
 .. code-block:: bash
 
   cd $JEDI_SRC
-  git clone --branch 1.2.0 https://github.com/jcsda-internal/solo
-  git clone --branch 2.0.0 https://github.com/jcsda-internal/r2d2
-  git clone --branch 0.4.0 https://github.com/jcsda-internal/ewok
-  git clone --branch 1.2.0 https://github.com/jcsda-internal/simobs
-  git clone --branch 1.0.0 https://github.com/jcsda-internal/skylab
+  git clone https://github.com/jcsda-internal/solo
+  git clone https://github.com/jcsda-internal/r2d2
+  git clone https://github.com/jcsda-internal/ewok
+  git clone https://github.com/jcsda-internal/simobs
+  git clone https://github.com/jcsda-internal/skylab
 
   cd $JEDI_ROOT
   python3 -m venv --system-site-packages venv
