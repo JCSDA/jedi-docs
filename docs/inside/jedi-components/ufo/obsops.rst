@@ -217,6 +217,14 @@ Configuration options:
 * :code:`constant vertical coordinate values` [optional]: use the (array) values as vertical coordinate in interpolation. If :code:`interpolation method` is not defined, then nearest-neighbor will be used in interpolation. If this option is chosen, the geovals for vertical coordinate are not requested and vertical coordinate option above shouldn't be used. The primary purpose of this option is to serve the requirement for soil moisture assimilation.
 * :code:`observation vertical coordinate` [optional]: name of the ObsSpace variable (from the :code:`MetaData` group) storing the vertical coordinate of observation locations. If not set, assumed to be the same as :code:`vertical coordinate`.
 * :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator (see the example below). This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
+* :code:`apply near surface wind scaling` [optional]: Optional element that allows the resulting h(x) to be scaled. This is used to scale near surface wind and make use of the near surface log regime to improve on a straightforward interpolation.
+
+Optionally the vertical interpolation can use a 'backup' coordinate for interpolation. For some data types it might be preferable to use a certain coordinate but then fall back on an alternative coordinate when data is missing. This can be acheieved by specifying:
+
+* :code:`vertical coordinate backup` [optional]: the backup vertical coordinate to use in interpolation.
+* :code:`observation vertical coordinate backup` [optional]: name of the ObsSpace variable storing the vertical coordinate of observation locations.
+* :code:`observation vertical coordinate group backup` [optional]: If the observation coordinate is not in the group :code:`MetaData` the parameter can be used to set the group to something else.
+* :code:`interpolation method backup` [optional]: Type of interpolation to do when using the backup coordinate.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -269,6 +277,27 @@ The observation operator in the above example choose array :code:`[0.1, 0.5, 1.0
       - name: stationPressure
 
 In the example above, the `VertInterp` operator is used to simulate only the wind components; the surface pressure is simulated using the `Identity` operator.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Composite
+    components:
+     - name: VertInterp
+       variables: [windEastward, windNorthward]
+       apply near surface wind scaling: true
+
+       # Use height vertical coordinate first
+       vertical coordinate: geometric_height
+       observation vertical coordinate: height
+       interpolation method: linear
+
+       # Use pressure vertical coordinate backup
+       vertical coordinate backup: air_pressure
+       observation vertical coordinate backup: pressure
+       interpolation method backup: log-linear
+
+In the above example wind observations are simulated and scaled near the surface. The preferred coordinate to use for interpolation is height but in the case that height observations are missing the code will fall back on using pressure as the coordinate.
 
 Atmosphere Vertical Layer Interpolation
 ----------------------------------------
