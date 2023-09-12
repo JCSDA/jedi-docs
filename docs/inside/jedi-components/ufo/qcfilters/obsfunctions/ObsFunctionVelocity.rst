@@ -5,15 +5,17 @@ ObsFunctionVelocity
 
 This obsFunction is designed to compute wind speed based on u(windEastward) and v(windNorthward) components of wind. 
 
-Required input parameters:
+Parameters:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-windEastward
-  zonel velocity, i.e. the component of the horizontal wind TOWARDS EAST
-  
-windNorthward
-  meridional velocity, i.e. the component of the horizontal wind TOWARDS NORTH
-  
+- :code:`channels`: List of assimilated channels. Default is none.
+
+- :code:`type`: Observation group name. Default is ObsValue.
+
+- :code:`eastward wind variable`: Name of the u wind component variable. Default is windEastward.
+
+- :code:`northward wind variable`: Name of the v wind component variable. Default is windNorthward.
+
 Example configuration:
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -31,3 +33,13 @@ value is bigger than :code:`maxvalue`.
     maxvalue: 135.0
     action:
       name: reject
+
+Example for calculating 10m wind speed
+
+.. code-block:: yaml
+
+  obs function:
+    name: ObsFunction/Velocity
+    options:
+      eastward wind variable: windEastwardAt10M
+      northward wind variable: windNorthwardAt10M
