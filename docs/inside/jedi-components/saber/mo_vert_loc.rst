@@ -35,9 +35,9 @@ The percentage of explained variance (in the pressure-weighted space, see next s
 Pressure weights
 ----------------
 Optionally, different weights can be given to different vertical levels in the selection of leading eigenvectors. 
-This will have no effect if the number of vertical modes is set to the number of levels, i.e. if all modes are kept. 
+In this case, a low-rank reconstruction of the vertical localization matrix is more accurate for levels with higher weigths, but less accurate for levels with lower weights.
 
-The weights :math:`\mathbf{w}` are computed as the square root of the air mass associated to each level.
+The weights :math:`\mathbf{w}` are computed as the square root of the air mass associated to each layer.
 This air mass is computed from the :code:`pressure field name in pressure file` variable of the `pressure file name` netcdf file. 
 This variable should have a shape of :math:`n_z+1`, and the air mass for one level is computed from the pressure differences. 
 
