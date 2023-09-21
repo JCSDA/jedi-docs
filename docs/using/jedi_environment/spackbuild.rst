@@ -4,7 +4,7 @@ Building spack-stack modules for JEDI
 =====================================
 
 The instructions in this section are specific to building spack-stack environments to support the JEDI applications
-(SkyLab v5.0 release). For general information on using spack-stack to build and run software, see the
+(SkyLab v5 release). For general information on using spack-stack to build and run software, see the
 `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.4.0>`_. Make sure you have read through
 the documentation before attempting to build your own stack. The commands below only highlight the differences
 to the general documentation, steps in between that are not written down here are identical.
@@ -41,7 +41,7 @@ Go into the ``spack-stack-1.4.0`` directory and source the spack-stack ``setup.s
    cd spack-stack-1.4.0
    source setup.sh
 
-Use the following command to create the spack-stack environment for ``skylab-5.0``:
+Use the following command to create the spack-stack environment for ``skylab-5.0.0``:
 
 .. code-block:: bash
 
