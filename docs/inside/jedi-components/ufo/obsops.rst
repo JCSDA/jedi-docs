@@ -663,9 +663,9 @@ Configuration options (ObsOperator):
 
   * options: :code:`NBAM` or :code:`ECMWF` (default is :code:`NBAM`)
 
-* :code:`sr_steps`: when using the "NBAM" suepr refraction, if apply one or two step QC.
+* :code:`sr_steps`: when using the "NBAM" super refraction, if apply one or two step QC. As to September 2023, the super refraction check is consistent with the operational GSI codes.
 
-  * options: :code:`1` or :code:`2` (default is :code:`2` following NBAM implementation in GSI)
+  * options: :code:`1`, :code:`2`, or :code:`3` (default is :code:`2`. :code:`1` does only the first step super refraction check using the 0.75 critical threshold as GSI; :code:`2` replicates the GSI super refraction QC check including 2 steps; :code:`3` differs from :code:`2` in the second step. The differences are minor. Users are suggested to use :code:`3` for their research unless they want to exactly replicate GSI)
 
 * :code:`use_compress`: compressibility factors in geopotential heights. Only for NBAM.
 
