@@ -35,7 +35,7 @@ The percentage of explained variance (in the pressure-weighted space, see next s
 Pressure weights
 ----------------
 Optionally, different weights can be given to different vertical levels in the selection of leading eigenvectors. 
-In this case, a low-rank reconstruction of the vertical localization matrix is more accurate for levels with higher weigths, but less accurate for levels with lower weights.
+In this case, a low-rank reconstruction of the vertical localization matrix is more accurate for levels with higher weights, but less accurate for levels with lower weights.
 
 The weights :math:`\mathbf{w}` are computed as the square root of the air mass associated to each layer.
 This air mass is computed from the :code:`pressure field name in pressure file` variable of the `pressure file name` netcdf file. 
