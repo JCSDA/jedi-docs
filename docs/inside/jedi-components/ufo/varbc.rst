@@ -469,6 +469,21 @@ Example
   component: cos
   order: 2
 
+`read_bias`
++++++++++++
+
+Read the observation bias from the ObsSpace.
+
+* :code:`group name`: (Optional) Name of the ObsSpace group which has the observation bias to be read. By default, :code:`ObsBias`.
+
+Example
+.......
+
+.. code-block:: yaml
+
+  name: read_bias
+  group name: ObsBiasCreated
+
 `scan_angle`
 ++++++++++++
 
