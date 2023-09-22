@@ -59,27 +59,35 @@ If you are working on a system not specified below please follow the instruction
 `JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/5.0.0/using/jedi_environment/index.html>`_.
 
 Users are responsible for setting up their GitHub and AWS credentials on the platform they are using.
-You will need to create or edit your ``~/.aws/credentials`` and ``~/.aws/config`` to make sure they contain:
+You will need to create or edit your ``~/.aws/config`` and ``~/.aws/credentials`` to make sure they contain:
+
 
       .. code-block:: bash
 
          [default]
-         aws_access_key_id=***
+         region=us-east-1
+
+         [jcsda-noaa-us-east-1]
+         region=us-east-1
+
+         [jcsda-usaf-us-east-2]
+         region=us-east-2
+
+
+      .. code-block:: bash
+
+         [default]
+         aws_access_key_id=***      # NOAA AWS account credentials if default in config is us-east-1
          aws_secret_access_key=***
 
          [jcsda-noaa-us-east-1]
-         aws_access_key_id=***
+         aws_access_key_id=***      # NOAA AWS account credentials
          aws_secret_access_key=***
 
          [jcsda-usaf-us-east-2]
-         aws_access_key_id=***
+         aws_access_key_id=***      # USAF AWS account credentials
          aws_secret_access_key=***
 
-
-      .. code-block:: bash
-
-         [default]
-         region = us-east-1
 
 The commands for loading the modules to compile and run SkyLab are provided in separate sections for :doc:`HPC platforms <../jedi_environment/modules>` and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`. Users need to execute these commands before proceeding with the build of ``jedi-bundle`` below.
 
@@ -178,7 +186,9 @@ ctests. Please refer the `documentation <https://jointcenterforsatellitedataassi
 3- Clone and install solo/r2d2/ewok/simobs, clone skylab only
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 We recommend that you use a python3 virtual environment (venv) for
-building solo/r2d2/ewok/simobs
+building solo/r2d2/ewok/simobs. As indicated above in the note about
+the :code:`$JEDI_SRC` and :code:`$JEDI_BUILD` environment variables, 
+clone these repos *inside* the clone of the jedi-bundle repo.
 
 .. code-block:: bash
 
@@ -218,6 +228,7 @@ We recommend creating this bash script and sourcing it before running the experi
 This bash script sets environment variables such as :code:`JEDI_BUILD`, :code:`JEDI_SRC`,
 :code:`EWOK_WORKDIR` and :code:`EWOK_FLOWDIR` required by ewok. If these variables are not
 defined they will be set from :code:`JEDI_ROOT`.
+
 Users may set :code:`JEDI_SRC`, :code:`JEDI_BUILD`, :code:`EWOK_WORKDIR` and
 :code:`EWOK_FLOWDIR` to point to relevant directories on their systems
 or use the default template in the sample script below. Note that :code:`JEDI_SRC`,
@@ -227,6 +238,10 @@ experiments at the same time, each having their own definition for these variabl
 The user further has to set the environment variable :code:`R2D2_HOST` in the script.
 :code:`R2D2_HOST` is required by r2d2, ewok, and to determine the location :code:`EWOK_STATIC_DATA`
 of the static data used by ewok. This data is staged on the preconfigured platforms.
+
+In the section that exports your :code:`R2D2_HOST`, **Be sure to remove all lines that
+are NOT relevant to your platform.**
+
 On generic platforms, the script sets :code:`EWOK_STATIC_DATA` to :code:`${JEDI_SRC}/static-data/static`.
 
 Please don’t forget to source this script after creating it: :code:`source $JEDI_ROOT/activate.sh`
@@ -320,7 +335,16 @@ Please don’t forget to source this script after creating it: :code:`source $JE
       ;;
   esac
 
-Note: On AWS pcluster users will need to update the python version referenced in the above :code:`source $JEDI_ROOT/activate.sh` script. The following lines under :code:`# ecflow and pyioda Python bindings` should be:
+
+
+If you are running locally you my want to pick a constant value for :code:`ECF_PORT`. As written,
+the code above will generate a new, random value for your :code:`ECF_PORT` everytime this script
+is sourced. Changing your :code:`ECF_PORT` will require you to reconnect the ecflow server after
+everytime this script is sourced, so keeping it constant will keep your ecflow server connected.
+
+Note: On AWS pcluster users will need to update the python version referenced in the above
+:code:`source $JEDI_ROOT/activate.sh` script. The following lines under 
+:code:`# ecflow and pyioda Python bindings` should be:
 
 .. code-block:: bash
 
@@ -328,7 +352,56 @@ Note: On AWS pcluster users will need to update the python version referenced in
     PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:2]; print("{0}.{1}".format(*version))'`
     export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}:/home/ubuntu/jedi/ecflow-5.8.4/lib/python3.8/site-packages:${PYTHONPATH}"
 
-5- Run SkyLab
+
+
+5- Setup R2D2 (for MacOS and AWS Single Nodes)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you are running skylab locally on the MacOS or an AWS single node instance,
+you will also have to setup R2D2. This step should be skipped if you are on any
+other supported platform. As with the previous step, it is recommended to complete
+these steps inside the python virtual environment that was activated above.
+
+Clone the r2d2-data Repo
+""""""""""""""""""""""""
+
+As with the other repositories, clone this inside your :code:`$JEDI_SRC` directory.
+
+.. code-block:: bash
+
+  cd $JEDI_SRC
+  git clone https://github.com/jcsda-internal/r2d2-data
+
+Create a local copy of the R2D2 data store:
+
+.. code-block:: bash
+
+  mkdir $HOME/r2d2-experiments-localhost
+  cp -R $JEDI_SRC/r2d2-data/r2d2-experiments-tutorial/* $HOME/r2d2-experiments-localhost
+
+
+Install, Start, and Configure the MySQL Server
+""""""""""""""""""""""""""""""""""""""""""""""
+
+Execution of R2D2 on MacOS and AWS single nodes requires that MySQL is installed, started,
+and configured properly. For new site configurations see the 
+`spack-stack instructions <https://spack-stack.readthedocs.io/en/latest/NewSiteConfigs.html#newsiteconfigs>`_
+for the needed prerequisites for macOS, Ubuntu, and Red Hat. Note, if you are reading these
+instructions, it is likely you have already setup the spack-stack environment.
+
+You should have installed MySQL when you were setting up the spack-stack environment. To
+check this, enter :code:`brew list` to the terminal and check the output for :code:`mysql`.
+
+Follow the directions for setting up the MySQL server found in the R2D2 tutorial starting
+at the `Prerequisites for MacOS and AWS Single Nodes Only
+<https://github.com/JCSDA-internal/r2d2/blob/develop/TUTORIAL.md#prerequisites-for-hpc-macos-and-aws-single-nodes>`_
+section. (If the link doesn't work, the directions can be found in the :code:`TUTORIAL.md` file in the r2d2 repository).
+
+Note: The command used to setup the the local database should be run from the :code:`$JEDI_SRC/r2d2` directory. And
+the :code:`r2d2-experiments-tutorial.sql` file is in :code:`$JEDI_SRC/r2d2-data`.
+
+
+6- Run SkyLab
 ^^^^^^^^^^^^^
 Now you are ready to start an ecflow server and run an experiment. Make sure you are in your python virtual environment (venv).
 
@@ -372,7 +445,36 @@ To start your ewok experiment:
 
   create_experiment.py $JEDI_SRC/skylab/experiments/your-experiment.yaml
 
-6- Existing SkyLab experiments
+Note for MacOS Users:
+"""""""""""""""""""""
+If attempting to start the ecflow server on the MacOS gives you an error message like this:
+
+.. code-block::
+
+  Failed to connect to <machineName>:<PortNumber>. After 2 attempts. Is the server running ?
+
+  ...
+
+  restart of server failed
+
+You will need to edit your :code:`/etc/hosts` file (which will require sudo access). Add the name of
+your machine on the :code:`localhost` line. So if the name of your local machine is :code:`SATURN`,
+then edit your :code:`/etc/hosts` to:
+
+.. code-block:: bash
+
+  ##
+  # Host Database
+  #
+  # localhost is used to configure the loopback interface
+  # when the system is booting. Do not change this entry.
+  ##
+  127.0.0.1	localhost SATURN
+  255.255.255.255	broadcasthost
+  ::1       localhost
+
+
+7- Existing SkyLab experiments
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 At the moment there are four SkyLab flagship experiments:

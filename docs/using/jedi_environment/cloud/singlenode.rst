@@ -98,7 +98,7 @@ After launching the instance through the AWS console, select the instance and cl
    module load ewok-env/unified-dev
    module load soca-env/unified-dev
 
-Note the skylab-v5 static data is synced to both AWS EC2 AMIs in directory ``~/jedi/static/skylab-5.0.0/``.
+Note the Skylab v5 static data is synced to both AWS EC2 AMIs in directory ``~/jedi/static/skylab-5.0.0/``.
 
 Suspending or terminating your compute node
 -------------------------------------------

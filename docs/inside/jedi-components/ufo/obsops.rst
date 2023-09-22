@@ -217,6 +217,14 @@ Configuration options:
 * :code:`constant vertical coordinate values` [optional]: use the (array) values as vertical coordinate in interpolation. If :code:`interpolation method` is not defined, then nearest-neighbor will be used in interpolation. If this option is chosen, the geovals for vertical coordinate are not requested and vertical coordinate option above shouldn't be used. The primary purpose of this option is to serve the requirement for soil moisture assimilation.
 * :code:`observation vertical coordinate` [optional]: name of the ObsSpace variable (from the :code:`MetaData` group) storing the vertical coordinate of observation locations. If not set, assumed to be the same as :code:`vertical coordinate`.
 * :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator (see the example below). This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
+* :code:`apply near surface wind scaling` [optional]: Optional element that allows the resulting h(x) to be scaled. This is used to scale near surface wind and make use of the near surface log regime to improve on a straightforward interpolation.
+
+Optionally the vertical interpolation can use a 'backup' coordinate for interpolation. For some data types it might be preferable to use a certain coordinate but then fall back on an alternative coordinate when data is missing. This can be acheieved by specifying:
+
+* :code:`vertical coordinate backup` [optional]: the backup vertical coordinate to use in interpolation.
+* :code:`observation vertical coordinate backup` [optional]: name of the ObsSpace variable storing the vertical coordinate of observation locations.
+* :code:`observation vertical coordinate group backup` [optional]: If the observation coordinate is not in the group :code:`MetaData` the parameter can be used to set the group to something else.
+* :code:`interpolation method backup` [optional]: Type of interpolation to do when using the backup coordinate.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -269,6 +277,27 @@ The observation operator in the above example choose array :code:`[0.1, 0.5, 1.0
       - name: stationPressure
 
 In the example above, the `VertInterp` operator is used to simulate only the wind components; the surface pressure is simulated using the `Identity` operator.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Composite
+    components:
+     - name: VertInterp
+       variables: [windEastward, windNorthward]
+       apply near surface wind scaling: true
+
+       # Use height vertical coordinate first
+       vertical coordinate: geometric_height
+       observation vertical coordinate: height
+       interpolation method: linear
+
+       # Use pressure vertical coordinate backup
+       vertical coordinate backup: air_pressure
+       observation vertical coordinate backup: pressure
+       interpolation method backup: log-linear
+
+In the above example wind observations are simulated and scaled near the surface. The preferred coordinate to use for interpolation is height but in the case that height observations are missing the code will fall back on using pressure as the coordinate.
 
 Atmosphere Vertical Layer Interpolation
 ----------------------------------------
@@ -634,9 +663,9 @@ Configuration options (ObsOperator):
 
   * options: :code:`NBAM` or :code:`ECMWF` (default is :code:`NBAM`)
 
-* :code:`sr_steps`: when using the "NBAM" suepr refraction, if apply one or two step QC.
+* :code:`sr_steps`: when using the "NBAM" super refraction, if apply one or two step QC. As to September 2023, the super refraction check is consistent with the operational GSI codes.
 
-  * options: :code:`1` or :code:`2` (default is :code:`2` following NBAM implementation in GSI)
+  * options: :code:`1`, :code:`2`, or :code:`3` (default is :code:`2`. :code:`1` does only the first step super refraction check using the 0.75 critical threshold as GSI; :code:`2` replicates the GSI super refraction QC check including 2 steps; :code:`3` differs from :code:`2` in the second step. The differences are minor. Users are suggested to use :code:`3` for their research unless they want to exactly replicate GSI)
 
 * :code:`use_compress`: compressibility factors in geopotential heights. Only for NBAM.
 
@@ -1230,6 +1259,48 @@ In the example above, the `Identity` operator is used to simulate all ObsSpace v
       - name: stationPressure
 
 In the example above, the `Identity` operator is used to simulate only the surface pressure; the wind components are simulated using the `VertInterp` operator.
+
+Product observation operator
+----------------------------
+
+Description:
+^^^^^^^^^^^^
+
+A simple observation operator based on the identity operator that allows scaling by another GeoVaL. The operator performs :math:`H(x) = x * a` where `x` is a variable at the lowest model level and `a` is some other customizable scaling GeoVaL that is two dimensional. The scaling variable may optionally be raised to a power.
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator. This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
+
+* :code:`geovals to act on` [optional]: name of the variable to apply H(x) to. If not specified, the operator assumes the same variable as the simulated variable. Note, if this is set then currently only one simulated variable may be specified.
+
+* :code:`geovals to scale hofx by`: name of the GeoVaLs to multiply the simulated variable by.
+
+* :code:`geovals exponent` [optional]: option to raise the scaling GeoVaL to a power.
+
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Product
+    geovals to scale hofx by: a
+
+In the example above H(x) will be calculated as :math:`H(x) = x * a` where x is the simulated variable.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Product
+    geovals to act on: x
+    geovals to scale hofx by: a
+    geovals exponent: -0.5
+
+In the example above H(x) would be calculated as :math:`H(x) = \frac{x}{\sqrt{a}}`  Here x need not be the same as the simulated variable.
+
 
 In situ particulate matter (PM) operator
 ----------------------------------------
