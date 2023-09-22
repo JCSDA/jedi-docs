@@ -33,6 +33,7 @@ SABER blocks can encapsulate various components:
    ID: identity operator<ID>
    SPECTRALB: spectral covariance/correlation<SPECTRALB>
    StdDev: standard-deviation application<StdDev>
+   mo_vertical_localization: Vertical localization as implemented in UK Met Office system<mo_vert_loc>
 
 Calibration of SABER error covariance
 -------------------------------------
