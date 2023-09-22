@@ -1260,6 +1260,48 @@ In the example above, the `Identity` operator is used to simulate all ObsSpace v
 
 In the example above, the `Identity` operator is used to simulate only the surface pressure; the wind components are simulated using the `VertInterp` operator.
 
+Product observation operator
+----------------------------
+
+Description:
+^^^^^^^^^^^^
+
+A simple observation operator based on the identity operator that allows scaling by another GeoVaL. The operator performs :math:`H(x) = x * a` where `x` is a variable at the lowest model level and `a` is some other customizable scaling GeoVaL that is two dimensional. The scaling variable may optionally be raised to a power.
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator. This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
+
+* :code:`geovals to act on` [optional]: name of the variable to apply H(x) to. If not specified, the operator assumes the same variable as the simulated variable. Note, if this is set then currently only one simulated variable may be specified.
+
+* :code:`geovals to scale hofx by`: name of the GeoVaLs to multiply the simulated variable by.
+
+* :code:`geovals exponent` [optional]: option to raise the scaling GeoVaL to a power.
+
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Product
+    geovals to scale hofx by: a
+
+In the example above H(x) will be calculated as :math:`H(x) = x * a` where x is the simulated variable.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Product
+    geovals to act on: x
+    geovals to scale hofx by: a
+    geovals exponent: -0.5
+
+In the example above H(x) would be calculated as :math:`H(x) = \frac{x}{\sqrt{a}}`  Here x need not be the same as the simulated variable.
+
+
 In situ particulate matter (PM) operator
 ----------------------------------------
 
