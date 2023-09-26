@@ -151,6 +151,9 @@ filters into separate parts would have an obfuscating effect.
 
 :ref:`SetSurfaceType <SetSurfaceType>`
   Determine and output surface type for use with observation operator
+  
+:ref:`SetSeaIceEmiss <SetSeaIceEmiss>`
+  Calculate MW emissivity for surfaces classified as Ice by AAPP.
 
 :ref:`TropopauseEstimate <TropopauseEstimate>`
   First-guess extimate of tropopause pressure from climatology
@@ -210,5 +213,6 @@ filters into separate parts would have an obfuscating effect.
    SatWindsSPDBCheck
    SCATRetMW
    SetSurfaceType
+   SetSeaIceEmiss
    TropopauseEstimate
    WindDirAngleDiff

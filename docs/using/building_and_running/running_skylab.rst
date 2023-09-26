@@ -59,27 +59,35 @@ If you are working on a system not specified below please follow the instruction
 `JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/5.0.0/using/jedi_environment/index.html>`_.
 
 Users are responsible for setting up their GitHub and AWS credentials on the platform they are using.
-You will need to create or edit your ``~/.aws/credentials`` and ``~/.aws/config`` to make sure they contain:
+You will need to create or edit your ``~/.aws/config`` and ``~/.aws/credentials`` to make sure they contain:
+
 
       .. code-block:: bash
 
          [default]
-         aws_access_key_id=***
+         region=us-east-1
+
+         [jcsda-noaa-us-east-1]
+         region=us-east-1
+
+         [jcsda-usaf-us-east-2]
+         region=us-east-2
+
+
+      .. code-block:: bash
+
+         [default]
+         aws_access_key_id=***      # NOAA AWS account credentials if default in config is us-east-1
          aws_secret_access_key=***
 
          [jcsda-noaa-us-east-1]
-         aws_access_key_id=***
+         aws_access_key_id=***      # NOAA AWS account credentials
          aws_secret_access_key=***
 
          [jcsda-usaf-us-east-2]
-         aws_access_key_id=***
+         aws_access_key_id=***      # USAF AWS account credentials
          aws_secret_access_key=***
 
-
-      .. code-block:: bash
-
-         [default]
-         region = us-east-1
 
 The commands for loading the modules to compile and run SkyLab are provided in separate sections for :doc:`HPC platforms <../jedi_environment/modules>` and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`. Users need to execute these commands before proceeding with the build of ``jedi-bundle`` below.
 
