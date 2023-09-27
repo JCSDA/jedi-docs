@@ -35,6 +35,18 @@ SABER blocks can encapsulate various components:
    StdDev: standard-deviation application<StdDev>
    mo_vertical_localization: Vertical localization as implemented in UK Met Office system<mo_vert_loc>
 
+SABER applications
+------------------
+.. _SABER_applications:
+
+There are currently only two applications.  The main application runs most of the functionality of saber and is called `ErrorCovarianceToolbox`.  In addition we have an application that reads either an ensemble of states or perturbations. It then processes / filters the transformed increments, dumping them to file. More details are in
+
+.. toctree::
+   :maxdepth: 1
+
+   ProcessPerts.rst
+
+
 Calibration of SABER error covariance
 -------------------------------------
 
