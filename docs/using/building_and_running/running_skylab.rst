@@ -8,41 +8,29 @@ List of spack, software, and AMIs
 
 Versions used:
 
-- spack-stack-1.4.0 from May 2023
+- spack-stack-1.5.0 from September 2023
 
-  * https://github.com/JCSDA/spack-stack/tree/1.4.0
+  * https://github.com/JCSDA/spack-stack/tree/1.5.0
 
-  * https://spack-stack.readthedocs.io/en/1.4.0/
+  * https://spack-stack.readthedocs.io/en/1.5.0
 
-- AMIs available in us-east-1 region (N. Virginia)
-
-  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
-
-    AMI Name skylab-5.0.0-redhat8
-
-    AMI ID ami-0e9479372af5b5b8d (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-0e9479372af5b5b8d)
-
-  - Ubuntu 20 with gnu-10.3.0 and openmpi-4.1.5:
-
-    AMI Name skylab-5.0.0-ubuntu20
-
-    AMI ID ami-09743c63b8bf95c2e (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-09743c63b8bf95c2e)
-
-- AMIs available in us-east-2 region (Ohio)
+- AMI available in us-east-1 region (N. Virginia)
 
   - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
 
-    AMI Name skylab-5.0.0-redhat8
+    AMI Name skylab-6.0.0-redhat8
 
-    AMI ID ami-06082db161bf0769d (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-06082db161bf0769d)
+    AMI ID ami-059d445a90ad8b792 (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-059d445a90ad8b792)
 
-  - Ubuntu 20 with gnu-10.3.0 and openmpi-4.1.5:
+- AMI available in us-east-2 region (Ohio)
 
-    AMI Name skylab-5.0.0-ubuntu20
+  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
 
-    AMI ID ami-0e10ae1b5232c08fc (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-0e10ae1b5232c08fc)
+    AMI Name skylab-6.0.0-redhat8
 
-Note. It is necessary to use c6i.2xlarge or larger instances of this family (recommended: c6i.4xlarge).
+    AMI ID ami-01fcf5d75ced5a046 (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-01fcf5d75ced5a046)
+
+Note. It is necessary to use c6i.4xlarge or larger instances of this family (recommended: c6i.8xlarge when running the `skylab-atm-land-small` experiment). 
 
 Developer section
 -----------------
@@ -56,7 +44,7 @@ jedi-bundle, run ctests, install solo/r2d2/ewok/simobs and download skylab.
 
 Please note that currently we only support Orion, Discover, S4, and AWS platforms.
 If you are working on a system not specified below please follow the instructions on
-`JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/5.0.0/using/jedi_environment/index.html>`_.
+`JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/6.0.0/using/jedi_environment/index.html>`_.
 
 Users are responsible for setting up their GitHub and AWS credentials on the platform they are using.
 You will need to create or edit your ``~/.aws/config`` and ``~/.aws/credentials`` to make sure they contain:
@@ -162,7 +150,7 @@ the build was successful by running the tests (still from $JEDI_BUILD):
 
 If you are on an HPC you may need to provide additional flags to the ecbuild
 command, or login to a compute node, or submit a batch script for running the
-ctests. Please refer the `documentation <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/5.0.0/using/jedi_environment/modules.html#general-tips-for-hpc-systems>`_ for more details.
+ctests. Please refer the `documentation <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/6.0.0/using/jedi_environment/modules.html#general-tips-for-hpc-systems>`_ for more details.
 
 (You might have another coffee.) You have successfully built JEDI!
 
