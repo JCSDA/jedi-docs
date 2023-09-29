@@ -20,7 +20,7 @@ Versions used:
 
     AMI Name skylab-6.0.0-redhat8
 
-    AMI ID ami-059d445a90ad8b792 (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-059d445a90ad8b792)
+    AMI ID ami-0f1750cc8882b7d75 (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-0f1750cc8882b7d75)
 
 - AMI available in us-east-2 region (Ohio)
 
@@ -28,7 +28,7 @@ Versions used:
 
     AMI Name skylab-6.0.0-redhat8
 
-    AMI ID ami-01fcf5d75ced5a046 (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-01fcf5d75ced5a046)
+    AMI ID ami-0d671c49d7bf7918c (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-0d671c49d7bf7918c)
 
 Note. It is necessary to use c6i.4xlarge or larger instances of this family (recommended: c6i.8xlarge when running the `skylab-atm-land-small` experiment). 
 
