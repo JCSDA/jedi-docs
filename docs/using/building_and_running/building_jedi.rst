@@ -18,7 +18,9 @@ In terms of the actual commands you would enter, these steps will look something
     cd <src-directory>
     git clone https://github.com/JCSDA/fv3-bundle.git
     cd <build-directory>
-    ecbuild -DPython3_EXECUTABLE=$(which python3) <src-directory>/fv3-bundle
+    # See build step 3 for possible ways of detecting the correct
+    # Python3 interpreter in the ecbuild command
+    ecbuild <src-directory>/fv3-bundle
     make update
     make -j4
     ctest
@@ -145,13 +147,11 @@ Then, from that build directory, run :code:`ecbuild`, specifying the path to the
 .. code-block:: bash
 
     cd ~/jedi/build
-    ecbuild -DPython3_EXECUTABLE=$(which python3) ../src/fv3-bundle
+    ecbuild ../src/fv3-bundle
 
 Here we have used :code:`~/jedi/src` as our source directory and :code:`~jedi/build` as our build directory.  Feel free to change this as you wish, but just **make sure that your source and build directories are different**. This command should work for most bundles, and in particular when working on a preconfigured HPC or AWS instance. The ecbuild command may take several minutes to run.
 
-Note that :code:`-DPython3_EXECUTABLE=$(which python3)` uses a cmake flag to ensure that the :code:`python3` executable is set to the current shell session's Python 3 interpreter. This ensures that build targets are linking with the correct Python library. This flag is especially important in macOS where the system Python 3 and/or the Homebrew-installed Python 3 interpreter may be a newer version than used by spack-stack, or where :code:`cmake` prefers macOS Framework Python installations over Unix-style Python installations; in this case the flag is required to prevent build errors.
-
-This should work for most bundles, and in particular when working on a preconfigured HPC or AWS instance.
+In case :code:`cmake` is picking up the wrong :code:`python3` interpreter, an optional argument to the :code:`ecbuild` command can be used to specify the correct :code:`python3` interpreter during the build process. When using the modules provided by :code:`spack-stack`, the argument :code:`-DPython3_EXECUTABLE=${python_ROOT}/bin/python3` will guarantee that the spack-stack :code:`python3` interpreter is getting used. A similar method can be used to point to another :code:`python3` installation.
 
 .. warning::
 
