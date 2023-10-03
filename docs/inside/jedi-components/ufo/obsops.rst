@@ -217,7 +217,6 @@ Configuration options:
 * :code:`constant vertical coordinate values` [optional]: use the (array) values as vertical coordinate in interpolation. If :code:`interpolation method` is not defined, then nearest-neighbor will be used in interpolation. If this option is chosen, the geovals for vertical coordinate are not requested and vertical coordinate option above shouldn't be used. The primary purpose of this option is to serve the requirement for soil moisture assimilation.
 * :code:`observation vertical coordinate` [optional]: name of the ObsSpace variable (from the :code:`MetaData` group) storing the vertical coordinate of observation locations. If not set, assumed to be the same as :code:`vertical coordinate`.
 * :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator (see the example below). This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
-* :code:`apply near surface wind scaling` [optional]: Optional element that allows the resulting h(x) to be scaled. This is used to scale near surface wind and make use of the near surface log regime to improve on a straightforward interpolation.
 
 Optionally the vertical interpolation can use a 'backup' coordinate for interpolation. For some data types it might be preferable to use a certain coordinate but then fall back on an alternative coordinate when data is missing. This can be acheieved by specifying:
 
@@ -225,6 +224,11 @@ Optionally the vertical interpolation can use a 'backup' coordinate for interpol
 * :code:`observation vertical coordinate backup` [optional]: name of the ObsSpace variable storing the vertical coordinate of observation locations.
 * :code:`observation vertical coordinate group backup` [optional]: If the observation coordinate is not in the group :code:`MetaData` the parameter can be used to set the group to something else.
 * :code:`interpolation method backup` [optional]: Type of interpolation to do when using the backup coordinate.
+
+Optionally the resulting hofx can be scaled by another variable from the GeoVaLs or ObsSpace. This is achieved using two configuraiton keys:
+
+* :code:`hofx scaling field` [optional]: The group providing the scaling field. Can be `GeoVaLs`.
+* :code:`hofx scaling field group` [optional]: The name of the field used for scaling.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -285,7 +289,8 @@ In the example above, the `VertInterp` operator is used to simulate only the win
     components:
      - name: VertInterp
        variables: [windEastward, windNorthward]
-       apply near surface wind scaling: true
+       hofx scaling field: wind_reduction_factor_at_10m
+       hofx scaling field group: GeoVaLs
 
        # Use height vertical coordinate first
        vertical coordinate: geometric_height
@@ -682,13 +687,13 @@ Configuration options (ObsFilters):
 * :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation.Default value is 50 km.
 
 * :code:`ROobserror`: A RO specific filter. use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
- 
+
   * options: :code:`NBAM`, :code:`NRL`, :code:`ECMWF`, and more to come (default is :code:`NBAM`)
 
 * :code:`Background Check`: the background check for RO can use either the generic one (see the filter documents) or the  RO specific one based on the NBAM implementation in GSI.
 
   * options: :code:`Background Check` for the JEDI generic one or :code:`Background Check RONBAM` for NBAM method.
- 
+
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 :code:`ufo/test/testinput/gnssrobndnbam.yaml`
@@ -973,9 +978,9 @@ Description:
 
 A one-dimensional observation operator for calculating the Global
 Navigation Satellite System (GNSS) Radio Occultation (RO)
-refractivity data, based on the refractivity operator in the NCEP 
+refractivity data, based on the refractivity operator in the NCEP
 GSI system. However, this operator is not an operational capability.
-Note it is not updated or validated through extensive tests. Please 
+Note it is not updated or validated through extensive tests. Please
 use this operator with caution.
 
 Configuration options (ObsFilters):
@@ -986,7 +991,7 @@ Configuration options (ObsFilters):
 * :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
 
   * options: Only :code:`NBAM` (default) is implemented now.
- 
+
 * :code:`Background Check`: can only use the generic one (see the filter documents).
 
 Examples of yaml:
@@ -1029,13 +1034,13 @@ Examples of yaml:
 Ground Based GNSS observation operator (Met Office)
 ---------------------------------------------------
 
-The JEDI UFO interface of the Met Office's observation operator for Ground based GNSS Zenith Total Delay (ZTD). 
-ZTD is the equivalent extra path that a radio signal from a Global Navigation Satellite System satellite travels from vertically overhead to a station on the ground due to the presence of the atmosphere compared to that same path through a vacuum. 
+The JEDI UFO interface of the Met Office's observation operator for Ground based GNSS Zenith Total Delay (ZTD).
+ZTD is the equivalent extra path that a radio signal from a Global Navigation Satellite System satellite travels from vertically overhead to a station on the ground due to the presence of the atmosphere compared to that same path through a vacuum.
 The ZTD may be expressed as
 
 .. math::
    ZTD=10^{-6}\int_{z=0}^{z=\infty}{N dz}
- 
+
 Where :math:`z` is the height above the surface and :math:`N` is the refractivity, given by
 
 .. math::
@@ -1043,13 +1048,13 @@ Where :math:`z` is the height above the surface and :math:`N` is the refractivit
 
 Where :math:`P` is pressure, :math:`e` is water vapour pressure, :math:`T` is temperature and :math:`a` and :math:`b` are the dry and wet refractivity constants respectively, given by 0.776 KPa\ :sup:`-1` and 3.73x10\ :sup:`3` K\ :sup:`2` Pa\ :sup:`-1`. ZTD can be considered to be constructed from two delay components; Zenith Wet Delay (ZWD), due to the dipole moment of water and Zenith Hydrostatic Delay (ZHD) due to the dry atmosphere.
 
-The Met Office Ground Based GNSS observation operator makes use of a generic refractivity calculator and for the tangent linear and adjoint it calculates the ZTD gradient with respect to both the pressure and specific humidity. 
+The Met Office Ground Based GNSS observation operator makes use of a generic refractivity calculator and for the tangent linear and adjoint it calculates the ZTD gradient with respect to both the pressure and specific humidity.
 
-Model inputs for the forward operator are specific humidity, pressure, geopotential heights of air_pressure/full levels/theta and geopotential heights of air_pressure_levels/half levels/rho. 
+Model inputs for the forward operator are specific humidity, pressure, geopotential heights of air_pressure/full levels/theta and geopotential heights of air_pressure_levels/half levels/rho.
 
 Configuration options (ObsFilters):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-These configurations are generic to using the refractivity calculator, which the Ground Based GNSS operator utilises.  
+These configurations are generic to using the refractivity calculator, which the Ground Based GNSS operator utilises.
 The operator requires these values to be set to the default values to work correctly, therefore, these configuration options do not need to be written out in the YAML when calling this operator.
 
 :code:`vert_interp_ops`:
@@ -1061,34 +1066,34 @@ The operator requires these values to be set to the default values to work corre
 :code:`min_temp_grad`:
   Minimum value of the vertical temperature gradient when checking for isothermal
   levels in the pseudo-level calculation (default: 1e-6).
-  
+
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
 :code:`ufo/test/testinput/groundgnssmetoffice.yaml`
 
 .. code-block:: yaml
 
-  - obs operator: 
+  - obs operator:
       name: GroundgnssMetOffice
       min_temp_grad: 1.0e-6
-    obs space: 
+    obs space:
       name: Groundgnss
-      obsdatain: 
+      obsdatain:
         engine:
           type: H5File
           obsfile: Data/ufo/testinput_tier_1/groundgnss_obs_2019123006_obs.nc
       simulated variables: [zenithTotalDelay]
-    geovals: 
+    geovals:
       filename: Data/ufo/testinput_tier_1/groundgnss_geovals_20191230T0600Z.nc4
 
 Details of how the operator works
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 
+
 
 Below, the method for calculating ZTD using the refractivity calculator, the partial derivatives at each calculation, and the ZTD gradient with respect to pressure and humidity is described.
-Both pressure and humidity signals can be identified in the ZTD and so the gradient for the tangent linear and adjoint (TL/AD) are calculated with respect to both pressure and specific humidity. 
+Both pressure and humidity signals can be identified in the ZTD and so the gradient for the tangent linear and adjoint (TL/AD) are calculated with respect to both pressure and specific humidity.
 
-The operator works in the direction of surface to the model top.  
+The operator works in the direction of surface to the model top.
 
 In this operator, we assume ln(pressure) is linear with height and therefore :code:`vert_interp_ops` needs to be true (default), and use this assumption to interpolate pressure on rho levels :math:`P_{\rho}` (air_pressure_levels/half levels) to pressure on theta levels :math:`P_{\theta}` (air_pressure/full levels), such that:
 
@@ -1100,16 +1105,16 @@ Where
 .. math::
   z_{weight} =\frac{z_{\rho_{i+1}}-z_{\theta_{i}}}{z_{\rho_{i+1}}-z_{\rho_{i}}},
 
-with :math:`z_{\rho}` being the geopotential height of the rho levels and :math:`z_{\theta}` being the geopotential height of the theta levels. 
+with :math:`z_{\rho}` being the geopotential height of the rho levels and :math:`z_{\theta}` being the geopotential height of the theta levels.
 Pressure on theta and rho levels, together with specific humidity on theta levels is then passed to the generic refractivity calculator, which calculates refractivity on theta levels. The partial derivative of the pressure on theta with regards to pressure on rho levels is required for the refractivity derivatives used in the ZTD TL/AD, and is
 
 .. math::
-  \frac{\partial P_{\theta_{i}}}{\partial P_{\rho_{i}}}=\frac{P_{\theta_{i}} z_{weight}}{P_{\rho_{i}}} 
+  \frac{\partial P_{\theta_{i}}}{\partial P_{\rho_{i}}}=\frac{P_{\theta_{i}} z_{weight}}{P_{\rho_{i}}}
 
 And for the ZTD above the model top we require
 
 .. math::
-  \frac{\partial P_{\theta_{i}}}{\partial P_{\rho_{i+1}}}=\frac{P_{\theta_{i}} (1-z_{weight})}{P_{\rho_{i+1}}} 
+  \frac{\partial P_{\theta_{i}}}{\partial P_{\rho_{i+1}}}=\frac{P_{\theta_{i}} (1-z_{weight})}{P_{\rho_{i+1}}}
 
 The operator then loops through the theta levels, starting with the theta level directly above the station height, calculating the delay contribution for each layer bounded by the theta levels, assuming the refractivity decays exponentially between the model levels.
 
@@ -1119,12 +1124,12 @@ The operator then loops through the theta levels, starting with the theta level 
 Where :math:`c` is the scale height such that
 
 .. math::
-  c_{i}=\frac{lnN_{i+1}-lnN_{i}}{z_{i}-z_{i+1}} 
+  c_{i}=\frac{lnN_{i+1}-lnN_{i}}{z_{i}-z_{i+1}}
 
 .. math::
   \frac{\partial c_{i}}{\partial N_{i} }=\frac{-1}{N_{i} (z_{i}-z_{i+1})}
-  
-.. math::  
+
+.. math::
   \frac{\partial c_{i}}{\partial N_{i+1}}=\frac{1}{N_{i+1}(z_{i}-z_{i+1})}
 
 
@@ -1138,10 +1143,10 @@ Delay for layer :math:`i` is then
 
 .. math::
   \frac{\partial ZTD_{i}}{\partial N_{i}}=\frac{-10^{-6}}{c_{i}}  e^{c_{i} z_{i} } (e^{-c_{i} z_{i+1} }-e^{-c_{i} z_{i} })
-  
+
 The delay for each layer is added to the running total delay.
-The operator iterates up to the highest theta level, calculating the delay up to that point. 
-A further small correction must be made for the signal above the model top. An assumption of hydrostatic equilibrium is used to calculate the integral 
+The operator iterates up to the highest theta level, calculating the delay up to that point.
+A further small correction must be made for the signal above the model top. An assumption of hydrostatic equilibrium is used to calculate the integral
 
 .. math::
    ZTD_{top}=10^{-6}\int_{z=z_{modeltop}}^{z=\infty}{\frac{aP}{T}}dz
@@ -1150,9 +1155,9 @@ which then gives the delay above the model top as
 
 .. math::
   ZTD_{top}=\frac{10^{-6} aR}{g} P_{\theta_{top}}
-  
+
 where :math:`R` is the gas constant and :math:`g` is the gravitational acceleration.
-  
+
 :math:`ZTD_{top}` is then added to the accumulated ZTD. Therefore the partial differentials with respect to specific humidity :math:`q` and pressure at the top of the model levels (note for rho levels, :math:`\rho_{top}` is one level above :math:`\theta_{top}`) are
 
 .. math::
@@ -1174,12 +1179,12 @@ and
 
 .. math::
   \frac{dZTD_{1}}{dN_{1}}=\frac{\partial ZTD_{1}}{\partial N_{1}}+\frac{\partial ZTD_{1}}{\partial c_{1}}  \frac{\partial c_{1}}{\partial N_{1}}
-  
+
 If the station lies above the lowest model level, the refractivity is interpolated exponentially to the station height (see GBGNSS figure 2) from level :math:`i`, the scale height is that for the whole model layer i.e. :math:`z_{i}` to :math:`z_{i+1}`, and Zenith delay is calculated from the station height such that
 
 .. math::
   ZTD_{station}=-10^{-6} \frac{N_{station}}{c_{i}} e^{c_{i} z_{station}} (e^{-c_{i} z_{i+1} }-e^{-c_{i} z_{station}})
-  
+
 and
 
 .. math::
@@ -1187,7 +1192,7 @@ and
 
 Where
 
-.. math:: 
+.. math::
   \frac{\partial ZTD_{station}}{\partial c_{i}}=\frac{\partial ZTD_{station}}{\partial c_{i}}+\frac{\partial ZTD_{station}}{\partial N_{station}}  \frac{\partial N_{station}}{\partial c_{i}}
 
 And
@@ -1195,7 +1200,7 @@ And
 .. math::
   \frac{\partial N_{station}}{\partial c_{i}}=-N_{station} (z_{station}-z_{i+1})
 
-Using the above partial differentials, and using the partial differential of refractivity with respect to pressure and specific humidity, the differential of ZTD with respect to input pressure and humidity on the rest of the levels can be found through: 
+Using the above partial differentials, and using the partial differential of refractivity with respect to pressure and specific humidity, the differential of ZTD with respect to input pressure and humidity on the rest of the levels can be found through:
 
 .. math::
   \frac{dZTD_{i}}{dN_{i}}=\frac{\partial ZTD_{i}}{\partial N_{i}}+\frac{\partial ZTD_{i}}{\partial c_{i}}  \frac{\partial c_{i}}{\partial N_{i}} +\frac{\partial ZTD_{i}}{\partial c_{i-1}}  \frac{\partial c_{i-1}}{\partial N_{i}}
@@ -1209,12 +1214,12 @@ Using the above partial differentials, and using the partial differential of ref
 .. image:: images/GNSS_Station_height_below_model_surface.png
            :alt: A diagram for stations below model levels
 
-GBGNSS Figure 1: Diagram of the model levels with the station height lying below the lowest model level. 
+GBGNSS Figure 1: Diagram of the model levels with the station height lying below the lowest model level.
 
 .. image:: images/GNSS_Station_height_between_levels.png
            :alt: A diagram for stations between levels
-	   
-GBGNSS Figure 2: Diagram of the model levels with the station height lying between two model levels. 
+
+GBGNSS Figure 2: Diagram of the model levels with the station height lying between two model levels.
 
 .. _obsops_identity:
 
@@ -1266,7 +1271,7 @@ Product observation operator
 Description:
 ^^^^^^^^^^^^
 
-A simple observation operator based on the identity operator that allows scaling by another GeoVaL. The operator performs :math:`H(x) = x * a` where `x` is a variable at the lowest model level and `a` is some other customizable scaling GeoVaL that is two dimensional. The scaling variable may optionally be raised to a power.
+A simple observation operator based on the identity operator that allows scaling by another variable. The operator performs :math:`H(x) = x * a` where `x` is a variable at the lowest model level and `a` is some other customizable scaling variable that is two dimensional. The scaling variable may optionally be raised to a power.
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -1275,7 +1280,9 @@ Configuration options:
 
 * :code:`geovals to act on` [optional]: name of the variable to apply H(x) to. If not specified, the operator assumes the same variable as the simulated variable. Note, if this is set then currently only one simulated variable may be specified.
 
-* :code:`geovals to scale hofx by`: name of the GeoVaLs to multiply the simulated variable by.
+* :code:`geovals to scale hofx by`: name of the variable (usually GeoVaLs) to multiply the simulated variable by.
+
+* :code:`group of geovals to scale hofx by`: name of the group that the variable to multiply the simulated variable by belongs to.
 
 * :code:`geovals exponent` [optional]: option to raise the scaling GeoVaL to a power.
 
@@ -1290,6 +1297,15 @@ Examples of yaml:
     geovals to scale hofx by: a
 
 In the example above H(x) will be calculated as :math:`H(x) = x * a` where x is the simulated variable.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Product
+    geovals to scale hofx by: SurfaceWindScalingCombined
+    group of geovals to scale hofx by: DerivedVariables
+
+In the example above H(x) is scaled by a custom varable belonging to a group other than the GeoVaLs.
 
 .. code-block:: yaml
 
@@ -1431,14 +1447,14 @@ This forward operator contains several schemes to correct the computation of sur
 
 Schemes:
 
-:code:`GSI`: If there is observed temperature along with pressure, take the average of the model simulated and observed near surface temperature, otherwise use just the model simulated temperature (and extrapolate to the surface using 6.5K/km 
-lapse rate if the ob height is below the model lowest layer).  Then the pressure output from this option is the model (background) surface pressure corrected from model surface to observation height as such: 
+:code:`GSI`: If there is observed temperature along with pressure, take the average of the model simulated and observed near surface temperature, otherwise use just the model simulated temperature (and extrapolate to the surface using 6.5K/km
+lapse rate if the ob height is below the model lowest layer).  Then the pressure output from this option is the model (background) surface pressure corrected from model surface to observation height as such:
 
 .. math::
-  H(x) = exp(log(Ps_{model}) - ((Zs_{ob} - Zs_{model}) * (gravity * Rd) / Tv_{avg})) 
+  H(x) = exp(log(Ps_{model}) - ((Zs_{ob} - Zs_{model}) * (gravity * Rd) / Tv_{avg}))
 
-where `Rd` is 287.05 J/kg/K, `Ps` and `Zs` are the surface pressure and height, and 
-`Tv_avg` is the averged virtual temperature of the model surface virtual temperature (`Tv_model`) and observed (virtual) temperature as such: 
+where `Rd` is 287.05 J/kg/K, `Ps` and `Zs` are the surface pressure and height, and
+`Tv_avg` is the averged virtual temperature of the model surface virtual temperature (`Tv_model`) and observed (virtual) temperature as such:
 
 .. math::
   Tv_{avg} = (Tv_{model} + Tv_{ob})/2.0
@@ -1446,16 +1462,16 @@ where `Rd` is 287.05 J/kg/K, `Ps` and `Zs` are the surface pressure and height, 
 if the surface obervation has virtual temperature value (`Tv_ob`). Otherwise
 
 .. math::
-  Tv_{avg} = (Tv_{model} + T_{ob})/2.0 
+  Tv_{avg} = (Tv_{model} + T_{ob})/2.0
 
 :code:`UKMO`: If the observed surface height and pressure are not missing, the pressure output from this option is the corrected
-model pressure as such: 
+model pressure as such:
 
 .. math::
-  H(x) = Ps_{model}+(Ps_{ob}-Ps_{o2m}) 
+  H(x) = Ps_{model}+(Ps_{ob}-Ps_{o2m})
 
 where `Ps_model` and `Ps_ob` are the model and observed surface
-pressure, and `Ps_o2m` is the observed pressure adjusted to the model surface height. 
+pressure, and `Ps_o2m` is the observed pressure adjusted to the model surface height.
 `Ps_o2m` is computed based on the method descried in UKMO Technical Report No.582, Appendix 1, by B. Ingleby (2013) as such:
 
 .. math::
@@ -1464,9 +1480,9 @@ pressure, and `Ps_o2m` is the observed pressure adjusted to the model surface he
 `Ps_m2o` is the model(background) surface pressure adjusted to observed station height as such:
 
 .. math::
-  Ps_{m2o} = Ps_{model} * (T_{m2o}/T_{model})** (gravity / Rd * L) 
+  Ps_{m2o} = Ps_{model} * (T_{m2o}/T_{model})** (gravity / Rd * L)
 
-where `L` is the constant lapse rate (0.0065 K/m), 
+where `L` is the constant lapse rate (0.0065 K/m),
 `T_model` is the temperature at model surface height (`H_model`), derived from the virtual temperature at 2000m above the model surface height (Tv_2000) to avoid diurnal/local variations, and `T_m2o` is the model temperature at observed station height (`H_ob`) as such:
 
 .. math::
@@ -1479,10 +1495,10 @@ where `L` is the constant lapse rate (0.0065 K/m),
 :code:`WRFDA`: This option is based on a subroutine from WRFDA da_intpsfc_prs.inc file
 corresponding to `sfc_assi_options = 1` in WRFDA's namelist.
 If the observed surface height and pressure are not missing, the pressure output from this option is the corrected
-model pressure as such: 
+model pressure as such:
 
 .. math::
-  H(x) = Ps_{model}+(Ps_{obs}-Ps_{o2m}) 
+  H(x) = Ps_{model}+(Ps_{obs}-Ps_{o2m})
 
 where `Ps_o2m` is the observed pressure adjusted from station hight to model surface height as such
 
@@ -1619,11 +1635,11 @@ Total column water vapour
 Description:
 ^^^^^^^^^^^^
 
-The operator (SatTCWV) to calculate total column water vapour (TCWV) or precipitable water from the 
-model specific humidity profiles. Clear air is assumed. On input, the operator requires surface 
-pressure (Pa), and pressure (Pa) and specific humidity (kg/sq.m) for each model layer. The model 
-levels input should be from the top of the atmosphere going down. Furthermore it is expected that 
-the model layer pressures and humidities are on staggered levels with respect to each other, i.e. 
+The operator (SatTCWV) to calculate total column water vapour (TCWV) or precipitable water from the
+model specific humidity profiles. Clear air is assumed. On input, the operator requires surface
+pressure (Pa), and pressure (Pa) and specific humidity (kg/sq.m) for each model layer. The model
+levels input should be from the top of the atmosphere going down. Furthermore it is expected that
+the model layer pressures and humidities are on staggered levels with respect to each other, i.e.
 the humidity values are valid for heights between the pressure levels. This was written for use with
 the OLCI total column water vapour product but other possibilities are MODIS, ABI, FCI.
 
@@ -1633,7 +1649,7 @@ Example of a yaml
 
 .. code-block:: yaml
 
-  - obs operator: 
+  - obs operator:
       name: SatTCWV
 
 ..
