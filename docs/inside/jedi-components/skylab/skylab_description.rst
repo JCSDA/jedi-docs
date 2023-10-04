@@ -34,7 +34,6 @@ The experiment yaml has to contain the following information:
     cost_function: # Cost function, choice between `3D-Var`, `4D-Var`, `3D-FGAT`,
     window_length: # Window length
     window_offset: # Offset between analysis and window start time
-    window_mode: # `3d` or `4d` depending on the cost function
     cycling mode: # Optional: `non cycling, (will read backgrounds from provider instead of cycling)
 
     forecast_length: # Forecast length after the variational task
@@ -134,6 +133,8 @@ The observations currently assimilated are:
 
 * scatwind
 
+* snowdepth_ghcn
+
 * gnssro_planetiq
 
 * gnssro_noaa_comm
@@ -170,11 +171,23 @@ The observations currently assimilated are:
 
 * mhs_metop-b
 
+* amsr2_gcom-w1
+
+* gmi_gpm
+
+* ssmis_f17
+
+* ssmis_f18
+
 * tms_tropics-01 (currently monitored only)
 
 * abi_g16_bt_64km
 
 * abi_g17_bt_64km
+
+* cowvr_iss
+
+* tempest_iss
 
 
 3. skylab-marine.yaml
@@ -212,9 +225,9 @@ The observations currently assimilated are:
 
 The :code:`skylab-trace-gas` experiment runs a single DA system at c90 resolution for
 outer loops and inner loops, for 10 days in August 2021.
-It is non cycling and running the ID model (as a placeholder for the geos-cf model integration).
+It is non cycling and running the Pseudo model (as a placeholder for the geos-cf model integration).
 
-It is using a static B matrix and 3D-Var cost function.
+It is using a static B matrix and 3D-FGAT cost function.
 The observations currently assimilated are:
 
 * tropomi_s5p_no2_tropo or tropomi_s5p_no2_total
@@ -222,3 +235,5 @@ The observations currently assimilated are:
 * mopitt_terra_co_total
 
 * tropomi_s5p_co_total
+
+* tempo_no2_tropo
