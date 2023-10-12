@@ -1,16 +1,16 @@
 .. _adjustedheight:
 
-=======================
+
 Compute adjusted height
 =======================
 
 This variable transform takes the height from observation space and adjusts it based on the station elevation. The transform is activated in the YAML with the following:
 
-``` yaml
-obs filters:
-- filter: Variable Transforms
-  Transform: AdjustedHeight
-```
+.. code:: yaml
+
+  obs filters:
+  - filter: Variable Transforms
+    Transform: AdjustedHeight
 
 **Inputs**
 
