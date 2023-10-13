@@ -19,14 +19,16 @@ Example yaml
       localization data:
         localization matrix file name: testdata/Lv.nc
         localization field name in file: Lv
-        pressure file name: testdata/ptheta_bar_mean.nc  # Optional
+        pressure file name: testdata/ptheta_bar_mean.nc        # Optional
         pressure field name in pressure file: Ptheta_bar_Mean  # Optional
       number of vertical modes: 7
-      output file name: testdata/vertical_localization.nc  # Optional
+      allow non-unit diagonal: true                            # Optional, default false
+      output file name: testdata/vertical_localization.nc      # Optional
 
 The :code:`localization data` section gives the input information on the vertical localization :math:`\mathbf{L}` to apply.
 The netcdf file provided to :code:`localization matrix file name` should have :math:`\mathbf{L}` as a 2D variable (:code:`localization field name in file`) of shape :math:`n_z\times n_z` where :math:`n_z` is the number of vertical levels. 
-No check is done to check that the provided localization is symmetric, or that it has a unit diagonal. 
+No check is done to check that the provided localization is symmetric. 
+An exception is thrown if it has a non-unit diagonal, except if a user override :code:`allow non-unit diagonal: true` is specified, or if we ask for renormalization to unit diagonal (:code:`renormalize to unit diagonal: true`) 
 
 The localization matrix provided is then decomposed as :math:`\mathbf{L}=\mathbf{UU}^T`.
 Only the :math:`m` leading eigenvectors in :math:`\mathbf{U}` are kept, where :math:`m` is specified from yaml by :code:`number of vertical modes`, :math:`1\leq  m\leq n_z`.
@@ -68,8 +70,6 @@ Possible solutions for this include:
 **Multivariate localization:**  this block only performs univariate localization, i.e. removes all cross-variable signal. 
 Multivariate localization is still possible by summing or duplicating variables before or after this block.
 
-**Amplitude at zero separation:** no check is currently done to ensure the provided localization matrix has unit amplitude on the diagonal. 
-
 
 Possible further improvements
 -----------------------------
@@ -77,4 +77,3 @@ Possible further improvements
 1. This SABER block could be improved by allowing the vertical localization to be analytically defined from a list of vertical localization lengths. 
 2. For efficiency, we could have a (very) slight gain at construction time by directly reading the square root of the localization matrix instead of computing it from the full localization. 
 3. Applying different localization matrices to different variables can only be done by applying the block multiple times, sequentially, to each group of variables. A parallel implementation could be envisioned. 
-4. Throw an exception if the target localization is not 1 on the diagonal, except if a key :code:`allow non normalized localization` is set to true.
