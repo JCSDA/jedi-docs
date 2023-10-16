@@ -171,6 +171,18 @@ ctests. Please refer the `documentation <https://jointcenterforsatellitedataassi
     cd $JEDI_SRC
     git clone https://github.com/jcsda-internal/static-data
 
+.. note::
+
+  Run :code:`ctest --help` for more information on the test options. Also, you may find yourself in a situation in which
+  you only want to run a single test such as :code:`test_soca_lefkf` and see its verbose output, but excecuting
+  :code:`ctest -VV -R test_soca_lefkf` will also run and write the output for the :code:`test_soca_letkf_split_observer`
+  and :code:`test_soca_letkf_split_solver` tests. To run only the first test enter a :code:`$`
+  at the end of the test name like this:
+
+  .. code-block:: bash
+
+    ctest -VV -R test_soca_lefkf$
+
 3- Clone and install solo/r2d2/ewok/simobs, clone skylab only
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 We recommend that you use a python3 virtual environment (venv) for
