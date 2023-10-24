@@ -6,27 +6,32 @@ SABER is the **System Agnostic Background Error Representation**.
 
 It provides generic software utilities for computing and working with the background error covariance matrix, often referred to as the **B** matrix.
 
-SABER blocks
-------------
-The **B** matrix is generally modeled as a series of linear operators, represented in SABER by "SABER blocks". Such blocks, even if they come from different SABER components of SABER, are interoperable.
+SABER Error Covariance Model
+----------------------------
 
+The **B** matrix is generally modeled as a series of linear operators, represented in SABER by "SABER blocks". Such blocks, even if they come from different
+components of SABER, are often interoperable. The full series of blocks (linear operators) used in a model for **B** is referred to as a "block-chain".
+
+The **B** matrix can be modeled in one of several ways, depending on the needs of the user. SABER has options for setting up parametric, esemble, or hybrid background error covariances. A parametric **B**, sometimes called a "static" **B** in the literature, could be a model which does not evolve with time or a model that introduces some flow-dependence through dependence on the background state. An ensemble **B** uses an ensemble of forecasts to update/evolve the background error in time. A hybrid **B** combines set of parametric and ensemble models using a weighted sum.
+ 
 More details here: 
 
 .. toctree::
    :maxdepth: 1
 
-   SABER_blocks.rst
+   SABER_intro.rst
 ..  Interface_with_VADER.rst
 
 
-SABER components
-----------------
-.. _SABER_components:
+SABER blocks
+------------
+.. _SABER_blocks:
 
 SABER blocks can encapsulate various components:
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
+   :titlesonly:
 
    BUMP: Background error on an Unstructured Mesh Package<BUMP>
    GSI: interface to the GSI covariance<GSI>
