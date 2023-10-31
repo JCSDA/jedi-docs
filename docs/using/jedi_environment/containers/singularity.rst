@@ -160,7 +160,7 @@ Before starting the build of JEDI in the container you need to load the Spack mo
 .. code-block:: bash
    
    export jedi_cmake_ROOT=/opt/view
-   source /etc/profile.d/z10_spack_environment.sh
+   source /opt/spack-environment/activate.sh
 
 .. _working-with-singularity:
 
