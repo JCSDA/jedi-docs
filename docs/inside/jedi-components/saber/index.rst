@@ -38,8 +38,9 @@ SABER blocks can encapsulate various components:
    ID: identity operator<ID>
    SPECTRALB: spectral covariance/correlation<SPECTRALB>
    StdDev: standard-deviation application<StdDev>
-   mo_vertical_localization: Vertical localization as implemented in UK Met Office system<mo_vert_loc>
-
+   DuplicateVariables: outer block to duplicate one variable into others<DuplicateVariables>
+   UKMO-specfic saber blocks<UKMO>
+ 
 SABER applications
 ------------------
 .. _SABER_applications:

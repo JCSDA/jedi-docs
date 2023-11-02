@@ -1,7 +1,7 @@
-.. _mo_vert_loc:
+.. _ukmo_vertical_localization:
 
-mo_vertical_localization
-========================
+UKMO_vertical_localization
+==========================
 
 The **mo_vertical_localization** SABER outer block is multiplying each model column by the *square root* of a vertical localization matrix.
 For efficiency, not all modes of the vertical localization matrix have to be kept. 
