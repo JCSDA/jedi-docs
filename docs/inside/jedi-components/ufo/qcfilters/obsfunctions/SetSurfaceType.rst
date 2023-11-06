@@ -10,8 +10,8 @@ Required input variables:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 GeoVaLs
-  :code:`GeoVaLs/surface_altitude`
-  :code:`GeoVaLs/ice_area_fraction`
+ |  :code:`GeoVaLs/surface_altitude`
+ |  :code:`GeoVaLs/ice_area_fraction`
 
 ObsSpace
   :code:`MetaData/latitude`
@@ -19,8 +19,11 @@ ObsSpace
 Optional input variables:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+GeoVaLs
+  :code:`GeoVaLs/land_area_fraction` (required if UseModelLandFraction_ is true)
+
 ObsSpace
- |  :code:`MetaData/landOrSeaQualifier` (required if UseReportSurface_ is true)
+ |  :code:`MetaData/landOrSeaQualifier` (required if UseReportSurface_ is true, variable name can be modified by SurfaceMetaDataName_)
  |  :code:`MetaData/heightOfSurface` (required if UseReportElevation_ is true)
  |  :code:`MetaData/surfaceClassAAPP` (required if UseAAPPSurfaceClass_ is true)
  |  :code:`MetaData/waterAreaFraction` (required if UseSurfaceWaterFraction_ is true)
@@ -51,6 +54,22 @@ UseAAPPSurfaceClass_
 UseSurfaceWaterFraction_
   | Use reported Surface Water Fraction.
   | (default false)
+
+.. _UseModelLandFraction:
+
+UseModelLandFraction_
+  | Use model land fraction in setting of the land-sea mask. If false, the Met Office OPS method using the model surface height is used instead.
+  | (default false)
+
+.. _SurfaceMetaDataName:
+
+SurfaceMetaDataName_
+  | Name of the variable storing the reported surface type
+  | (default MetaData/landOrSeaQualifier)
+
+MinLandFrac
+  | Minimum land fraction for assignment of land surface type. Only used if UseModelLandFraction is set to true.
+  | (default 0.5)
 
 MinIceFrac
   | Minimum ice fraction required for assignment of sea-ice surface type.
@@ -83,6 +102,10 @@ SurfaceTypeSea
 SurfaceTypeSeaIce
   | Observation operator sea-ice surface type value to map to. 
   | (default 2, RTTOV sea-ice surface value)
+
+HeightTolerance
+  | Tolerance on the test for model surface altitude being equal to zero for determining the land-sea mask (Met Office OPS method only).
+  | (default 0 [metres])
 
 Notes
 ~~~~~~~~~~~~~~~~~~~~~~~~~
