@@ -2232,7 +2232,10 @@ In the event of a tie in values of priority, the observation with the lower valu
 For a given latitude band the algorithm searches in that band and the adjacent one in order to avoid discontinuities at band edges.
 This filter is designed to reproduce the Met Office OPS code so the sorting by longitude is performed using the Met Office sorting algorithm.
 
-All of the parameters listed above are mandatory and none of them have default values.
+In addition to the above mandatory parameters there are two overridable parameters.
+:code:`pre-sort by record ID` will trigger an additional sort of the data in ascending identifier order before running the filter (all observations are guaranteed to have a record ID). This ensures that the results from a run using more than one MPI processor will match the results on a single processor. The default for this option is :code:`false`.
+:code:`vertical coordinate variable` allows the specification of the variable to use for the vertical coordinate information. By default this is :code:`MetaData/pressure`.
+
 An example configuration of this filter is as follows:
 
 .. code:: yaml
@@ -2244,6 +2247,8 @@ An example configuration of this filter is as follows:
     longitude bin half-width: 1.0
     time bin half-width: 30.0
     pressure bin half-width: 250.0
+    pre-sort by record ID: true
+    vertical coordinate variable: ObsValue/waterPressure
 
 In this example the globe is divided into bands of width 1.5 degrees. The search volume spans 2 degrees in latitude, 2 degrees in longitude, 500 Pa in pressure and 60 seconds in time.
 The priority variable name is :code:`MetaData/thinningPriority`; observations with higher values of this variable are retained in preference to those with lower values.
