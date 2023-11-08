@@ -73,6 +73,7 @@ Another way to get more information is to set one or more of these environment v
    export OOPS_TRACE=1
 
 The first two enable debug messages within the JEDI code that would not otherwise be written.  The second produces messages that follow the progress of the code as it executes.  These tools are provided by :doc:`eckit <../developer_tools/cmake>`.   Though higher values of these variables could in principle be set, few JEDI routines exploit this functionality.  So, setting these variables to values greater than 1 will make little difference.  Both can be disabled by setting them to zero.
+More information about the use of these variables is available here: :doc:`OOPS environment variables </inside/developer_tools/oops-env-variables>`
 
 You can also display the output messages only for the failed tests by using :code:`--output-on-failure`
 
