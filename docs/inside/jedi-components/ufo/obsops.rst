@@ -589,30 +589,35 @@ Examples of yaml:
       Instrument_Name: &inst_name ATMS
       CoefficientPath: &coef_path /Data
 
-Aerosol Optical Depth (AOD)
+Aerosol Optical Depth (AODCRTM)
 ----------------------------
 
 Description:
 ^^^^^^^^^^^^
 
-The operator to calculate Aerosol Optical Depth for GOCART aerosol parameterization. It relies on the implementation of GOCART in the CRTM. This implementation includes hydorphillic and hydrophobic black and organic carbonaceous species, sulphate, five dust bins (radii: 0.1-1, 1.4-1.8, 1.8-3.0, 3.0-6.0, 6.0-10. um), and four sea-salt bins (dry aerosol radii: 0.1-0.5, 0.5-1.5, 1.5-5.0, 5.0-10.0 um). AOD is calculated using CRTM's tables of optical properties for these aerosols. Some modules are shared with CRTM radiance UFO.
+The operator to calculate Aerosol Optical Depth for GOCART aerosol parameterization. It relies on the implementation of GOCART (3 different options see below for details) in the CRTM. AOD is calculated using CRTM's tables of optical properties for these aerosols. Some modules are shared with CRTM radiance UFO.
 On input, the operator requires aerosol mixing ratios, interface and mid-layer pressure, air temperature and specific / relative humidity for each model layer.
 
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
 
-:code:`Absorbers`: (Both are required; No clouds since AOD retrievals are not obtained in cloudy regions):
+:code:`name`: AodCRTM
+:code:`Absorbers`: (Both are required; No clouds since AOD retrievals are not obtained in cloudy regions).
 * H2O to determine radii of hygrophillic aerosols particles
 * O3 not strictly affecting aerosol radiative properties but required to be entered by the CRTM (here mixing ratio assigned a default value)
 
-:code:`obs options`:
-* :code:`Sensor_ID`: v.viirs-m_npp
-* Other possibilities: v.modis_aqua, v.modis_terra
-:code:`AerosolOption`: aerosols_gocart_default (Currently, that's the only one that works)
+:code:`obs options` configures the tabulated coefficient files that are used by CRTM.
+  * :code:`Sensor_ID`: v.viirs-m_npp, v.viirs-m_n20, v.modis_aqua, v.modis_terra
+  * :code:`EndianType` : Endianness of the coefficient files. Either little_endian or big_endian.
+  * :code:`CoefficientPath` : location of all coefficient files
+  * :code:`AerosolOption`: aerosols_gocart_default, aerosols_gocart_1, aerosols_gocart_2. Define the different gocart variables, see https://github.com/JCSDA-internal/ufo/blob/develop/src/ufo/ufo_variables_mod.F90 for details.
+  * :code:`model units coeff`: (optional) scaling factor for different background units, e.g. GFS is ug/kg and GEOS is kg/kg. Default value is 1.0 and operator would then expect ug/kg.
+
 
 Example of a yaml:
 ^^^^^^^^^^^^^^^^^^
+
 .. code-block:: yaml
 
    obs operator:
@@ -623,6 +628,7 @@ Example of a yaml:
        EndianType: little_endian
        CoefficientPath: Data/
        AerosolOption: aerosols_gocart_default
+       model units coef: 1e9
 
 Aerosol Optical Depth (AOD) for dust (Met Office)
 -------------------------------------------------
