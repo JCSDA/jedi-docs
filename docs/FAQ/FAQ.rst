@@ -170,7 +170,7 @@ This is often accompanied by failure of the python tests in ``ioda``.  A likely 
 
 Conda installs its own packages like ``hdf5``, ``NetCDF``, and ``openssl`` that can conflict with libraries installed via the `spack-stack <https://github.com/jcsda/spack-stack.git>`_. This applies in particular to the IODA Python API, which is now enabled by default in ``ioda``.
 
-These conflicts are not easily addressed since the dependencies are built into ``conda`` through `rpaths <https://en.wikipedia.org/wiki/Rpath>`_.  At this time we recommend that you avoid using conda if possible when building and running JEDI applications, and use alternative methods described in the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.5.0/MaintainersSection.html#testing-adding-packages-outside-of-spack>`_ instead.
+These conflicts are not easily addressed since the dependencies are built into ``conda`` through `rpaths <https://en.wikipedia.org/wiki/Rpath>`_.  At this time we recommend that you avoid using conda if possible when building and running JEDI applications, and use alternative methods described in the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.5.1/MaintainersSection.html#testing-adding-packages-outside-of-spack>`_ instead.
 
 Git LFS Smudge error when running ``ecbuild``
 ---------------------------------------------

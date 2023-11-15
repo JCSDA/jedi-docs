@@ -8,27 +8,27 @@ List of spack, software, and AMIs
 
 Versions used:
 
-- spack-stack-1.5.0 from September 2023
+- spack-stack-1.5.1 from November 2023
 
-  * https://github.com/JCSDA/spack-stack/tree/1.5.0
+  * https://github.com/JCSDA/spack-stack/tree/1.5.1
 
-  * https://spack-stack.readthedocs.io/en/1.5.0
+  * https://spack-stack.readthedocs.io/en/1.5.1
 
 - AMI available in us-east-1 region (N. Virginia)
 
   - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
 
-    AMI Name skylab-6.0.0-redhat8
+    AMI Name skylab-6.1.0-redhat8
 
-    AMI ID ami-0f1750cc8882b7d75 (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-0f1750cc8882b7d75)
+    AMI ID ami-06497c2e0f2ded6cf (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-06497c2e0f2ded6cf)
 
 - AMI available in us-east-2 region (Ohio)
 
   - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
 
-    AMI Name skylab-6.0.0-redhat8
+    AMI Name skylab-6.1.0-redhat8
 
-    AMI ID ami-0d671c49d7bf7918c (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-0d671c49d7bf7918c)
+    AMI ID ami-0b1ce08e2fd42333b (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-0b1ce08e2fd42333b)
 
 Note. It is necessary to use c6i.4xlarge or larger instances of this family (recommended: c6i.8xlarge when running the `skylab-atm-land-small` experiment). 
 
