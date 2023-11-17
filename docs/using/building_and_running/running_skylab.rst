@@ -76,6 +76,14 @@ You will need to create or edit your ``~/.aws/config`` and ``~/.aws/credentials`
          aws_access_key_id=***      # USAF AWS account credentials
          aws_secret_access_key=***
 
+.. tip::
+
+  Make sure to protect your AWS config and credentials via:
+
+  .. code-block:: bash
+
+        chmod 400 ~/.aws/config
+        chmod 400 ~/.aws/credentials
 
 The commands for loading the modules to compile and run SkyLab are provided in separate sections for :doc:`HPC platforms <../jedi_environment/modules>` and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`. Users need to execute these commands before proceeding with the build of ``jedi-bundle`` below.
 
