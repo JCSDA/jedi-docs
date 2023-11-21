@@ -5,6 +5,9 @@ This page describes which parameters are available in SkyLab experiments, and th
 of the four flagship experiments ran by the JSCDA team. You can see results from these on
 the `JCSDA SkyLab website <https://skylab.jcsda.org/>`_.
 
+Experiment configuration
+------------------------
+
 All the parameters for these experiments are contained within one yaml file,
 and running the :code:`create_experiment.py` command sets up the generic workflow
 (EWOK: Experiments and Workflows Orchestration Kit) for this experiment.
@@ -76,6 +79,34 @@ The experiment yaml has to contain the following information:
 
     plots: # yaml configuration, activates log based and model-space plots
 
+
+Plots configuration
+-------------------
+
+Yaml configuration for the plots (included in :code:`plots` section of the experiment configuration yaml) allows the user to configure plots of variational diagnostics, and plots of model fields on lat-lon grid. The following options are available:
+
+.. code-block:: yaml
+
+    # For model plots
+    plotModel:
+      plot_geom: 1                       # lat-lon grid resolution in degrees
+      plot_variables: [air_temperature]  # list of variables to output
+      plot_levels: [850, 500, 250]       # list of levels in hPa
+      plot_4d: true                      # flag to output 4D increments for 4DEnVar (false by default)
+
+    # Plots of variational diagnostics
+    plotVarDiagnostics:
+    - CostFunction # line plot of minimization-related diagnostics
+    - JoJb         # time-series of Jo & Jb
+    - trHKbyp      # time-series of the trace of HK scaled by the number of observations
+    - ObCnt        # barplot of the mean observation count per cycle
+    - TotImp       # barplot of the mean total impact per cycle (Jo reduction)
+    - ImpPerOb     # barplot of the mean impact per observation per cycle (Jo reduction)
+    - FracImp      # barplot of the mean fractional impact per cycle (Jo reduction)
+
+
+Existing experiments and adding new experiments
+-----------------------------------------------
 
 To add a new experiment we recommend starting from an existing experiment yaml file
 and modify it for your case to reduce the chance of introducing syntax errors.
