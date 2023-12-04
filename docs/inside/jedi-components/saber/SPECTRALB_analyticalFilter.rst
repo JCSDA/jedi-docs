@@ -5,6 +5,7 @@ Spectral Analytical Filter
 
 This block performs multiplication in spectral space by an analytical function depending only on the total wavenumber. 
 Typical use cases include horizontal localization and frequency filters.
+We refer the reader to :cite:`errera2012spectral` for an explanation of how these filters relate to isotropic convolutions. 
 
 Example yaml
 ~~~~~~~~~~~~
@@ -28,7 +29,7 @@ Usage for horizontal localization
 
 This block can be used for horizontal localization, relying on the fact that convolution on the physical space is equivalent to multiplication on the spectral space.
 
-To model convolution by a Gaussian localization function :math:`f(d)` in physical space (where :math:`d` is the great circle separation distance), we multiply by a Gaussian localization function :math:`\widehat{f}(n)`` in spectral space (where :math:`n` is the total wavenumber). 
+To model convolution by a Gaussian localization function :math:`f(d)` in physical space (where :math:`d` is the great circle separation distance), we multiply by a Gaussian localization function :math:`\widehat{f}(n)` in spectral space (where :math:`n` is the total wavenumber). 
 If the physical space Gaussian is given by
 
 .. math:: 
@@ -57,13 +58,7 @@ The normalization constant :math:`C` is computed by ensuring the total variance 
 
 
 Here, the localization is modeled as a Gaussian with Daley length specified from the yaml, in meters.
-For a Gaussian function, the Daley length :math:`\sqrt{-f(0) / f''(0)}` is parameter :math:`L` in the equations above (see for instance Pannekoucke *et al.*, 2008).
+For a Gaussian function, the Daley length :math:`\sqrt{-f(0) / f''(0)}` is parameter :math:`L` in the equations above (see for instance :cite:`pannekoucke2008background`).
 
-.. _references:
-
-References
-~~~~~~~~~~
-
-Errera, Q., & Ménard, R. (2012). Technical Note: Spectral representation of spatial correlations in variational assimilation with grid point models and application to the Belgian Assimilation System for Chemical Observations (BASCOE). Atmospheric Chemistry and Physics, 12(21), 10015–10031. `doi:10.5194/acp-12-10015-2012 <https://doi.org/10.5194/acp-12-10015-2012>`_
-
-Pannekoucke, O., Berre, L., & Desroziers, G. (2008). Background-error correlation length-scale estimates and their sampling statistics. Quarterly Journal of the Royal Meteorological Society, 134(631), 497–508. `doi:10.1002/qj.212 <https://doi.org/10.1002/qj.212>`_
+Since the spectral analytical localization is a (self-adjoint) outer block, it is actually applied twice in a multiplication by the associated localization or covariance matrix. 
+The block accounts for this in the definition of the Daley length :math:`L`, so that the full correlation model (with the outer block applied twice) has a Daley length :math:`L`.

@@ -590,7 +590,7 @@ Examples of yaml:
       CoefficientPath: &coef_path /Data
 
 Aerosol Optical Depth (AODCRTM)
-----------------------------
+-------------------------------
 
 Description:
 ^^^^^^^^^^^^
