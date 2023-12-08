@@ -14,8 +14,9 @@ the example below:
 
 .. code-block:: yaml
 
-   window begin: 2018-04-14T21:00:00Z
-   window end: 2018-04-15T03:00:00Z
+   time window:
+     begin: 2018-04-14T21:00:00Z
+     end: 2018-04-15T03:00:00Z
 
    observations:
      observers:

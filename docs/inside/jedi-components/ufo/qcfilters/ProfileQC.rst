@@ -14,8 +14,9 @@ The user can specify two options in the yaml: :code:`absolute threshold` and :co
 
 .. code-block:: yaml
 
-    window begin: 2020-12-31T23:59:00Z
-    window end: 2021-01-01T00:01:00Z
+    time window:
+      begin: 2020-12-31T23:59:00Z
+      end: 2021-01-01T00:01:00Z
 
     observations:
       observers:
@@ -50,8 +51,9 @@ This filter finds the number of valid observations within a profile.  If this nu
 
 .. code-block:: yaml
 
-    window begin: 2020-12-31T23:59:00Z
-    window end: 2021-01-01T00:01:00Z
+    time window:
+      begin: 2020-12-31T23:59:00Z
+      end: 2021-01-01T00:01:00Z
 
     observations:
       observers:
@@ -87,8 +89,9 @@ Uses the record number functionality defined by the :code:`obsgrouping` to ident
 
 .. code-block:: yaml
 
-    window begin: 2019-06-14T20:30:00Z
-    window end: 2019-06-15T03:30:00Z
+    time window:
+      begin: 2019-06-14T20:30:00Z
+      end: 2019-06-15T03:30:00Z
 
     observations:
       observers:
@@ -133,8 +136,9 @@ This filter relies on the refractivity and model geopotential heights being save
 
 .. code-block:: yaml
 
-    window begin: 2020-05-01T03:00:00Z
-    window end: 2020-05-01T09:00:00Z
+    time window:
+      begin: 2020-05-01T03:00:00Z
+      end: 2020-05-01T09:00:00Z
 
     observations:
       observers:
@@ -891,8 +895,9 @@ Note that a call to the Ocean Vertical Stability Check filter MUST be preceded b
 
 .. code-block:: yaml
 
-  window begin: 2020-12-31T23:59:00Z
-  window end: 2021-01-01T00:01:00Z
+  time window:
+    begin: 2020-12-31T23:59:00Z
+    end: 2021-01-01T00:01:00Z
 
   observations:
     observers:
@@ -1033,8 +1038,9 @@ The QC flags on model levels are set by this filter to be equal to those of the 
 
 .. code-block:: yaml
 
-    window begin: 2020-12-31T23:59:00Z
-    window end: 2021-01-01T00:01:00Z
+    time window:
+      begin: 2020-12-31T23:59:00Z
+      end: 2021-01-01T00:01:00Z
 
     observations:
     - obs space:

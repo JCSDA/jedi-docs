@@ -167,10 +167,19 @@ Extending the observation space automatically produces a variable called :code:`
 
 Here is an :ref:`example YAML file <radiosonde_example_yaml>` showing how to specify the creation of an output file from IODA.
 
-window begin, window length
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+time window
+^^^^^^^^^^^
 
 Used to define the assimilation window for many applications, such as Variational, EDA, LocalEnsembleDA, MakeObs, HofX, EnsHofX.
+
+Sub-configuration options:
+
+* **begin**: Start of the assimilation window in ISO-8601 format.
+* **length**: Length of the assimilation window in ISO-8601 format.
+* **end**: End of the assimilation window in ISO-8601 format.
+* **bound to include**: Specifies which assimilation window bound is inclusive. Options: begin, end (default).
+
+Note that only one of the options **length** and **end** can be specified. If both are listed then an exception will be thrown.
 
 cost function
 ^^^^^^^^^^^^^

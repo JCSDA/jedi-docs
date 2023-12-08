@@ -123,17 +123,17 @@ In the preceding example, we have already seen that parameters can store not onl
 
   .. code-block:: c++
 
-    oops::RequiredParameter<util::DateTime> windowBegin{"window begin", this};
-    oops::RequiredParameter<util::Duration> windowLength{"window length", this};
+    oops::RequiredParameter<util::DateTime> windowBegin{"start date", this};
+    oops::RequiredParameter<util::Duration> windowLength{"duration", this};
 
   can store the date and duration loaded from the following YAML file:
 
   .. code-block:: yaml
 
-    window begin: 2010-01-01T21:00:00Z
-    window length: PT6H
+    start date: 2010-01-01T21:00:00Z
+    duration: PT6H
 
-  If the :code:`window begin` or :code:`window length` YAML keys are not set to valid ISO 8601 dates or durations, :code:`validateAndDeserialize()` will throw an exception.
+  If the :code:`start date` or :code:`duration` YAML keys are not set to valid ISO 8601 dates or durations, :code:`validateAndDeserialize()` will throw an exception.
 
 * **Maps**. For instance, the parameter
 

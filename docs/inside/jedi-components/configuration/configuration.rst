@@ -32,8 +32,9 @@ As an example, consider a configuration file similar to the one used in the :cod
       name: QG
       tstep: PT1H
     forecast length: PT12H
-    window begin: 2010-01-01T00:00:00Z
-    window length: PT12H
+    time window:
+      begin: 2010-01-01T00:00:00Z
+      length: PT12H
     observations:
       observers:
       - obs space:
@@ -69,7 +70,7 @@ We refer the user to the `YAML Documentation <https://yaml.org/spec/1.2/spec.htm
 
 The first thing to note is that indentation matters.  Items are organized into a hierarchy, with the top-level objects beginning in the leftmost column and subsidiary components of these objects indented accordingly.  The number of spaces is not important; two is sufficient to define the scope of an item and its contents.
 
-The beginning of a YAML document can be indicated by three dashes :code:`---`, which may or may not be preceded by directives. Each line typically contains a key-value pair separated by a colon and a space.  The key is generally a string and the value may be either a string or a number.  This is used to assign values to variables.  For example, the **window begin** object is set to a value of '2010-01-01T00:00:00Z' and the **geometry.nx** variable is set to a value of 40.  Note that we have used a period to represent the hierarchy of items; **nx** is a component of **geometry**.  Note also that the values may be interpreted in different ways.  For example, the **window begin** value is written as a string in the yaml file but it is interpreted as a :code:`util::DateTime` object when it is read into JEDI.
+The beginning of a YAML document can be indicated by three dashes :code:`---`, which may or may not be preceded by directives. Each line typically contains a key-value pair separated by a colon and a space.  The key is generally a string and the value may be either a string or a number.  This is used to assign values to variables.  For example, the **time window.begin** object is set to a value of '2010-01-01T00:00:00Z' and the **geometry.nx** variable is set to a value of 40.  Note that we have used a period to represent the hierarchy of items; **begin** is a component of **time window**, and **nx** is a component of **geometry**.  Note also that the values may be interpreted in different ways.  For example, the **time window.begin** value is written as a string in the yaml file but it is interpreted as a :code:`util::DateTime` object when it is read into JEDI.
 
 Objects with multiple values (sequences in YAML) are indicated as indented lists with one item per line and each item delineated by a dash.  For example, **observations[0].obs space.simulated variables** is equated to a list of items, namely ["air_temperature", "eastward_wind", "northward_wind"].
 
@@ -99,10 +100,8 @@ What happens next is more specific to the HofX Application but it serves to illu
     int execute(const eckit::Configuration & fullConfig) const {
 
       // Example 1
-      const util::Duration winlen(fullConfig.getString("window length"));
-      const util::DateTime winbgn(fullConfig.getString("window begin"));
-      const util::DateTime winend(winbgn + winlen);
-      Log::info() << "Observation window from " << winbgn << " to " << winend << std::endl;
+      const util::TimeWindow timeWindow(fullConfig.getSubConfiguration("time window"));
+      Log::info() << "Observation time window: " << timeWindow << std::endl;
 
       // Example 2
       const eckit::LocalConfiguration geometryConfig(fullConfig, "geometry");
@@ -110,7 +109,7 @@ What happens next is more specific to the HofX Application but it serves to illu
 
     [...]
 
-Here the :code:`Configuration` object can also be accessed directly through the public methods of the :code:`eckit::Configuration` object itself.  This is demonstrated by the :code:`fullConfig.getString()` in Example 1 :ref:`above <config-cpp-seg1>`.  This sets the duration :code:`winlen` equal to the value of **window length** as specified in the first line of the :ref:`YAML file <yaml-file>`.
+Here the :code:`Configuration` object can also be accessed directly through the public methods of the :code:`eckit::Configuration` object itself.  This is demonstrated by the :code:`fullConfig.getSubConfiguration()` in Example 1 :ref:`above <config-cpp-seg1>`.  This is used to configure the time window object as specified in the :ref:`YAML file <yaml-file>`. The time window is configured by parameters such as **begin** and **length** which themselves are read in the code using accessor methods such as :code:`getString()`.
 
 The example 2 illustrates an important point, namely that new configuration objects are constructed through the derived (child) class of :code:`eckit::LocalConfiguration` rather than the base class of :code:`eckit::Configuration` (whose constructors are protected).  The constructor shown in Example 2 :ref:`above <config-cpp-seg1>` takes two arguments.  The first is :code:`fullConfig`, the configuration passed to the :code:`oops::HofX::execute()` method.  The second argument is a string that serves to extract a component of that Configuration, in particular, everything contained under the **geometry** section of the :ref:`YAML file <yaml-file>`.  This component is placed in the :code:`LocalConfiguration` object :code:`geometryConfig`.
 
@@ -118,7 +117,7 @@ YAML and JSON objects are hierarchical and self-similar.  So, the **geometry** c
 
 It's tempting to think of :code:`LocalConfiguration` objects as components of :code:`Configuration` objects but this is incorrect.  One could in principle have an :code:`eckit::LocalConfiguration` object refer to the YAML file as a whole and a :code:`eckit::Configuration` object refer to a single section, though this is rarely done.  The **Local** in LocalConfiguration refers to a local component of the JEDI code, not a local section of the YAML file.  You can create, access, and even change :code:`eckit::LocalConfiguration` objects in a way that is not possible with :code:`eckit::Configuration` objects.  In short, :code:`LocalConfiguration` objects are local instantiations of :code:`Configuration` objects that you can use to access the configuration file.
 
-Variables, parameters, and other settings in the config file can be read by means of the various :code:`get` methods of the :code:`eckit::Configuration` class.  Paths are relative to the top-level of the YAML/JSON hierarchy that is contained in the Configuration object.  Two examples are shown :ref:`above <config-cpp-seg1>`.  Since the :code:`fullConfig` object contains the entire YAML file, the top level of the hierarchy includes the top-level components of the :ref:`YAML file <yaml-file>`, for example the variables **window begin** and **window length**, as well as the multi-component YAML object **observations**.  The first of these top-level variables is read using the :code:`config.getString()` method and placed into the local variable :code:`winlen`.  One could access other levels of the hierarchy using periods as separators, for example:
+Variables, parameters, and other settings in the config file can be read by means of the various :code:`get` methods of the :code:`eckit::Configuration` class.  Paths are relative to the top-level of the YAML/JSON hierarchy that is contained in the Configuration object.  Two examples are shown :ref:`above <config-cpp-seg1>`.  Since the :code:`fullConfig` object contains the entire YAML file, the top level of the hierarchy includes the top-level components of the :ref:`YAML file <yaml-file>`, for example multi-component YAML objects **time window** and **observations**.  The first of these top-level variables is read using the :code:`config.getSubConfiguration()` method and placed into the local variable :code:`timeWindow`.  One could access other levels of the hierarchy using periods as separators, for example:
 
 .. code-block:: C++
 

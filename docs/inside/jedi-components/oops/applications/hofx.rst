@@ -28,10 +28,10 @@ The HofX3D application computes :math:`H(x)` for all specified observations usin
       # model state used for computing H(x)
 
     ### Sections describing observations.
-    # only observations taken at times lying in the (`window begin`, `window begin` + `window length`]
-    # interval will be included
-    window begin:  # datetime in ISO format
-    window length: # duration in ISO format
+    time window:
+      begin:  # datetime in ISO format
+      length: # duration in ISO format
+      bound to include: end # which window bound is inclusive (options: begin, end (default)).
     # list of observations (input files, observation operators, observation errors, etc).
     observations:
       obs perturbations:  # default false; set to true for perturbing the result of H(x) -- for OSSE experiments
@@ -62,10 +62,10 @@ The HofX4D application runs the model forecast from the specified `initial condi
       # options used when writing out forecast fields.
     
     ### Sections describing observations.
-    # only observations taken at times lying in the (`window begin`, `window begin` + `window length`]
-    # interval will be included
-    window begin:  # datetime in ISO format
-    window length: # duration in ISO format
+    time window:
+      begin:  # datetime in ISO format
+      length: # duration in ISO format
+      bound to include: end # which window bound is inclusive (options: begin, end (default)).
     # list of observations (input files, observation operators, observation errors, etc).
     observations:
       obs perturbations:  # default false; set to true for perturbing the result of H(x) -- for OSSE experiments

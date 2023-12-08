@@ -67,8 +67,9 @@ The following is a YAML example for configuring the processing of radiosonde dat
 
 .. code-block:: YAML
 
-   window begin: 2018-04-14T21:00:00Z
-   window end: 2018-04-15T03:00:00Z
+   time window:
+     begin: 2018-04-14T21:00:00Z
+     end: 2018-04-15T03:00:00Z
    observations:
      observers:
      - obs space:

@@ -90,8 +90,10 @@ The following block of code gives the main components of the yaml file needed to
     ---
     cost function:
       cost type: #one of the supported cost functions
-      window begin: #beginning of the data assimilation window
-      window length: #length of the data assimilation window
+      time window:
+         begin: # beginning of the data assimilation window
+         length: # length of the data assimilation window
+         bound to include: end # which window bound is inclusive (options: begin, end (default)).
       analysis variables: #variables used for the analysis
       geometry:
         #geometry of the model
