@@ -19,20 +19,14 @@ Each variable change that can be performed by Vader is defined by code called a 
 Below is a list of the recipes that have been implemented in VADER:
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   pot_temp_from_temp
-   air_potential_temperature_b
-   air_pressure_a
-   air_pressure_at_interface_a
-   air_pressure_at_interface_b
-   ln_air_pressure_at_interface_a
-   air_pressure_thickness_a
-   air_pressure_to_kappa_a
-   surface_air_pressure_a
-   air_temperature_a
-   air_temperature_b
-   air_virtual_temperature_a
-   dry_air_density_levels_minus_one_a
-   uwind_at_10m_a
-   vwind_at_10m_a
+    airtemperature
+    airpressure
+    atmospherewater
+    wind
+    marine
+
+
+
+
