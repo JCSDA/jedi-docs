@@ -55,25 +55,30 @@ You will need to create or edit your ``~/.aws/config`` and ``~/.aws/credentials`
          [default]
          region=us-east-1
 
-         [jcsda-noaa-us-east-1]
+         # NOAA AWS account configuration for the ``jcsda-noaa-aws-us-east-1`` R2D2 Data Hub
+         [jcsda-noaa-aws-us-east-1]
          region=us-east-1
 
-         [jcsda-usaf-us-east-2]
+         # USAF AWS account configuration for the ``jcsda-usaf-aws-us-east-2`` R2D2 Data Hub
+         [jcsda-usaf-aws-us-east-2]
          region=us-east-2
 
 
       .. code-block:: bash
 
+         # NOAA AWS account credentials if default in config is us-east-1
          [default]
-         aws_access_key_id=***      # NOAA AWS account credentials if default in config is us-east-1
+         aws_access_key_id=***
          aws_secret_access_key=***
 
-         [jcsda-noaa-us-east-1]
-         aws_access_key_id=***      # NOAA AWS account credentials
+         # NOAA AWS account credentials for the ``jcsda-noaa-aws-us-east-1`` R2D2 Data Hub
+         [jcsda-noaa-aws-us-east-1]
+         aws_access_key_id=***
          aws_secret_access_key=***
 
-         [jcsda-usaf-us-east-2]
-         aws_access_key_id=***      # USAF AWS account credentials
+         # USAF AWS account credentials for the ``jcsda-usaf-aws-us-east-2`` R2D2 Data Hub
+         [jcsda-usaf-aws-us-east-2]
+         aws_access_key_id=***
          aws_secret_access_key=***
 
 .. tip::
@@ -243,11 +248,12 @@ or use the default template in the sample script below. Note that :code:`JEDI_SR
 :code:`JEDI_BUILD` and :code:`EWOK_WORKDIR` are experiment specific, i.e. you can run several
 experiments at the same time, each having their own definition for these variables.
 
-The user further has to set the environment variable :code:`R2D2_HOST` in the script.
-:code:`R2D2_HOST` is required by r2d2, ewok, and to determine the location :code:`EWOK_STATIC_DATA`
-of the static data used by ewok. This data is staged on the preconfigured platforms.
+The user further has to set two environment variables :code:`R2D2_HOST` and `R2D2_COMPILER` in the script.
+:code:`R2D2_HOST` and `R2D2_COMPILER` are required by r2d2 and ewok. They are used to initialize the
+location :code:`EWOK_STATIC_DATA` of the static data used by skylab and bind r2d2 to your current environment.
+:code:`EWOK_STATIC_DATA` is staged on the preconfigured platforms.
 
-In the section that exports your :code:`R2D2_HOST`, **Be sure to remove all lines that
+In the section that exports your :code:`R2D2_HOST` and `R2D2_COMPILER`, **Be sure to remove all lines that
 are NOT relevant to your platform.**
 
 On generic platforms, the script sets :code:`EWOK_STATIC_DATA` to :code:`${JEDI_SRC}/static-data/static`.
@@ -268,20 +274,39 @@ Please don’t forget to source this script after creating it: :code:`source $JE
     export JEDI_SRC=${JEDI_ROOT}/jedi-bundle
   fi
 
-  # Set host name for R2D2/EWOK
+  # Set the host for R2D2/EWOK
 
-  # On Orion
-  export R2D2_HOST=orion
-  # On Discover
-  export R2D2_HOST=discover
   # On Cheyenne
   export R2D2_HOST=cheyenne
+  # On Derecho
+  export R2D2_HOST=derecho
+  # On Discover
+  export R2D2_HOST=discover
+  # On Hercules
+  export R2D2_HOST=hercules
+  # On Orion
+  export R2D2_HOST=orion
   # On S4
   export R2D2_HOST=s4
   # On AWS Parallel Cluster
   export R2D2_HOST=aws-pcluster
+  # On NOAA's ParallelWorks on AWS
+  export R2D2_HOST=pw-aws
+  # On NOAA's ParallelWorks on Azure
+  export R2D2_HOST=pw-azure
+  # On NOAA's ParallelWorks on GCloud
+  export R2D2_HOST=pw-gcloud
   # On your local machine / AWS single node
   export R2D2_HOST=localhost
+
+  # Set the compiler for R2D2/EWOK
+
+  # For gnu
+  export R2D2_COMPILER=gnu
+  # For intel
+  export R2D2_COMPILER=intel
+  # For clang/llvm
+  export R2D2_COMPILER=clang
 
   # Most users won't need to change the following settings
 
@@ -319,17 +344,14 @@ Please don’t forget to source this script after creating it: :code:`source $JE
   export ECF_HOST=$host
 
   case $R2D2_HOST in
-    localhost)
-      export EWOK_STATIC_DATA=${JEDI_SRC}/static-data/static
-      ;;
-    orion)
-      export EWOK_STATIC_DATA=/work/noaa/da/role-da/static
+    cheyenne | derecho)
+      export EWOK_STATIC_DATA=/glade/p/mmm/jedipara/static
       ;;
     discover)
       export EWOK_STATIC_DATA=/discover/nobackup/projects/jcsda/s2127/static
       ;;
-    cheyenne)
-      export EWOK_STATIC_DATA=/glade/p/mmm/jedipara/static
+    orion* | hercules)
+      export EWOK_STATIC_DATA=/work/noaa/da/role-da/static
       ;;
     s4)
       export EWOK_STATIC_DATA=/data/prod/jedi/static
@@ -337,13 +359,17 @@ Please don’t forget to source this script after creating it: :code:`source $JE
     aws-pcluster)
       export EWOK_STATIC_DATA=${JEDI_ROOT}/static
       ;;
+    pw-aws | pw-azure | pw-gcloud)
+      echo "EWOK_STATIC_DATA chas not been assigned to '$R2D2_HOST'"
+      ;;
+    localhost)
+      export EWOK_STATIC_DATA=${JEDI_SRC}/static-data/static
+      ;;
     *)
-      echo "Unknown host name '$R2D2_HOST'"
+      echo "Unknown compute host name '$R2D2_HOST'"
       exit 1
       ;;
   esac
-
-
 
 If you are running locally you my want to pick a constant value for :code:`ECF_PORT`. As written,
 the code above will generate a new, random value for your :code:`ECF_PORT` everytime this script

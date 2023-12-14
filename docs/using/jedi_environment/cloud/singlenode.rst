@@ -70,11 +70,11 @@ After launching the instance through the AWS console, select the instance and cl
          aws_access_key_id=***
          aws_secret_access_key=***
 
-         [jcsda-noaa-us-east-1]
+         [jcsda-noaa-aws-us-east-1]
          aws_access_key_id=***
          aws_secret_access_key=***
 
-         [jcsda-usaf-us-east-2]
+         [jcsda-usaf-aws-us-east-2]
          aws_access_key_id=***
          aws_secret_access_key=***
 
@@ -86,8 +86,13 @@ After launching the instance through the AWS console, select the instance and cl
          [default]
          region = us-east-1
 
-**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.5.1/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Please note that the AMI IDs in the spack-stack 1.5.1 release documentation are incorrect - they are correct in these JEDI docs release notes. Proceed with loading the appropriate modules for your application, for example for the ``skylab-6.0.0`` release:
+         [jcsda-noaa-aws-us-east-1]
+         region = us-east-1
 
+         [jcsda-usaf-aws-us-east-2]
+         region = us-east-2
+
+**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.5.1/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Proceed with loading the appropriate modules for your application, for example for the ``skylab-6.0.0`` release:
 .. code-block:: bash
 
    module load jedi-fv3-env
