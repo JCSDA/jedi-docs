@@ -15,10 +15,10 @@ We have created a GitHub repository for holding documentation called :code:JCSDA
 Please place your documentation in this repository and place the appropriate links and text
 to your documentation in the top level index.html file.
 
-To add your documentation to the :code:`jedi-docs` repository you need to follow
+To add your documentation to the :code:`jedi-docs` repository follow
 the `Git flow paradigm <../inside/practices/gitflow.html>`_.
 
-First let's make sure you have the latest version of the code. To pull the
+First, make sure you have the latest version of the code. To pull the
 latest version of the develop branch run:
 
 .. code-block:: bash
@@ -40,8 +40,8 @@ You can check which branch you are currently on by running:
 
    git branch
 
-After creating and checking out your feature branch you can edit (or add new) files
-in the :code:`jedi-docs` repository. To edit the current documentations you can
+After creating and checking out your feature branch you can edit or add new files
+in the :code:`jedi-docs` repository. To edit existing documentation you can
 edit :code:`.rst` files. If you want to add a new section to the documentation you
 need to create a new :code:`.rst` file and also register the new file
 in :code:`index.rst` in your working directory.

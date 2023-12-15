@@ -112,7 +112,7 @@ html_theme = 'default'
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
 html_sidebars = {
     '**': [
-        'relations.html',  # needs 'show_related': True theme option to display
+        'globaltoc.html',  # needs 'show_related': True theme option to display
         'searchbox.html',
     ]
 }

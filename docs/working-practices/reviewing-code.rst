@@ -4,7 +4,7 @@
 Reviewing Code
 ##############
 
-The role of the review process is to control the contents of branches, especially the develop and main branches of a repository. Discussions and decisions of a scientific nature should happen at the ZenHub level, before reaching the level of pull requests (PRs) and code reviews.
+The role of the review process is to control the contents of branches, especially the develop and main branches of a repository, and ensure all code in the repository is functional and of high quality. Discussions and decisions of a scientific nature should happen at the ZenHub level, before reaching pull requests (PRs) and code reviews.
 
 What is a Code Review?
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -14,7 +14,7 @@ A **Code Review** is the systematic examination of software source code, intende
 Creating a Good Pull Request
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A Pull Request (PR) is a public record of what change is being made and why it was made. It becomes a permanent part of a repository's version control history. 
+A Pull Request (PR) is a public record of what change is being made and why. It becomes a permanent part of a repository's version control history. 
 
 It is often in the best interests of both developers and reviewers to review and merge code often in small incremental changes rather than massive changes at one time. This exposes code earlier to other developers who could be impacted and facilitates the merging process. This is often done by `creating a draft PR <https://github.blog/2019-02-14-introducing-draft-pull-requests/>`_.
 
@@ -44,9 +44,9 @@ Code reviews should integrate with a team’s existing process. For example, if 
 What to look for in a Code Review
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* **Design:** Do code interactions make sense? Are there logic errors in the code? Are issue requirements fully implemented? In other words, is the issue's **Defintion of Done** met?
+* **Design:** Do code interactions make sense? Are there logic errors in the code? Are issue requirements fully implemented? In other words, is the issue's **Definition of Done** met?
 * **Functionality:** Does the PR do what is intended? Are changes good for both end-users and developers?
-* **Complexity:** Is the code asily understood by the reviewer?
+* **Complexity:** Is the code easily understood by the reviewer?
 * **Testing:** Are unit / integration / end-to-end tests appropriate for the PR? Will tests fail when the code is broken? Will the tests generate false positives if underlying code changes? Do existing tests continue to pass as expected?
 * **Comments:** Are comments both clear *and* necessary? Comments explain a *why*, not a *what* in the code.
 * **Style and consistency:** If a Style Guide is applicable, do code changes adhere to it?
@@ -58,7 +58,7 @@ How Fast Should Code Reviews Be?
 **Code Reviews Take Time**...but they can be fast! This apparent dichotomy really isn't such -- optimize for the speed at which a product is created, not for the speed at which individuals write code. In other words, a team's *overall development velocity* is paramount, and timely code reviews aid that process. When code reviews are **not timely**:
 
 * **Team velocity is decreased**. New features and bug fixes are delayed as each PR waits for review.
-* **Developers protest the code review process**. Relatively quick reviwer responses are paramount to continue progress. *Most complaints about code review processes are  resolved by making the process faster*.
+* **Developers protest the code review process**. Relatively quick reviewer responses are paramount to continue progress. *Most complaints about code review processes are  resolved by making the process faster*.
 * **Code health can be impacted**. Slow reviews  discourage code cleanups, refactorings, and further improvements to existing PRs.
 
 **Timely** code reviews can be a balancing act:
