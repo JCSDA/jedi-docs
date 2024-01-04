@@ -42,6 +42,7 @@ Many HPC systems do not allow you to run MPI jobs from the login nodes. So, afte
 
 This runs several tests. The purpose of these tests is to download data files from the cloud that are then used by many of the other tests. If the :code:`get_*` tests are successful, then the data was downloaded successfully and you can proceed to run the remainder of the tests in batch using :code:`sbatch`, :code:`salloc`, or the equivalent process management command on your system.
 
+.. _orion-modules:
 
 Orion
 -----
@@ -143,6 +144,7 @@ An alternative to using the batch script is to request an interactive session on
 
 Make sure you use the correct account number. This command requests for one node with 24 MPI tasks.
 
+.. _discover-modules:
 
 Discover
 --------
@@ -169,13 +171,15 @@ To run the remaining tests, particularly those that require MPI, you'll need to 
 
 .. code-block:: bash
 
-    salloc --nodes=1 --time=30 --constraint="cas"
+    salloc --constraint="cas" --nodes=1 --ntasks-per-node=24 --time=2:00:00
 
 Or, you can submit a batch script to the queue through ``sbatch`` as described in the Orion instructions above.
 
 For GNU, when using ``ecbuild``, use ``ecbuild -DMPIEXEC_EXECUTABLE="/usr/bin/srun" -DMPIEXEC_NUMPROC_FLAG="-n"``. Then run all tests directly from the login node.
 
 Discover is a heterogeneous system with different CPU architectures and operating systems on the login and compute nodes. The default login node is of the newest Intel Cascade Lake generation, and we recommend requesting the same node type when running interactive jobs or batch jobs, which is accomplished by the argument ``--constraint="cas"``. If older node types are used (Skylake, Haswell), users may see warnings like "no version information available" for certain libraries in the default location ``/usr/lib64``. For more information, see https://www.nccs.nasa.gov/nccs-users/instructional/using-slurm/best-practices.
+
+.. _hera_modules:
 
 Hera
 -----
@@ -204,6 +208,8 @@ To run tests with slurm and :code:`srun`, you also need to have the following en
    export SLURM_ACCOUNT=<account you can run slurm jobs under>
    export SALLOC_ACCOUNT=$SLURM_ACCOUNT
    export SBATCH_ACCOUNT=$SLURM_ACCOUNT
+
+.. _cheyenne-modules:
 
 Cheyenne
 --------
@@ -248,6 +254,8 @@ The system configuration on Cheyenne will not allow you to run mpi jobs from the
 
     # now run ctest
     ctest -E get_
+
+.. _casper-modules:
 
 Casper
 ------

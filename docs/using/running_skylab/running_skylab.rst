@@ -260,6 +260,8 @@ On generic platforms, the script sets :code:`EWOK_STATIC_DATA` to :code:`${JEDI_
 
 Please don’t forget to source this script after creating it: :code:`source $JEDI_ROOT/activate.sh`
 
+Please see :ref:`hpc_users_guide` for more information on specifics for editing this :code:`activate.sh` script and other general instructions and notes for running skylab on supported HPC systems.
+
 .. code-block:: bash
 
   #!/bin/bash
@@ -332,7 +334,7 @@ Please don’t forget to source this script after creating it: :code:`source $JE
   # necessary user directories for ewok and ecFlow files
   mkdir -p $EWOK_WORKDIR $EWOK_FLOWDIR
 
-  # ecFlow vars
+  # ecFlow vars - EDIT: (set to constant) if running locally or on Discover
   myid=$(id -u ${USER})
   if [[ $myid -gt 64000 ]]; then
     myid=$(awk -v min=3000 -v max=31000 -v seed=$RANDOM 'BEGIN{srand(seed); print int(min + rand() * (max - min + 1))}')

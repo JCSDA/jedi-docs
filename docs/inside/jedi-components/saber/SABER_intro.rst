@@ -160,7 +160,7 @@ zero covariance between distantly separated grid points :cite:`Lorenc2003`.
 When setting up an experiment with an ensemble **B**, both the localization matrix and :math:`\textbf{B}_{\text{ens}}`
 can be defined in the experiment yaml configuration file with the covariance model set as :code:`ensemble`.
 
-The setup a localization matrix is very similar to the setup for the parametric **B** described in the previous section as the computational
+The setup for a localization matrix is very similar to the setup for the parametric **B** described in the previous section as the computational
 implementation of both :math:`\boldsymbol{\mathcal{L}}` and parametric **B** are identical. One difference is the addition of the :code:`localization` heading under
 the :code:`covariance model`:
 

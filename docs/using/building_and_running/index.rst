@@ -8,4 +8,3 @@ Building and Running JEDI
    building_jedi.rst
    running_jedi.rst
    config_content.rst
-   running_skylab.rst
