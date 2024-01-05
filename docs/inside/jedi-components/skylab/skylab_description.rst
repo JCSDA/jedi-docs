@@ -78,6 +78,15 @@ The experiment yaml has to contain the following information:
     diag: ombg # diagnostics in obs space, can be `oman`, `ombg`..
 
     plots: # yaml configuration, activates log based and model-space plots
+    
+    evaluation:   # running evaluation or not
+      evaluation_frequency: PT6H   # how frequently to evaluate the forecast within the forecast length
+      evaluation_baseline: self_anl   # evaluation is against with 'self_anl' or analyses from other exps (expid).
+      evaluation_cycles: ['00']       # a list that defines the valid cycle of evaluation.
+      type: metplus        # 'metplus' or 'basic'
+      verif_grid: G002     # if type is metplus, can select evaluation on which grid definition, GXXX
+                           # (more info https://www.nco.ncep.noaa.gov/pmb/docs/on388/tableb.html)
+      grid_stat_template: !ENV ${JEDI_SRC}/skylab/eval/metplus/GridStat.conf.IN  # the template to run GridStat in METplus
 
 
 Plots configuration
