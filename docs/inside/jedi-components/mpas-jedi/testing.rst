@@ -1,3 +1,6 @@
+.. warning::
+    This section is out of date!! A further review will be completed in the near future. Sorry for the inconvenience.
+
 .. _top-mpas-jedi-testing:
 
 .. _testing-mpas:
@@ -83,10 +86,10 @@ many tests to change, it is useful to use the :code:`RECALIBRATE_CTEST_REFS` opt
 
 .. _mmmtest:
 
-Additional automated testing on Cheyenne
+Additional automated testing on Derecho
 ----------------------------------------
 
-There are two additional testing mechanisms in place on Cheyenne that provide 
+There are two additional testing mechanisms in place on Derecho that provide 
 automated test coverage.
 
 (1) A daily cron job builds MPAS-JEDI from :code:`JCSDA-internal/mpas-bundle::develop`

@@ -1,3 +1,6 @@
+.. warning::
+    This section is out of date!! A further review will be completed in the near future. Sorry for the inconvenience.
+
 .. _top-mpas-jedi-build:
 
 Building and Testing MPAS-JEDI
@@ -18,24 +21,24 @@ executables.  MPAS-BUNDLE is built using :code:`ecbuild`. Full details on how to
 bundle are provided :doc:`elsewhere </using/building_and_running/building_jedi>`, and it is
 recommended to familiarize yourself with those instructions before continuing here.
 
-.. _build-test-mpas-cheyenne:
+.. _build-test-mpas-derecho:
 
-Building and testing MPAS-BUNDLE on Cheyenne
+Building and testing MPAS-BUNDLE on Derecho
 --------------------------------------------
 
-Most development and testing of MPAS-JEDI has been performed on NCAR's Cheyenne HPC
-system. Custom scripts for creating the required build environment on Cheyenne are provided
+Most development and testing of MPAS-JEDI has been performed on NCAR's Derecho HPC
+system. Custom scripts for creating the required build environment on Derecho are provided
 in MPAS-BUNDLE. After cloning MPAS-BUNDLE from Github, you can find these scripts in
 :code:`mpas-bundle/env-setup`.  Before executing the :code:`ecbuild` command, :code:`source`
 the script appropriate for your choice of compiler, MPI implementation, and shell (e.g.,
-gnu-openmpi-cheyenne.sh). The commands in the environment script are consistent with the
-instructions for Cheyenne under :ref:`top-modules`.
+gnu-openmpi-derecho.sh). The commands in the environment script are consistent with the
+instructions for Derecho under :ref:`top-modules`.
 
 After building MPAS-BUNDLE, it is recommended to run the ctests. Passing this suite of tests
 confirms that your build is working as expected.
 
 Starting from a project directory such as :code:`$HOME/jedi`, the entire build and test workflow
-on Cheyenne would look like:
+on Derecho would look like:
 
 .. code-block:: bash
 
@@ -49,9 +52,9 @@ on Cheyenne would look like:
     cd mpas-jedi
     ctest
 
-Notes about building on Cheyenne:
+Notes about building on Derecho:
   - The :code:`gnu-openmpi` environment has been more extensively tested than the :code:`intel-impi`
-    environment on Cheyenne
+    environment on Derecho
   - The :code:`<build-directory>` cannot be the directory named :code:`mpas-bundle`, where the
     repository is cloned, because doing so will create conflict between the source code
     directory and the CMake-generated build sub-directories
@@ -71,7 +74,7 @@ do not plan to or are unable to install Singularity natively, you may be interes
 `how to launch a Singularity container in a Vagrant Virtual Machine
 <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/1.3.0/using/jedi_environment/vagrant.html>`_.
 When working in the Singularity container, the main difference
-from the instructions provided above for Cheyenne is that the environment is already set up properly
+from the instructions provided above for Derecho is that the environment is already set up properly
 within the container. Thus there is no need to :code:`source` an environment setup file.
 
 .. _controltesting-mpas:
@@ -142,7 +145,7 @@ information on the individual ctests, see :doc:`the documentation for their yaml
 Controlling the testing
 -----------------------
 
-In addition to the basic :code:`ctest` command shown in :ref:`build-test-mpas-cheyenne`, which runs
+In addition to the basic :code:`ctest` command shown in :ref:`build-test-mpas-derecho`, which runs
 all of the available tests for MPAS-JEDI, :code:`ctest` has basic flags and arguments available for
 selecting a subset of tests.  :code:`ctest` also automatically provides some logging functionality
 that is useful for reviewing passing and failing test cases.  Both of those aspects of

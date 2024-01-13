@@ -1,3 +1,6 @@
+.. warning::
+    This section is out of date!! A further review will be completed in the near future. Sorry for the inconvenience.
+
 .. _top-mpas-jedi-diagnostics:
 
 Diagnostics
@@ -66,7 +69,7 @@ In the Variational application, ObsGroups associated with :code:`EffectiveQC`, :
 Those database files feed into a robust observation-space
 python-based verification tool. The first part of the tool diagnoses fits to observations, and
 writes binned statistics to intermediate NetCDF database files. If you perform verification on NCAR
-CISL's Cheyenne HPC, run the :code:`ncar_pylib` command first in order to load all of the required python
+CISL's Derecho HPC, run the :code:`ncar_pylib` command first in order to load all of the required python
 modules.
 
 Below is a sample shell script for writing the intermediate statistics database file for a single
@@ -103,7 +106,7 @@ first and last forecast durations and increment should also be modified.
 Users can then run :code:`AnalyzeStats.py` on the command-line or submit many jobs, each one for a
 different observation type, using :code:`SpawnAnalyzeStats.py`.  This procedure is described in
 detail in :code:`analyze_config.py`. Take note that the automated job submission process is only
-enabled on CISL's Cheyenne and Casper login nodes at this time.
+enabled on CISL's Derecho and Casper login nodes at this time.
 
 
 Model-space verification

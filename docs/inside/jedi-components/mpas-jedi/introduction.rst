@@ -1,3 +1,6 @@
+.. warning::
+    This section is out of date!! A further review will be completed in the near future. Sorry for the inconvenience.
+
 .. _top-mpas-jedi-intro:  [note: comments are new paragraphs that start with "dot dot space", the explicit markup start]
 
 Introduction
@@ -31,7 +34,7 @@ to global, quasi-uniform meshes like those in the test suite and tutorial exampl
 also be configured to employ analysis increments and ensemble-forecast input at a different, coarser
 mesh-spacing than the background forecast and analysis (to be referred to as dual-resolution or dual-mesh applications elsewhere in this documentation). MPAS-JEDI is distributed with python-based
 diagnostic and plotting utilities. There is an additional cylc-based workflow repository
-(`MPAS-Workflow <https://github.com/NCAR/MPAS-Workflow>`_) available, which has only been used on NCAR's Cheyenne HPC.
+(`MPAS-Workflow <https://github.com/NCAR/MPAS-Workflow>`_) available, which has only been used on NCAR's Derecho HPC.
 Eventually those independent post-processing and workflow tools will be merged with or replaced by shared JEDI
 capabilities as those capabilities mature.
 

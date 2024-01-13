@@ -32,6 +32,8 @@ Versions used:
 
 Note. It is necessary to use c6i.4xlarge or larger instances of this family (recommended: c6i.8xlarge when running the `skylab-atm-land-small` experiment). 
 
+For more information about using Amazon Web Services please see :ref:`cloud_index`.
+
 Developer section
 -----------------
 Note. To follow this section, one needs read access to the JCSDA-internal GitHub org.
@@ -42,7 +44,7 @@ First, you need to load all the modules needed to build jedi-bundle and solo/r2d
 Note that loading modules only sets up the environment for you. You still need to build
 jedi-bundle, run ctests, install solo/r2d2/ewok/simobs and download skylab.
 
-Please note that currently we only support Orion, Discover, S4, and AWS platforms.
+Please note that currently we only support Orion, Hercules, Derecho, Discover, S4, and AWS platforms.
 If you are working on a system not specified below please follow the instructions on
 `JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/6.0.0/using/jedi_environment/index.html>`_.
 
@@ -136,7 +138,7 @@ Note:
 
 It is recommended these two directories are not one inside the other.
 
-- Orion: it’s recommended to use :code:`$JEDI_ROOT=/work/noaa/da/${USER}/jedi`.
+- Orion: it’s recommended to use :code:`$JEDI_ROOT=/work2/noaa/jcsda/${USER}/jedi`.
 
 - Discover: it’s recommended to use :code:`$JEDI_ROOT=/discover/nobackup/${USER}/jedi`.
 
@@ -278,8 +280,6 @@ Please see :ref:`hpc_users_guide` for more information on specifics for editing 
 
   # Set the host for R2D2/EWOK
 
-  # On Cheyenne
-  export R2D2_HOST=cheyenne
   # On Derecho
   export R2D2_HOST=derecho
   # On Discover
@@ -346,7 +346,7 @@ Please see :ref:`hpc_users_guide` for more information on specifics for editing 
   export ECF_HOST=$host
 
   case $R2D2_HOST in
-    cheyenne | derecho)
+    derecho)
       export EWOK_STATIC_DATA=/glade/p/mmm/jedipara/static
       ;;
     discover)

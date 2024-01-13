@@ -275,9 +275,9 @@ S4 mainly uses Intel compilers and tools.  VTune is the main profiler to use on 
 
     $ module load vtune
 
-### Cheyenne
+### Derecho
 
-Cheyenne currently has an ArmForge license and MAP is the preferred profiler:
+Derecho currently has an ArmForge license and MAP is the preferred profiler:
 
     $ module load arm-forge
 
