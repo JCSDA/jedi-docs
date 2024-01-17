@@ -57,7 +57,7 @@ their roles on a case by case basis, particularly for small changes.
 
 
 JEDI Roles and Responsibilities: Our Governance Framework
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Management Oversight Board (MOB)
 --------------------------------

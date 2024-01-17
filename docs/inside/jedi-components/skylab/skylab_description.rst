@@ -13,7 +13,7 @@ and running the :code:`create_experiment.py` command sets up the generic workflo
 (EWOK: Experiments and Workflows Orchestration Kit) for this experiment.
 
 More information about how to build and run SkyLab is available here:
-:doc:`Running SkyLab </using/building_and_running/running_skylab>`.
+:ref:`build-run-skylab`.
 
 The experiment yaml has to contain the following information:
 

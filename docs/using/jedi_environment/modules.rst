@@ -38,7 +38,7 @@ This section outlines the general steps to set up spack-stack modules for the de
 
 1. Load HPC specific modules from `spack-stack pre-configured sites documentation <https://spack-stack.readthedocs.io/en/1.5.1/PreConfiguredSites.html>`_.
 
-2. Load appropriate modules for JEDI and the ``Skylab v6`` release.
+2. Load appropriate modules for JEDI and the ``{skylab_v}`` release.
 
    .. code-block:: bash
 

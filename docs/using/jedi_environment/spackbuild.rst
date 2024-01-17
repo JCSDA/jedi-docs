@@ -4,7 +4,7 @@ Building spack-stack modules for JEDI
 =====================================
 
 The instructions in this section are specific to building spack-stack environments to support the JEDI applications
-(SkyLab v6 release). For general information on using spack-stack to build and run software, see the
+({skylab_v} release). For general information on using spack-stack to build and run software, see the
 `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.5.1/>`_. Make sure you have read through
 the documentation before attempting to build your own stack. The commands below only highlight the differences
 to the general documentation, steps in between that are not written down here are identical.
@@ -39,27 +39,27 @@ Go into the ``spack-stack-1.5.1`` directory and source the spack-stack ``setup.s
    cd spack-stack-1.5.1
    source setup.sh
 
-Use the following command to create the spack-stack environment for ``skylab-6.0.0``:
+Use the following command to create the spack-stack environment for ``{skylab_version}``:
 
 .. code-block:: bash
 
-   spack stack create env --site=linux.default --template=skylab-dev --name=skylab-6.0.0
+   spack stack create env --site=linux.default --template=skylab-dev --name={skylab_version}
 
 Replace ``linux.default`` with ``macos.default`` as required for your system.
 
-Activate the ``skylab-6.0.0`` spack-stack environment:
+Activate the ``{skylab_version}`` spack-stack environment:
 
 .. code-block:: bash
 
-   spack env activate [-p] envs/skylab-6.0.0
+   spack env activate [-p] envs/{skylab_version}
 
 Export ``SPACK_SYSTEM_CONFIG_PATH``:
 
 .. code-block:: bash
 
-   export SPACK_SYSTEM_CONFIG_PATH="$PWD/envs/skylab-6.0.0/site"
+   export SPACK_SYSTEM_CONFIG_PATH="$PWD/envs/{skylab_version}/site"
 
-Build the ``skylab-6.0.0`` spack-stack environment:
+Build the ``{skylab_version}`` spack-stack environment:
 
 Go to https://spack-stack.readthedocs.io/en/latest/NewSiteConfigs.html#creating-a-new-environment for instructions starting with Step 3.
 

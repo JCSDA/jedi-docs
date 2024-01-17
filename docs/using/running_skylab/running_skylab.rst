@@ -18,17 +18,17 @@ Versions used:
 
   - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
 
-    AMI Name skylab-6.1.0-redhat8
+    AMI Name {skylab_version}-redhat8
 
-    AMI ID ami-06497c2e0f2ded6cf (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-06497c2e0f2ded6cf)
+    AMI ID ami-01147e0e00b99cbdf (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-01147e0e00b99cbdf)
 
 - AMI available in us-east-2 region (Ohio)
 
   - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
 
-    AMI Name skylab-6.1.0-redhat8
+    AMI Name {skylab_version}-redhat8
 
-    AMI ID ami-0b1ce08e2fd42333b (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-0b1ce08e2fd42333b)
+    AMI ID ami-091ad0584d0400762 (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-091ad0584d0400762)
 
 Note. It is necessary to use c6i.4xlarge or larger instances of this family (recommended: c6i.8xlarge when running the `skylab-atm-land-small` experiment). 
 
@@ -45,8 +45,7 @@ Note that loading modules only sets up the environment for you. You still need t
 jedi-bundle, run ctests, install solo/r2d2/ewok/simobs and download skylab.
 
 Please note that currently we only support Orion, Hercules, Derecho, Discover, S4, and AWS platforms.
-If you are working on a system not specified below please follow the instructions on
-`JEDI Portability <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/6.0.0/using/jedi_environment/index.html>`_.
+If you are working on a system not specified below please follow the instructions on :ref:`jedi_portability`.
 
 Users are responsible for setting up their GitHub and AWS credentials on the platform they are using.
 You will need to create or edit your ``~/.aws/config`` and ``~/.aws/credentials`` to make sure they contain:
@@ -165,7 +164,7 @@ the build was successful by running the tests (still from $JEDI_BUILD):
 
 If you are on an HPC you may need to provide additional flags to the ecbuild
 command, or login to a compute node, or submit a batch script for running the
-ctests. Please refer the `documentation <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/6.0.0/using/jedi_environment/modules.html#general-tips-for-hpc-systems>`_ for more details.
+ctests. Please refer the :ref:`hpc_users_guide` for more details.
 
 (You might have another coffee.) You have successfully built JEDI!
 
@@ -213,6 +212,21 @@ clone these repos *inside* the clone of the jedi-bundle repo.
   git clone https://github.com/jcsda-internal/ewok
   git clone https://github.com/jcsda-internal/simobs
   git clone https://github.com/jcsda-internal/skylab
+
+Or for the latest release of ``{skylab_v}``, clone the corresponding workflow repository branches:
+
+.. code-block:: bash
+
+  cd $JEDI_SRC
+  git clone --branch 1.2.0 https://github.com/jcsda-internal/solo
+  git clone --branch 2.3.0 https://github.com/jcsda-internal/r2d2
+  git clone --branch 0.7.0 https://github.com/jcsda-internal/ewok
+  git clone --branch 1.5.0 https://github.com/jcsda-internal/simobs
+  git clone --branch 7.0.0 https://github.com/jcsda-internal/skylab
+
+Continue with setting up a virtual environment.
+
+.. code-block:: bash
 
   cd $JEDI_ROOT
   python3 -m venv --system-site-packages venv
