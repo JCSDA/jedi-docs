@@ -251,158 +251,40 @@ new session on your machine.
 4- Setup SkyLab
 ^^^^^^^^^^^^^^^
 
-Create and source $JEDI_ROOT/activate.sh
+Create and source $JEDI_ROOT/setup.sh
 """"""""""""""""""""""""""""""""""""""""
 We recommend creating this bash script and sourcing it before running the experiment.
 This bash script sets environment variables such as :code:`JEDI_BUILD`, :code:`JEDI_SRC`,
-:code:`EWOK_WORKDIR` and :code:`EWOK_FLOWDIR` required by ewok. If these variables are not
-defined they will be set from :code:`JEDI_ROOT`.
+:code:`EWOK_WORKDIR` and :code:`EWOK_FLOWDIR` required by ewok. A reference setup script that reflects
+the lastest developmental code is available at https://github.com/JCSDA-internal/jedi-tools/blob/develop/buildscripts/setup.sh.
 
-Users may set :code:`JEDI_SRC`, :code:`JEDI_BUILD`, :code:`EWOK_WORKDIR` and
+The script contains logic for loading the required spack-stack modules
+on configurable platforms (i.e. where :code:`R2D2_HOST=LOCALHOST`, see below),
+and it pulls in spack-stack configurations for supported platforms. These are located in
+https://github.com/JCSDA-internal/jedi-tools/blob/develop/buildscripts/setup/ for the latest
+developmental code.
+
+Users may set :code:`JEDI_ROOT`, :code:`JEDI_SRC`, :code:`JEDI_BUILD`, :code:`EWOK_WORKDIR` and
 :code:`EWOK_FLOWDIR` to point to relevant directories on their systems
-or use the default template in the sample script below. Note that :code:`JEDI_SRC`,
-:code:`JEDI_BUILD` and :code:`EWOK_WORKDIR` are experiment specific, i.e. you can run several
-experiments at the same time, each having their own definition for these variables.
+or use the default template in the sample script. Note that these locations are experiment specific,
+i.e. you can run several experiments at the same time, each having their own definition for these variables.
 
-The user further has to set two environment variables :code:`R2D2_HOST` and `R2D2_COMPILER` in the script.
-:code:`R2D2_HOST` and `R2D2_COMPILER` are required by r2d2 and ewok. They are used to initialize the
+The user further has to set two environment variables :code:`R2D2_HOST` and :code:`R2D2_COMPILER` in the script.
+:code:`R2D2_HOST` and :code:`R2D2_COMPILER` are required by r2d2 and ewok. They are used to initialize the
 location :code:`EWOK_STATIC_DATA` of the static data used by skylab and bind r2d2 to your current environment.
-:code:`EWOK_STATIC_DATA` is staged on the preconfigured platforms.
+:code:`EWOK_STATIC_DATA` is staged on the preconfigured platforms. On generic platforms, the script sets
+:code:`EWOK_STATIC_DATA` to :code:`${JEDI_SRC}/static-data/static`.
 
-In the section that exports your :code:`R2D2_HOST` and `R2D2_COMPILER`, **Be sure to remove all lines that
-are NOT relevant to your platform.**
+Please don’t forget to source this script after creating it: :code:`source $JEDI_ROOT/setup.sh`
 
-On generic platforms, the script sets :code:`EWOK_STATIC_DATA` to :code:`${JEDI_SRC}/static-data/static`.
+Please see :ref:`hpc_users_guide` for more information on specifics for editing this :code:`setup.sh` script
+and other general instructions and notes for running skylab on supported HPC systems.
 
-Please don’t forget to source this script after creating it: :code:`source $JEDI_ROOT/activate.sh`
-
-Please see :ref:`hpc_users_guide` for more information on specifics for editing this :code:`activate.sh` script and other general instructions and notes for running skylab on supported HPC systems.
-
-.. code-block:: bash
-
-  #!/bin/bash
-
-  # Set JEDI_ROOT
-
-  if [ -z $JEDI_ROOT ]; then
-    export JEDI_ROOT=**Set this based on your set up if JEDI_SRC, JEDI_BUILD, EWOK_WORKDIR or EWOK_FLOWDIR are not defined.**
-  fi
-
-  if [ -z $JEDI_SRC ]; then
-    export JEDI_SRC=${JEDI_ROOT}/jedi-bundle
-  fi
-
-  # Set the host for R2D2/EWOK
-
-  # On Derecho
-  export R2D2_HOST=derecho
-  # On Discover
-  export R2D2_HOST=discover
-  # On Hercules
-  export R2D2_HOST=hercules
-  # On Orion
-  export R2D2_HOST=orion
-  # On S4
-  export R2D2_HOST=s4
-  # On AWS Parallel Cluster
-  export R2D2_HOST=aws-pcluster
-  # On NOAA's ParallelWorks on AWS
-  export R2D2_HOST=pw-aws
-  # On NOAA's ParallelWorks on Azure
-  export R2D2_HOST=pw-azure
-  # On NOAA's ParallelWorks on GCloud
-  export R2D2_HOST=pw-gcloud
-  # On your local machine / AWS single node
-  export R2D2_HOST=localhost
-
-  # Set the compiler for R2D2/EWOK
-
-  # For gnu
-  export R2D2_COMPILER=gnu
-  # For intel
-  export R2D2_COMPILER=intel
-  # For clang/llvm
-  export R2D2_COMPILER=clang
-
-  # Most users won't need to change the following settings
-
-  # Source source this file for ewok ecFlow workflows
-  source $JEDI_ROOT/venv/bin/activate
-
-  if [ -z $JEDI_BUILD ]; then
-    export JEDI_BUILD=${JEDI_ROOT}/build
-  fi
-
-  if [ -z $EWOK_WORKDIR ]; then
-    export EWOK_WORKDIR=${JEDI_ROOT}/workdir
-  fi
-
-  if [ -z $EWOK_FLOWDIR ]; then
-    export EWOK_FLOWDIR=${JEDI_ROOT}/ecflow
-  fi
-
-  # Add ioda python bindings to PYTHONPATH
-  PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:2]; print("{0}.{1}".format(*version))'`
-  export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}:${PYTHONPATH}"
-
-  # necessary user directories for ewok and ecFlow files
-  mkdir -p $EWOK_WORKDIR $EWOK_FLOWDIR
-
-  # ecFlow vars - EDIT: (set to constant) if running locally or on Discover
-  myid=$(id -u ${USER})
-  if [[ $myid -gt 64000 ]]; then
-    myid=$(awk -v min=3000 -v max=31000 -v seed=$RANDOM 'BEGIN{srand(seed); print int(min + rand() * (max - min + 1))}')
-  fi
-  export ECF_PORT=$((myid + 1500))
-
-  # The ecflow hostname (e.g. a specific login node) is different from the R2D2/EWOK general host (i.e. system) name
-  host=$(hostname | cut -f1 -d'.')
-  export ECF_HOST=$host
-
-  case $R2D2_HOST in
-    derecho)
-      export EWOK_STATIC_DATA=/glade/p/mmm/jedipara/static
-      ;;
-    discover)
-      export EWOK_STATIC_DATA=/discover/nobackup/projects/jcsda/s2127/static
-      ;;
-    orion* | hercules)
-      export EWOK_STATIC_DATA=/work/noaa/da/role-da/static
-      ;;
-    s4)
-      export EWOK_STATIC_DATA=/data/prod/jedi/static
-      ;;
-    aws-pcluster)
-      export EWOK_STATIC_DATA=${JEDI_ROOT}/static
-      ;;
-    pw-aws | pw-azure | pw-gcloud)
-      echo "EWOK_STATIC_DATA chas not been assigned to '$R2D2_HOST'"
-      ;;
-    localhost)
-      export EWOK_STATIC_DATA=${JEDI_SRC}/static-data/static
-      ;;
-    *)
-      echo "Unknown compute host name '$R2D2_HOST'"
-      exit 1
-      ;;
-  esac
-
-If you are running locally you my want to pick a constant value for :code:`ECF_PORT`. As written,
-the code above will generate a new, random value for your :code:`ECF_PORT` everytime this script
-is sourced. Changing your :code:`ECF_PORT` will require you to reconnect the ecflow server after
-everytime this script is sourced, so keeping it constant will keep your ecflow server connected.
-
-Note: On AWS pcluster users will need to update the python version referenced in the above
-:code:`source $JEDI_ROOT/activate.sh` script. The following lines under 
-:code:`# ecflow and pyioda Python bindings` should be:
-
-.. code-block:: bash
-
-    # ecflow and pyioda Python bindings
-    PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:2]; print("{0}.{1}".format(*version))'`
-    export PYTHONPATH="${JEDI_BUILD}/lib/python${PYTHON_VERSION}:/home/ubuntu/jedi/ecflow-5.8.4/lib/python3.8/site-packages:${PYTHONPATH}"
-
-
+The script also sets the variable :code:`ECF_PORT` to a constant value that depends on your user ID
+on the system. Please make sure that the resulting value for :code:`ECF_PORT` is somewhere between
+5000 and 20000. On some systems (e.g. your own macOS laptop), the user ID is a large integer well
+outside the allowed port range. Note that changing your :code:`ECF_PORT` will require you to reconnect
+the ecflow server, so keeping it constant will keep your ecflow server connected.
 
 5- Setup R2D2 (for MacOS and AWS Single Nodes)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -455,7 +337,7 @@ the :code:`r2d2-experiments-tutorial.sql` file is in :code:`$JEDI_SRC/r2d2-data`
 ^^^^^^^^^^^^^
 Now you are ready to start an ecflow server and run an experiment. Make sure you are in your python virtual environment (venv).
 
-To start the ecflow server:
+First, start the ecflow server. Note that this may already be done by your `setup.sh` script if you are using the reference script mentioned in the previous sections.
 
 .. code-block:: bash
 
