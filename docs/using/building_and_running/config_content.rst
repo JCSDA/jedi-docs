@@ -131,7 +131,7 @@ If the observations have been divided into records then it is possible to extend
         name: Sonde
         obsdatain:
           engine:
-            type: H5File
+            type: ODB
             obsfile: sonde.odb
           obsgrouping:
             group variables: [ "stationIdentification" ]
