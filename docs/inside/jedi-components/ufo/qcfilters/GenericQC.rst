@@ -1746,6 +1746,7 @@ The following are optional YAML parameters with defaults listed where a variable
 * :code:`Store1DVarCLW`:  flag to write the retrieved liquid water profiles to the observation database. Default: :code:`false`.
 * :code:`Store1DVarTransmittance`:  flag to write the retrieved surface to space transmittance to the observation database. Default: :code:`false`.
 * :code:`RecalculateBT`:  flag to recalculate the brightness temperatures using retrieved surface variables (emissivity, skin temperature) and retrieved cloud layer variables (CTP, ECA). Default: :code:`false`.
+* :code:`set the initial skin temperature from the obsspace`:  flag to read the initial skin temperature from the observation database. If true, the code reads the skin temperature from :code:`MetaData/skinTemperature`, if the array is not in the observation space an exception is thrown. If false the original value in the GeoVaL will be used. Default: :code:`false`.
 * :code:`Max1DVarIterations`:  maximum number of iterations. Default: :code:`7`.
 * :code:`JConvergenceOption`:  integer to select convergence option.  1 equals percentage change in cost function value tested between iterations.  Otherwise the absolute change in cost function value is tested between iterations. Default: :code:`1`.
 * :code:`IterNumForLWPCheck`:  choose which iteration to start checking the liquid water path. Default: :code:`2`.
