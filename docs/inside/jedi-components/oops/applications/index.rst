@@ -12,3 +12,4 @@ OOPS Applications
    hofx
    forecast
    genenspertb
+   gen-hybrid-linear-model-coeffs

@@ -30,6 +30,7 @@ Data assimilation helper applications
 * StaticBInit
 * ExternalDFI
 * EnsVariance
+* :doc:`GenHybridLinearModelCoeffs<gen-hybrid-linear-model-coeffs>`: generates hybrid tangent linear model coefficients via ensemble forecasts
 
 Applications operating on model states and increments
 -----------------------------------------------------
