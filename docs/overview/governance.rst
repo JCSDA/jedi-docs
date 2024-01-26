@@ -24,7 +24,7 @@ bloated, difficult to manage, and unpopular.
 With modern programming this situation can be avoided.  Common practices such as modularity, generic programming, and separation of concerns permit more versatile and efficient workflows.
 
 Structure of JEDI
---------------------------------
+-----------------
 
 In the old code style, a specialized sub-class in an inheritance structure leaves no trace
 behind when it is removed.
