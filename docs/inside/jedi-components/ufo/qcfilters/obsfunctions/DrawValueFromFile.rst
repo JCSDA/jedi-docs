@@ -31,7 +31,7 @@ is chosen in the examples below).
              file: <path-to-input>    # path to the CSV/NetCDF file
              group: DerivedObsValue   # group with the payload variable
              interpolation:
-             - name: MetaData/satelliteIdentifier
+             - name: MetaData/stationIdentification
                method: exact
 
 and the CSV file, located at :code:`<path-to-input>`, might look like this:
@@ -216,7 +216,7 @@ The following examples illustrate more advanced usage of this obsfunction.
 Example 2 (multi-channel)
 .........................
 Here we illustrate how we might extend our first example by having multiple
-channels as well as additional variables over which the payload varies.
+channels as well as an additional variable over which the payload varies.
 
 .. code-block:: yaml
 
@@ -233,8 +233,6 @@ channels as well as additional variables over which the payload varies.
              interpolation:
              - name: MetaData/satelliteIdentifier
                method: exact
-             - name: MetaData/dataProviderOrigin
-               method: exact
              - name: MetaData/pressure
                method: linear
 
@@ -246,7 +244,7 @@ channel information to be described by the name `MetaData/sensorChannelNumber` a
 
 This might be described by a CSV similar to: ::
 
-    MetaData/stationIdentification,MetaData/pressure,MetaData/sensorChannelNumber,DerivedObsValue/mydata
+    MetaData/satelliteIdentifier,MetaData/pressure,MetaData/sensorChannelNumber,DerivedObsValue/mydata
     string,float,int,float
     ABC,30000,0, 0.1
     ABC,60000,0, 0.2

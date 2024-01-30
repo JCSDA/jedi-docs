@@ -108,9 +108,9 @@ Example:
          obsfile: Data/sondes_obs_2018041500.nc4
      simulated variables: [airTemperature, windEastward, windNorthward]
      derived variables: [windEastward, windNorthward]
-   # Example 4: observed and derived variables. Suppose the input file contains station_pressure  
-   # and mean_sea_level_pressure which need to be quality controlled before being used to derive 
-   # stationPressure which is the variable to be assimialted. 
+   # Example 4: observed and derived variables. Suppose the input file contains station_pressure
+   # and mean_sea_level_pressure which need to be quality controlled before being used to derive
+   # stationPressure which is the variable to be assimilated.
    obs space:
      name: Surface
      obsdatain:
@@ -131,7 +131,7 @@ If the observations have been divided into records then it is possible to extend
         name: Sonde
         obsdatain:
           engine:
-            type: H5File
+            type: ODB
             obsfile: sonde.odb
           obsgrouping:
             group variables: [ "stationIdentification" ]
