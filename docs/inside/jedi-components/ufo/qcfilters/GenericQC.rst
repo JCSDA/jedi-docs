@@ -303,13 +303,13 @@ This filter retains all observations selected by the :ref:`"where" statement <wh
        maxvalue: 300
      - variable:
          name: MetaData/height
-       is_defined:
+       value: is_valid
      - variable:
          name: MetaData/stationIdentification
        is_in: 3, 6, 11-120
      - variable:
          name: MetaData/pressure
-       is_not_defined:
+       value: is_not_valid
 
 BlackList Filter
 ----------------

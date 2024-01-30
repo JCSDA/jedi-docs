@@ -59,21 +59,21 @@ This would cause the filter to be applied only to air temperature observations `
 The list passed to the :code:`where` keyword can contain more than one item, each representing a separate condition imposed on a particular variable. The filter is applied only to observations meeting all of these conditions. The following kinds of conditions are accepted:
 
 - :code:`minvalue` and/or :code:`maxvalue`: filter applied only to observations for which the condition variable lies in the specified range. The upper and lower bounds can be floating-point numbers or datetimes in the ISO 8601 format. If any date/time components are set to `*`, they are disregarded. See :ref:`Example 2 <where-example-2>` below on where this can be useful.  Each of these strings must be 20 characters long so defining 'any year' would be indicated by `****`.
-- :code:`is_defined`: filter applied only to observations for which the condition variable has a valid value (not a missing data indicator).
-- :code:`is_not_defined`: filter applied only to observations for which the condition variable is set to a missing data indicator.
+- :code:`value: is_valid`: filter applied only to observations for which the condition variable has a valid value (not a missing data indicator).
+- :code:`value: is_not_valid`: filter applied only to observations for which the condition variable is set to a missing data indicator.
 - :code:`is_in`: filter applied only to observations for which the condition variable is set to a value belonging to the given whitelist.
 - :code:`is_close_to_any_of`: filter applied only to observations for which the condition variable (a float) is close to any of the variables in the given reference list.  Two variables are defined as close if they differ by less than a provided tolerance.  The tolerance must be provided and can either be absolute (:code:`absolute_tolerance`) or relative (:code:`relative_tolerance`).
 - :code:`is_not_in`: filter applied only to observations for which the condition variable is set to a value not belonging to the given blacklist.
 - :code:`is_not_close_to_any_of`: filter applied only to observations for which the condition variable (a float) is not close to any of the variables in the given reference list.  Two variables are defined as close if they differ by less than a provided tolerance.  The tolerance must be provided and can either be absolute (:code:`absolute_tolerance`) or relative (:code:`relative_tolerance`).
-- :code:`is_true`: filter applied only to observations for which the condition variable (normally a diagnostic flag) is set to :code:`true`.
-- :code:`is_false`: filter applied only to observations for which the condition variable (normally a diagnostic flag) is set to :code:`false`.
+- :code:`value: is_true`: filter applied only to observations for which the condition variable (normally a diagnostic flag) is set to :code:`true`.
+- :code:`value: is_false`: filter applied only to observations for which the condition variable (normally a diagnostic flag) is set to :code:`false`.
 - :code:`any_bit_set_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices set.
 - :code:`any_bit_unset_of`: filter applied only to observations for which the condition variable is an integer with at least one of the bits with specified indices unset (i.e. zero).
 - :code:`matches_regex`: filter applied only to observations for which the condition variable is a string that matches the specified regular expression or an integer whose decimal representation matches that expression. The regular expression should conform to the ECMAScript syntax described at http://www.cplusplus.com/reference/regex/ECMAScript.
 - :code:`matches_wildcard`: filter applied only to observations for which the condition variable is a string that matches the specified wildcard pattern or an integer whose decimal representation matches that pattern. The following wildcards are recognized: :code:`*` (matching any number of characters, including zero) and :code:`?` (matching any single character).
 - :code:`matches_any_wildcard`: filter applied only to observations for which the condition variable is a string that matches at least one of the specified wildcard patterns, or an integer whose decimal representation matches at least one of these patterns. The same wildcards are recognized as for :code:`matches_wildcard`.
 
-The elements of both whitelists and blacklists can be strings, non-negative integers or ranges of non-negative integers. It is not necessary to put any value after the colon following :code:`is_defined` and :code:`is_not_defined`. Bits are numbered from zero starting from the least significant bit.
+The elements of both whitelists and blacklists can be strings, non-negative integers or ranges of non-negative integers. Bits are numbered from zero starting from the least significant bit.
 
 By default, if multiple conditions are used in a :code:`where` statement then the logical :code:`and` of the results is used to determine which locations are selected by the statement. The logical operator used to combine the results can be chosen explicitly with the :code:`where operator` parameter; the permitted operators are :code:`and` and :code:`or`. The use of the :code:`or` operator is illustrated in :ref:`Example 11 <where-example-11>`. Note that it is possible to use the :code:`where operator` option without the :code:`where` statement. The option has no impact in that case.
 
@@ -94,7 +94,7 @@ Example 1
       maxvalue: 60.
     - variable:
         name: MetaData/height
-      is_defined:
+      value: is_valid
     - variable:
         name: MetaData/stationIdentification
       is_in: 3, 6, 11-120
@@ -222,10 +222,10 @@ Example 10
     where:
     - variable:
         name: DiagnosticFlags/ExtremeValue/airTemperature
-      is_true:
+      value: is_true
     - variable:
         name: DiagnosticFlags/ExtremeValue/relativeHumidity
-      is_false:
+      value: is_false
 
 In this example, the filter will be applied only to observations with the :code:`ExtremeValue` diagnostic flag set for the air temperature, but not for the relative humidity.
 
@@ -548,7 +548,7 @@ Note that any diagnostic flags in the original space that are already set remain
       where:
         - variable:
             name: ObsValue/waterPotentialTemperature
-          is_defined:
+          value: is_valid
       filter variables:
         - name: DiagnosticFlags/BayBgCheckReject/salinity
         - name: DiagnosticFlags/BayBgCheckReject/waterPotentialTemperature

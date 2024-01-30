@@ -964,7 +964,7 @@ Once the density spikes and steps have been flagged, it is possible to subsequen
             where:
               - variable:
                   name: ObsValue/waterTemperature
-                is_defined:
+                value: is_valid
   # create derived metadata counting spikes only:
     - filter: Variable Assignment
       assignments:
@@ -976,7 +976,7 @@ Once the density spikes and steps have been flagged, it is possible to subsequen
             where:
               - variable:
                   name: DiagnosticFlags/DensitySpike/depthBelowWaterSurface
-                is_true:
+                value: is_true
   # reject whole profile if num spikes >= numlev/4, so compute
   #  4*( num spikes ) minus numlev in order to check it against 0:
     - filter: Variable Assignment

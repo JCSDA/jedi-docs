@@ -24,7 +24,7 @@ Here is an example that assigns to :code:`DerivedObsValue/depthBelowWaterSurface
     where:
     - variable:
         name: MetaData/argo_identifier
-      is_defined:
+      value: is_valid
     assignments:
     - name: DerivedObsValue/depthBelowWaterSurface
       type: float

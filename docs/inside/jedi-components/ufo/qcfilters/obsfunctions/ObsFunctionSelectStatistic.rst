@@ -47,7 +47,7 @@ An example with a multi-channel variable:
       where:
       - variable:
           name: ObsValue/var1
-        is_defined:
+        value: is_valid
       - variable:
           name: QCflagsData/var2
         is_in: 0
