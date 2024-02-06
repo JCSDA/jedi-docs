@@ -49,13 +49,6 @@ Code basics
 
 The core of the code is written in object-oriented Fortran 90 (~ 35,000 lines), but it also has OOPS-based C++ interfaces (~ 5,000 lines). Some Python scripts are also available (~ 4,000 lines), especially to plot results.
 
-Four SABER blocks are based on BUMP:
-
-* **BUMP_NICAS**: grid-point smoother for correlation or localization.
-* **BUMP_PsiChiToUV**: variable change from streamfunction and velocity potential to horizontal wind components, using smooth estimates of the derivatives.
-* **BUMP_StdDev**: standard-deviation (diagonal) operator.
-* **BUMP_VerticalBalance**: vertical balance operator.
-
 BUMP usage
 **********
 
@@ -69,7 +62,7 @@ For both steps, the BUMP setup (in :code:`BUMP.h`) follows the same process:
 
 * Setup BUMP configuration using both SABER block configuration and background.
 * Read universe size from a model file (optional).
-* Initialize BUMP instances (see the :code:`grids` parameter in the :ref:`External parameters <external_parameters>` section):
+* Initialize BUMP instances:
 
   * parallelization aspects (MPI, OpenMP, parallel I/O),
   * configuration parameters (consistency checking),
