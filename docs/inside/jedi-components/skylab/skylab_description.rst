@@ -98,10 +98,14 @@ Yaml configuration for the plots (included in :code:`plots` section of the exper
 
     # For model plots
     plotModel:
-      plot_geom: 1                       # lat-lon grid resolution in degrees
-      plot_variables: [air_temperature]  # list of variables to output
-      plot_levels: [850, 500, 250]       # list of levels in hPa
-      plot_4d: true                      # flag to output 4D increments for 4DEnVar (false by default)
+      plot_geom: 1                            # lat-lon grid resolution in degrees
+      plot_variables: [air_temperature]       # list of variables to output
+      plot_pressure_levels: [850, 500, 250]   # list of pressure levels in hPa to plot (optional)
+      plot_model_levels: [1]                  # list of model levels to plot (optional). Typically either
+                                              # pressure or model levels are specified. For plotting 2D
+                                              # variables both plot_pressure_levels and plot_model_levels
+                                              # can be omitted
+      plot_4d: true                           # flag to output 4D increments for 4DEnVar (false by default)
 
     # Plots of variational diagnostics
     plotVarDiagnostics:
