@@ -80,7 +80,7 @@ Adding substance to the new Observation Operator
 
 To implement the Observation Operator, one needs to:
 
-* Specify input variable names (requested from the model) in :code:`ufo_obsoperator_mod.F90`, subroutine :code:`ufo_obsoperator_setup`. The input variable names need to be saved in :code:`self%geovars`. The variables that need to be simulated by the observation operator are already set in :code:`self%obsvars` (these are the variables from :code:`obs space.simulated variables` section of configuration file. See examples in :code:`ufo/src/ufo/atmvertinterp/ufo_atmvertinterp_mod.F90` and :code:`ufo/src/ufo/crtm/ufo_radiancecrtm_mod.F90`. The variables can be hard-coded or controlled from the config file depending on your observation operator.
+* Specify input variable names (requested from the model) in :code:`ufo_obsoperator_mod.F90`, subroutine :code:`ufo_obsoperator_setup`. The input variable names need to be saved in :code:`self%geovars`. The variables that need to be simulated by the observation operator are already set in :code:`self%obsvars` (these are the variables from :code:`obs space.simulated variables` section of configuration file). See examples in :code:`ufo/src/ufo/atmvertinterp/ufo_atmvertinterp_mod.F90` and :code:`ufo/src/ufo/crtm/ufo_radiancecrtm_mod.F90`. The variables can be hard-coded or controlled from the config file depending on your observation operator.
 
 * Fill in :code:`ufo_obsoperator_simobs` routine. This subroutine is for calculating H(x). Inputs: :code:`geovals` (horizontally interpolated to obs locations model fields for the variables specified in :code:`self%geovars` above), :code:`obss` (observation space, can be used to request observation metadata). Output: :code:`hofx(nvars, nlocs)` (obs vector to hold H(x), :code:`nvars` are equal to the size of :code:`self%obsvars`). Note that the :code:`hofx` vector was allocated before the call to :code:`ufo_obsoperator_simobs`, and only needs to be filled in.
 
@@ -97,7 +97,7 @@ There are two parts of this test:
 :code:`testSimulateObs`: tests observation operator calculation in the following way:
 
 * Creates observation operator, calls :code:`ufo_obsoperator_setup`
-* Reads "GeoVaLs" (vertical profiles of relevant model variables, interpolated to observation lat-lon location) from the geovals file
+* Reads "GeoVaLs" (vertical profiles of relevant model variables, interpolated to observation lat-lon locations or along custom paths specified by the observation operator) from the geovals file
 * Computes H(x) by calling :code:`ufo_obsoperator_simobs`
 * Reads reference and compares the result to the reference. Options for specifying reference:
 
@@ -111,3 +111,19 @@ There are two parts of this test:
 
   - otherwise, the expected reference norm(H(x)) can be specified in the :code:`rms ref` entry in the config. Test passes
     if reference norm is close to the norm(H(x)) with tolerance defined in the config by :code:`tolerance`:
+
+Operators simulating non-pointwise observations
+-----------------------------------------------
+
+Most operators assume that the location of each observation, i.e., the region of space probed by the instrument taking that observation, can be well-approximated by a point or a vertical line. If this is the case, the operator can predict the value of an observation taken at a given latitude and longitude just from the values of relevant model fields interpolated along a vertical line intersecting the point on the Earth's surface with that latitude and longitude. For certain instruments, though, this approximation may not be sufficiently accurate, and JEDI allows operators to receive values of model variables interpolated along any number of paths per observation location. By averaging these model field profiles with appropriate weights, the operator can compute an arbitrarily accurate approximation of an observation taken by an instrument probing a spatially extended region of any shape.
+
+To specify a custom set of model variable interpolation paths, an :code:`ObsOperator` needs to override its :code:`locations()` method, which returns an :code:`oops::Locations` object mapping model variables to sets of paths along which these variables should be interpolated. An example can be found in the :code:`ObsGnssroBndROPP2D` class implementing a 2D GNSS-RO operator. Its :code:`locations()` method asks for all model variables required by this operator to be sampled along a certain number of paths per observation location; this number is user-controlled and specified in the YAML configuration file. In general, the number of interpolation paths can be location- and model-variable-dependent; for instance, it might be chosen differently for rapidly and slowly varying fields. At present, all paths must be vertical, but there are plans to add support for slanted paths in the future.
+
+The interpolation results, i.e., model field profiles, are stored in a :code:`GeoVaLs` object and passed to the :code:`ObsOperator::simulateObs()` method. The (one-to-many) mapping between observation locations and profiles can be retrieved by calling the :code:`GeoVaLs::getProfileIndicesGroupedByLocation()` function (in C++) or by inspecting the :code:`paths_by_loc` component of the appropriate element of the :code:`sampling_method_by_var` array stored in an instance of :code:`ufo_geovals` (in Fortran).
+
+.. tip::
+   Interpolation paths can be shared across multiple observation locations. This can be useful if an observation operator wants to simulate multiple (possibly all) observations by weighted averaging of model fields interpolated along paths arranged on, for instance, an equispaced or Gaussian quadrature grid covering an area encompassing the locations of all these observations.
+
+Apart from observation operators, GeoVaLs are also consumed by some observation filters and bias predictors. However, the latter expect the number of model variable profiles stored in a GeoVaL to match the number of observation locations. To allow such filters and bias predictors to be applied to observations handled by operators using model fields interpolated along multiple paths per observation location, the distinction between *sampled* and *reduced* GeoVaLs has been introduced. *Sampled* GeoVaLs are profiles produced by direct interpolation of a model field along an arbitrary set of paths sampling the observation locations, whereas *reduced* GeoVaLs are obtained by reducing each set of profiles associated with a single location to a single profile, typically by weighted averaging. This work is performed by the :code:`ObsOperator::computeReducedVars()` method, which needs to be overridden by observation operators that (a) require some model variables to be interpolated along multiple paths per observation location and (b) must work together with observation filters or bias predictors requiring access to the reduced representation of the GeoVaLs corresponding to these model variables.
+
+A single :code:`ufo::GeoVaLs` object can store GeoVaLs in both the sampled and reduced formats. Clients reading or writing GeoVaLs can specify the format of interest through the :code:`format` parameter of member functions such as :code:`getProfile()` and :code:`putProfile()`. The default value of that parameter is context-dependent: it is set to *sampled* most of the time, in particular when the OOPS framework invokes the :code:`ObsOperator::simulateObs()` method, but it is switched to *reduced* when the framework invokes observation filters or bias predictors.
