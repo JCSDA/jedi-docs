@@ -31,15 +31,16 @@ The experiment yaml has to contain the following information:
     init_cycle: # Date for the first cycle of the experiment
     last_cycle: # Date for the last cycle of the experiment
     step_cycle: # Step between cycles
-    init_exp: # Reference for the first background to be read from DB, to initialize the experiment
-    initype: # Optional, `fc` will initialize from forecasts or from analysis
+
+    cycling mode: # Optional, `non cycling` (default; will read backgrounds from an experiment set in `init_exp`) or `cycling`, (will use forecasts from the previous cycle of current experiment as backgrounds)
+    init_exp: # Reference for the first background to be read from DB, to initialize the experiment.
+    init_type: # Optional, `fc` (default;will initialize from forecasts) or `an` (will initialize from analysis and run forecast to get backgrounds for the first DA cycle)
 
     cost_function: # Cost function, choice between `3D-Var`, `4D-Var`, `3D-FGAT`,
     window_length: # Window length
     window_offset: # Offset between analysis and window start time
-    cycling mode: # Optional: `non cycling, (will read backgrounds from provider instead of cycling)
 
-    forecast_length: # Forecast length after the variational task
+    forecast_length: # Forecast length after the variational task. If set to `PT0H` the forecast task will not run. 
     forecast_output_frequency: # Forecast output frequency
 
     obs_sampling: # Optional, `coarse` if the coarse observation file exists
