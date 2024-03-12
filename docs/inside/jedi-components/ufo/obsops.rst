@@ -557,8 +557,10 @@ Optional
 * :code:`obs options.RTTOV_GasUnitConv` (integer, default :code:`false`): Convert absorber concentration from mass concentration [kg/kg] to volume concentration [ppmv dry] for use with RTTOV.
 * :code:`obs options.InspectProfileNumber` (integer list, default 0): Print RTTOV profile(s) with indices corresponding to the order in which the geovals are processed. Intended for use with debugging.
 * :code:`obs options.SatRad_compatibility` (boolean, default :code:`true`): Sets internal options to replicate Met Office OPS processing.
-* :code:`obs options.UseRHWaterForQC` (boolean, default :code:`true`): Use liquid water only in the saturation calculation (requires :code:`SatRad_compatibility` to be true).
 * :code:`obs options.UseColdSurfaceCheck` (boolean, default :code:`false`): Reset surface temperature over land and sea-ice where it is below 271.4 K. This is a legacy option for replicating OPS results prior to PS45 (requires :code:`SatRad_compatibility` to be true).
+* :code:`obs options.BoundQToSaturation` (boolean, default :code:`true`): Check the humidity profile and surface humidity does not exceed saturation.  If they do then reset to saturation. (requires :code:`SatRad_compatibility` to be true).
+* :code:`obs options.UseRHWaterForQC` (boolean, default :code:`true`): Use liquid water only in the saturation calculation (requires :code:`SatRad_compatibility` and :code:`BoundQToSaturation` to both be set to true).
+* :code:`obs options.UseMinimumQ` (boolean, default :code:`true`): Check the humidity profile and surface humidity is not less than min_q.  If the humidity is then it is reset to min_q.  Where the humidity profile has been reset to zero the Jacobian used in the TL and AD is set the zero. (requires :code:`SatRad_compatibility` to be true).
 
 Additionally, each option that may be modified within the RTTOV options structure may be accessed by prefixing :code:`RTTOV_` ahead of the option name, regardless of where it resides within the RTTOV option structure.
 For example, :code:`RTTOV_addrefrac: true` will enable the option within RTTOV to account for atmospheric refraction during the optical depth calculation.
