@@ -1,3 +1,4 @@
+.. _cmake_devtools:
 
 CMake, CTest, and ecbuild
 =========================
@@ -55,7 +56,7 @@ for packages and instructions.
 Using CMake and CTest
 ^^^^^^^^^^^^^^^^^^^^^
 
-At the heart of CMake are the CMakeLists.txt files.
+At the heart of CMake are the :code:`CMakeLists.txt` files.
 These files are where the specification takes place for all manufacturing processes.
 This specification may include items such as where the source code lives, dependencies
 for that source code, what libraries to link in, configuration of tests and the selection
@@ -74,8 +75,8 @@ your software is:
     ctest             # run the tests
     make install      # install the programs and scripts
 
-In the example above, the <dir_where_toplevel_CMakeLists.txt_file> argument to cmake
-is the Linux path to wherever the top level CMakeLists.txt file exists (only the
+In the example above, the :code:`<dir_where_toplevel_CMakeLists.txt_file>` argument to cmake
+is the Linux path to wherever the top level :code:`CMakeLists.txt` file exists (only the
 directory part of the path).
 This path can be relative or absolute.
 Here are some examples for running cmake:
@@ -89,14 +90,14 @@ Here are some examples for running cmake:
     cmake $HOME/projects/my-project   # top level CMakeLists.txt file lives
                                       # in $HOME/project/my-project
 
-Output from the cmake command is captured in the following files:
+Output from the :code:`cmake` command is captured in the following files:
 
 .. code-block:: bash
 
     ./CMakeFiles/CMakeOutput.log   # messages from cmake
     ./CMakeFiles/CMakeError.log    # errors and warnings from cmake
 
-The ctest command without arguments will run the entire set of tests.
+The :code:`ctest` command without arguments will run the entire set of tests.
 In the case that you want to run a specific test or you want more information on tests
 that failed, you can run individual tests using ctest as shown below.
 

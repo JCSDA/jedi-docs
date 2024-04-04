@@ -9,21 +9,15 @@ skylab on supported HPC systems.
 General Tips for HPC Systems
 ----------------------------
 
-Many HPC systems do not allow you to run MPI jobs from the login nodes. So, after building JEDI, you'll have to run the tests either in batch mode through a job submission program such as :code:`slurm` via :code:`sbatch` directives, or by accessing a batch compute node interactively through a program such as :code:`salloc`. Often these batch nodes do not have access to the internet; after you build JEDI, you may need to run the following command from a login node:
+Many HPC systems do not allow you to run MPI jobs from the login nodes. So, after building JEDI, you'll have to run the tests either in batch mode through a job submission program such as :code:`slurm` via the :code:`sbatch` command, or by accessing a compute node interactively through a command like :code:`salloc`. An advantage of submitting a job 'to the queue' through the :code:`slurm` scheduler is that you can then logout of the system, or continue to use your terminal after sumbitting your script while the tests run. The test results will be written into a :code:`slurm-<jobNumber>` file which will appear in which ever directory from which you submitted the job.
 
-.. code-block:: bash
-
-    ctest -R get_
-
-This runs several tests. The purpose of these tests is to download data files from the cloud that are then used by many of the other tests. If the :code:`get_*` tests are successful, then the data was downloaded successfully and you can proceed to run the remainder of the tests in batch using :code:`sbatch`, :code:`salloc`, or the equivalent process management command on your system.
-
-An alternative to using the batch script is to request an interactive session and run the ctests there. After logging into the interactive session, reload the modules (:ref:`top-modules`), go to the bundle build directory and run the tests:
+An alternative to using the batch script is to request an interactive session and run the :code:`ctests` there. After logging into the interactive session, reload the modules (:ref:`top-modules`), go to the bundle build directory and run the tests:
 
 .. code-block:: bash
 
    <reload the modules>
    cd <path-to-bundle-build-directory>
-   ctest -E get_ 2>&1 |tee ctest.log
+   ctest 2>&1 |tee ctest.log
 
 .. _sbatch:
 
@@ -138,7 +132,7 @@ The following is a sample batch script to run the remaining unit tests.  Note th
 System Specific Information
 ---------------------------
 
-.. _casper:
+.. _casperGuide:
 
 Casper
 ------
@@ -166,7 +160,7 @@ Casper documentation:
 
 * `Casper guide <https://arc.ucar.edu/knowledge_base/70549550>`_
 
-.. _derecho:
+.. _derechoGuide:
 
 Derecho
 -------
@@ -189,7 +183,7 @@ Derecho documentation:
 
 * `Derecho guide <https://arc.ucar.edu/knowledge_base/74317833>`_
 
-.. _discover:
+.. _discoverGuide:
 
 Discover
 --------
@@ -202,7 +196,7 @@ Build jedi on the login-node (with 4 or fewer processes i.e. :code:`-j4` or less
 
 **Intel build**
 
-For Intel, when using :code:`ecbuild``, use:
+For Intel, when using :code:`ecbuild`, use:
 
 .. code-block:: bash
 
@@ -295,6 +289,8 @@ Hercules
 
 Hercules is an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
 
+It shares a file system and log-in credentials with :ref:`orion`, so see that section (below) for more information.
+
 Hercules documentation:
 
 * `MSU Cluster Computing Basics documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/clusters_getting_started.php>`_
@@ -333,7 +329,7 @@ Orion
 
 Orion is an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
 
-We do not recommend running the ctests on login nodes because of the computational requirements of these tests. Instead you can submit ctests as a batch job or use an interactive node.To request an interactive session on Orion, you can run the following. Make sure you use the correct account number. This command requests for one node with 24 MPI tasks.
+We do not recommend running the ctests on login nodes because of the computational requirements of these tests. Instead you can submit ctests as a batch job or use an interactive node. To request an interactive session on Orion, you can run the following. Make sure you use the correct account number. This command requests for one node with 24 MPI tasks.
 
 .. code-block:: bash
 

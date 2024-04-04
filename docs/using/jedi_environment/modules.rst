@@ -46,7 +46,7 @@ This section outlines the general steps to set up spack-stack modules for the de
       module load ewok-env
       module load soca-env
 
-3. Your environment is now set up, users can proceed to :doc:`compile and run the JEDI bundle of their choice </using/building_and_running/building_jedi>`.
+3. Your environment is now set up, users can proceed to :ref:`compile and run the JEDI bundle of their choice <build-jedi>`.
 
 JEDI and Skylab environment set up using jedi-tools
 """""""""""""""""""""""""""""""""""""""""""""""""""
@@ -76,7 +76,7 @@ Setup scripts are available in the `jedi-tools github repository <https://github
       vi buildscripts/setup.sh
       source buildscripts/setup.sh
 
-4. At this point you should have all of the modules needed and loaded in your HPC environment to continue with building JEDI. Verify the modules by running :code:`module list` and proceed to :doc:`compile and run the JEDI bundle of their choice </using/building_and_running/building_jedi>`.
+4. At this point you should have all of the modules needed and loaded in your HPC environment to continue with building JEDI. Verify the modules by running :code:`module list` and proceed to :ref:`build-jedi`.
 
   **For HPC specific build and testing help, see** :ref:`hpc_users_guide`
 

@@ -1,16 +1,18 @@
+.. _jedi-testing:
+
 JEDI Testing
 ============
 
-Each JEDI bundle has its own suite of tests.  To run them, first build and compile the bundle as described in our :doc:`bundle build page </using/building_and_running/building_jedi>`.  Step 5 in that building and compiling procedure is to test the code with **ctest**.  This step is described in the :ref:`following section <running-ctest>`.
+Each JEDI bundle has its own suite of tests.  To run them, first build and compile the bundle as described in :ref:`build-jedi`.  The first step after building and compiling your bundle is to test the code with :code:`ctest`.  This step is described in the :ref:`following section <running-ctest>`.
 
-After describing the basic functionality of ctest, we proceed to give a more detailed overview of how tests are organized and implemented in JEDI.  This is a prelude to the :doc:`next document <adding_a_test>`, which describes how you -- yes *you!*  -- can implement your own JEDI unit tests.
+After describing the basic functionality of ctest, we proceed to give a more detailed overview of how tests are organized and implemented in JEDI.  This is a prelude to the instructions for :ref:`adding-a-test` on the next page, which describes how you -- yes *you!*  -- can implement your own JEDI unit tests.
 
 .. _running-ctest:
 
 Running ctest
 -------------
 
-The standard practice after :doc:`building and compiling a JEDI bundle </using/building_and_running/building_jedi>` is to run ctest with no arguments in order to see if the bundle is operating correctly.
+The standard practice after building and compiling a bundle is to run :code:`ctest` with no arguments in order to see if the bundle is operating correctly.
 First you need to run :code:`ulimit -s unlimited` (on a linux machine; you may not be able to do this on macOS) to ensure that you don't encounter memory or stack size issues. Then you can test your build with:
 
 .. code-block:: bash
@@ -40,12 +42,28 @@ This will run all tests in the test suite for that bundle. This can take a while
 	    130 - test_fv3jedi_localization (Timeout)
     Errors while running CTest
 
-If you want to run a single test or a subset of tests, you can do this with the :code:`-R` option, for example:
+Run the command :code:`ctest --help` for more a long list of options for running tests. Conveniently,
+the arguments for the :code:`ctest` options recognize regular expressions (AKA *regex*). Particularly,
+useful is the dollar sign :code:`$` which indicates the end of a string. This can be used to only run
+one of a series of tests which have similar names.
+
+For example, if you want to run a single test or a subset of tests, you can do this with the :code:`-R` option
 
 .. code-block:: bash
 
    ctest -R test_fv3jedi_linearmodel # run a single test
-   ctest -R test_qg* # run a subset of tests
+   ctest -R test_qg # run a subset of tests - all tests with names starting with 'test_qg'
+   ctest -R test_qg_hofx$ # run only test with complete name 'test_qg_hofx'; WILL NOT run 'test_qg_hofx3d'
+
+Another useful :code:`ctest` option is the :code:`-I [Start,End,Stride]` flag. This will run tests starting from the test numbered :code:`Start` up to the test numbered :code:`End`(optional). Less useful is the (optional):code:`Stride` argument which lets you skip tests. So it will run every other test if :code:`Stride` is :code:`2`, or every third test if :code:`Stride` is :code:`3`, and so on:
+
+.. code-block:: bash
+
+   ctest -I 423 # run all tests starting at test with index 423
+   ctest -I 423,2142 # run all tests from index 423 up to 2142
+   ctest -I 0,2142,2 #run only even numbered tests, because why not*?
+   # *running only the even tests will result in test
+   #  failures due to test dependencies
 
 The output from these tests (stdout) will be printed to the screen but, to allow for greater scrutiny, it will also be written to the file **LastTest.log** in the directory :code:`<build-directory>/Testing/Temporary`.  In that same directory you will also find a file called **LastTestsFailed.log** that lists the last tests that failed.  This may be from the last time you ran ctest or, if all those tests passed, it may be from a previous invocation.
 
@@ -72,7 +90,7 @@ Another way to get more information is to set one or more of these environment v
    export MAIN_DEBUG=1
    export OOPS_TRACE=1
 
-The first two enable debug messages within the JEDI code that would not otherwise be written.  The second produces messages that follow the progress of the code as it executes.  These tools are provided by :doc:`eckit <../developer_tools/cmake>`.   Though higher values of these variables could in principle be set, few JEDI routines exploit this functionality.  So, setting these variables to values greater than 1 will make little difference.  Both can be disabled by setting them to zero.
+The first two enable debug messages within the JEDI code that would not otherwise be written.  The second produces messages that follow the progress of the code as it executes.  These tools are provided by :code:`eckit` (see :ref:`cmake_devtools`).   Though higher values of these variables could in principle be set, few JEDI routines exploit this functionality.  So, setting these variables to values greater than 1 will make little difference.  Both can be disabled by setting them to zero.
 More information about the use of these variables is available here: :doc:`OOPS environment variables </inside/developer_tools/oops-env-variables>`
 
 You can also display the output messages only for the failed tests by using :code:`--output-on-failure`
@@ -94,7 +112,7 @@ To see a list of tests for your bundle without running them, enter
 
    ctest -N
 
-For a complete list of ctest options, enter :code:`man ctest`, :code:`ctest --help`, or check out our :doc:`JEDI page on CMake and CTest <../developer_tools/cmake>`.  As described there, CTest is a component of CMake, so you can also consult the `CMake online documentation <https://cmake.org/documentation/>`_ for the most comprehensive documentation available.
+For a complete list of ctest options, enter :code:`man ctest`, :code:`ctest --help`, or check out our :ref:`cmake_devtools`.  As described there, CTest is a component of CMake, so you can also consult the `CMake online documentation <https://cmake.org/documentation/>`_ for the most comprehensive documentation available.
 
 .. _manual-testing:
 

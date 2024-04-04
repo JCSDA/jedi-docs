@@ -1,3 +1,5 @@
+.. _git-lfs-devtools:
+
 Git-LFS
 =======
 

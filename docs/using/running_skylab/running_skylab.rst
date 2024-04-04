@@ -36,7 +36,7 @@ For more information about using Amazon Web Services please see :ref:`cloud_inde
 
 Developer section
 -----------------
-Note. To follow this section, one needs read access to the JCSDA-internal GitHub org.
+**To follow this section, one needs read access to the JCSDA-internal GitHub org.**
 
 1- Load modules
 ^^^^^^^^^^^^^^^
@@ -105,6 +105,7 @@ The commands for loading the modules to compile and run SkyLab are provided in s
   Make sure you are building CRTMV3 within the jedi-bundle using the `ecbuild_bundle command <https://github.com/JCSDA-internal/jedi-bundle/blob/5.0.0/CMakeLists.txt#L38>`_. 
 
 
+.. _build-jedi-bundle:
 
 2- Build jedi-bundle
 ^^^^^^^^^^^^^^^^^^^^
@@ -114,9 +115,9 @@ is to get and build the JEDI executables.
 
 The first step is to create your work directory. In this directory you will clone
 the JEDI code and all the files needed to build, test, and run JEDI and SkyLab.
-We call this directory ``JEDI_ROOT`` throughout this document.
+We call this directory :code:`JEDI_ROOT` throughout this document.
 
-The next step is to clone the code bundle to a local directory:
+The next step is to clone the code bundle to a local directory. To clone the publicly available repositories use:
 
 .. code-block:: bash
 
@@ -124,6 +125,14 @@ The next step is to clone the code bundle to a local directory:
   cd $JEDI_ROOT
   git clone https://github.com/jcsda/jedi-bundle
 
+
+Alternatively, developers with access to the internal repositories should instead clone the development branch. For that use:
+
+.. code-block:: bash
+
+  mkdir $JEDI_ROOT
+  cd $JEDI_ROOT
+  git clone https://github.com/jcsda-internal/jedi-bundle
 
 The example here is for jedi-bundle, the instructions apply to other bundles as well.
 
@@ -156,7 +165,7 @@ Building JEDI then can be achieved with the following commands:
   make -j8
 
 Feel free to have a coffee while it builds. Once JEDI is built, you should check
-the build was successful by running the tests (still from $JEDI_BUILD):
+the build was successful by running the tests (still from :code:`$JEDI_BUILD`):
 
 .. code-block:: bash
 
@@ -166,17 +175,11 @@ If you are on an HPC you may need to provide additional flags to the ecbuild
 command, or login to a compute node, or submit a batch script for running the
 ctests. Please refer the :ref:`hpc_users_guide` for more details.
 
-(You might have another coffee.) You have successfully built JEDI!
+Running the tests may take up to 2 hours depending on your system, so you might
+want to take another coffee break. If all the expected tests pass, congratulations!, 
+You have successfully built JEDI!
 
 .. warning::
-
-  Even if you are a master builder and don’t need to check your build, if you
-  intend to run experiments with ewok, you still need to run a few of the tests
-  that download data (this is temporary). You can run these tests with:
-
-  .. code-block:: bash
-
-        ctest -R get_
 
   If you are running on your own machine you will also need to clone the static-data repo for some skylab experiments. 
 
@@ -187,15 +190,7 @@ ctests. Please refer the :ref:`hpc_users_guide` for more details.
 
 .. note::
 
-  Run :code:`ctest --help` for more information on the test options. Also, you may find yourself in a situation in which
-  you only want to run a single test such as :code:`test_soca_lefkf` and see its verbose output, but excecuting
-  :code:`ctest -VV -R test_soca_lefkf` will also run and write the output for the :code:`test_soca_letkf_split_observer`
-  and :code:`test_soca_letkf_split_solver` tests. To run only the first test enter a :code:`$`
-  at the end of the test name like this:
-
-  .. code-block:: bash
-
-    ctest -VV -R test_soca_lefkf$
+  Run :code:`ctest --help` for more information on the test options. For even more information, see section :ref:`jedi-testing`.
 
 3- Clone and install solo/r2d2/ewok/simobs, clone skylab only
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
