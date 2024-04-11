@@ -38,7 +38,7 @@ The experiment yaml has to contain the following information:
 
     cost_function: # Cost function, choice between `3D-Var`, `4D-Var`, `3D-FGAT`,
     window_length: # Window length
-    window_offset: # Offset between analysis and window start time
+    window_offset: # Offset between analysis and end of the assimilation window
 
     forecast_length: # Forecast length after the variational task. If set to `PT0H` the forecast task will not run. 
     forecast_output_frequency: # Forecast output frequency
