@@ -8,11 +8,11 @@ List of spack, software, and AMIs
 
 Versions used:
 
-- spack-stack-1.5.1 from November 2023
+- spack-stack-1.7.0 from April 2024
 
-  * https://github.com/JCSDA/spack-stack/tree/1.5.1
+  * https://github.com/JCSDA/spack-stack/tree/1.7.0
 
-  * https://spack-stack.readthedocs.io/en/1.5.1
+  * https://spack-stack.readthedocs.io/en/1.7.0
 
 - AMI available in us-east-1 region (N. Virginia)
 
@@ -104,6 +104,10 @@ The commands for loading the modules to compile and run SkyLab are provided in s
 
   Make sure you are building CRTMV3 within the jedi-bundle using the `ecbuild_bundle command <https://github.com/JCSDA-internal/jedi-bundle/blob/5.0.0/CMakeLists.txt#L38>`_. 
 
+.. warning::
+
+  If you are using ``spack-stack 1.7.0``, different versions of ``mapl`` are used with different variants, depending on the version of the compiler and whether the system is used for UFS or GEOS.
+  Please reference `spack-stack 1.7.0 documentation <https://spack-stack.readthedocs.io/en/1.7.0/PreConfiguredSites.html>`_ in a note and table under "3.1. Officially supported spack-stack installations" for more information.
 
 .. _build-jedi-bundle:
 
@@ -239,6 +243,18 @@ You can then proceed with
   python3 -m pip install -e .
   cd $JEDI_SRC/simobs
   python3 -m pip install -e .
+
+.. note::
+
+  If you are using ``spack-stack 1.7.0``, when installing ``r2d2`` you might recieve the following error:
+
+  .. code-block::
+
+    ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+    cylc-flow 8.2.3 requires protobuf<4.22.0,>=4.21.2, but you have protobuf 3.20.1 which is incompatible.
+    Successfully installed protobuf-3.20.1 r2d2-2.3.0
+
+  You can ignore this for now and note that is says ``Successfully installed protobuf-3.20.1 r2d2-2.3.0``
 
 Note: You need to run :code:`source venv/bin/activate` every time you start a
 new session on your machine.

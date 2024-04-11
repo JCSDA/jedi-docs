@@ -3,7 +3,7 @@
 Using spack-stack modules to build and run JEDI
 ===============================================
 
-The instructions in this section are specific to the use of spack-stack environment modules (``lmod/lua`` or ``tcl/tk``) for building and running JEDI applications. For general information on using spack-stack to build and run software, see the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.5.1>`_.
+The instructions in this section are specific to the use of spack-stack environment modules (``lmod/lua`` or ``tcl/tk``) for building and running JEDI applications. For general information on using spack-stack to build and run software, see the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.7.0>`_.
 
 One of the big advantages of spack-stack is that it automatically generates modules for all compiled packages and Python packages and works in exactly the same way on HPCs, on the cloud, and on a personal computer. Environment modules are available on basically all HPC systems and any modern macOS or Linux distribution, and are an easy and effective way to manage software libraries. There are two main flavors, the older ``tcl/tk`` modules and the newer ``lmod/lua`` modules, with the latter being superior and therefore preferred, if available. The two implementations share similar commands, such as:
 
@@ -36,7 +36,7 @@ General Instructions
 
 This section outlines the general steps to set up spack-stack modules for the desired HPC. Please see :ref:`hpc_users_guide` for more information on how to run jobs on the different HPCs.
 
-1. Load HPC specific modules from `spack-stack pre-configured sites documentation <https://spack-stack.readthedocs.io/en/1.5.1/PreConfiguredSites.html>`_.
+1. Load HPC specific modules from `spack-stack pre-configured sites documentation <https://spack-stack.readthedocs.io/en/1.7.0/PreConfiguredSites.html>`_.
 
 2. Load appropriate modules for JEDI and the ``{skylab_v}`` release.
 

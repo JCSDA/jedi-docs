@@ -94,7 +94,7 @@ After launching the instance through the AWS console, select the instance and cl
          [jcsda-usaf-aws-us-east-2]
          region = us-east-2
 
-**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.5.1/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Proceed with loading the appropriate modules for your application, for example for the ``{skylab_version}`` release:
+**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.7.0/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Proceed with loading the appropriate modules for your application, for example for the ``{skylab_version}`` release:
 
 .. code-block:: bash
 
