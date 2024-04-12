@@ -99,6 +99,7 @@ The following is a YAML example for configuring the processing of radiosonde dat
          tolerance TL: 1.0e-9
          tolerance AD: 1.0e-11
 
+Note that the :code:`obs space.obsdatain` section is required, whereas the :code:`obs space.obsdataout` section is optional.
 
 The :code:`obs space.obsdatain.obsgrouping` keyword is used to initate the obs grouping step in the IODA input flow (:numref:`ioda-operations`).
 This specification is requesting that IODA group locations according the MetaData variable "stationIdentification" ("MetaData/stationIdentification").

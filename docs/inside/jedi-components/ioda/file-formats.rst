@@ -13,12 +13,15 @@ IODA can read files in the following formats:
 
 and write files in the following formats:
 
-* HDF5.
+* HDF5
 
 The following sections describe how these formats are handled from the user's point of view.
 
 HDF5
 ----
+
+Reading HDF5 files
+^^^^^^^^^^^^^^^^^^
 
 To read an HDF5 file into an ``ObsSpace``, it is enough to set the ``obs space.obsdatain.engine`` option in the YAML configuration file to the HDF5 file path. For example,
 
@@ -32,7 +35,10 @@ To read an HDF5 file into an ``ObsSpace``, it is enough to set the ``obs space.o
 
 Note that the HDF5 file type is explicitly specified using the ``obs space.obsdatain.engine.type`` keyword with the value of ``H5File``.
 
-Similarly, to write the contents of an ``ObsSpace`` to an HDF5 file at the end of the observation processing pipeline, use the ``obs space.obsdataout.engine`` option:
+The current reader is not io pool based, and as a result it does not scale well with the number of MPI tasks.
+To address this issue a new io pool based reader is under development, is available in the develop branches of ioda and ioda-data, and is targeted for the upcoming skylab v9 release.
+
+To write the contents of an ``ObsSpace`` to an HDF5 file at the end of the observation processing pipeline, use the ``obs space.obsdataout.engine`` option:
 
 .. code-block:: YAML
 
@@ -40,11 +46,36 @@ Similarly, to write the contents of an ``ObsSpace`` to an HDF5 file at the end o
       obsdataout:
         engine:
           type: H5File
-          obsfile: obsfile: Data/sondes_obs_2018041500_m_out.nc4
+          obsfile: Data/sondes_obs_2018041500_m_out.nc4
 
 Again, note the explicit specification of an HDF5 output file using the ``obs space.obsdataout.engine.type`` keyword.
 
-Each MPI rank will then write its observations to a separate file with the name obtained by inserting the rank before the extension of the file name taken from the ``obs space.obsdataout.engine.obsfile`` option. In the example above, processes 0 and 1 would produce files called ``Data/sondes_obs_2018041500_m_out_0000.nc4`` and ``Data/sondes_obs_2018041500_m_out_0001.nc4``, respectively (assuming observations were split across ranks only in space; if they were split also in time, file names would have an extra suffix with the index of the time partition).
+Writing HDF5 files
+^^^^^^^^^^^^^^^^^^
+
+The current writer is io pool based meaning that a small number of tasks in the obs space main communicator group are designated as io pool members and only these tasks handle file IO operations.
+All of the data belonging to non io pool members is handled with MPI data transfers.
+With the io pool a maximum size is specified (default is 4 tasks) and the io pool size is set to the minumum of the communicator group size and the specified maximum pool size.
+
+In addition to specifying the maximum pool size, the writer pool can be configured to produce a single output file or a set of outputs files that correspond to the number of tasks in the io pool. 
+In the case of writing multiple files, each MPI rank in the io pool will write its observations, plus the observations of the non io pool ranks assigned to it, to a separate file with the name obtained by inserting the rank number before the extension of the file name taken from the ``obs space.obsdataout.engine.obsfile`` option.
+For example, if there are two tasks in the io pool using the specifications shown above, the writer will produce files called ``Data/sondes_obs_2018041500_m_out_0000.nc4`` and ``Data/sondes_obs_2018041500_m_out_0001.nc4``.
+
+The writer io pool behavior can be controlled with the ``io pool`` section of the ``obs space`` YAML configuration. To build on the above configuration example an ``io pool`` section can be added:
+
+.. code-block:: YAML
+
+    obs space:
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: Data/sondes_obs_2018041500_m_out.nc4
+      io pool:
+        max pool size: 6
+        write multiple files: true
+
+In this example the writer is being told to form an io pool of no more than six pool members, and to write out multiple output files.
+Note a setting of ``false`` for the ``write multiple files`` is the default and results in the writer producing a single output file containing all of the observations.
 
 ODB
 ---
