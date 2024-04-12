@@ -55,7 +55,7 @@ For example, if you want to run a single test or a subset of tests, you can do t
    ctest -R test_qg # run a subset of tests - all tests with names starting with 'test_qg'
    ctest -R test_qg_hofx$ # run only test with complete name 'test_qg_hofx'; WILL NOT run 'test_qg_hofx3d'
 
-Another useful :code:`ctest` option is the :code:`-I [Start,End,Stride]` flag. This will run tests starting from the test numbered :code:`Start` up to the test numbered :code:`End`(optional). Less useful is the (optional):code:`Stride` argument which lets you skip tests. So it will run every other test if :code:`Stride` is :code:`2`, or every third test if :code:`Stride` is :code:`3`, and so on:
+Another useful :code:`ctest` option is the :code:`-I [Start,End,Stride]` flag. This will run tests starting from the test numbered :code:`Start` up to the test numbered :code:`End` (optional). Less useful is the (optional) :code:`Stride` argument which lets you skip tests. So it will run every other test if :code:`Stride` is :code:`2`, or every third test if :code:`Stride` is :code:`3`, and so on:
 
 .. code-block:: bash
 

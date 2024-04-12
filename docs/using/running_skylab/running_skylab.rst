@@ -40,9 +40,9 @@ Developer section
 
 1- Load modules
 ^^^^^^^^^^^^^^^
-First, you need to load all the modules needed to build jedi-bundle and solo/r2d2/ewok/simobs/skylab.
+First, you need to load all the modules needed to build jedi-bundle and :code:`solo/r2d2/ewok/simobs/skylab.`
 Note that loading modules only sets up the environment for you. You still need to build
-jedi-bundle, run ctests, install solo/r2d2/ewok/simobs and download skylab.
+jedi-bundle, run ctests, install :code:`solo/r2d2/ewok/simobs` and clone skylab.
 
 Please note that currently we only support Orion, Hercules, Derecho, Discover, S4, and AWS platforms.
 If you are working on a system not specified below please follow the instructions on :ref:`jedi_portability`.
@@ -180,12 +180,12 @@ command, or login to a compute node, or submit a batch script for running the
 ctests. Please refer the :ref:`hpc_users_guide` for more details.
 
 Running the tests may take up to 2 hours depending on your system, so you might
-want to take another coffee break. If all the expected tests pass, congratulations!, 
+want to take another coffee break. If all the expected tests pass, congratulations!
 You have successfully built JEDI!
 
 .. warning::
 
-  If you are running on your own machine you will also need to clone the static-data repo for some skylab experiments. 
+  If you are running on your own machine you will also need to clone the :code:`static-data` repo for some skylab experiments.
 
   .. code-block:: bash
 
@@ -199,7 +199,7 @@ You have successfully built JEDI!
 3- Clone and install solo/r2d2/ewok/simobs, clone skylab only
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 We recommend that you use a python3 virtual environment (venv) for
-building solo/r2d2/ewok/simobs. As indicated above in the note about
+building :code:`solo/r2d2/ewok/simobs`. As indicated above in the note about
 the :code:`$JEDI_SRC` and :code:`$JEDI_BUILD` environment variables, 
 clone these repos *inside* the clone of the jedi-bundle repo.
 
