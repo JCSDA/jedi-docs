@@ -45,6 +45,7 @@ This section outlines the general steps to set up spack-stack modules for the de
       module load jedi-fv3-env
       module load ewok-env
       module load soca-env
+      module load sp
 
 3. Your environment is now set up, users can proceed to :ref:`compile and run the JEDI bundle of their choice <build-jedi>`.
 

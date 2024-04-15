@@ -89,6 +89,79 @@ The experiment yaml has to contain the following information:
                            # (more info https://www.nco.ncep.noaa.gov/pmb/docs/on388/tableb.html)
       grid_stat_template: !ENV ${JEDI_SRC}/skylab/eval/metplus/GridStat.conf.IN  # the template to run GridStat in METplus
 
+Retrieving experiment configuration
+-----------------------------------
+
+A new feature in Skylab v8 and later is the ability to retrieve the experiment configuration
+used for Skylab experiments via Research Repository for Data and Diagnostics (R2D2).
+An example on how to do this in python is given below.
+Update `<my_exp_name>` to the experiment id (expid).
+
+.. code-block:: python
+
+  from r2d2 import R2D2Index
+  experiment_index_object = R2D2Index.get(item='experiment', name=<my_exp_name>)
+  yaml_name = experiment_index_object.get_property('yaml_name')
+  yaml_text = experiment_index_object.get_property('yaml_text')
+
+Then adding the line ``print(yaml_text)`` to the above script would return the yaml name, such as:
+
+.. code-block:: bash
+
+  l95-4dvar.yaml
+
+And adding the line ``print(yaml_text)`` to the script would return the configuration file used, such as:
+
+.. code-block:: bash
+
+  # (C) Copyright 2020-2022 UCAR
+  #
+  # This software is licensed under the terms of the Apache Licence Version 2.0
+  # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+
+  workflow engine: ecworkflow
+
+  workdir: !ENV ${EWOK_WORKDIR}
+  flowdir: !ENV ${EWOK_FLOWDIR}
+
+  suite: !ENV ${JEDI_SRC}/ewok/src/ewok/suites/cyclingDA.py
+  model: l95
+  model_path: !ENV ${JEDI_SRC}/skylab/models/l95
+  init_cycle: 2020-01-01T00:00:00Z
+  last_cycle: 2020-01-01T18:00:00Z
+  step_cycle: PT6H
+
+  cycling mode: cycling
+  init_type: an
+  init_exp: test
+
+  window_length: PT6H
+  window_offset: PT3H
+
+  forecast_length: P2D
+  forecast_output_frequency: PT3H
+
+  GEOMETRY: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/resol.yaml
+  MODEL: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/model.yaml
+
+  cost_function: 4D-Var
+  AN_VARIABLES: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/an_variables.yaml
+
+  BACKGROUND_ERROR: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/bstatic.yaml
+
+  OBSERVATIONS:
+  - !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/obs.yaml
+
+  JC: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/jc.yaml
+  MINIMIZER: !INCLUDE ${JEDI_SRC}/skylab/algorithms/drplanczos.yaml
+
+  ninner: 10
+  reduc: 1.0e-5
+  MIN_GEOMETRY: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/resol.yaml
+  LINEAR_MODEL: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/tlm.yaml
+
+More information on R2D2 can be found in the
+`R2D2 README <https://github.com/JCSDA-internal/r2d2?tab=readme-ov-file#research-repository-for-data-and-diagnostics-r2d2>`_.
 
 Plots configuration
 -------------------

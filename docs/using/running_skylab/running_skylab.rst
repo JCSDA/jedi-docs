@@ -16,19 +16,19 @@ Versions used:
 
 - AMI available in us-east-1 region (N. Virginia)
 
-  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
+  - Red Hat 8 with gnu-11.2.1 and openmpi-5.0.1:
 
     AMI Name {skylab_version}-redhat8
 
-    AMI ID ami-01147e0e00b99cbdf (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-01147e0e00b99cbdf)
+    AMI ID ami-09b779bf476173702 (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-09b779bf476173702)
 
 - AMI available in us-east-2 region (Ohio)
 
-  - Red Hat 8 with gnu-11.2.1 and openmpi-4.1.5:
+  - Red Hat 8 with gnu-11.2.1 and openmpi-5.0.1:
 
     AMI Name {skylab_version}-redhat8
 
-    AMI ID ami-091ad0584d0400762 (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-091ad0584d0400762)
+    AMI ID ami-0f5458fa2920d1df2 (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-0f5458fa2920d1df2)
 
 Note. It is necessary to use c6i.4xlarge or larger instances of this family (recommended: c6i.8xlarge when running the `skylab-atm-land-small` experiment). 
 
@@ -217,11 +217,11 @@ Or for the latest release of ``{skylab_v}``, clone the corresponding workflow re
 .. code-block:: bash
 
   cd $JEDI_SRC
-  git clone --branch 1.2.0 https://github.com/jcsda-internal/solo
-  git clone --branch 2.3.0 https://github.com/jcsda-internal/r2d2
-  git clone --branch 0.7.0 https://github.com/jcsda-internal/ewok
-  git clone --branch 1.5.0 https://github.com/jcsda-internal/simobs
-  git clone --branch 7.0.0 https://github.com/jcsda-internal/skylab
+  git clone --branch 1.3.0 https://github.com/jcsda-internal/solo
+  git clone --branch 2.4.0 https://github.com/jcsda-internal/r2d2
+  git clone --branch 0.8.0 https://github.com/jcsda-internal/ewok
+  git clone --branch 1.6.0 https://github.com/jcsda-internal/simobs
+  git clone --branch 8.0.0 https://github.com/jcsda-internal/skylab
 
 Continue with setting up a virtual environment.
 

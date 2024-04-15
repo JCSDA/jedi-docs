@@ -12,7 +12,7 @@ As described elsewhere in :doc:`this chapter <index>`, there are several steps y
 
 When you have completed these steps, you are ready to launch a single JEDI EC2 instance through the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ on the AWS console.
 
-As part of this release, an Amazon Media Image (AMI) is available that has the necessary `spack-stack-1.5.1` environment for ``{skylab_version}`` pre-installed. For more information on how to find this AMI, refer to :ref:`Building and running SkyLab <build-run-skylab>` in this documentation.
+As part of this release, an Amazon Media Image (AMI) is available that has the necessary `spack-stack-1.7.0` environment for ``{skylab_version}`` pre-installed. For more information on how to find this AMI, refer to :ref:`Building and running SkyLab <build-run-skylab>` in this documentation.
 
 
 .. _singlenode-launch:
@@ -49,6 +49,9 @@ The following example uses the ``{skylab_version}-redhat8`` AMI.
 +-----------------------------------------+---------------------------------+--------------------------+
 | ``skylab-7.0.0-redhat8``                | c6i.4xlarge                     | Intel Ice Lake 8375C     |
 +-----------------------------------------+---------------------------------+--------------------------+
+| ``skylab-8.0.0-redhat8``                | c6i.4xlarge                     | Intel Ice Lake 8375C     |
++-----------------------------------------+---------------------------------+--------------------------+
+
 
 4. Select an existing key pair (for which you hold the private key on your machine) or create a new key pair and follow the process.
 5. Check the entries under "Network settings". Make sure that the network is correct (usually the default is), that the subnet is public (usually indicated by the name), and that "Auto-assign public IP" enabled. Choose the existing security group  "Global SSH" or create a new security group that allows SSH traffic from anywhere so that you can connect to the instance from your local machine.
