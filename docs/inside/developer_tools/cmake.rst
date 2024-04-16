@@ -199,7 +199,7 @@ source directories.
 Installing ecbuild
 ^^^^^^^^^^^^^^^^^^
 
-As before, the steps shown in this section are only necessary if you are working outside preconfigured JEDI environments or containers, and when not following the recommendation to use `spack-stack <https://spack-stack.readthedocs.io/en/1.7.0/>`_ to set up your environment.
+As before, the steps shown in this section are only necessary if you are working outside preconfigured JEDI environments or containers, and when not following the recommendation to use `spack-stack v1.7.0 <https://spack-stack.readthedocs.io/en/1.7.0/>`_ to set up your environment.
 
 For all systems, you need to have CMake, eigen3 installed before installing ecbuild.
 To install these on the Mac:

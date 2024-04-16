@@ -115,7 +115,7 @@ The syntax of the mapping and query files is described in the subsections below.
           query file: testinput/iodatest_odb_aircraft.yml
 
 Mapping Files
-"""""""""""""
+^^^^^^^^^^^^^
 
 Here is an example ODB mapping file:
 
