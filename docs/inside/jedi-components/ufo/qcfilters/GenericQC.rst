@@ -284,6 +284,20 @@ Example:
          probability_density_bad: 0.1
      PGE threshold: 0.15
 
+PreQC Filter
+------------
+
+This filter rejects all observations with a `PreQC` value either greater than a `maxvalue` or less than a `minvalue` (both of which default to zero if not provided). The example filter (below) is configured to reject all `windSpeed` observations whose `PreQC` value is greater than 3 (and less than zero due to default on `minvalue`).
+
+.. code-block:: yaml
+
+   - filter: PreQC
+     filter variables:
+     - name: windSpeed
+     maxvalue: 3
+     action:
+       name: reject
+
 Domain Check Filter
 -------------------
 
