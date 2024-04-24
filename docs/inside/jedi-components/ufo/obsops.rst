@@ -554,6 +554,7 @@ Optional
 ~~~~~~~~
 * :code:`obs options.RTTOV_default_opts` (string, default :code:`default`): These are set first and may be overridden by setting individual options. Valid options are :code:`UKMO_PS43`, :code:`UKMO_PS44`, :code:`UKMO_PS45` and correspond to options pertaining to RTTOV used operationally at the Met Office.
 * :code:`obs options.Do_MW_Scatt` (boolean, default :code:`false`): Call RTTOV-SCATT to simulate MW radiances affected by cloud and precipitation.
+* :code:`obs options.UseQCFlagsToSkipHofX` (boolean, default :code:`false`): Use the quality control flags to decide whether a profile should be passed to rttov. This will turn on profile by profile processing. This is currently only implemented for the :code:`ObsOperator`. The :code:`LinearObsOperator` code will be added after oops functionality is available.
 * :code:`obs options.RTTOV_GasUnitConv` (integer, default :code:`false`): Convert absorber concentration from mass concentration [kg/kg] to volume concentration [ppmv dry] for use with RTTOV.
 * :code:`obs options.InspectProfileNumber` (integer list, default 0): Print RTTOV profile(s) with indices corresponding to the order in which the geovals are processed. Intended for use with debugging.
 * :code:`obs options.SatRad_compatibility` (boolean, default :code:`true`): Sets internal options to replicate Met Office OPS processing.
