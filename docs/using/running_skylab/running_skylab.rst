@@ -244,18 +244,6 @@ You can then proceed with
   cd $JEDI_SRC/simobs
   python3 -m pip install -e .
 
-.. note::
-
-  If you are using ``spack-stack 1.7.0``, when installing ``r2d2`` you might recieve the following error:
-
-  .. code-block::
-
-    ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
-    cylc-flow 8.2.3 requires protobuf<4.22.0,>=4.21.2, but you have protobuf 3.20.1 which is incompatible.
-    Successfully installed protobuf-3.20.1 r2d2-2.3.0
-
-  You can ignore this for now and note that is says ``Successfully installed protobuf-3.20.1 r2d2-2.3.0``
-
 Note: You need to run :code:`source venv/bin/activate` every time you start a
 new session on your machine.
 
