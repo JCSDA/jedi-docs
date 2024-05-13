@@ -144,6 +144,10 @@ Here is an example YAML configuration for the standalone application:
 
 .. code-block:: YAML
 
+   time window:
+     begin: "2018-01-01T00:00:00Z"
+     end: "2022-01-01T00:00:00Z"
+
    obs space:
      name: "AMSUA NOAA19"
      simulated variables: ['brightnessTemperature']
@@ -162,6 +166,8 @@ Here is an example YAML configuration for the standalone application:
 In this example, the communicator given to the ObsSpace constructor in the subsequent DA job is expected to contain 100 MPI tasks as mentioned above.
 A work directory is implied by the directory portion of the ``io pool.file preparation.output file`` specification, and as in the internal mode case, the workflow is expected to manage that directory.
 
+Note that the ``time window`` specification is required and must match that of the subsequent DA job. This is necessary for executing the time window filtering operation.
+
 Only one ``obs space`` specification is accepted by the standalone application since it is expected that the workflow will submit separate jobs in parallel for each of the target ObsSpace objects, whereas allowing for multilple ``obs space`` specifications in one execution of the standalone application will force serial execution for those ObsSpace targets.
 
 ----
@@ -174,18 +180,23 @@ Here is the YAML configuration for the DA job that goes with the example standal
 
 .. code-block:: YAML
 
-   obs space:
-     name: "AMSUA NOAA19"
-     simulated variables: ['brightnessTemperature']
-     channels: 1-15
-     obsdatain:
-       engine:
-         type: H5File
-         obsfile: "path/to/work/directory/amsua_n19_obs_2018041500_m.nc4"
-       file preparation type: "external"
-     io pool:
-       reader name: SinglePool
-       max pool size: 6
+   time window:
+     begin: "2018-01-01T00:00:00Z"
+     end: "2022-01-01T00:00:00Z"
+   ...
+   observations:
+   - obs space:
+       name: "AMSUA NOAA19"
+       simulated variables: ['brightnessTemperature']
+       channels: 1-15
+       obsdatain:
+         engine:
+           type: H5File
+           obsfile: "path/to/work/directory/amsua_n19_obs_2018041500_m.nc4"
+         file preparation type: "external"
+       io pool:
+         reader name: SinglePool
+         max pool size: 6
 
 Note that the ``io pool.max pool size`` specification (6) is in accordance with the planned DA run, which will use 100 total tasks, as noted above.
 Also note that the ``obsdatain.engine.obsfile`` specification for the DA job YAML, matches the ``io pool.output file`` specification for the standalone application YAML.
@@ -205,6 +216,7 @@ In the case of writing multiple files, each MPI rank in the io pool will write i
 .. code-block:: YAML
 
     obs space:
+      ...
       obsdataout:
         engine:
           type: H5File
