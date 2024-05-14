@@ -180,6 +180,8 @@ Yaml configuration for the plots (included in :code:`plots` section of the exper
                                               # variables both plot_pressure_levels and plot_model_levels
                                               # can be omitted
       plot_4d: true                           # flag to output 4D increments for 4DEnVar (false by default)
+      plot_region: conus                      # key for limiting plot region to CONtinental US (CONUS)
+                                              # omiting key will produce global plot
 
     # Plots of variational diagnostics
     plotVarDiagnostics:
@@ -190,6 +192,45 @@ Yaml configuration for the plots (included in :code:`plots` section of the exper
     - TotImp       # barplot of the mean total impact per cycle (Jo reduction)
     - ImpPerOb     # barplot of the mean impact per observation per cycle (Jo reduction)
     - FracImp      # barplot of the mean fractional impact per cycle (Jo reduction)
+
+
+Plot region
+~~~~~~~~~~~
+
+Currently, the only two available plot regions are :code:`global` and :code:`conus`. However, with a few
+modifications in the :code:`SIMOBS` repository, a user can change the domain to another limited area. In
+script for the :code:`plot_global_latlon_map.py` located in :code:`simobs/src/simobs/plotting`, find the
+:code:`if` block that defines the **CONUS** region:
+
+.. code-block:: python
+
+        map_projection = cartopy.crs.LambertConformal()
+        map_transform = cartopy.crs.PlateCarree()
+        image_extent = (-120, -70, 25, 50)
+        lon_gridlines = [-110, -100, -90, -80]
+        lat_gridlines = [25, 35, 45]
+        data_range = (230, 295, 25, 50)  # (-130, -65, 25, 50)
+        # slice out data within plot region
+        pdata, plon, plat, lats = plot_limiter(data, lat, lon, data_range)
+        data = pdata
+
+
+The :code:`image_extent` tuple roughly defines the :code:`cartopy` plot window. Respectively,
+the entries are the west-longitude, east-longitude, southern-latitude, and northern-latitude boundaries.
+The :code:`lon_gridlines` and :code:`lat_gridlines` lists manually set the gridlines that will appear
+in the plot. :code:`data_range` is similar to :code:`image_extent`, except this is (1) what will be used
+to slice out the data for your region out of the global data set (so that the histogram & colorbar only
+include data from your chosen region) and (2) expects longitudes in the range [0, 360). The entries in
+:code:`image_extent` and :code:`data_range` should *nearly* correspond to eachother; the longitude bounds in
+:code:`data_range` will likely need extend a little beyond the ones in :code:`image_extent` so that the plotted
+data fills your entire plot window. When running an experiment, leave the :code:`plot_region: conus` line in
+the plot configuration yaml.
+
+.. note::
+
+  Producing a limited plot region that extends around full lines of latitude (i.e., includes all longitudes),
+  like a plot of the tropics, is not fully supported with this method. More work will be needed to produce such
+  a plot.
 
 
 Existing experiments and adding new experiments
