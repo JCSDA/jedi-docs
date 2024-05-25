@@ -276,7 +276,10 @@ ODB
 
 .. note::
 
-   To be able to read ODB files, ``ioda`` needs to be built in an environment providing access to ECMWF's ``odc`` library. All of the development containers (Intel, GNU and Clang) include this library.
+   To be able to read and write ODB files, ``ioda`` needs to be built in an environment providing access to ECMWF's ``odc`` library. All of the development containers (Intel, GNU and Clang) include this library.
+
+Reading ODB files
+^^^^^^^^^^^^^^^^^^
 
 To read an ODB file into an ``ObsSpace``, four options need to be set in the ``obs space.obsdatain.engine`` section of the YAML configuration file:
 
@@ -305,8 +308,40 @@ The syntax of the mapping and query files is described in the subsections below.
         engine:
           type: ODB
           obsfile: Data/testinput_tier_1/aircraft.odb
-          mapping file: testinput/odb_default_name_map.yml
-          query file: testinput/iodatest_odb_aircraft.yml
+          mapping file: ..share/test/testinput/odb_default_name_map.yaml
+          query file: ..share/test/testinput/iodatest_odb_aircraft.yaml
+
+Writing ODB files
+^^^^^^^^^^^^^^^^^^
+
+To write an ``ObsSpace`` into an ODB file, four options need to be set in the ``obs space.obsdataout.engine`` section of the YAML configuration file.
+These are the same four options as the read method, namely ``type``, ``obsfile``, ``mapping file`` and ``query file`` which are detailed in the read section. The ``type`` will 
+be ``ODB`` and the obsfile specifies the path to the output file. The ODB file produced is a series of columns all of length ``Location`` multiplied by the number of varno's.
+For varno's with a channel dimension this is multiplied by the length of ``Channel``. As an example if varno 119 and 110 are requested then there would be ``Location`` multiplied by
+``Channel`` rows for varno 119, which is ``brightnessTemperature``, and an additional ``Location`` number of rows for varno 110, which is ``surfacePressure``. If there were 10 locations
+and varno 119 had 7 channels the total length of each column would be :math:`\left ( 10\times7 \right ) + 10 = 80`.
+
+The mapping file provides the mapping between the ODB column name and the variable name in the ``ObsSpace``. The mapping file also specifies whether the variable is varno dependent or not.
+A varno dependent variable will provide the group which the data is stored in e.g. ``ObsValue`` and the varno specifies what name the variable has e.g. varno 119 maps to an ioda variable
+name of ``brightnessTemperature``. For a varno independent variable the full path e.g. ``MetaData/stationIdentifier`` will be specified in the mapping file. The query file lists the
+ODB column names that are to be written out to the file. This will be a subset of the data in the ``ObsSpace`` and all variables that the user wishes to output are required 
+in the query file. If a variable is requested in the ``query file`` but it is not in the ``ObsSpace`` a message is written to the log but the code does not fail. If a query variable
+is requested and there is no variable matching that name in the ``mapping file`` the code will throw an exception.
+
+The syntax of the mapping and query files is described in the subsections below. The ``ioda`` repository contains sample mapping and query files that should be 
+sufficient for most needs. There is a single mapping file, ``..share/test/testinput/odb_default_name_map.yaml``, and one query file per observation type, 
+e.g. ``..share/test/testinput/iodatest_odb_aircraft.yaml`` for aircraft observations and ``..share/test/testinput/iodatest_odb_atms.yaml`` for ATMS observations.
+For example, a YAML file used for aircraft data processing could contain the following ``obs space.obsdataout`` section:
+
+.. code-block:: YAML
+
+    obs space:
+      obsdataout:
+        engine:
+          type: ODB
+          obsfile: testoutput/aircraft_out.odb
+          mapping file: ..share/test/testinput/odb_default_name_map.yaml
+          query file: ..share/test/testinput/iodatest_odb_aircraft.yaml
 
 Mapping Files
 ^^^^^^^^^^^^^
