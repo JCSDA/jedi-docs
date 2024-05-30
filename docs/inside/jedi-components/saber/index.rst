@@ -51,6 +51,7 @@ There are currently only two applications.  The main application runs most of th
    :maxdepth: 1
 
    ProcessPerts.rst
+   ErrorCovarianceToolbox.rst
 
 
 Calibration of SABER error covariance
