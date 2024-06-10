@@ -67,15 +67,17 @@ A SABER error covariance can be calibrated from ensemble data:
 SABER testing
 -------------
 
-SABER has its own pseudo-model for testing purposes, called **QUENCH**.
+SABER has its own pseudo-model for testing purposes, called **QUENCH**. Also, SABER has an automated testing
+process which will require a few more steps for adding new tests.
 
-More details here: 
+For more details here: 
 
 .. toctree::
    :maxdepth: 1
 
    QUENCH
    SABER block testing<SABER_testing>
+   Adding a SABER test<SABER_test>
 
 A low-level description of the classes, functions, and subroutines is also available, produced by means of the `Doxygen document generator <https://www.doxygen.nl/index.html>`_.
 
