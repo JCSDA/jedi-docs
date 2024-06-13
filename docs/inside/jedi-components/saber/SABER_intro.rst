@@ -185,7 +185,7 @@ block chain, and so will be nested inside the chain of outer blocks.
 
     covariance model: SABER
     saber central block:
-      block name: Ensemble      
+      saber block name: Ensemble      
       localization:
         ...
         saber central block:
