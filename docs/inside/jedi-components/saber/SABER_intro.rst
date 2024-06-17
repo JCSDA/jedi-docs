@@ -85,15 +85,17 @@ This will make a general model for **B** a series of matrix multiplications simi
   
   \textbf{B} = \textbf{TVK} \boldsymbol{\Sigma} \textbf{C} \boldsymbol{\Sigma} \textbf{K}^T \textbf{V}^T \textbf{T}^T
 
-In the SABER model, **C** is called the central block, which will be present in all block chains. All the other matrices
-are referred to as outer blocks, and their transposes are called adjoints (AD). 
+In SABER, the central block **C** will be present in all block chains (even if
+it is simply the identity matrix). All the other matrices are referred to as
+outer blocks, and their transposes are called adjoints (AD).
 
-In the calculation of the analysis increment (see Eq. :eq:`eq-inc`), **B** is applied
-at the front of the expression for the increment vector. In the block chain model, this matrix multiplication
-is implemented as the application, from left to right, of the series of blocks in Eq. :eq:`eq-modelB`. So, 
-first the adjoints of the outer blocks are applied in reverse order. 
-Then, the central block, which is considered to be auto-adjoint, is applied.
-Then, the direct outer blocks are applied in forward order (indicated as TL: tangent linear):
+In the calculation of the analysis increment (see Eq. :eq:`eq-inc`), **B** is
+applied at the front of the expression for the increment vector. In the block
+chain model, this matrix multiplication is implemented as the application, from
+left to right, of the series of blocks in Eq. :eq:`eq-modelB`. So, first the
+adjoints of the outer blocks are applied in reverse order. Next, the central
+block, which is considered to be auto-adjoint, is applied. Then, the direct
+outer blocks are applied in forward order (indicated as TL: tangent linear):
 
 .. image:: fig/figure_saber_blocks_2.jpg
    :align: center
@@ -103,18 +105,23 @@ Then, the direct outer blocks are applied in forward order (indicated as TL: tan
 Block chain specification
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A SABER block encapsulates a linear operator -- which can represent a covariance, transformation,
-localization, etc. matrix -- that is part of the block chain described above (see Eq. :eq:`eq-modelB`).
+A SABER block encapsulates a linear operator -- which can represent a covariance,
+transformation, localization, etc. matrix -- that is part of the block chain
+described above (see Eq. :eq:`eq-modelB`).
 
-The list of available blocks for constructing a block chain in SABER can be found in :ref:`SABER blocks <SABER_blocks>`.
+The list of available blocks for constructing a block chain in SABER can be found
+in :ref:`SABER blocks <SABER_blocks>`.
 
-The most basic model for the background covariance is have a **B** that is constant in time which, in SABER, is an example
-of a parametric **B**. Sometimes referred to as a "static" **B** in the literature, a parametric model for **B** could be a model
-which does not evolve with time or a model that introduces some flow-dependence through dependence on the background state.
-The implementation of a parametric **B** will directly match the expression in Eq. :eq:`eq-modelB`. Alternatively, **B**
-could modeled using an ensemble of forecasts (e.g. similar to what is done in an Ensemble Kalman Filter). This Ensemble
-**B** will allow the background covariances to evolve in time. Finally, the parametric and ensemble models can be combined
-into a hybrid **B** using a weighted sum. These models are described in the following sections.
+A simple model for the background covariance is a **B** that is constant in time
+which, in SABER, is an example of a parametric **B**. Sometimes referred to
+as a "static" **B** in the literature, a parametric **B** could be a fully
+static model that does not evolve with time or a model that introduces some flow-dependence
+through dependence on the background state. The implementation of a parametric **B**
+will directly match the expression in Eq. :eq:`eq-modelB`. Alternatively, **B**
+could modeled using an ensemble of forecasts (e.g. similar to what is done in an
+Ensemble Kalman Filter). This Ensemble **B** will allow the background covariances
+to evolve in time. Finally, the parametric and ensemble models can be combined into
+a hybrid **B** using a weighted sum. These models are described in the following sections.
 
 Parametric **B**
 ----------------
@@ -144,124 +151,156 @@ Thus, the simplest SABER covariance model is just the Identity matrix:
   saber central block: 
   - saber block name: ID
 
-.. When the :code:`covariance model` is set as :code:`SABER`, a parametric block chain is used
-
 Ensemble **B**
 --------------
 
-An ensemble **B** model (:math:`\textbf{P}^f_e`) includes a matrix generated from the ensemble members :math:`\textbf{B}_{\text{ens}}` and a localization
-matrix :math:`\boldsymbol{\mathcal{L}}` which is applied in an element-wise multiplication (a Schur product) to :math:`\textbf{B}_{\text{ens}}` to enforce
-zero covariance between distantly separated grid points :cite:`Lorenc2003`.
+An ensemble **B** model (:math:`\textbf{P}^f_{ens}`) includes a matrix generated from the ensemble members
+:math:`\textbf{B}_{\text{ens}}` and a localization matrix :math:`\boldsymbol{\mathcal{L}}` which is applied
+in an element-wise multiplication (a Schur product) to :math:`\textbf{B}_{\text{ens}}` to remove spurious
+covariances between distantly separated grid points :cite:`Lorenc2003`:
 
 .. math::
+  :label: eq-ensB
 
-    \textbf{P}^f_e = \boldsymbol{\mathcal{L}} \circ \textbf{B}_{\text{ens}}
+    \textbf{P}^f_{ens} = \boldsymbol{\mathcal{L}} \circ \textbf{B}_{\text{ens}}.
 
-When setting up an experiment with an ensemble **B**, both the localization matrix and :math:`\textbf{B}_{\text{ens}}`
-can be defined in the experiment yaml configuration file with the covariance model set as :code:`ensemble`.
 
-The setup for a localization matrix is very similar to the setup for the parametric **B** described in the previous section as the computational
-implementation of both :math:`\boldsymbol{\mathcal{L}}` and parametric **B** are identical. One difference is the addition of the :code:`localization` heading under
-the :code:`covariance model`:
-
+The setup for a localization matrix is similar to the setup for the parametric
+**B** (described in the previous section) since the computational implementation
+of :math:`\boldsymbol{\mathcal{L}}` and a parametric **B** are identical.
+Both are setup as block chains, but the key difference for a localization setup
+is the addition of the :code:`localization` heading in the localization block chain:
 
   .. code-block:: yaml
 
-    covariance model: ensemble
+    saber block name: Ensemble
     localization:
-      localization method: SABER
       saber central block:
-        - saber block name: <central block>
-           ...
+        saber block name: <central block for localization>
+        ...
       saber outer blocks:
-        - saber block name: <outer block>
+        - saber block name: <outer block for localization>
           ...
         ...
 
-When setting up an ensemble model, the localization will form the central block inside the full ensemble
-block chain, and so will be nested inside the chain of outer blocks.
+When setting up an ensemble model, this configuration of the localization (above) will form the central
+block inside the full ensemble block chain:
 
   .. code-block:: yaml
 
     covariance model: SABER
-    saber central block:
+    ... # ensemble configuration goes here
+    saber central block: # 'outer' central block
       saber block name: Ensemble      
       localization:
         ...
-        saber central block:
-          - saber block name: <central block for localization>
-             ...
-        saber outer blocks:
+        saber central block: # 'inner' central block
+          saber block name: <central block for localization>
+          ...
+        saber outer blocks: # 'inner' outer block chain
           - saber block name: <outer block for localization>
             ...
         ...
-    saber outer blocks:
+    saber outer blocks: # 'outer' outer block chain
       - saber block name: <outer block for ensemble>
         ...
       ...
 
-For example, a series of outer blocks in the outer block chain (i.e., blocks that would take the place of the
-:code:`<outer block for ensemble>` in the code outline above) may be needed to transform or interpolate from
-variables used in the localization to variables in the analysis increment/model.
+This nesting of block chains can make it difficult to keep track of all the SABER blocks
+used to make up a covariance model. In this general case (shown above) of an ensemble
+covariance model, there is an 'inner' central block plus associated outer block chain
+which set up the localization **and** an 'outer' central block plus associated outer
+block chain (which, for example, could set up an interpolation or variable change).
+Here is a mathematical outline of the nested block structure:
+
+.. math::
+  :label: eq-ens-expansion
+
+  \textbf{P}^f_{ens} = \mathbf{T} \left\lbrace \boldsymbol{\mathcal{L}} \circ \textbf{B}_{\text{ens}} \right\rbrace\mathbf{T}^T
+  = \mathbf{T} \left\lbrace \left(\mathbf{V}_l\mathbf{C}_l\mathbf{V}_l^T\right) \circ \textbf{B}_{\text{ens}} \right\rbrace\mathbf{T}^T
+
+where the outermost :math:`\mathbf{T}` block represents an interpolation and makes up
+the 'outer' outer block chain, the :math:`\mathbf{V}_l` represents a variable change
+and makes up the 'inner' outer block chain, and :math:`\mathbf{C}_l` is the central
+block for the localization. The quantities with the :math:`l` subscript are part of
+the full block chain for the localization operator :math:`\boldsymbol{\mathcal{L}}`,
+and are encasulated within the 'outer' central block in the yaml outline above. 
+
+While convoluted, especially to new users, this modularization is a powerful feature
+allowing for more options and flexibility in building covariance models.
 
 .. note::
 
   With settings of :code:`covariance model: hybrid` or :code:`covariance model: ensemble` computations will
-  be done by OOPS. With  :code:`covariance model: SABER` computations will be done by SABER.
+  be done by OOPS. With :code:`covariance model: SABER` computations will be done by SABER.
 
 Hybrid **B**
 ------------
 
-A hybrid **B** is a linear combination of parametric and ensemble covariance models. Thus a hybrid **B** with
-one parametric component and one ensemble component could be expressed as
+A hybrid **B** is a general linear combination of covariance models. An example of a
+hybrid **B** with one parametric component and one ensemble component could be expressed as:
 
 .. math::
   :label: eq-hybridB
 
   \textbf{B} = \alpha \textbf{B}_{s} + \beta \boldsymbol{\mathcal{L}} \circ \textbf{B}_{\text{ens}}.
 
-This method is intended to use the strengths of each component model to minimize the weakness of the other. To set up a
-hybrid **B** the parametric and ensemble models will both be included as :code:`components` with the :code:`covariance model`
-set to :code:`hybrid` as shown below:
+This method is intended to use the strengths of each component model to minimize the weakness of the others.
+To set up a hybrid **B** in SABER, all the components of the full covariance model will be wrapped into
+a SABER :code:`Hybrid` central block, unless there are outer blocks common to all individual components
+in which case those outer blocks could be 'factored out' into an 'outermost' outer block chain. See the example
+below which outlines a SABER hybrid covariance composed of a static/parametic component and an ensemble component.
 
 .. code-block:: yaml
 
   background error:
-  covariance model: hybrid
-  components:
-  - covariance:
-      covariance model: SABER
-      saber central block:
-        saber block name: <central block for parametric>
-        ...
-      saber outer blocks:
-      - saber block name: <outer block 1 for parametric>
-        ...
-      - saber block name: <outer block N for parametric>
-        ...
-      ...
-    weight:
-      value: alpha
-  - covariance:
-      covariance model: ensemble
-      ...
-      localization:
-        ...
-        saber central block:
-          - saber block name: <central block for localization>
+    covariance model: SABER
+    saber central block:
+      saber block name: Hybrid
+      components:
+      - covariance:
+          saber central block:
+            saber block name: <central block for parametric>
             ...
-        saber outer blocks:
-          - saber block name: <outer block for localization>
+          saber outer blocks:
+          - saber block name: <outer block 1 for parametric>
+            ...
+          - saber block name: <outer block N for parametric>
+            ...
           ...
-      saber outer blocks:
-        - saber block name: <outer block for ensemble>
+        weight:
+          value: alpha
+      - covariance:
+          ... # ensemble configuration goes here
+          saber central block:
+            saber block name: Ensemble
+            localization:
+            ...
+              saber central block:
+                - saber block name: <central block for localization>
+                ...
+              saber outer blocks:
+                - saber block name: <outer block for localization>
+                ...
+            saber outer blocks:
+              - saber block name: <outer block for ensemble>
+              ...
           ...
-      ...
-    weight:
-      value: beta
+        weight:
+          value: beta
+    saber outer blocks: # 'outermost' outer block chain
+    - saber block name: <outer block common to all components>
 
-For an even more general model, a user can add extra terms to the sum in Eq. :eq:`eq-hybridB` by setting up additional
-covariance components under the :code:`components` heading in the yaml file, as long as the weights add up to one.
+
+Under the :code:`components` heading in the :code:`Hybrid` central block, list each individual component
+of the full hybrid model, using the dash (:code:`-`) to mark each new member to the list. Each member in
+the list needs a :code:`covariance` key for specifying the specific covariance model and a :code:`weight`
+key for setting the weight value (e.g., the :math:`\alpha` and :math:`\beta` in :eq:`eq-hybridB`) for
+each individual component.
+
+SABER allows for a hybrid covariance to contain more than two components (equivalent to adding terms in
+:eq:`eq-hybridB`). Simply add more members to the list under :code:`components:`, specifying a
+:code:`covariance` and :code:`weight` for each member. An arbitrary number of components can be included.
 
 .. note::
 
