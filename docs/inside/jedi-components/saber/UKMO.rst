@@ -49,3 +49,4 @@ Index
    :titlesonly:
 
    UKMO_vertical_localization.rst
+   UKMO_moistincrop.rst
