@@ -66,87 +66,51 @@ testing server, and to report the test status on the PR GitHub page.
 Almost all the scripts that are used by the automated testing framework are located in
 the “CI” directory, except for :code:`.travis.yml` that is located in the base directory.
 
-Travis-CI
----------
-Travis-CI computational `resources <https://docs.travis-ci.com/user/reference/overview/#virtualisation-environment-vs-operating-system>`_
-are limited which makes this tool more suitable for
-less computationally expensive tests. Travis-CI builds JEDI inside the CLANG
-container. :code:`.travis.yml` in each repository includes instruction for
-Travis-CI on pulling the docker container, building the code, and running the tests.
-The status of the Travis-CI job will be printed under the “Check” section in each
-PR page. The status line has a link to the build and test output.
-All users can view the output to get more information
-about the build and debug their code.
-
-AWS CodeBuild
+GitHub Automated Testing
 -------------
-For AWS CodeBuild, instances with different CPU and memory sizes are available
-to choose from based on the computational needs. Currently, CodeBuild is
-set to use the three Clang, GNU, and Intel containers testing the main JEDI repositories.
-With every new PR or a new commit to an existing PR, the three CodeBuild projects
-get triggered to build and test the code. YAML files with building and testing
-instructions for CodeBuild projects are located under the “CI” directory in each repository.
+Most repositories in the JEDI Bundle are tested using a test automation system
+built on AWS Batch that automatically provisions a fresh environment and
+launches tests on the Clang, GNU, or Intel containers. One environment will be
+provisioned randomly, although the environment can be configured with
+annotations added to your pull request description.
 
-CodeCov
--------
-After building JEDI and running the tests, CodeCov is used to create a report on
-the test coverage. The test coverage report highlights the sections of the code
-that are not fully tested so developers can focus on writing tests for these
-sections. CodeCov also calculates how much new changes (with pull requests) impacts
-the test coverage and reports it to the GitHub pull request page. You can find more
-information about test coverage and using gcov to generate test coverage report on
-your local machine :doc:`here <../inside/developer_tools/gcov>`.
+Full documentation for CI configuration and pull request annotations are
+provided in the test output attached to the pull request. Just click the
+"details" link on the check run.
+
+Note that check runs will not execute for draft pull requests unless you add a
+line to your pull request description that reads "run-ci-on-draft=true". In
+order to re-launch a test you can push an empty commit.
+
+.. code:: bash
+
+  git commit --allow-empty -m 'trigger CI' && git push
 
 Testing Development across Multiple Repositories
 ------------------------------------------------
 Sometimes the development of a new feature requires changes in multiple
-repositories. You can test this new feature with Travis-CI and AWS CodeBuild by using the
-same branch name when creating a new branch in each repository.
-When you invoke the automated testing tools by creating a PR or pushing a commit
-to an existing PR, the tools will search for branches with a similar name as the branch
-that is being tested. If such branches exist in repositories in the bundle, it
-will build and test your code using these branches. For example, if you create a PR in UFO
-from a branch named :code:`feature/a`  automated testing tool will search in all the
-repositories listed in ufo-bundle/CMakeLists.txt i.e. fckit, atlas, oops, saber, etc.
-for :code:`feature/a` branch and use those branches for testing.
-
-Searching for branches with similar names also happens for dependent repositories,
-and the results will be printed on the PR page under the “Check” section.
-For example, if you are issued a PR from your branch :code:`feature/b` in IODA repository,
-automated testing tool will search in all dependent repositories including UFO,
-and all the models for :code:`feature/b` branch. If this branch exists it will add a new line under
-“Check” with a pending status stating the repository name. This feature will remind
-users to test dependent repositories before merging a PR into the develop branch.
+repositories. You can test this new feature in JEDI CI using annotations in
+your pull request description. The annotations must link to pull requests
+in other JCSDA-internal repositories.
 
 
-Testing Downstream Repositories with AWS CodePipeline
------------------------------------------------------
-In some cases, comprehensive testing of downstream repositories, including the
-models, is required. Let’s say you are adding a new feature to the OOPS repository.
-You know that the new changes will impact downstream repositories such as SABER and
-UFO, and you want to test your code using automated testing tools in your PR.
-In this case, you can trigger the downstream tests by pushing a commit with the
-message “trigger pipeline”. You can submit an empty commit using the command below:
+.. code:: plaintext
 
-.. code:: bash
+  This is my generic pull request description. My change requires coordinated
+  changes in oops and saber. My tests won't pass unless your bundle contains the
+  matching changes.
 
-  git commit --allow-empty -m “trigger pipeline”
-
-AWS CodePipeline is designed to start multiple CodeBuild projects to build and test
-downstream repositories when the commit message contains the phrase
-“trigger pipeline." This feature is currently implemented only for the OOPS repository,
-but will be implemented for JEDI core repositories (e.g. SABER, IODA, and UFO) as well.
-The OOPS pipeline is set to invoke building and testing IODA, SABER, UFO, and SOCA
-after OOPS CodeBuild-CLANG is finished (more downstream repositories will be added).
-The status for building and testing each of these repositories will be printed under
-the “Check” section on the PR page.
-
-.. warning::
-  This feature is currently in progress. Please test it and let us know if you have any suggestions for improving this feature.
+  build-group=https://github.com/JCSDA-internal/oops/pull/123
+  build-group=https://github.com/JCSDA-internal/saber/pull/456
 
 
 Tips on How to Use Automated Testing Tools
 ------------------------------------------
-* Automated testing tools such as Travis-CI and CodeBuild are to be used after you have ensured the successful build of your new feature. It is not meant to be used for debugging.
+* Automated testing tools are to be used after you have ensured the successful
+  build of your new feature. It is not meant to be used for debugging.
 
-* Please limit the number of pushes to an existing pull request. Automated testing tools build and run all the tests with every push to and existing PR. Pushing every commit to an existing pull request can congest the queue and slow down the process for all users. You can reduce the number of pushes by pushing multiple commits together instead of just one commit at a time.
+* Please limit the number of pushes to an existing pull request. Automated
+  testing tools build and run all the tests with every push to an existing PR.
+  Pushing each commit individually can congest the queue and slow tests for all
+  users. You can reduce the number of tests run by converting your pull request
+  to a draft, or by pushing multiple commits together instead of one at a time.
