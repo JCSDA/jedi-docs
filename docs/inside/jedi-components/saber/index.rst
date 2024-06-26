@@ -39,6 +39,7 @@ SABER blocks can encapsulate various components:
    SPECTRALB: spectral covariance/correlation<SPECTRALB>
    StdDev: standard-deviation application<StdDev>
    DuplicateVariables: outer block to duplicate one variable into others<DuplicateVariables>
+   Interpolation blocks<Interpolations>
    UKMO-specfic saber blocks<UKMO>
  
 SABER applications

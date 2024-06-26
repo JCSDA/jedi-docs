@@ -1,3 +1,5 @@
+.. _BUMP-SABER-blocks:
+
 BUMP SABER blocks
 -----------------
 
