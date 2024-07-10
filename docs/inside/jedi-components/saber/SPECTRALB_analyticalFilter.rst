@@ -42,7 +42,7 @@ then the associated Gaussian in spectral space is given by:
 
 .. math::
 
-  \widehat{f}(n) = C\exp\biggl(-\frac{n^2}{2\sigma_n}\biggr)
+  \widehat{f}(n) = C\exp\biggl(-\frac{n^2}{2\sigma_n^2}\biggr)
 
 where :math:`\sigma_n = 1/ \sigma_\lambda = R / L` and :math:`C` is some normalization constant.
 
