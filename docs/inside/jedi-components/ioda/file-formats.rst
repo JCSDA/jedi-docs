@@ -148,8 +148,8 @@ Here is an example YAML configuration for the standalone application:
 .. code-block:: YAML
 
    time window:
-     begin: "2018-01-01T00:00:00Z"
-     end: "2022-01-01T00:00:00Z"
+     begin: "2018-04-14T21:00:00Z"
+     end: "2018-04-15T03:00:00Z"
 
    obs space:
      name: "AMSUA NOAA19"
@@ -184,8 +184,8 @@ Here is the YAML configuration for the DA job that goes with the example standal
 .. code-block:: YAML
 
    time window:
-     begin: "2018-01-01T00:00:00Z"
-     end: "2022-01-01T00:00:00Z"
+     begin: "2018-04-14T21:00:00Z"
+     end: "2018-04-15T03:00:00Z"
    ...
    observations:
    - obs space:
@@ -237,7 +237,8 @@ In this case, when there are 6 tasks in the io pool the output files that are cr
 - ...
 - Data/sondes_obs_2018041500_m_out_0005.nc4
 
-----
+Specific File Formats
+^^^^^^^^^^^^^^^^^^^^^
 
 The following sections describe how the specific file formats are handled from the user's point of view.
 
@@ -248,3 +249,75 @@ The following sections describe how the specific file formats are handled from t
    format-odb
    format-bufr
    format-script
+
+Additional Reader Controls
+--------------------------
+
+Missing File Action
+^^^^^^^^^^^^^^^^^^^
+
+When a missing input file is encountered, the reader can be configured to take one of two actions:
+
+1. Issue a warning, construct an empty ObsSpace object, and continue execution. This action is typically applicable to operations where you want the job to forge ahead despite a missing file.
+2. Issue an error, throw an exception, and quit execution. This action is typically applicable to research and development where you want to be immediately notified when a file is missing.
+
+The missing file action can be specified in the YAML configuration using the ``missing file action`` keyword.
+The valid values are ``warn`` (default) or ``error``, where ``warn`` corresponds the the first action and ``error`` corresponds to the second action noted above.
+Here is a sample YAML section that shows how to configure the missing file action to be an error.
+
+.. code-block:: YAML
+
+   time window:
+     begin: "2018-04-14T21:00:00Z"
+     end: "2018-04-15T03:00:00Z"
+   ...
+   observations:
+   - obs space:
+       name: "AMSUA NOAA19"
+       simulated variables: ['brightnessTemperature']
+       channels: 1-15
+       obsdatain:
+         engine:
+           type: H5File
+           obsfile: "Data/amsua_n19_obs_2018041500_m.nc4"
+         missing file action: error
+
+Note that the ``missing file action`` keyword is specified in the ``obs space.obsdatain.engine`` section.
+
+Handling Multiple Input Files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The IODA reader can handle multiple input files that are specified for the construction of a single ObsSpace object.
+The files are appended along the Location dimension to form the data loaded into the ObsSpace object, and as such have the following constraints on their layout.
+
+1. The files need to contain the same set of variables.
+2. For multi-dimensioned variables (e.g., Location X Channel), the second and higher dimensions must be specified identically in each file. For the 2D, Location X Channel example, each file must have the same number of channels all specfied with matching channel numbers.
+3. Variables that are not dimensioned by Location must be defined identically in each file. For example, if the files contain ``MetaData/channelFrequency`` (dimensioned by Channel), the corresponding variable in each file must be the same size and have the same values.
+4. For the file formats (ODB, BUFR) that require additional configuration beyond the paths to the input files (e.g. ODB mapping file, BUFR table path, etc.), each file needs to be readable using the same set of additional configuration.
+
+A new keyword named ``obsfiles`` (plural) has been added to the YAML configuration, and this keyword is placed in the ``obs space.obdatain.engine`` section.
+The current ``obsfile`` (singluar) keyword will continue to be accepted.
+Note that the existing YAML files will contiue to read in single files as before, thus there is no need to modify existing YAML (except to specify multiple input files).
+One and only one of the ``obsfile`` or ``obsfiles`` keywords must be used for the reader backends that tie to files (eg, H5File, ODB, bufr).
+Here is an example HDF5 file backend YAML configuration using multiple input files.
+
+.. code-block:: YAML
+
+   time window:
+     begin: "2018-04-14T21:00:00Z"
+     end: "2018-04-15T03:00:00Z"
+   ...
+   observations:
+   - obs space:
+       name: "AMSUA NOAA19"
+       simulated variables: ['brightnessTemperature']
+       channels: 1-15
+       obsdatain:
+         engine:
+           type: H5File
+           obsfiles:
+           - "Data/amsua_n19_obs_2018041500_m_p1.nc4"
+           - "Data/amsua_n19_obs_2018041500_m_p2.nc4"
+           - "Data/amsua_n19_obs_2018041500_m_p3.nc4"
+
+Note that the file data will be appended to the ObsSpace in the order of the list of files in the ``obsfiles`` specification.
