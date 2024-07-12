@@ -5,6 +5,9 @@ Observation Functions are more advanced filtering routines that are encapsulated
 a unit. They usually combine several complicated logic operations, and decomposing these
 filters into separate parts would have an obfuscating effect.
 
+:ref:`AssignValueEqualChannels <AssignValueEqualChannels>`
+  Assign values to a variable, depending on a value of another (channel-by-channel)
+
 :ref:`BennartzScatIndex <BennartzScatIndex>`
   Compute Bennartz scattering index from microwave channels
 
@@ -164,6 +167,7 @@ filters into separate parts would have an obfuscating effect.
 .. toctree::
    :hidden:
 
+   AssignValueEqualChannels
    BennartzScatIndex
    BgdDepartureAnomaly
    ChannelUseflagCheckRad
