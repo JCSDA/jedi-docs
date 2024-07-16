@@ -91,7 +91,7 @@ Another way to get more information is to set one or more of these environment v
    export OOPS_TRACE=1
 
 The first two enable debug messages within the JEDI code that would not otherwise be written.  The second produces messages that follow the progress of the code as it executes.  These tools are provided by :code:`eckit` (see :ref:`cmake_devtools`).   Though higher values of these variables could in principle be set, few JEDI routines exploit this functionality.  So, setting these variables to values greater than 1 will make little difference.  Both can be disabled by setting them to zero.
-More information about the use of these variables is available here: :doc:`OOPS environment variables </inside/developer_tools/oops-env-variables>`
+More information about the use of these variables is available here: :ref:`OOPS environment variables <oops-env-vars>`
 
 You can also display the output messages only for the failed tests by using :code:`--output-on-failure`
 
@@ -180,7 +180,7 @@ With few exceptions, all JEDI repositories contain a :code:`test` directory that
 
 Within each :code:`test` directory you will find a file called :code:`CMakeLists.txt`.  This is where each test is added, one by one, to the suite of tests that is executed by CTest.  As described in the `CMake documentation <https://cmake.org/documentation/>`_, this is ultimately achieved by repeated calls to the CMake :code:`add_test()` command.
 
-However, the :doc:`ecbuild package <../developer_tools/cmake>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`. For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
+However, the :ref:`ecbuild package <cmake_devtools>` offers a convenient interface to CMake's :code:`add_test()` command called :code:`ecbuild_add_test()`. For further details on how to interpret this argument list see :doc:`Adding a New Unit Test <adding_a_test>`.
 
 Since it relies on the net result of an application, each Application test is typically associated with a single CTest executable.  However, applications of type :code:`oops::Test` (see :ref:`next section <test-apps>`) will typically execute multiple unit tests for each executable, or in other words each item in the CTest suite.  So, in this sense, the suite of unit tests is nested within each of the individual tests defined by CTest.  And, it is this nested suite of unit tests. (see :ref:`below <init-test>`).
 
@@ -211,7 +211,7 @@ To appreciate how a JEDI Application is actually run, consider the following pro
      return 0;
    };
 
-This program begins by defining an object of type :code:`oops::Run`, passing the constructor the arguments from the command line.  These command-line arguments generally include a :doc:`configuration file </inside/jedi-components/configuration/index>` that specifies the parameters, input files, and other information that is necessary to run the application (in this case, a test).
+This program begins by defining an object of type :code:`oops::Run`, passing the constructor the arguments from the command line.  These command-line arguments generally include a :ref:`configuration file <jedi-config>` that specifies the parameters, input files, and other information that is necessary to run the application (in this case, a test).
 
 Then the program proceeds to define an object of type :code:`test::State<qg::QgTraits>` called :code:`tests`, which is a sub-class of :code:`oops::Test` as illustrated here:
 

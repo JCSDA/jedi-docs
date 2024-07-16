@@ -3,10 +3,12 @@
 Introduction to SABER Error Covariance Model
 ============================================
 
-In variational data assimilation (VAR), the background error covariance matrix **B** plays an important role in
-calculating the analysis (i.e., the best guess for the present state given a set of observations). For a
-linear observation operator :math:`\textbf{H}`, the analysis :math:`\textbf{x}^a` is the sum of the background state
-:math:`\textbf{x}^b` and an update increment :math:`\delta \textbf{x}`
+In variational data assimilation (VAR), the background error covariance matrix
+**B** plays an important role in calculating the analysis (i.e., the best guess
+for the present state given a set of observations). For a linear observation
+operator :math:`\textbf{H}`, the analysis :math:`\textbf{x}^a` is the sum of
+the background state :math:`\textbf{x}^b` and an update increment
+:math:`\delta \textbf{x}`
 
 .. math::
   :label: eq-inc
@@ -15,30 +17,37 @@ linear observation operator :math:`\textbf{H}`, the analysis :math:`\textbf{x}^a
   
 where :math:`\textbf{y}^o` is a set of observations.
 
-Conceptually, the **B** matrix contains the covariations in the errors between all pairs of elements in the
-background state vector (:math:`\textbf{x}^b`). So, if a state vector has :math:`N = 10^9` entries, the full **B** matrix
-will have :math:`N^2 = 10^{18}` entries. Storing a matrix of this size in memory is computationally prohibitive, so
-instead most algorithms implement **B** as a matrix-like operator which modifies an increment vector.
+Conceptually, the **B** matrix contains the covariations in the errors between
+all pairs of elements in the background state vector (:math:`\textbf{x}^b`).
+So, if a state vector has :math:`N = 10^9` entries, the full **B** matrix will
+have :math:`N^2 = 10^{18}` entries. Storing a matrix of this size in memory is
+computationally prohibitive, so instead most algorithms implement **B** as a
+matrix-like operator which modifies an increment vector.
 
-A conceptual obstacle to understanding the **B** matrix is that, in a standard frequentist notion,
-a covariation between a pair of variables is calculated through a sum over some number of matched pairs of draws
-from the two variables. But, in basic VAR there is only one :math:`\textbf{x}^b`, so there is only one 'draw' and thus no
-sum over which a covariation can be calculated. Thus, the covariances stored in **B** are better interpreted in
-a Bayesian sense as our 'degree of belief' and represent the level of uncertainty in the background state of the
-system: a larger covariance means there is a larger uncertainty in the background state. Covariances are also
-responsible for spreading information across variables.
+A conceptual obstacle to understanding the **B** matrix is that, in a standard
+frequentist notion, a covariation between a pair of variables is calculated
+through a sum over some number of matched pairs of draws from the two variables.
+But, in basic VAR there is only one :math:`\textbf{x}^b`, so there is only one
+'draw' and thus no sum over which a covariation can be calculated. Thus, the
+covariances stored in **B** are better interpreted in a Bayesian sense as our
+'degree of belief' and represent the level of uncertainty in the background
+state of the system: a larger covariance means there is a larger uncertainty
+in the background state. Covariances are also responsible for spreading
+information across variables.
 
-Another important consideration to keep in mind about the **B** matrix is that it is the covariances between
-*errors* in state variables. The errors :math:`\boldsymbol{\eta}` can be defined as the difference between the "true state"
-:math:`\textbf{x}^{\text{t}}` and our guess for the background state
+Another important consideration to keep in mind about the **B** matrix is that
+it is the covariances between *errors* in state variables. The errors
+:math:`\boldsymbol{\eta}` can be defined as the difference between the "true state"
+:math:`\textbf{x}^{\text{t}}` and the background state, which is our guess for the true state
 
 .. math::
 
     \boldsymbol{\eta} = \textbf{x}^{\text{t}} - \textbf{x}^b,
 
-where it is assumed that the background errors :math:`\boldsymbol{\eta}` are unbiased.
-In practice, we can never actually know the true state. If we could there wouldn't be a need to do data
-assimilation! But with this definition we can define **B** (with a frequentist definition) as
+where it is assumed that the background errors :math:`\boldsymbol{\eta}` are
+unbiased. In practice, we can never actually know the true state. If we could
+there wouldn't be a need to do data assimilation! But with this definition we
+can define **B** (with a frequentist definition) as
 
 .. math::
     
@@ -74,11 +83,12 @@ hats):
     \hat{\textbf{B}} = \textbf{V}^T \textbf{B} \textbf{V}
     \end{cases}
 
-Additionally, a balance operator **K**, a linear transformation which enforces physical constraints (such as hydrostatic or
-geostrophic balance) is included in the model **B** :cite:`Bannister2008Pt1`.
-
-Also, an interpolation operator **T** may be included to transform from the grid used for modeling **B** to the model grid.
-This will make a general model for **B** a series of matrix multiplications similar to the one shown below:
+Additionally, a balance operator **K**, a linear transformation which enforces
+physical constraints (such as hydrostatic or geostrophic balance) is included
+in the model **B** :cite:`Bannister2008Pt1`. Also, an interpolation operator
+**T** may be included to transform from the grid used for modeling **B** to the
+model grid. This will make a general model for **B** a series of matrix
+multiplications similar to the one shown below:
 
 .. math::
   :label: eq-modelB
@@ -142,8 +152,9 @@ in the yaml configuration file for their experiment following this general outli
       - saber block name: <outer block N>
           ...
 
-Each covariance model should have at least a central block, and may or may not have outer blocks. 
-Thus, the simplest SABER covariance model is just the Identity matrix:
+Each covariance model should have at least a central block, and may or may not
+have outer blocks. Thus, the simplest SABER covariance model is just the
+Identity matrix:
 
 .. code-block:: yaml
 
@@ -151,13 +162,20 @@ Thus, the simplest SABER covariance model is just the Identity matrix:
   saber central block: 
   - saber block name: ID
 
+.. note::
+
+  A block chain yaml configuration (like the ones above) should be read from
+  bottom-to-top to see the order in which each block will be applied to an
+  incoming analysis increment.
+
 Ensemble **B**
 --------------
 
-An ensemble **B** model (:math:`\textbf{P}^f_{ens}`) includes a matrix generated from the ensemble members
-:math:`\textbf{B}_{\text{ens}}` and a localization matrix :math:`\boldsymbol{\mathcal{L}}` which is applied
-in an element-wise multiplication (a Schur product) to :math:`\textbf{B}_{\text{ens}}` to remove spurious
-covariances between distantly separated grid points :cite:`Lorenc2003`:
+An ensemble **B** model (:math:`\textbf{P}^f_{ens}`) includes a matrix generated
+from the ensemble members :math:`\textbf{B}_{\text{ens}}` and a localization
+matrix :math:`\boldsymbol{\mathcal{L}}` which is applied in an element-wise
+multiplication (a Schur product) to :math:`\textbf{B}_{\text{ens}}` to remove
+spurious covariances between distantly separated grid points :cite:`Lorenc2003`:
 
 .. math::
   :label: eq-ensB
@@ -245,11 +263,13 @@ hybrid **B** with one parametric component and one ensemble component could be e
 
   \textbf{B} = \alpha \textbf{B}_{s} + \beta \boldsymbol{\mathcal{L}} \circ \textbf{B}_{\text{ens}}.
 
-This method is intended to use the strengths of each component model to minimize the weakness of the others.
-To set up a hybrid **B** in SABER, all the components of the full covariance model will be wrapped into
-a SABER :code:`Hybrid` central block, unless there are outer blocks common to all individual components
-in which case those outer blocks could be 'factored out' into an 'outermost' outer block chain. See the example
-below which outlines a SABER hybrid covariance composed of a static/parametic component and an ensemble component.
+This method is intended to use the strengths of each component model to minimize
+the weakness of the others. To set up a hybrid **B** in SABER, all the components
+of the full covariance model will be wrapped into a SABER :code:`Hybrid` central
+block, unless there are outer blocks common to all individual components in which
+case those outer blocks could be 'factored out' into an 'outermost' outer block
+chain. See the example below which outlines a SABER hybrid covariance composed
+of a static/parametric component and an ensemble component.
 
 .. code-block:: yaml
 

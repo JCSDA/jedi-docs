@@ -4,15 +4,41 @@ SABER
 
 SABER is the **System Agnostic Background Error Representation**.
 
-It provides generic software utilities for computing and working with the background error covariance matrix, often referred to as the **B** matrix.
+It provides generic software utilities for computing and working with the
+background error covariance matrix, often referred to as the **B** matrix.
 
 SABER Error Covariance Model
 ----------------------------
 
-The **B** matrix is generally modeled as a series of linear operators, represented in SABER by "SABER blocks". Such blocks, even if they come from different
-components of SABER, are often interoperable. The full series of blocks (linear operators) used in a model for **B** is referred to as a "block-chain".
+The **B** matrix is generally modeled as a series of linear operators,
+represented in SABER by "SABER blocks". Such blocks, even if they come from
+different components of SABER, are often interoperable. The full series of
+blocks (linear operators) used in a model for **B** is referred to as a
+"block-chain".
 
-The **B** matrix can be modeled in one of several ways, depending on the needs of the user. SABER has options for setting up parametric, esemble, or hybrid background error covariances. A parametric **B**, sometimes called a "static" **B** in the literature, could be a model which does not evolve with time or a model that introduces some flow-dependence through dependence on the background state. An ensemble **B** uses an ensemble of forecasts to update/evolve the background error in time. A hybrid **B** combines set of parametric and ensemble models using a weighted sum.
+A block-chain is composed of a central block surrounded, symmetrically, by a
+'backward' AKA 'adjoint' outer block chain on the left and a 'forward' AKA
+'tangent linear' outer block chain on the right. The forward and backward outer
+block-chains are always mirrored images of each other as shown in
+:numref:`blockchainfig`. When reading a block-chain in a YAML configuration,
+saber blocks are listed from top-to-bottom in the 'forward' order, but are first
+applied to an incoming model increment in the backwards (bottom-to-top) order.
+
+.. _blockchainfig:
+.. figure:: fig/figure_saber_blocks_2.jpg
+   :scale: 20%
+   :align: center
+
+   An outline of a SABER block-chain.
+
+The **B** matrix can be modeled in one of several ways, depending on the needs
+of the user. SABER has options for setting up parametric, ensemble, or hybrid
+background error covariances. A parametric **B**, sometimes called a "static"
+**B** in the literature, could be a model which does not evolve with time or a
+model that introduces some flow-dependence through dependence on the background
+state. An ensemble **B** uses an ensemble of forecasts to update/evolve the
+background error in time. A hybrid **B** combines a set of parametric and ensemble
+models using a weighted sum.
  
 More details here: 
 

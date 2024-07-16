@@ -1,3 +1,5 @@
+.. _oops-env-vars:
+
 OOPS ENVIRONMENT VARIABLES
 ==========================
 

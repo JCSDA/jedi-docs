@@ -1,3 +1,5 @@
+.. _jedi-config:
+
 ################
 Configuring JEDI
 ################

@@ -16,8 +16,7 @@ Developers are the best persons to write tests for their code and every major
 development should be included with its associated tests.
 The tests should be reviewed as any other part of the system and any by-passing
 or relaxing of a test criterion should be fully justified and documented. You can
-find more details about adding a new test in the
-:doc:`Adding a New Test <../inside/testing/adding_a_test>` section.
+find more details about adding a new test in the :ref:`adding-a-test` section.
 
 As the software industry favored frequent and small modifications to the code
 (agile methodology) as a development approach, the need for frequent automated
@@ -67,7 +66,7 @@ Almost all the scripts that are used by the automated testing framework are loca
 the “CI” directory, except for :code:`.travis.yml` that is located in the base directory.
 
 GitHub Automated Testing
--------------
+------------------------
 Most repositories in the JEDI Bundle are tested using a test automation system
 built on AWS Batch that automatically provisions a fresh environment and
 launches tests on the Clang, GNU, or Intel containers. One environment will be
@@ -94,7 +93,7 @@ your pull request description. The annotations must link to pull requests
 in other JCSDA-internal repositories.
 
 
-.. code:: plaintext
+.. code::
 
   This is my generic pull request description. My change requires coordinated
   changes in oops and saber. My tests won't pass unless your bundle contains the
