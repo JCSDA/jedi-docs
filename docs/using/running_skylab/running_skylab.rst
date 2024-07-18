@@ -177,7 +177,9 @@ the build was successful by running the tests (still from :code:`$JEDI_BUILD`):
 
 If you are on an HPC you may need to provide additional flags to the ecbuild
 command, or login to a compute node, or submit a batch script for running the
-ctests. Please refer the :ref:`hpc_users_guide` for more details.
+ctests. Please refer the :ref:`hpc_users_guide` for more details. You can also
+run ctests using a Skylab experiment. This can be executed after Section
+:ref:`Run-Skylab`, using the :code:`$JEDI_SRC/skylab/experiments/jedi_ctest.yaml`.
 
 Running the tests may take up to 2 hours depending on your system, so you might
 want to take another coffee break. If all the expected tests pass, congratulations!
@@ -331,6 +333,7 @@ section. (If the link doesn't work, the directions can be found in the :code:`TU
 Note: The command used to setup the the local database should be run from the :code:`$JEDI_SRC/r2d2` directory. And
 the :code:`r2d2-experiments-tutorial.sql` file is in :code:`$JEDI_SRC/r2d2-data`.
 
+.. _Run-Skylab:
 
 6- Run SkyLab
 ^^^^^^^^^^^^^
