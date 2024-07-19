@@ -12,6 +12,11 @@ The SABER block method used for direct calibration is :code:`directCalibration`.
 It receives a vector of Atlas FieldSets, which are all loaded in memory to calibrate the block.
 There is no enforced assumption on whether the ensemble mean has already been removed from the ensemble or not, this is a choice to be made for each block by the developers.
 
+Saber blocks with direct calibration assuming that the ensemble mean has been removed (not exhaustive list!)
+
+- :code:`spectral covariance`: calculates vertical covariances for each  `spectral` total wavenumber.
+- :ref:`write variances <calibration_write_variances>`: currently calculates variances and inter-variable cross-covariances either as a horizontal global average or per grid point. Also calculates vertical covariances or vertical cross-covariances.
+
 Iterative calibration
 ---------------------
 
@@ -44,3 +49,12 @@ Each methods come in two versions, one using the model reader/writer, and one us
 - :code:`read()` is used in read mode only to read calibration data of the block.
 - In calibration mode only, :code:`write()` is used to write the calibration data that has been computed.
 - In calibration mode only, calibration data can also be written using the model writer. The write configuration and the Atlas FieldSet to write from should be specified by the block method :code:`fieldsToWrite()`. Default is to write nothing.
+
+Index
+^^^^^
+
+.. toctree::
+   :titlesonly:
+
+   calibration_writeVariances.rst
+
