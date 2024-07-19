@@ -15,8 +15,12 @@ open _build/html/index.html
 
 ## Writing documentation
 
-Here are a few important standards to follow when writing (or editing) documentation.
+The jedi-docs are written in reStructuredText (reST) markup plaintext files and are
+built by [Sphinx](https://www.sphinx-doc.org/en/master/). For an introduction and
+reference for reST see the [reStructuredText Primer](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) in the
+Sphinx documentation.
 
+Here are a few important standards to follow when writing (or editing) documentation.
 
 1. Linking to other pages in the documentation is encouraged. Sphinx provides
    many ways of doing this, and the best way is to use the `:ref:` directive.
