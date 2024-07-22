@@ -39,7 +39,7 @@ In particular the outer blocks that are affected are:
 
 Future
 ------
-In the future we expect to be changing the naming of the variables. Full levels will have the "_at_interface" suffix, half-levels (not including level above model top) will no longer have a suffix, and half-levels including level above model top will include suffix "_including_point_above_model_top".
+In the future we expect to be changing the naming of the variables. Full levels will have the "_at_top_interfaces" suffix, half-levels (not including level above model top) will no longer have a suffix, and half-levels including level above model top will include suffix "_extended_up_by_1".
 
 
 Index
