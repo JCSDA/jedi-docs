@@ -262,7 +262,7 @@ When a missing input file is encountered, the reader can be configured to take o
 2. Issue an error, throw an exception, and quit execution. This action is typically applicable to research and development where you want to be immediately notified when a file is missing.
 
 The missing file action can be specified in the YAML configuration using the ``missing file action`` keyword.
-The valid values are ``warn`` (default) or ``error``, where ``warn`` corresponds the the first action and ``error`` corresponds to the second action noted above.
+The valid values are ``warn`` or ``error`` (default), where ``warn`` corresponds the the first action and ``error`` corresponds to the second action noted above.
 Here is a sample YAML section that shows how to configure the missing file action to be an error.
 
 .. code-block:: YAML
@@ -280,7 +280,7 @@ Here is a sample YAML section that shows how to configure the missing file actio
          engine:
            type: H5File
            obsfile: "Data/amsua_n19_obs_2018041500_m.nc4"
-         missing file action: error
+           missing file action: error
 
 Note that the ``missing file action`` keyword is specified in the ``obs space.obsdatain.engine`` section.
 
