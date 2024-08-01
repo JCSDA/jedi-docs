@@ -302,6 +302,7 @@ The action taken on observations flagged by the filter can be adjusted using the
   - :code:`rejected observations` if the diagnostic flag should not be changed at observations that have previously been rejected or
   - :code:`defective observations` if the diagnostic flag should not be changed at observations that have previously been rejected because of a missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator.
 
+* :code:`set flag bit`: the bit of the bitmap diagnostic flag indicated by the :code:`bit` option will be set at observations flagged by filter.
 * :code:`flag original and average profiles`: rejects any observations in the original profiles that have been flagged by the filter, and also rejects all observations in any averaged profile whose corresponding original profile contains at least one flagged observation. See the example below for further details.
 
 To perform multiple actions, replace the :code:`action` option, which takes a single action, by :code:`actions`, which takes a list of actions. This list may contain at most one action altering quality control flags, namely :code:`reject`, :code:`accept` and :code:`passivate`; if present, such an action must be the last in the list. The :code:`action` and :code:`actions` options are mutually exclusive.

@@ -1681,18 +1681,24 @@ Create Diagnostic Flags Filter
 
 This "filter" (it is not a true filter; rather, a "processing step") makes it possible to define new diagnostic flags and to reinitialize existing ones.
 
-Diagnostic flags are stored in Boolean ObsSpace variables. A diagnostic flag *Flag* associated with a observed variable *var* is stored in the variable :code:`DiagnosticFlags/Flag/var`.
+Diagnostic flags can be stored in two different ways:
 
-The diagnostic flags to create or reinitialize are specified in the :code:`flags` list in the
+- in Boolean ObsSpace variables. A diagnostic flag *Flag* associated with a observed variable *var* is stored in the variable :code:`DiagnosticFlags/Flag/var`;
+- in Integer ObsSpace variables (Integer serves as a bitmap). A diagnostic flag associated with an observed variable *var* is stored in the variable :code:`DiagnosticFlags/var`.
+
+The Boolean diagnostic flags to create or reinitialize are specified in the :code:`flags` list in the
 YAML file. Each element of this list can contain the following keys:
 
 - :code:`name` (required): The flag name. Conventionally, flag names follow the CamelCase naming convention (like group names).
 - :code:`initial value`: Initial value for the flag (either :code:`true` or :code:`false`). If not specified, defaults to :code:`false`.
 - :code:`force reinitialization`: Determines what happens if the flag already exists. By default, the flag is not reinitialized, i.e. its current value is preserved. Set :code:`force reinitialization` to :code:`true` to reset the flag to :code:`initial value`.
 
+The Integer (bitmap) diagnostic flags are created or reinitialized if :code:`bitmap diagnostic flags` is set to :code:`true` in the YAML file. :code:`force bitmap reinitialization` option behaves similarly to
+:code:`force reinitialization` for the bitmap diagnostics flags. Bitmap diagnostic flags are always set to zero on creation or reinitialization.
+
 In addition, the filter recognizes the standard filter options :code:`filter variables` and :code:`defer to post`, but not :code:`where` or :code:`action`.
 
-Setting and unsetting of diagnostic flags is normally performed using actions on a given filter; examples can be seen in :ref:`Filter Actions <filter-actions>`.
+Setting and unsetting of diagnostic flags or bits of diagnostic flags (for the bitmap diagnostics) is normally performed using actions on a given filter; examples can be seen in :ref:`Filter Actions <filter-actions>`.
 
 Example 1
 ^^^^^^^^^
@@ -1721,6 +1727,18 @@ The following YAML snippet creates a diagnostic flag :code:`OriginallyMeasuredIn
     - name: OriginallyMeasuredInMmHg
       initial value: true
       force reinitialization: true
+
+Example 3
+^^^^^^^^^
+
+The following YAML snippet creates bitmap diagnostic variable for the observed variable :code:`stationPressure`.
+
+.. code:: yaml
+
+  - filter: Create Diagnostic Flags
+    filter variables: [stationPressure]
+    bitmap diagnostic flags: true
+
 
 RTTOV 1D-Var Check (RTTOVOneDVar) Filter
 ----------------------------------------
