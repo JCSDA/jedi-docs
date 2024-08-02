@@ -63,6 +63,7 @@ SABER blocks can encapsulate various components:
    GSI: interface to the GSI covariance<GSI>
    ID: identity operator<ID>
    SPECTRALB: spectral covariance/correlation<SPECTRALB>
+   FakeLevels: fake levels convolution<FakeLevels>
    StdDev: standard-deviation application<StdDev>
    DuplicateVariables: outer block to duplicate one variable into others<DuplicateVariables>
    Interpolation blocks<Interpolations>
