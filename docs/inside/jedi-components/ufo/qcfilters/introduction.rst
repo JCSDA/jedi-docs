@@ -3,23 +3,6 @@
 Background
 ==========
 
-
-OOPS Observation Processing Flow
---------------------------------
-
-The flow of H(x) computation and QC filters application in OOPS is shown in the figure below.
-
-.. _ufo-observer-flow:
-.. figure:: images/observer_flow.png
-   :align: center
-
-   Flow chart for computing H(x) and running QC filters
-
-
-The :code:`Observer` calls the :code:`preProcess` method of :code:`ObsFilters` before the loop over time steps. After the loop, it calls the :code:`priorFilter` and :code:`postFilter` methods just before and just after calling the :code:`simulateObs` method of :code:`ObsOperator`. The observation filters are very generic and can perform a number of tasks, but mostly they are used for quality control.
-
-In variational data assimilation, the above flow happens inside of the observation term of the cost function (J\ :sub:`o`) evaluation.
-
 .. _Observation-Filters:
 
 Observation Filters
