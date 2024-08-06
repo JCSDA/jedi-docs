@@ -13,6 +13,11 @@ Create test YAML
 The test :code:`YAML` file sets the test configuration. See the other tests in the :code:`test/testinput`
 directory for examples.
 
+The name for the new test (and filename for the new :code:`YAML` file) should begin with the name of the
+:ref:`QUENCH` executable that will run the test. Current testing executables are: **convertstate**,
+**process_perts**, **randomization**, **error_covariance_training**, and **dirac**. The last three
+executables are provided by the quenchErrorCovarianceToolbox application.
+
 Create :code:`testdeps` file
 -----------------------------
 
