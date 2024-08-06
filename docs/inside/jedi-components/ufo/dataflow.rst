@@ -1,4 +1,4 @@
-.. _top-ufo-qc:
+.. _ufo-qc-dataflow:
 
 Observation Processing Flow
 ===========================

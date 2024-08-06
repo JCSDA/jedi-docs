@@ -16,11 +16,11 @@ In terms of the actual commands you would enter, these steps will look something
 .. code-block:: bash
 
     cd <src-directory>
-    git clone https://github.com/JCSDA/fv3-bundle.git
+    git clone https://github.com/JCSDA/jedi-bundle.git
     cd <build-directory>
     # See build step 3 for possible ways of detecting the correct
     # Python3 interpreter in the ecbuild command
-    ecbuild <src-directory>/fv3-bundle
+    ecbuild <src-directory>/jedi-bundle
     make update
     make -j4
     ctest
@@ -67,7 +67,7 @@ Before building the jedi code, you should also make sure that git is configured 
 
 This only needs to be done once, and it is required even if you are running in a container.
 
-Another thing to keep in mind is that many JEDI tests likely require more MPI tasks to run than the number of processor cores on your system.  For example, may laptops have two or four processor cores but the minimum number of MPI tasks needed to run fv3-bundle is 6.  That's no problem - you just have to tell Openmpi that it is ok to run more than one MPI task on each core.  To do this, run these commands:
+Another thing to keep in mind is that many JEDI tests likely require more MPI tasks to run than the number of processor cores on your system.  For example, many laptops have two or four processor cores but the minimum number of MPI tasks needed to run many fv3-jedi ctests within the jedi-bundle is 6.  That's no problem - you just have to tell Openmpi that it is ok to run more than one MPI task on each core.  To do this, run these commands:
 
 .. code-block:: bash
 
@@ -80,11 +80,8 @@ Another thing to keep in mind is that many JEDI tests likely require more MPI ta
 Step 1: Clone the Desired JEDI Bundle
 -------------------------------------
 
-JEDI applications are organized into high-level **bundles** that conveniently gather together all the git repositories necessary for JEDI applications to run.  Often a bundle is associated with a particular model, such as **FV3** or **MPAS**.
+JEDI applications are organized into high-level **bundles** that conveniently gather together all the git repositories necessary for JEDI applications to run.  Sometimes a bundle is associated with a particular model, such as **FV3** or **MPAS**, but for most cases using the :code:`jedi-bundle` is highly recommended.
 
-.. note::
-
-   In the instructions that follow, the the :code:`fv3-bundle` will be used as an example. But it is more common to clone the :code:`jedi-bundle`.
 
 To start your JEDI adventure, first choose a place -- and create a directory -- as a home for your bundle (or bundles--plural--if you're ambitious!). This directory will be referred to as :code:`JEDI_ROOT` throughout the JEDI documentation. You may call this directory what ever you wish, but :code:`jedi` is a good choice! Once you create this directory, export it as an environment variable for convenience:
 
@@ -98,35 +95,45 @@ Next, navigate into your :code:`JEDI_ROOT` and clone the **GitHub** repository t
 .. code-block:: bash
 
    cd $JEDI_ROOT
-   git clone https://github.com/JCSDA/fv3-bundle.git
+   git clone https://github.com/JCSDA/jedi-bundle.git
 
 Alternatively, developers with access to the internal repositories should instead clone the development branch. For the internal repositories, clone from **https://github.com/jcsda-internal**:
 
 .. code-block:: bash
 
    cd $JEDI_ROOT
-   git clone https://github.com/jcsda-internal/fv3-bundle.git
+   git clone https://github.com/jcsda-internal/jedi-bundle.git
 
 
 Step 2: Choose your Repos
 -------------------------
 
-As executed above in Step 1, cloning a bundle will create a directory :code:`<JEDI_ROOT>/<your-bundle>`. This checkout of the bundle will be referred to as the :code:`JEDI_SRC` (source). Export this as an evironment variable like you did for the :code:`JEDI_ROOT`. For the :code:`fv3-bundle`:
+As executed above in Step 1, cloning a bundle will create a directory :code:`<JEDI_ROOT>/<your-bundle>`. This checkout of the bundle will be referred to as the :code:`JEDI_SRC` (source). Export this as an evironment variable like you did for the :code:`JEDI_ROOT`. For the :code:`jedi-bundle`:
 
 .. code-block:: bash
 
-  export JEDI_SRC=$JEDI_ROOT/fv3-bundle
+  export JEDI_SRC=$JEDI_ROOT/jedi-bundle
 
 
-Navigate (:code:`cd`) into this source directory and have a look (modify this as needed if you used a different path or a different bundle).  There's not much there.  There is a :code:`README` file that you might want to consult for specific information on how to work with this bundle.  But in this Step we'll focus on the :code:`CMakeLists.txt` file.  This contains a list of repositories that the application needs to run.  In the case of **fv3-bundle** that list looks something like this:
+Navigate (:code:`cd`) into this source directory and have a look (modify this as needed if you used a different path or a different bundle).  There's not much there.  There is a :code:`README` file that you might want to consult for specific information on how to work with this bundle.  But in this Step we'll focus on the :code:`CMakeLists.txt` file.  This contains a list of repositories that the application needs to run.  In the case of **jedi-bundle** one of the more important sections of the :code:`CMakeLists.txt` looks like this:
 
 .. code-block:: cmake
 
-   ecbuild_bundle( PROJECT oops     GIT "https://github.com/JCSDA/oops.git"         BRANCH develop UPDATE )
-   ecbuild_bundle( PROJECT gsw      GIT "https://github.com/JCSDA/GSW-Fortran.git"  BRANCH develop UPDATE )
-   ecbuild_bundle( PROJECT crtm     GIT "https://github.com/JCSDA/crtm.git"         BRANCH develop UPDATE )
-   ecbuild_bundle( PROJECT ioda     GIT "https://github.com/JCSDA/ioda.git"         BRANCH develop UPDATE )
-   ecbuild_bundle( PROJECT ufo      GIT "https://github.com/JCSDA/ufo.git"          BRANCH develop UPDATE )
+  ecbuild_bundle( PROJECT gsw      GIT "https://github.com/jcsda-internal/GSW-Fortran.git" BRANCH develop UPDATE )
+
+  ecbuild_bundle( PROJECT oops     GIT "https://github.com/jcsda-internal/oops.git"        BRANCH develop UPDATE )
+  ecbuild_bundle( PROJECT vader    GIT "https://github.com/jcsda-internal/vader.git"       BRANCH develop UPDATE )
+  ecbuild_bundle( PROJECT saber    GIT "https://github.com/jcsda-internal/saber.git"       BRANCH develop UPDATE )
+
+  ecbuild_bundle( PROJECT crtm     GIT "https://github.com/jcsda/CRTMv3.git"               BRANCH develop UPDATE )
+
+  option(ENABLE_IODA_DATA "Obtain ioda test data from ioda-data repository (vs tarball)" ON)
+  ecbuild_bundle( PROJECT ioda-data GIT "https://github.com/jcsda-internal/ioda-data.git"  BRANCH develop UPDATE )
+  ecbuild_bundle( PROJECT ioda     GIT "https://github.com/jcsda-internal/ioda.git"        BRANCH develop UPDATE )
+
+  option(ENABLE_UFO_DATA "Obtain ufo test data from ufo-data repository (vs tarball)" ON)
+  ecbuild_bundle( PROJECT ufo-data GIT "https://github.com/jcsda-internal/ufo-data.git"    BRANCH develop UPDATE )
+  ecbuild_bundle( PROJECT ufo      GIT "https://github.com/jcsda-internal/ufo.git"         BRANCH develop UPDATE )
 
 
 The lines above tell :code:`ecbuild` which specific branches to retrieve from each GitHub repository.  **Modify these accordingly if you wish to use different branches.**  When you then run :code:`ecbuild` as described in :ref:`Step 3 <build-step3>` below, it will first check to see if these repositories already exist on your system, within the directory of the bundle you are building.  If not, it will clone them from GitHub.  Then :code:`ecbuild` will proceed to checkout the branch specified by the :code:`BRANCH` argument, fetching it from GitHub if necessary.
@@ -139,11 +146,11 @@ This will tell ecbuild to do a fresh pull of each of the branches that include t
 
 If you are a developer, you will, by definition, be modifying the code.  And, if you are a legitimate *JEDI Master*, you will be following the :ref:`gitflowapp-top` workflow.  So, you will have created a feature (or bugfix) branch on your local computer where you are implementing your changes.
 
-For illustration, let's say we created a feature branch of ufo called :code:`feature/newstuff`, which exists on your local system.  Now we want to tell :code:`ecbuild` to use this branch to compile the bundle instead of some other remote branch on GitHub.  To achieve this, we would change the appropriate line in the CMakeLists.txt file to point to the correct branch and we would remove the :code:`UPDATE` argument:
+For illustration, let's say we created a feature branch of ufo called :code:`feature/newstuff`, which exists on your local system.  Now we want to tell :code:`ecbuild` to use this branch to compile the bundle instead of some other remote branch on GitHub.  To achieve this, we would change the appropriate line in the :code:`CMakeLists.txt` file to point to the correct branch and we would remove the :code:`UPDATE` argument:
 
 .. code-block:: cmake
 
-   ecbuild_bundle( PROJECT ufo GIT "<JEDI_ROOT>/fv3-bundle/ufo" BRANCH feature/newstuff )
+   ecbuild_bundle( PROJECT ufo GIT "<JEDI_ROOT>/jedi-bundle/ufo" BRANCH feature/newstuff )
 
 This may be all you need to know about :code:`ecbuild_bundle()` but other options are available.  For example, if you would like to fetch a particular release of a remote GitHub repository you can do this:
 
