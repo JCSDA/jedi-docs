@@ -146,9 +146,9 @@ An example of using LGETKF solver in FV3:
 Localization supported in the ensemble solvers
 ----------------------------------------------
 
-Observation-space :math:`R-localization` is used in all local solvers. The :code:`obs localizations` syntax specifies a sequence of obs localizations for each obs space. Localization is initialized to all ones internally and is refined (multiplied) with each subsequent localization in the list. In other words, we assume that localizations are separable. 
+Observation-space :math:`R-localization` is used in all local solvers following `Frolov et al, 2024 <https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2023MS003692>`_. The :code:`obs localizations` syntax specifies a sequence of obs localizations for each obs space. Localization is initialized to all ones internally and is refined (multiplied) with each subsequent localization in the list. In other words, we assume that localizations are separable. 
 
-Localization sequence is specified as following for each obs space:
+The horizontal localization sequence is specified as following for each obs space:
 
 .. code-block:: yaml
 
@@ -159,29 +159,36 @@ Localization sequence is specified as following for each obs space:
        ...
        obs localizations:
        - localization method: Horizontal Gaspari-Cohn    # inflate errors with Gaspari-Cohn function, based on the
-                                                         # horizontal distance from the updated grid point
-         lengthscale: 1000e3                             # localization distance in meters
+                                                         #   horizontal distance from the updated grid point
+         lengthscale: 1000e3                             # horizontal localization distance in meters
 
+Other options for obs-space localization are available outside of OOPS. Specifically, UFO supports Gaspari-Cohn, SOAR, and Box Car localizations with kd-tree distance search (e.g., :code:`localization method: Horizontal SOAR`). Additional localizations are supported in SOCA (Rossby radius based) and FV3-JEDI (soil-specific localization).
 
-There is currently no vertical localization in LETKF implementations in JEDI. LGETKF implementation uses ensemble modulation to approximate model-space vertical localization. Vertical R-localization is work in progress. 
+Similarly, the vertical localization sequence is specified as: 
 
-.. list-table:: Localization options available in different solvers
-   :header-rows: 1
+.. code-block:: yaml
 
-   * - Solver
-     - Horizontal localization
-     - Vertical localization
-   * - LETKF
-     - Gaspari-Cohn R-localization
-     - No localization
-   * - GSI LETKF
-     - Gaspari-Cohn R-localization
-     - No localization
-   * - GETKF
-     - Gaspari-Cohn R-localization
-     - Modulated ensembles for emulating Gaspari-Cohn B-localization
+   observations:
+     observers:
+     - obs space:
+         name: radiosonde
+       ...
+       obs localizations: 
+       - localization method: Vertical localization      # As above but for vertical localization
+         localization function: Gaspari Cohn             # Function for vertical localization
+         ioda vertical coordinate group: MetaData        # Group containing the below vertical coordinate
+         ioda vertical coordinate: height                # Name of UFO variable storing the vertical coordinate
+                                                         #   of the observation locations
+         vertical lengthscale: 6e3                       # vertical localization distance in units of given coord
 
-Other options for obs localizations are available outside of oops. Specifically, UFO supports Gaspari-Cohn and SOAR localizations with kd-tree distance search. Additional localizations are supported in soca (Rossby radius based) and fv3-jedi (soil-specific localization). 
+The Gaspari-Cohn, SOAR, and Box Car methods are also supported for vertical localization (e.g., :code:`localization function: SOAR`). If using vertical localization for LETKF (or GSI LETKF), the 3D Geometry Iterator must be enabled to carry model height information into the vertical localization routines following: 
+
+.. code-block:: yaml
+
+   geometry:
+     iterator dimension: 3
+
+Finally, the LGETKF implementation uses ensemble modulation to approximate model-space vertical localization (see above section for details). 
 
 Inflation supported in the ensemble solvers
 -------------------------------------------
