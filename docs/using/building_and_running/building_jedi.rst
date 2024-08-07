@@ -5,6 +5,7 @@ Building and compiling JEDI
 
 As described in detail :ref:`cmake_devtools`, the procedure for building and compiling JEDI rests heavily on the software tools :code:`CMake` and :code:`ecbuild`, which make your life much easier.  A typical workflow proceeds in the following steps, which are described in more detail in the sections that follow:
 
+0. Configure System: set git settings and load spack-stack environment (if not previously set)
 1. Clone the desired JEDI :ref:`bundle <bundle>`
 2. Optionally edit the :code:`CMakeLists.txt` file in the bundle to choose the code branches you want to work with
 3. :code:`cd` to the build directory and run :code:`ecbuild` to generate the Makefiles and other infrastructure
@@ -25,16 +26,18 @@ In terms of the actual commands you would enter, these steps will look something
     make -j4
     ctest
 
-In this document we describe Steps 1 through 4, including the various options you have available to you at each step.  For a description of Step 5, see our page on :ref:`jedi-testing`.
+In this document, we describe Steps 0 through 4, including the various options you have available to you at each step.  For a description of Step 5, see our page on :ref:`jedi-testing`.
 
-You will probably only need to do Step 1 once.  However, if you are a developer who is making changes to one or more JEDI repositories, you will likely find it useful to execute Steps 2 through 5 multiple times, with progressively increasing frequency.  For example, if you are working with a single repository, you may only need to do Step 2 once in order to tell ecbuild to compile your local branch.  And, you'll only need to run :code:`ecbuild` (Step 3) occasionally, when you make changes that affect the directory tree or compilation (for example, adding a file that was not there previously or substantially altering the dependencies).  By comparison, you will likely execute Steps 4 and 5 frequently as you proceed to make changes and test them.
+You will probably only need to do Steps 0 and 1 once.  However, if you are a developer who is making changes to one or more JEDI repositories, you will likely find it useful to execute Steps 2 through 5 multiple times, with progressively increasing frequency.  For example, if you are working with a single repository, you may only need to do Step 2 once in order to tell ecbuild to compile your local branch.  And, you'll only need to run :code:`ecbuild` (Step 3) occasionally, when you make changes that affect the directory tree or compilation (for example, adding a file that was not there previously or substantially altering the dependencies).  By comparison, you will likely execute Steps 4 and 5 frequently as you proceed to make changes and test them.
 
 .. _git-config:
 
-Precursor: System Configuration
--------------------------------
+Step 0: System Configuration
+----------------------------
 
-Before jumping into the actual building of JEDI, we highly recommend that you read this section.  This information will let you avoid the need to enter your GitHub password many times during the JEDI build process, which can be annoying to say the least.  And, it will allow you to avoid errors when using a bundle that requires multiple MPI threads.
+Before jumping into building JEDI, there are a few system settings to configure. First, load the spack environment on your system (see :ref:`top-modules`). Supported HPC platforms have a year's worth of the latest spack-stack releases pre-built and installed. If you are working on a local machine or a non-supported platform, you will have to build the spack-stack.
+
+Next, there are a few one-time settings to configure that will (1) let you avoid the need to enter your GitHub password many times during the JEDI build process, which will make the automated cloning of git repositories much faster, (2) set up git lfs (large file storage) for handling large data files, and (3) -- IF the CPU on your machine has fewer than 6 threads -- configure Open MPI settings to allow up to 6 MPI tasks to run.
 
 All JEDI repositories are stored and distributed by means of `GitHub <https://github.com>`_.   If you have used :code:`git` before, then you probably already have a :code:`.gitconfig` configuration file in your home directory.  If you have not already done so at some point in the past, you can create a git configuration file by specifying your GitHub username and email as follows:
 
@@ -51,7 +54,7 @@ This is a recommended action for any user of GitHub since it governs how you acc
 
 This tells GitHub to keep your GitHub login information for an hour, i.e. 3600 seconds (feel free to increase this time if you wish).  If you don't do this, you may regret it - you'll have to enter your GitHub password repeatedly throughout the build process as ecbuild proceeds to clone multiple GitHub repositories.
 
-The statement above should be sufficient on most systems.   However, on some systems (particularly HPC systems with stringent security protocols), it may be necessary to explicitly give git permission to store your GitHub password unencrypted on disk as follows:
+The statement above should be sufficient for most systems.  However, on some systems (particularly HPC systems with stringent security protocols), it may be necessary to explicitly give git permission to store your GitHub password unencrypted on disk as follows:
 
 .. code-block:: bash
 
@@ -67,7 +70,7 @@ Before building the jedi code, you should also make sure that git is configured 
 
 This only needs to be done once, and it is required even if you are running in a container.
 
-Another thing to keep in mind is that many JEDI tests likely require more MPI tasks to run than the number of processor cores on your system.  For example, many laptops have two or four processor cores but the minimum number of MPI tasks needed to run many fv3-jedi ctests within the jedi-bundle is 6.  That's no problem - you just have to tell Openmpi that it is ok to run more than one MPI task on each core.  To do this, run these commands:
+Another thing to keep in mind is that many JEDI tests likely require more MPI tasks to run than the number of processor cores on your system.  For example, many laptops have two or four processor cores but the minimum number of MPI tasks needed to run many fv3-jedi ctests within the jedi-bundle is 6.  That's no problem - you just have to tell Open MPI that it is ok to run more than one MPI task on each core.  To do this, run these commands:
 
 .. code-block:: bash
 
