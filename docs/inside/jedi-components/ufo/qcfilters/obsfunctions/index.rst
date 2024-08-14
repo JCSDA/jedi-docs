@@ -137,6 +137,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ProfileLevelCount <ProfileLevelCount>`
   Count the number of locations in each profile that satisfy a particular condition.
 
+:ref:`RecordNumberToObsSpace <RecordNumberToObsSpace>`
+  For an input data set that has been grouped into records, enable the internal unique record number to be saved to the ObsSpace.
+
 :ref:`RONBAMErrInflate <RONBAMErrInflate>`
   Observation error inflation factor for GnssroBndNBAM
 
