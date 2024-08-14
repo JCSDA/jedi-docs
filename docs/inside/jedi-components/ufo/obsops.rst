@@ -449,8 +449,8 @@ RTTOV requires the following GeoVaLs for clear-sky radiance calculation. The var
 Additionally, for calculation of MW cloud-affected radiances using RTTOV-SCATT the following GeoVaLs are also required:
 
 * :code:`air_pressure_levels` (:code:`var_prsi`) [Pa]
-* :code:`mass_content_of_cloud_liquid_water_in_atmosphere_layer` (:code:`var_qcl`) [kg/kg]
-* :code:`mass_content_of_cloud_ice_in_atmosphere_layer` (:code:`var_qci`) [kg/kg]
+* :code:`cloud_liquid_water_mixing_ratio_wrt_moist_air_and_condensed_water` (:code:`var_qcl`) [kg/kg]
+* :code:`cloud_ice_mixing_ratio_wrt_moist_air_and_condensed_water` (:code:`var_qci`) [kg/kg]
 * :code:`cloud_area_fraction_in_atmosphere_layer`  (:code:`var_cloud_layer`) [dimensionless]
 
 The geographic location of the observation, the satellite zenith angle and the RTTOV surface type are also required from the ObsSpace:
@@ -500,9 +500,9 @@ The configurable options for the RTTOV observation operator interface are:
 
   * :code:`Water_vapour` (the internal RTTOV name for water vapour, c.f. :code:`H2O` in CRTM) is mandatory and maps to :code:`specificHumidity` and it is not necessary to list it here explicitly.
 
-  * :code:`CLW` (cloud liquid water) is optional for clear-sky MW calculation but mandatory for MW scattering calculations and maps to :code:`mass_content_of_cloud_liquid_water_in_atmosphere_layer`.
+  * :code:`CLW` (cloud liquid water) is optional for clear-sky MW calculation but mandatory for MW scattering calculations and maps to :code:`cloud_liquid_water_mixing_ratio_wrt_moist_air_and_condensed_water`.
 
-  * :code:`CIW` (cloud ice water) is not used for clear-sky MW calculation but mandatory for MW scattering calculations and maps to :code:`mass_content_of_cloud_ice_in_atmosphere_layer`.
+  * :code:`CIW` (cloud ice water) is not used for clear-sky MW calculation but mandatory for MW scattering calculations and maps to :code:`cloud_ice_mixing_ratio_wrt_moist_air_and_condensed_water`.
 
   * :code:`Ozone`, :code:`CO2`, :code:`CO`, :code:`N2O`, :code:`CH4`, :code:`SO2` are due to be implemented.
 
