@@ -1398,6 +1398,46 @@ Examples of yaml:
             obsfile: Data/radar_rw_obs_2019052222.nc4
         simulated variables: [radialVelocity]
 
+Radar Doppler wind
+------------------
+
+Description
+^^^^^^^^^^^
+
+This operator computes the model equivalent of radial velocity [m/s] for Doppler radar observations.
+
+The following variables must be present in the obs space prior to running this operator:
+* :code:`MetaData/sinTilt`
+* :code:`MetaData/cosAzimuthCosTilt`
+* :code:`MetaData/sinAzimuthCosTilt`
+* :code:`MetaData/height`
+
+These variables can be produced with the :code:`RadarBeamGeometry` Variable Transform filter.
+Tilt is the angle [deg] of the radar beam relative to the horizontal, and
+and azimuth [deg] is the angle of the radar beam measured clockwise relative to true North.
+
+It is mandatory to specify the names of the model vertical coordinates associated with both
+horizontal (u, v) and vertical (w) wind speeds. That will ensure the correct vertical
+interpolation is performed.
+
+This operator shares functionality with the :code:`RadarRadialVelocity` operator, but is implemented entirely in C++.
+
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
+:code:`vertical coordinate for horizontal wind`: (required, string) model vertical coordinate associated with horizontal winds.
+:code:`vertical coordinate for vertical wind`: (required, string) model vertical coordinate associated with vertical wind.
+
+Example
+^^^^^^^
+
+.. code-block:: yaml
+
+ obs operator:
+   name: RadarDopplerWind
+   vertical coordinate for horizontal wind: height_levels
+   vertical coordinate for vertical wind: height
+
 Scatterometer neutral wind (Met Office)
 ---------------------------------------
 
