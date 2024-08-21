@@ -107,6 +107,9 @@ For more details here:
    SABER block testing<SABER_testing>
    Adding a SABER test<SABER_test>
 
+As an additional debugging tool, TotalView is available for BUMP when SABER/JEDI is built in debug mode.
+TotalView is a powerful parallel debugger for C/C++, Fortran, and mixed C/C++ and python codes.
+
 A low-level description of the classes, functions, and subroutines is also available, produced by means of the `Doxygen document generator <https://www.doxygen.nl/index.html>`_.
 
 +-----------------------------------------------------------------------------------------+
