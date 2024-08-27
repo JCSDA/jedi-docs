@@ -94,6 +94,13 @@ The variable transforms available are:
 
    transforms/humidity
 
+**Logarithm**
+
+.. toctree::
+   :maxdepth: 1
+
+   transforms/logarithm
+
 **Ocean Conversions**
 
 .. toctree::
