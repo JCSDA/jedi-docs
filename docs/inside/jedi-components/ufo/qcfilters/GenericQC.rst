@@ -121,9 +121,15 @@ Bayesian Background Check Filter
 
 Similar to the standard Background Check filter, which rejects observations based on the difference between observation value and model simulated value (:math:`y-H(x)`), the Bayesian Background Check also takes into account the probability that an observation is "bad", i.e. "in gross error". It is expected that the initial Probability of Gross Error (PGE) is set before calling the Bayesian Background Check filter (e.g. using a Variable Assignment filter). In the Bayesian Background Check filter, this initial :code:`PGE` value determines the  weight given to the uniform ("bad") probability distribution - while :code:`(1-PGE)` is the weight given to the "good" distribution (a Gaussian in :math:`[y-H(x)]`, with variance :math:`{\sigma}^2` given by the sum of background uncertainty and observation uncertainty variances). The initial :code:`PGE` divided by the combined probability distribution, gives the conditional probability that the observation is in gross error. This conditional probability value is the after-check PGE, :code:`PGEBd`. It is saved in the ObsSpace for optional later use in the buddy check, and observations are also rejected if it exceeds a given threshold. There is also the option of the Bayesian Background Check filter performing a "squared difference" check, to reject observations if :math:`[y-H(x)]^2/{\sigma}^2` exceeds a threshold.
 
-The .yaml file requires the following filter parameter:
+A useful reference describing the practical implementation of Bayes Theorem for meteorological observations is:
 
-- :code:`prob density bad obs` (:code:`PdBad`): the value of the prior uniform probability distribution for the observation to be bad (e.g. 0.1/K for a domain 273-283 K for some temperature observation).
+Lorenc, A.C. and Hammon, O. (1988), Objective quality control of observations using Bayesian methods. Theory, and a practical implementation. Q.J.R. Meteorol. Soc., 114: 515-543.
+ 
+The .yaml file requires that one of the following two filter parameters are set to define the probability distribution for the observation to be bad:
+
+- :code:`prob density bad obs` (:code:`PdBad`): In this case the same value is applied to all the observations on which the filter is applied (typically this is set to the inverse of the climatological range e.g. 0.1/K for a domain 273-283 K for some temperature observation).
+
+- :code:`prob density bad obs vector name` (:code:`pdBadObsVectorName`): In this case the probability distribution of bad obs is allowed to vary from observation to observation location. The vector should reside in the obspace as part of the :code:`MetaData` group and be of size nlocations. An application of this is for quality control of land soil moisture observations where the range of soil moisture values can change in different locations according to the soil properties.
 
 The .yaml file can also contain optional filter parameters, which override the default values in ufo/filters/BayesianBackgroundCheck.h and ufo/utils/ProbabilityOfGrossErrorParameters.h:
 
