@@ -129,12 +129,12 @@ The variable transforms available are:
 
    transforms/profilehorizontaldrift
 
-**Surface pressure**
+**Radar beam geometry**
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   transforms/surfacepressure
+   transforms/radarbeamgeom
 
 **Remap scan position**
 
@@ -163,6 +163,13 @@ The variable transforms available are:
    :maxdepth: 1
 
    transforms/satzencorrection
+
+**Surface pressure**
+
+.. toctree::
+   :maxdepth: 2
+
+   transforms/surfacepressure
 
 **Surface wind scaling for height coordinate**
 
