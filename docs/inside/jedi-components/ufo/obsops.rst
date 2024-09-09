@@ -1327,6 +1327,63 @@ In the example above H(x) is scaled by a custom varable belonging to a group oth
 In the example above H(x) would be calculated as :math:`H(x) = \frac{x}{\sqrt{a}}`  Here x need not be the same as the simulated variable.
 
 
+Logarithm observation operator
+------------------------------
+
+Description:
+^^^^^^^^^^^^
+
+A simple observation operator that allows the logarithm of a variable, with a chosen base, to be calculated. If acting on a model column with more than one level, this operator selects the model level closest to the Earth's surface.
+
+The operator performs :math:`H(x) = \log_n(x)` where :math:`x` is the variable at the lowest model level and :math:`n` is the base.
+
+If this operator encounters values which are less than or equal to zero, the output is set to missing.
+Invalid bases (zero, one or negative numbers) will produce an error.
+
+This operator can be used as a component of the :ref:`Composite <obsops_composite>` operator.
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`variables` [optional]: a list of names of ObsSpace variables to be simulated by this operator. This option should only be set if this operator is used as a component of the `Composite` operator. If it is not set, the operator will simulate all ObsSpace variables.
+
+* :code:`base` [optional]: the base of the logarithm. Default value: e (natural logarithm).
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Logarithm
+
+In the example above H(x) will be calculated as :math:`H(x) = \ln(x)` where :math:`x` is the simulated variable and :math:`\ln` is the natural logarithm.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Logarithm
+    base: 2
+
+In the example above H(x) will be calculated as :math:`H(x) = \log_2(x)` where :math:`x` is the simulated variable.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Composite
+    components:
+    - name: Logarithm
+      variables:
+      - name: horizontalVisibility
+      base: 10
+    - name: VertInterp
+      variables:
+      - name: windEastward
+      - name: windNorthward
+
+In the example above, the :code:`Logarithm` operator is applied to the horizontal visibility variable with base 10; the :code:`VertInterp` operator is applied to the wind components.
+
+
 In situ particulate matter (PM) operator
 ----------------------------------------
 
