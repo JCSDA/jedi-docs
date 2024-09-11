@@ -6,12 +6,11 @@ Write Variances
 This block has two modes of use:
 
 - ``instantaneous statistics`` mode - where horizontal global averaged variances are calculated for each model level. The data is from a single FieldSet at a specific point in the workflow. In all cases, when activated, it deals the input FieldSet to the class method in question, whether it is `multiply`, `multiplyAD`, `leftInverseMultiply`. This is to be used primarily for diagnostic purposes. With this there is the option of writing the variances to NetCDF files. In the near future, we will make this code more consistent with the other main mode.
-- ``calibration`` mode - where we accumulate using the "direct calibration" method. This method is still work in progress and will be extended in the near future. Currently, it has the capability to generate:
-    - grid-point variances and global horizontal-averaged variances,
-    - grid-point covariances and global horizontal-averaged covariances between 2 variables,
-    - grid-point vertical covariances and global horizontal-averaged vertical covariances,
-    - grid-point vertical cross-covariances and horizontal-averaged vertical cross-covariances between 2 variables.
-
+- ``calibration`` mode - where we accumulate using the "direct calibration" method. This method is still a work-in-progress and will be extended in the near future. Currently, it has the capability to generate variances, covariances, vertical-covariances, and vertical cross-covariances between 2 variables either
+    - at grid-points
+    - as a globally horizontal-averaged quantity
+    - or on over overlapping latitude bands.
+  
 In all cases we are assuming:
 
 - that the mean of each field has been removed before entering this saber block. This affects the operations being performed.
@@ -73,9 +72,9 @@ An example of covariances between two variables on each grid point with binning 
     additional cross covariances:                               // switching on cross covariances
     - variable 1: eastward_wind                                 // setting cross (co)variance between "eastward_wind" and "northward_wind"
       variable 2: northward_wind                                // both variable1 and variable2 are required.
-    - variable 1: eastward_wind                                 // setting cross (co)variance between "eastward_wind" and "northward_wind"
+    - variable 1: eastward_wind                                 // setting cross (co)variance between "eastward_wind" and "mu"
       variable 2: mu
-    - variable 1: northward_wind                                // setting cross (co)variance between "eastward_wind" and "northward_wind"
+    - variable 1: northward_wind                                // setting cross (co)variance between "northward_wind" and "mu"
       variable 2: mu
     binning:                                                    // binning category (required)
       type: "horizontal grid point"                             // binning category type (required)
@@ -87,6 +86,46 @@ An example of covariances between two variables on each grid point with binning 
         mpi pattern: '%MPI%'                                    // mpi pattern string (needs %'s)
         file path: path2/intervariable_variances_%MPI%.nc       // file path for netCDF (total number of mpi ranks replace the %MPI%)
   - (...)
+
+An example of vertical covariances generated for overlapping latitude bands is below. This works for global domains only. The weights are calculated by multiplying the surface area associated with each grid point by a structure function that is dependent on latitude only and then is normalised so that the total sum of the weights across a bin sum to 1. There are a number of nodes (latitude points) that determine the extent and shape of the overlapping bands.  The maximum and minimum latitude extent of each bin is given by :math:`-90 + (bin index + 1) * 180/(nbins)` and :math:`-90 + (bin index ) * 180/(nbins)` when :math:`bin index = 0, \cdots, nbins -1` and :math:`nbins` is the total number of bins. The maximum value of each structure function resides at the latitude that is the midpoint of the minimum and maximum latitudes for that bin. For bands that include either the North Pole or the South pole the structure function between the midpoint and the pole is constant. In all other cases, the structure function linearly decreases from the midpoint value to the values at the maximum and minimum extent.
+
+.. code-block:: yaml
+ 
+  saber outer blocks:
+  - (...)
+  - saber block name: write variances
+    additional cross covariances:                               // switching on cross covariances
+    - variable 1: eastward_wind                                 // setting cross (co)variance between "eastward_wind" and "northward_wind"
+      variable 2: northward_wind                                // both variable1 and variable2 are required.
+    - variable 1: eastward_wind                                 // setting cross (co)variance between "eastward_wind" and "mu"
+      variable 2: mu
+    - variable 1: northward_wind                                // setting cross (co)variance between "northward_wind" and "mu"
+      variable 2: mu
+    binning:
+      type: "overlapping area-weighted latitude bands"
+      no of bins: 7
+      mpi rank pattern: '%MPI%'
+      file path: path2/lat_overlap_binning_%MPI%.nc
+    calibration:
+      write:
+        covariance name: "randomization with F12 mesh"
+        mpi pattern: '%MPI%'
+        file path: path/lat_overlap_vertcov_%MPI%.nc
+    field names: *inputvars
+    save NetCDF file: true
+    statistics type:  "vertical covariance"
+  - (...)
+
+
+Note that for the bins including the North or South poles the weighting function still drops as one approaches the pole, due to the decrease in the surface area associated with such points. Below are the weights accumulated on each of the Gaussian latitude rings. The plot below shows the accumulated weights for each latitude ring. For an F12 grid (with 24 Gaussian latitudes) and 7 bins, the sum of the weights on each Gaussian latitude is:
+
+.. figure:: fig/weightOverlappingBins.png
+    :scale: 50%
+    :alt: Accumulated weights on each Gaussian latitude.
+
+    Weights associated with each overlapping band.
+
+
 
 
 General equations used
@@ -200,9 +239,7 @@ In addition we dump Binning data from each MPI rank to file. This is mainly for 
       :binning type = "horizontal grid point" ;
   }
 
-Here we store some of the information that we use within the `BinningData_` fieldset.  The longitude and latitude values and the weights are given for each local bin index on the PE rank in question. Also a 1-dimensional array, called :code:`<binning_type> global bins`, gives the global bin value for each local bin index on this PE rank. The variable `horizontal grid point weights` relates to the :math:`\mathrm{w}(b, j)` in the equations above. We do not put the equivalent of :math:`\mathrm{binIdx}(b, j)` into the NetCDF file. Instead we put the longitude and latitudes values associated to each horizontal index and each local bin index. In summary, we write :math:`\mathrm{longitude}(b, j)`, :math:`\mathrm{latitude}(b, j)`, :math:`\mathrm{w}(b, j)` and :code:`<binning_type> global bins` to a NetCDF file for each PE rank.
-
-In the near future we expect to extend this to include an additional 1-dimensional array called :code:`<binning_type> bin extent` which will give the number of horizontal points for each bin. At present it is not needed as the binnning strategies implemented have the same number of longitude, latitude points on each MPI rank.
+Here we store some of the information that we use within the `BinningData_` fieldset.  The longitude and latitude values and the weights are given for each local bin index on the PE rank in question. Also a 1-dimensional array, called :code:`<binning_type> global bins`, gives the global bin value for each local bin index on this PE rank and a 1-dimensional array, called  called :code:`<binning_type> horizontal extent`, gives the number of horizontal points for each (local) bin on each PE rank. The variable `horizontal grid point weights` relates to the :math:`\mathrm{w}(b, j)` in the equations above. We do not put the equivalent of :math:`\mathrm{binIdx}(b, j)` into the NetCDF file. Instead we put the longitude and latitudes values associated to each horizontal index and each local bin index. In summary, we write :math:`\mathrm{longitude}(b, j)`, :math:`\mathrm{latitude}(b, j)`, :math:`\mathrm{w}(b, j)`, :code:`<binning_type> global bins` and :code:`<binning_type> horizontal extent` to a NetCDF file for each PE rank.
 
 Technical implementation considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
