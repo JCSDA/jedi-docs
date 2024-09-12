@@ -121,7 +121,7 @@ This implementation is used when :code:`GSI LETKF` keywords are used in :code:`s
 LGETKF
 ^^^^^^
 
-Another available solver is Local GETKF (Gain form of the Ensemble Transform Kalman filter, `Bishop et al 2017 <https://doi.org/10.1029/2018MS001468>`_) using modulated ensembles to emulate model-space localization in vertical. The implementation calls GSI-GETKF Fortran implementation and follows `Lei et al 2018 <https://doi.org/10.1029/2018MS001468>`_.
+Another available solver is Local GETKF (Gain form of the Ensemble Transform Kalman filter, `Bishop et al 2017 <https://doi.org/10.1175/MWR-D-17-0102.1>`_) using modulated ensembles to emulate model-space localization in vertical. The implementation calls GSI-GETKF Fortran implementation and follows `Lei et al 2018 <https://doi.org/10.1029/2018MS001468>`_.
 
 To use LGETKF, specify :code:`GETKF` in :code:`solver` section. Using LGETKF also requires specifying parameters for the modulation product that emulates model-space localization in vertical:
 
