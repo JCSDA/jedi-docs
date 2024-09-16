@@ -962,7 +962,7 @@ For example:
 
 The above YAML is checking the difference between :code:`ObsValue/brightnessTemperature_9` and :code:`ObsValue/brightnessTemperature_8` and rejecting negative values.
 
-In psuedo-code form:
+In pseudo-code form:
 :code:`if (ObsValue/brightnessTemperature_9 - ObsValue/brightnessTemperature_8 < minvalue) reject_obs()`
 
 The options for YAML include:

@@ -7,5 +7,6 @@ Some of the OOPS interfaces have generic implementations that can be used with a
 .. toctree::
    :maxdepth: 2
 
+   pseudo-model
    hybrid-linear-model
    obserror
