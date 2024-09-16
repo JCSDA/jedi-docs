@@ -158,8 +158,22 @@ It is recommended these two directories are not one inside the other.
 
 - On the preconfigured AWS AMIs, use :code:`$JEDI_ROOT=$HOME/jedi`.
 
+Before building JEDI, set up a python virtual environment based on the spack-stack python installation and activate it.
 
-Building JEDI then can be achieved with the following commands:
+Note the use of the ``python_ROOT`` variable which, at this point, should be set to the python3 executable installed in your spack-stack environment.
+This is important since it will ensure the python3 installation you will be using is in sync with the spack-stack python modules (eg. py-numpy).
+
+.. code-block:: bash
+
+  cd $JEDI_ROOT
+  $python_ROOT/bin/python3 -m venv --system-site-packages venv
+  source venv/bin/activate
+
+.. note::
+  You need to activate this virtual environment every time you start a new session on your machine.
+  Note below that the creation and usage (sourcing) of the :code:`$JEDI_ROOT/setup.h` script will cover this requirement.
+
+Run the build of JEDI
 
 .. code-block:: bash
 
@@ -225,14 +239,6 @@ Or for the latest release of ``{skylab_v}``, clone the corresponding workflow re
   git clone --branch 1.6.0 https://github.com/jcsda-internal/simobs
   git clone --branch 8.0.0 https://github.com/jcsda-internal/skylab
 
-Continue with setting up a virtual environment.
-
-.. code-block:: bash
-
-  cd $JEDI_ROOT
-  python3 -m venv --system-site-packages venv
-  source venv/bin/activate
-
 You can then proceed with
 
 .. code-block:: bash
@@ -245,9 +251,6 @@ You can then proceed with
   python3 -m pip install -e .
   cd $JEDI_SRC/simobs
   python3 -m pip install -e .
-
-Note: You need to run :code:`source venv/bin/activate` every time you start a
-new session on your machine.
 
 4- Setup SkyLab
 ^^^^^^^^^^^^^^^

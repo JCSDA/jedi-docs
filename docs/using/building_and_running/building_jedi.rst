@@ -7,6 +7,7 @@ As described in detail :ref:`cmake_devtools`, the procedure for building and com
 
 0. Configure System: set git settings and load spack-stack environment (if not previously set)
 1. Clone the desired JEDI :ref:`bundle <bundle>`
+   This includes the creation and activation of a python3 virtual environment (venv) based on the spack-stack python installation.
 2. Optionally edit the :code:`CMakeLists.txt` file in the bundle to choose the code branches you want to work with
 3. :code:`cd` to the build directory and run :code:`ecbuild` to generate the Makefiles and other infrastructure
 4. Run :code:`make update` to pull the latest, up-to-date code from GitHub (optional) and :code:`make` to compile the code
@@ -92,6 +93,19 @@ To start your JEDI adventure, first choose a place -- and create a directory -- 
 
    mkdir <path-to-root>/jedi
    export $JEDI_ROOT=<path-to-root>/jedi
+
+It is essential to create (one time configuration) and activate a python virtual environment (venv) based on the spack-stack python3 installation before starting the steps to build JEDI.
+After the spack-stack environment is loaded, there will be a python3 installation located in the path contained in the environment variable ``python_ROOT``.
+To create the python venv, do the following:
+
+.. code-block:: bash
+
+  # Create the python venv - first time only
+  cd $JEDI_ROOT
+  $python_ROOT/bin/python3 -m venv --system-site-packages venv
+
+  # Always activate
+  source venv/bin/activate
 
 Next, navigate into your :code:`JEDI_ROOT` and clone the **GitHub** repository that contains the bundle you want. For the publicly available bundles, clone from **https://github.com/JCSDA**:
 
