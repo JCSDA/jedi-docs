@@ -12,8 +12,6 @@ your software environment in a single disk **image file** that can be copied to
 and invoked on any system on which Singularity itself is installed.
 The JEDI environment is contained in one such image file (see :ref:`below <build_env>`).
 
-**For these reasons, Singularity is the recommended container platform for JEDI users and developers on HPC.**
-
 However, Singularity requires root privileges to install. This may not be a
 problem on your laptop or PC, but it can be an issue on HPC systems where such
 installations can only be done by the system administrator. So, if you are on an
