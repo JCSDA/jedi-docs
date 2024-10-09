@@ -127,7 +127,7 @@ The next step is to clone the code bundle to a local directory. To clone the pub
 
   mkdir $JEDI_ROOT
   cd $JEDI_ROOT
-  git clone https://github.com/jcsda/jedi-bundle
+  git clone -b 8.0.0 https://github.com/JCSDA/jedi-bundle.git
 
 
 Alternatively, developers with access to the internal repositories should instead clone the development branch. For that use:

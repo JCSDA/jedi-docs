@@ -36,7 +36,21 @@ You will probably only need to do Steps 0 and 1 once.  However, if you are a dev
 Step 0: System Configuration
 ----------------------------
 
-Before jumping into building JEDI, there are a few system settings to configure. First, load the spack environment on your system (see :ref:`top-modules`). Supported HPC platforms have a year's worth of the latest spack-stack releases pre-built and installed. If you are working on a local machine or a non-supported platform, you will have to build the spack-stack.
+Before jumping into building JEDI, there are a few system settings to configure. First, load the spack environment on your system (see :ref:`top-modules`). Supported HPC platforms have a year's worth of the latest spack-stack releases pre-built and installed. If you will be using a publicly released version of JEDI, make sure to use the corresponding spack-stack version (see the table below):
+
++--------------+---------------------+---------------------+
+| Release Date | JEDI-bundle Version | Spack-Stack Version |
++==============+=====================+=====================+
+| develop      | develop             | version 1.8.0       |
++--------------+---------------------+---------------------+
+| April 2024   | skylab-v8.0.0       | version 1.7.0       |
++--------------+---------------------+---------------------+
+| Jan 2024     | skylab-v7.0.0       | version 1.6.0       |
++--------------+---------------------+---------------------+
+| Sept 2023    | skylab-v6.0.0       | version 1.5.1       |
++--------------+---------------------+---------------------+
+
+For building the development version of the JEDI-bundle, use the latest spack stack release. If you are working on a local machine or a non-supported platform, you will have to build the spack-stack.
 
 Next, there are a few one-time settings to configure that will (1) let you avoid the need to enter your GitHub password many times during the JEDI build process, which will make the automated cloning of git repositories much faster, (2) set up git lfs (large file storage) for handling large data files, and (3) -- IF the CPU on your machine has fewer than 6 threads -- configure Open MPI settings to allow up to 6 MPI tasks to run.
 
@@ -107,12 +121,12 @@ To create the python venv, do the following:
   # Always activate
   source venv/bin/activate
 
-Next, navigate into your :code:`JEDI_ROOT` and clone the **GitHub** repository that contains the bundle you want. For the publicly available bundles, clone from **https://github.com/JCSDA**:
+Next, navigate into your :code:`JEDI_ROOT` and clone the **GitHub** repository that contains the bundle you want. Those wishing to use JEDI should clone the latest release branch from the publicly available bundle at **https://github.com/JCSDA**:
 
 .. code-block:: bash
 
    cd $JEDI_ROOT
-   git clone https://github.com/JCSDA/jedi-bundle.git
+   git clone -b 8.0.0 https://github.com/JCSDA/jedi-bundle.git
 
 Alternatively, developers with access to the internal repositories should instead clone the development branch. For the internal repositories, clone from **https://github.com/jcsda-internal**:
 
