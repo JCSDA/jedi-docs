@@ -326,7 +326,110 @@ SABER allows for a hybrid covariance to contain more than two components (equiva
 
   With settings of :code:`covariance model: hybrid` or :code:`covariance model: ensemble` computations will
   be done by OOPS. With  :code:`covariance model: SABER` computations will be done by SABER.
-  
+
+Geometries used in SABER covariances
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When used as part of the Variational application, increments input to SABER (and any other implementation of ErrorCovariance) are at the inner loop Geometry, and backgrounds are at the outer loop Geometry. These geometries can be different, often with inner loop Geometry coarser than the outer loop one. By default no resolution changes are performed for the background (to save unnecessary computations), so the background and the increment may be at different resolutions. Yaml key :code:`change background resolution` can be set to :code:`true` (default :code:`false`) to interpolate the background to the same resolution as the increment before applying the SABER covariance, e.g.:
+
+.. code-block:: yaml
+
+  background error:
+    covariance model: SABER
+    change background resolution: true
+    saber central block:
+      ...
+    saber outer blocks:
+    - ...
+
+Background and increment geometries can also be changed by certain SABER outer blocks, e.g. blocks performing an interpolation to a different Geometry (e.g. :code:`interpolation` (shown below) or :code:`SpectralToGauss`). In this case, the increment's geometry is changed passing through the SABER block multiplication and its adjoint, and the background's geometry is changed accordingly if :code:`state variables to inverse` yaml option specified for this block is not empty.
+
+
+.. code-block:: yaml
+
+  background error:
+    covariance model: SABER
+    saber central block:
+      ...
+    saber outer blocks:
+    - saber block name: interpolation
+      inner geometry:
+        ...
+      forward interpolator:
+        local interpolator type: oops unstructured grid interpolator
+      inverse interpolator:
+        local interpolator type: oops unstructured grid interpolator
+      state variables to inverse:   # if this key is present with non-empty list of variables all
+                                    # variables in the background will be interpolated to the increment Geometry
+      - stream_function
+
+For the ensemble covariances, the ensemble by default is expected to be on the same Geometry as the increment that is passed to the background error covariance. It is possible to specify ensemble perturbations on an atlas-supported FunctionSpace, by using yaml keys :code:`ensemble pert on other geometry` (for perturbations) and :code:`ensemble geometry` (for describing the ensemble's FunctionSpace). The localization in this case needs to be specified on the FunctionSpace used in the :code:`ensemble_geometry` yaml section. For example:
+
+.. code-block:: yaml
+
+  background error:
+    covariance model: SABER
+      ensemble geometry:
+        function space: StructuredColumns
+        grid:
+          type: regular_gaussian
+          N: 14
+        ...
+      ensemble pert on other geometry:
+        date: ...
+        members:
+          ...
+      saber central block:
+        saber block name: Ensemble
+        # FunctionSpace-specific localization, not on model Geometry.
+        localization:
+          saber central block:
+            saber block name: ID
+          saber outer blocks:
+          - saber block name: spectral analytical filter
+            ...
+          - saber block name: spectral to gauss
+
+For the :code:`Hybrid` SABER covariance, one can specify a different model Geometry for different components, using :code:`geometry` yaml section at the level of covariance components. For example, the yaml outline below has a two-component :code:`Hybrid` covariance with each component on `atlas` `RegularGaussianGrids <https://sites.ecmwf.int/docs/atlas/design/grid/#regulargaussiangrid>`_ with different resolutions:
+
+.. code-block:: yaml
+
+  background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: Hybrid
+    components:
+    ###########################################################################
+    # Component 1 - F14 grid
+    ###########################################################################
+    - weight:
+        value: 1.0
+      covariance:
+        ensemble geometry:
+          function space: StructuredColumns
+          grid:
+            type: regular_gaussian
+            N: 14
+        saber central block:
+          ...
+        saber outer blocks:
+          ...
+    ###########################################################################
+    # Component 2 - F24 grid
+    ###########################################################################
+    - weight:
+        value: 1.0
+      covariance:
+        ensemble geometry:
+          function space: StructuredColumns
+          grid:
+            type: regular_gaussian
+            N: 24
+        saber central block:
+          ...
+        saber outer blocks:
+          ...
+
 
 Interfaces
 ^^^^^^^^^^
