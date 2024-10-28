@@ -128,9 +128,9 @@ as a "static" **B** in the literature, a parametric **B** could be a fully
 static model that does not evolve with time or a model that introduces some flow-dependence
 through dependence on the background state. The implementation of a parametric **B**
 will directly match the expression in Eq. :eq:`eq-modelB`. Alternatively, **B**
-could modeled using an ensemble of forecasts (e.g. similar to what is done in an
-Ensemble Kalman Filter). This Ensemble **B** will allow the background covariances
-to evolve in time. Finally, the parametric and ensemble models can be combined into
+could be modeled with the statistics from an ensemble of forecasts. An ensemble **B** will allow
+the background covariances to evolve in time (sometimes referred to as 'flow-dependence' or
+the 'errors-of-the-day'). Finally, the parametric and ensemble models can be combined into
 a hybrid **B** using a weighted sum. These models are described in the following sections.
 
 Parametric **B**
@@ -325,7 +325,7 @@ SABER allows for a hybrid covariance to contain more than two components (equiva
 .. note::
 
   With settings of :code:`covariance model: hybrid` or :code:`covariance model: ensemble` computations will
-  be done by OOPS. With  :code:`covariance model: SABER` computations will be done by SABER.
+  be done by OOPS. With :code:`covariance model: SABER` computations will be done by SABER.
 
 Geometries used in SABER covariances
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
