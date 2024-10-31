@@ -14,9 +14,13 @@ Symbol glossary
    * - :math:`C_{p}`
      - specific heat capacity for dry air
    * - :math:`e`
-     - water vapor pressure
-   * - :math:`e_{sat}`
-     - saturated vapor pressure 
+     - vapor pressure of pure water vapor
+   * - :math:`e_\text{sat w/i}`
+     - saturated vapor pressure of pure water vapor over water or ice
+   * - :math:`e'`
+     - vapor pressure of moist air
+   * - :math:`e'_\text{sat w/i}`
+     - saturation vapor pressure in moist air
    * - :math:`g`
      - standard acceleration due to gravity
    * - :math:`P`
@@ -44,13 +48,13 @@ Symbol glossary
    * - :math:`v`
      - northward wind
    * - :math:`V_{d}`
-     - wind direction   
+     - wind direction
    * - :math:`V_{s}`
      - wind speed
-   * - :math:`w`
-     - water vapor mixing ratio
-   * - :math:`w_{sat}`
-     - saturated water vapor mixing ratio
+   * - :math:`r`
+     - mixing ratio of water vapor in dry air
+   * - :math:`r_\text{sat}`
+     - saturation mixing ratio of water vapor in dry air
    * - :math:`\theta`
      - potential temperature
    * - :math:`\epsilon`

@@ -31,20 +31,18 @@ the example below:
        - filter: Variable Transforms
          Transform: ["RelativeHumidity"]
          Method: UKMO
-         Formulation: Sonntag
 
 
 The :code:`Variable Transforms` filter has the following available yaml settings:
  - **Transform**: name of the variable transform that need to be performed.
    (see :ref:`available-variable-transforms`).
- - **Method**: [*Optional*] Method used during the variable transformation.
-   This usually refers to the different Met Center.
-   (See individual :ref:`available-variable-transforms` for possible choices and definitions)
- - **Formulation**: [*Optional*] Name of a specific formulation used during
-   the variable transformation.
-   (See individual :ref:`available-variable-transforms` for possible choices and definitions)
+ - **Method**: [*Optional* | *default = default*] Method or "recipe" used for the variable transformation.
+   Often this refers to a Met Center.
+   Any method in the list of all possible variable transform methods can be specified, but in many cases this will result in a default method being used.
+   For example, the method :code:`GoffGratchLandoltBornsteinIceWater` can be specified for any variable transform, but will cause a default method to be used in all cases but the relative and specific humidity variable transforms.
+   See individual :ref:`available-variable-transforms` for default methods, possible choices and definitions.
  - **UseValidDataOnly**: [*Optional* | *default = true*]
-   Should the variable transform be applied only to valid data?
+   If *true*, the variable transform is only applied to valid data.
  - **FillMissingDerivedFromOriginal** [*Optional* | *default = false*]
    If *true*, fill any missing entries of a vector in a Derived group (e.g. DerivedObsValue) with
    the non-missing entries of the vector in the equivalent original group (e.g. ObsValue).
@@ -200,17 +198,10 @@ The variable transforms available are:
    transforms/wind
 
 
-Formulations
-============
+Symbols
+=======
 
-The formulations available are:
-
-.. toctree::
-   :maxdepth: 2
-
-   formulations/formula_part1
-
-**Table listing all the symbols used**
+Table listing all the symbols used
 
 .. toctree::
    :maxdepth: 2

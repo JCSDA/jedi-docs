@@ -3,7 +3,7 @@
 ================================================
 Pressure from Height (using the ICAO atmosphere)
 ================================================
-Converts heights to pressures using the ICAO atmosphere. 
+Converts heights to pressures using the ICAO atmosphere.
 The newly calculated variable is included in the same
 obs space.
 
@@ -14,7 +14,7 @@ obs space.
     obs filters:
     - filter: Variable Transforms
       Transform: PressureFromHeightForICAO
-    
+
 **Observation parameters needed** (JEDI name)
 
 - geopotentialHeight (:math:`Z`)
@@ -22,13 +22,9 @@ obs space.
 
 **Method(s) available**
 
-Only one method is avalable, shared accross all center options. (Any setting of :code:`METHOD` will result
+Only one method is available. (Any setting of :code:`METHOD` will result
 in using this unique method.) Setting :code:`METHOD` can be omitted.
-(see formulation for details)
 
-**Formulation(s) available**
-
-See the unique formulation :ref:`Heights_to_pressure_ICAO`  for details
 
 .. _VT-Pressure-from-Height-over-a-vertical-profile:
 
@@ -45,26 +41,25 @@ template.
     obs filters:
     - filter: Variable Transforms
       Transform: PressureFromHeightForProfile
-      Method: UKMO  
-    
+      Method: UKMO
+
 **Observation parameters needed** (JEDI name)
 
 - geopotentialHeight (:math:`Z`)
 - airTemperature  (:math:`T`)
-- dewPointTemperature (:math:`T_{d}`) or relativeHumidity (:math:`Rh`)
+- dewPointTemperature (:math:`T_{d}`) or relativeHumidity (:math:`RH`)
 
 
 **Method(s) available**
 
-Only one method is avalable, shared accross all center options. (Any setting of :code:`METHOD` will result
+Only one method is available. (Any setting of :code:`METHOD` will result
 in using this unique method.) Setting :code:`METHOD` can be omitted.
-(see formulation for details)
 
-`Nash et al (2011) <https://library.wmo.int/doc_num.php?explnum_id=9467>`__ 
-showed that with GPS heights and accurate temperatures measured 
-pressures are almost redundant and it seems likely that the use of pressure sensors 
-will decrease over time. The pressure can be calculated hydrostatically starting 
-from the station pressure. For two adjacent levels i and i+1 
+`Nash et al (2011) <https://library.wmo.int/doc_num.php?explnum_id=9467>`__
+showed that with GPS heights and accurate temperatures measured
+pressures are almost redundant and it seems likely that the use of pressure sensors
+will decrease over time. The pressure can be calculated hydrostatically starting
+from the station pressure. For two adjacent levels i and i+1
 (eg eqn 2.2 of `Chouinard and Staniforth, 1995 <https://www.researchgate.net/publication/249620682_Deriving_Significant-Level_Geopotentials_from_Radiosonde_Reports>`__):
 
 .. math::
@@ -83,19 +78,30 @@ For better accuracy one can replace the temperature with the virtual temperature
 
 .. math::
 
-    Tv = T \frac{P+\frac{e_{sat}}{\epsilon}}{P+e_{sat}}
+    Tv = T \frac{P+\frac{e'_\text{sat w}}{\epsilon}}{P+e'_\text{sat w}}
 
-where :math:`e_{sat}` is the saturated vapour pressure which can be calculated 
-from :math:`T_{d}` or :math:`Rh` using saturation vapor pressure from temperature, and
-:math:`\epsilon`is ratio of the gas constant for dry air (:math:`R_{d}`) over 
+where :math:`e'_\text{sat w}` is the saturated vapour pressure which can be calculated
+from :math:`T_{d}` or :math:`RH` using saturation vapor pressure from temperature, and
+:math:`\epsilon` is ratio of the gas constant for dry air (:math:`R_{d}`) over
 the gas constant for water vapor (:math:`R_{v}`).
 
-In this equation we use the pressure :math:`P` from the previous level as we don't yet have 
-:math:`P` for the current level (this should be a good approximation for the high-resolution reports). 
-Note that if the pressures have been calculated hydrostatically (or from the model height/pressure profile) 
-there is no point in applying the hydrostatic check below. 
+The Sonntag formulation for calculating the saturated or actual vapour pressure of pure water vapor (:math:`e_\text{sat w} = h(T)` or :math:`e = h(T_d)`) is used (see :ref:`the description of the Sonntag equation here <VT-_SatVaporPres_fromTemp_Methods>`).
+An enhancement factor is used to correct this for moist air
 
-**Formulation(s) available**
+.. math::
 
-By default the saturated vapour pressure (:math:`e_{sat}`) is 
-derived using the :code:`Sonntag` formulation of :ref:`SatVaporPres_fromTemp`.
+    e'_\text{sat w} = f_\text{w}(P, T)) e_\text{sat w}
+
+or
+
+.. math::
+
+    e' = f_\text{w}(P, T_d)) e
+
+where the enhancement factor :math:`f_\text{w}` is taken from Eq. A4.6 of Gill (1982) "Atmosphere-Ocean Dynamics", Academic Press.
+This approximates table 89 of the Smithsonian Meteorological Tables correct to 2 parts in :math:`10^4`.
+
+In this equation we use the pressure :math:`P` from the previous level as we don't yet have
+:math:`P` for the current level (this should be a good approximation for the high-resolution reports).
+Note that if the pressures have been calculated hydrostatically (or from the model height/pressure profile)
+there is no point in applying the hydrostatic check below.
