@@ -4,7 +4,7 @@ RecordNumberToObsSpace
 ----------------------
 
 If the ObsSpace is grouped into records, each record is assigned a unique numerical identifier
-in the ioda code. The `RecordNumberToObsSpace` ObsFunction can be used to write out this identifier
+in the ioda code. The :code:`RecordNumberToObsSpace` ObsFunction can be used to write out this identifier
 for use as a variable in ufo.
 
 If the ObsSpace has not been divided into records, attempting to use this ObsFunction

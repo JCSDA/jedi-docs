@@ -68,6 +68,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`MetOfficeRelativeHumidityCorrection <MetOfficeRelativeHumidityCorrection>`
   Produce correction to Met Office relative humidity H(x).
 
+:ref:`ModelLevelIndex <ModelLevelIndex>`
+  Given observed and model values of a chosen vertical coordinate, return the index at which each observed value lies in its equivalent model column.
+
 :ref:`NearSSTRetCheckIR <NearSSTRetCheckIR>`
   NCEP-GDAP near-sea-surface temperature IR retrieval
 
@@ -137,6 +140,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ProfileLevelCount <ProfileLevelCount>`
   Count the number of locations in each profile that satisfy a particular condition.
 
+:ref:`RadarScanEdgeFlag <RadarScanEdgeFlag>`
+  Clean the edges of radar scans using a variety of techniques.
+
 :ref:`RecordNumberToObsSpace <RecordNumberToObsSpace>`
   For an input data set that has been grouped into records, enable the internal unique record number to be saved to the ObsSpace.
 
@@ -191,6 +197,7 @@ filters into separate parts would have an obfuscating effect.
    HydrometeorCheckATMS
    InterChannelConsistencyCheck
    MetOfficeRelativeHumidityCorrection
+   ModelLevelIndex
    NearSSTRetCheckIR
    ObsErrorBoundIR
    ObsErrorBoundMW
@@ -214,6 +221,7 @@ filters into separate parts would have an obfuscating effect.
    OceanPressureToDepth
    ProfileAverageObsPressure
    ProfileLevelCount
+   RadarScanEdgeFlag
    RecordNumberToObsSpace
    ROobserrInflation
    SatwindIndivErrors

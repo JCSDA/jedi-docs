@@ -1464,6 +1464,7 @@ Description
 This operator computes the model equivalent of radial velocity [m/s] for Doppler radar observations.
 
 The following variables must be present in the obs space prior to running this operator:
+
 * :code:`MetaData/sinTilt`
 * :code:`MetaData/cosAzimuthCosTilt`
 * :code:`MetaData/sinAzimuthCosTilt`
@@ -1494,6 +1495,96 @@ Example
    name: RadarDopplerWind
    vertical coordinate for horizontal wind: height_levels
    vertical coordinate for vertical wind: height
+
+Radar Reflectivity
+------------------
+
+This operator computes the model equivalent of radar reflectivity.
+The :code:`algorithm.name` parameter controls which algorithm is used to perform the calculation.
+Each algorithm can implement its own set of parameters.
+
+An example yaml configuration that uses an algorithm called :code:`abc` is as follows:
+
+.. code-block:: yaml
+
+  - obs operator:
+      name: RadarReflectivity
+      algorithm:
+        name: abc
+
+To create a new algorithm, the user must create a subclass of
+:code:`ReflectivityAlgorithmBase` (and, if there are to be configurable parameters,
+a subclass of :code:`ReflectivityAlgorithmParametersBase` to hold them).
+See the header file of :code:`ReflectivityAlgorithmBase` for further details.
+
+This operator can be used as part of the :code:`Composite` operator.
+
+
+Met Office reflectivity
+^^^^^^^^^^^^^^^^^^^^^^^
+
+This algorithm computes the model equivalent of radar reflectivity accounting for contributions from both rain and ice.
+There are several semi-empirical parameters that control the relationship between the model mixing ratios and the reflectivity.
+These parameters are tuned for specific combinations of radar sites and NWP models.
+
+At the Met Office, reflectivity has units :math:`\text{mm}^{6} \text{m}^{-3}`. Prior to assimilation the square root of (reflectivity + :math:`k`)
+is computed, where :math:`k` is usually equal to 1. This avoids an infinite derivative in the tangent linear operator.
+The units of the square-root reflectivity for :math:`k = 1` are :math:`\sqrt{\text{mm}^{6}\text{m}^{-3} + 1}`.
+
+To compute H(x), model values of pressure (:math:`p`), temperature (:math:`T`), rain mixing ratio (:math:`q_{\text{rain}}`) and ice mixing ratio (:math:`q_{\text{ice}}`)
+are interpolated vertically to the observation location. The air density :math:`\rho` is computed from :math:`p` and :math:`T`.
+
+The contribution of rain to the reflectivity is calculated as:
+
+.. math::
+
+  Z_R = \begin{cases} A (\rho q_{\text{rain}})^B & q_{\text{rain}} > 0, \\
+                      0                          & q_{\text{rain}} = 0.
+        \end{cases}
+
+where :math:`A` corresponds to the parameter :code:`rain multiplier` and
+:math:`B` corresponds to the parameter :code:`rain exponent`.
+
+The equivalent contribution from ice is:
+
+.. math::
+
+  Z_I = \begin{cases} 10^{C T_\text{C} + D} (\rho q_{\text{ice}})^E & q_{\text{ice}} > 0, \\
+                      0                                             & q_{\text{ice}} = 0.
+        \end{cases}.
+
+where :math:`C` corresponds to the parameter :code:`ice multiplier`,
+:math:`D` corresponds to the parameter :code:`ice additive constant` and
+:math:`E` corresponds to the parameter :code:`ice exponent`.
+The quantity :math:`T_\text{C}` is the temperature expressed in degrees C.
+
+Finally, the square-root reflectivity is calculated as
+
+.. math::
+
+   Z = \sqrt{Z_R + Z_I + k}.
+
+where :math:`k` is a constant, corresponding to the parameter :code:`lower bound` and usually equal to 1.
+
+It is possible to use the tangent linear and adjoint version of this operator in an assimilation,
+but that is discouraged due to the high nonlinearity present.
+
+An example usage of the algorithm is as follows:
+
+.. code-block:: yaml
+
+  - obs operator:
+      name: RadarReflectivity
+      algorithm:
+        name: Met Office reflectivity
+        rain multiplier: 1000.0
+        rain exponent: 1.1
+        ice multiplier: 0.1
+        ice additive constant: 2.0
+        ice exponent: 2.0
+        lower bound: 1.0
+
+
 
 Scatterometer neutral wind (Met Office)
 ---------------------------------------

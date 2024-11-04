@@ -2291,3 +2291,102 @@ An example configuration of this filter is as follows:
 
 In this example the globe is divided into bands of width 1.5 degrees. The search volume spans 2 degrees in latitude, 2 degrees in longitude, 500 Pa in pressure and 60 seconds in time.
 The priority variable name is :code:`MetaData/thinningPriority`; observations with higher values of this variable are retained in preference to those with lower values.
+
+.. _superob-filter:
+
+SuperOb filter
+--------------
+
+The SuperOb filter can be used to produce superobs (super-observations) by combining multiple observation (:math:`O`) and model background (:math:`B`) values in a chosen region into a single quantity. This quantity is assigned to the :code:`DerivedObsValue` group for each filter variable at a chosen location. It is possible to perform this procedure at more than one location in the region. After the assignments have concluded, all other locations in the superob region are flagged as rejected. Typically, superobbing is used when the density of observations is very high and the observation error covariances have not been fully specified. Superobbing can also be used to reduce the computational load experienced when dealing with very high-density observations.
+
+There are two pre-requisites that must be true for this filter to be used:
+
+* H(x) must be available, so the filter must be run as a post-filter.
+* The ObsSpace must have been divided into records.
+
+The :code:`algorithm` parameter selects the algorithm that is used to compute one or more superobs in each ObsSpace record.
+
+
+Available superobbing algorithms
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The following superobbing algorithms are available:
+
+* :code:`mean OmB`: Computes superob using mean :math:`O - B` in each record,
+* :code:`radar`: Computes superob for weather radar data.
+
+These algorithms are described in more detail in the following sections.
+
+
+**mean OmB**
+
+This algorithm computes the mean :math:`O - B` of each filter variable in each record, ignoring missing values. The mean values are added to the value of :math:`B` at the first location in the record. All other entries in the record are flagged as rejected. Note the choice of the first location in the record is arbitrary and could lead to different results depending on the ordering of the input data.
+
+Example usage:
+
+.. code:: yaml
+
+  - filter: SuperOb
+    filter variables:
+    - name: airTemperature
+    - name: windEastward
+    algorithm:
+      name: mean OmB
+    action:
+      name: reject
+
+
+**radar**
+
+This algorithm computes superobs for ground radar scans. Each scan is divided into superob regions according to the parameters
+:code:`number of beams in superob region` and :code:`superob region radial extent [m]`.
+Values of :math:`O` and :math:`B` inside each region are summed, discarding any locations that are masked by a superob template class.
+The superob template is a circle (looking vertically down on the scan) which is used to select regions in a group of beams and radial sections as in the following image:
+
+.. figure:: images/beamSuperob.png
+
+*Figure: Sketch of the template used in the radar superobbing algorithm. In this example, five beams are used in each superob region, and there are multiple radial boundaries. The circular template is used to select observations for superobbing. Those regions marked 1 are used, and those marked 0 are discarded.*
+
+Note there are typically multiple regions in a scan, so there can be multiple superobs computed.
+
+If there are insufficient observations inside the region (governed by the parameter :code:`minimum number of observations in superob region`) a superob is not computed.
+
+In order to compute the superob, the mean value of :math:`O - B` is calculated and added onto the background value that lies spatially closest to the centre of the superob template.
+Using the notation in Simonin *et al.* 2014:
+
+.. math::
+
+   Y^o = H(x^b)_c + \sum_{i = 1}^{n} [y^o_i - H(x^b)_i]
+
+where :math:`Y^o` is the superob value, :math:`y^o_k` is the observation value at location :math:`k`, :math:`H(x^b)_k` is the observation operator acting on the model background at location :math:`k`,
+and the subscript :math:`c` indicates the location closest to the centre of the superob region.
+
+Two superob uncertainties are also computed for use in subsequent error assignment:
+
+* Total innovation (:math:`O - B`) uncertainty,
+* Background uncertainty.
+
+These values are written to the :code:`TotalUncertainty` and :code:`BackgroundUncertainty` groups
+in the ObsSpace.
+
+Lastly, a diagnostic flag called :code:`UsedInSuperOb` is used to record the locations
+whose values of :math:`O` and :math:`B` were used to compute the superob in each case.
+
+Example usage:
+
+.. code:: yaml
+
+  - filter: SuperOb
+    filter variables:
+    - name: radialVelocity
+    algorithm:
+      name: radar
+      number of beams in superob region: 5
+      superob region radial extent [m]: 5000.0
+      minimum number of observations in superob region: 5
+
+
+References
+^^^^^^^^^^
+
+Simonin, D., Ballard, S.P. and Li, Z. (2014), Doppler radar radial wind assimilation using an hourly cycling 3D-Var with a 1.5 km resolution version of the Met Office Unified Model for nowcasting. Q.J.R. Meteorol. Soc., 140: 2298-2314. https://doi.org/10.1002/qj.2298.
