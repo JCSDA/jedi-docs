@@ -1785,6 +1785,7 @@ The following are optional YAML parameters with defaults listed where a variable
 * :code:`Store1DVarTransmittance`:  flag to write the retrieved surface to space transmittance to the observation database. Default: :code:`false`.
 * :code:`RecalculateBT`:  flag to recalculate the brightness temperatures using retrieved surface variables (emissivity, skin temperature) and retrieved cloud layer variables (CTP, ECA). Default: :code:`false`.
 * :code:`set the initial skin temperature from the obsspace`:  flag to read the initial skin temperature from the observation database. If true, the code reads the skin temperature from :code:`MetaData/skinTemperature`, if the array is not in the observation space an exception is thrown. If false the original value in the GeoVaL will be used. Default: :code:`false`.
+* :code:`DoCloudyChannelRejection`: flag to reject channels on a channel-by-channel basis if a cloud analysis is being performed.  If more than 1% of the integrated (vertically in log(pressure)) Jacobian peaks below the retrieved cloud height for a given channel and the cloud fraction exceeds 0.05, that channel will be rejected if this flag is true. Default: :code:`false`.
 * :code:`Max1DVarIterations`:  maximum number of iterations. Default: :code:`7`.
 * :code:`JConvergenceOption`:  integer to select convergence option.  1 equals percentage change in cost function value tested between iterations.  Otherwise the absolute change in cost function value is tested between iterations. Default: :code:`1`.
 * :code:`IterNumForLWPCheck`:  choose which iteration to start checking the liquid water path. Default: :code:`2`.
@@ -1865,6 +1866,7 @@ The following are optional YAML parameters to provide diagnostics for developers
       - emissivity_pc # 18
       nlevels: 70
       UseMLMinimization: true
+      DoCloudyChannelRejection: true
       obs bias group for testing: ObsBias
       Max1DVarIterations: 10
       MaxMLIterations: 10
