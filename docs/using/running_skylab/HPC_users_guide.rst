@@ -350,15 +350,21 @@ S4
 
 S4 is the **Satellite Simulations and Data Assimilation Studies** supercomputer located at the University of Wisconsin-Madison's Space Science and Engineering Center.
 
-Although S4 uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs, users are advised to use :code:`mpirun` or :code:`mpiexec` instead of the slurm run script :code:`srun` due to problems with the mpich library with slurm.
+S4 uses the `slurm <https://slurm.schedmd.com/>`_ task manager for parallel mpi jobs and users are advised to use :code:`srun` instead of :code:`mpirun` or :code:`mpiexec`.
 
 Once logged into S4, you must then log into **s4-submit** to load the spack-stack modules to build and run JEDI.
 
 .. code-block:: bash
 
-   ssh -Y s4-submit
+   ssh -Y s4-submit.ssec.wisc.edu
 
-To request and interactive session on S4, run:
+When running :code:`ecbuild` use the following to direct CMake to use :code:`srun` for CTest MPI jobs.
+
+.. code-block:: bash
+
+   ecbuild -DMPIEXEC_EXECUTABLE=$(which srun) -DMPIEXEC_NUMPROC_FLAG="-n"
+
+To request an interactive session on S4, run:
 
 .. code-block:: bash
 
