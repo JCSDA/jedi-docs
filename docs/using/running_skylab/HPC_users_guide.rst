@@ -329,6 +329,12 @@ Orion
 
 Orion is an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
 
+When running :code:`ecbuild` use the following to direct CMake to use :code:`srun` for CTest MPI jobs.
+
+.. code-block:: bash
+
+   ecbuild -DMPIEXEC_EXECUTABLE=$(which srun) -DMPIEXEC_NUMPROC_FLAG="-n"
+
 We do not recommend running the ctests on login nodes because of the computational requirements of these tests. Instead you can submit ctests as a batch job or use an interactive node. To request an interactive session on Orion, you can run the following. Make sure you use the correct account number. This command requests for one node with 24 MPI tasks.
 
 .. code-block:: bash
