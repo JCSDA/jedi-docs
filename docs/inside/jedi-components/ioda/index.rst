@@ -13,7 +13,7 @@ These documents give a high-level overview of the IODA code repository.  A low-l
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    introduction
    details
