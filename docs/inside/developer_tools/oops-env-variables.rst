@@ -8,8 +8,8 @@ There are several environment variables users can set to enable more (or all) pr
 More prints for PE 0
 --------------------
 
-Exporting one or both of these environment variables before running an application (ctest or executable) will print :code:`OOPS_DEBUG` and :code:`OOPS_TRACE` statements **for the PEs displayed in :code:`OOPS_INFO` only**. The default for this is PE 0.
-:code:`OOPS_TRACE` gives you information about which part of the code you are currently running, :code:`OOPS_DEBUG` is typically used when you are debugging a precise part of the code.
+Exporting one or both of these environment variables before running an application (ctest or executable) will print :code:`OOPS_DEBUG` and :code:`OOPS_TRACE` statements **for the PEs displayed in** :code:`OOPS_INFO` **only**. The default for this is PE 0.
+:code:`OOPS_TRACE` gives you information about which part of the code you are currently running, :code:`OOPS_DEBUG` is typically used when debugging a precise part of the code.
 
 .. code-block:: bash
 
