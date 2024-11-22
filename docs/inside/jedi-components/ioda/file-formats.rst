@@ -321,3 +321,79 @@ Here is an example HDF5 file backend YAML configuration using multiple input fil
            - "Data/amsua_n19_obs_2018041500_m_p3.nc4"
 
 Note that the file data will be appended to the ObsSpace in the order of the list of files in the ``obsfiles`` specification.
+
+
+File Processing Applications
+----------------------------
+
+ioda-filterObs.x
+^^^^^^^^^^^^^^^^
+
+The :code:`ioda-filterObs.x` application provides a means to filter observation data in the situtation where a filter can be accomplished with only the observation data itself.
+Examples would be thinning data using an algorithm that randomly selects a subset of the data, and throwing out unrealistic data such as negative temperature values when the units are in Kelvin.
+Filters requiring additional data such as the forecast background must use the filter operators in UFO.
+
+Currently, :code:`ioda-filterObs.x` offers one filter which is throwing out observations that are outside of a given time window.
+This filter is always applied when the application is run.
+
+:code:`ioda-filterObs.x` is based on :code:`oops::Application` and as such takes a configuration YAML file as a required arguemnt, plus an optional second argument that specifies a log file for saving messages from the application.
+By default the application writes all of its messages to stdout and stderr.
+Here is the usage for :code:`ioda-filterObs.x`.
+
+.. code-block:: bash
+
+   # usage string is: ioda-filterObs.x config-file [output-file]
+   # where config-file contains the YAML specifications, and output-file is an optional log file
+
+   ioda-filterObs.x filter-obs-app-config.yaml
+
+In the required YAML configuration file, you must specify one :code:`time window` section and one :code:`obs space` section.
+Note that in this case both the :code:`obs space.obsdatain` and :code:`obs space.obsdataout` sections must be specified.
+(Normally the :code:`obs space.obsdataout` section is optional.)
+The specified :code:`time window` will be applied to the data contained in the input file(s) given in the :code:`obs space.obsdatain` section and the results are written to the output file given in the :code:`obs space.obsdataout` section.
+
+Here is an example YAML configuration for reading a single input file.
+
+.. code-block:: yaml
+
+  ---
+  time window:
+    begin: "2024-01-10T00:00:00Z"
+    end: "2024-01-10T06:00:00Z"
+
+  obs space:
+    name: "Single File Input"
+    simulated variables: ['airTemperature']
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: "Data/sonde_obs_example.nc4"
+    obsdataout:
+      engine:
+        type: H5File
+        obsfile: "FilteredData/sonde_obs_example.nc4"
+
+Here is a similar example except for reading multiple input files.
+
+.. code-block:: yaml
+
+  ---
+  time window:
+    begin: "2024-01-10T00:00:00Z"
+    end: "2024-01-10T06:00:00Z"
+
+  obs space:
+    name: "Multiple File Input"
+    simulated variables: ['airTemperature']
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile:
+         - "Data/sonde_obs_example_receipt1.nc4"
+         - "Data/sonde_obs_example_receipt2.nc4"
+         - "Data/sonde_obs_example_receipt3.nc4"
+    obsdataout:
+      engine:
+        type: H5File
+        obsfile: "FilteredData/sonde_obs_example.nc4"
+
