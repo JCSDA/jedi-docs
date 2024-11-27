@@ -53,21 +53,86 @@ SABER blocks
 ------------
 .. _SABER_blocks:
 
-SABER blocks can encapsulate various components:
+SABER blocks implement a variety of operations that can be applied to an
+:code:`oops::FieldSet3D` (wrapper for an :code:`atlas::FieldSet`) representing
+an analysis increment.
+
+SABER includes blocks for generic/basic operations as well as blocks for more
+specialized covariance models like BUMP, Spectral Filtering, Explicit Diffusion,
+and GSI (Gridpoint Statistical Interpolation).
+
+
+Generic blocks
+^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   ID: identity operator<ID>
+   StdDev: standard-deviation application<StdDev>
+   ShadowLevels: shadow levels convolution<ShadowLevels>
+   DuplicateVariables: outer block to duplicate one variable into others<DuplicateVariables>
+   Write Fields<writeFields>
+   Write Variances (calibration diagnostic)<calibration_writeVariances>
+
+Interpolation blocks
+^^^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   Interpolation blocks<Interpolations>
+
+BUMP blocks
+^^^^^^^^^^^
 
 .. toctree::
    :maxdepth: 2
    :titlesonly:
 
    BUMP: Background error on an Unstructured Mesh Package<BUMP>
-   GSI: interface to the GSI covariance<GSI>
-   ID: identity operator<ID>
+
+
+Spectral blocks
+^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
    SPECTRALB: spectral covariance/correlation<SPECTRALB>
-   FakeLevels: fake levels convolution<FakeLevels>
-   StdDev: standard-deviation application<StdDev>
-   DuplicateVariables: outer block to duplicate one variable into others<DuplicateVariables>
-   Interpolation blocks<Interpolations>
+
+
+Diffusion blocks
+^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   Explicit Diffusion<explicitDiffusion>
+
+GSI blocks
+^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   GSI: interface to the GSI covariance<GSI>
+
+
+UK Met Office specific blocks
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
    UKMO-specfic saber blocks<UKMO>
+
  
 SABER applications
 ------------------
