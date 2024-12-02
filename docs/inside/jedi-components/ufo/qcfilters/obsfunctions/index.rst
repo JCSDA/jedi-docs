@@ -173,6 +173,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`TropopauseEstimate <TropopauseEstimate>`
   First-guess extimate of tropopause pressure from climatology
 
+:ref:`TropopauseHeight <TropopauseHeight>`
+  Calculate tropopause height from model fields
+
 :ref:`WindDirAngleDiff <WindDirAngleDiff>`
   Compute wind direction angle different between observation and model
 
@@ -235,4 +238,5 @@ filters into separate parts would have an obfuscating effect.
    SetSurfaceType
    SetSeaIceEmiss
    TropopauseEstimate
+   TropopauseHeight
    WindDirAngleDiff
