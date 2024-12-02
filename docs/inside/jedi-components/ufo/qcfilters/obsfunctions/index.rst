@@ -71,6 +71,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ModelLevelIndex <ModelLevelIndex>`
   Given observed and model values of a chosen vertical coordinate, return the index at which each observed value lies in its equivalent model column.
 
+:ref:`MPIRank <MPIRank>`
+  Returns the MPI rank on which each ObsSpace location is stored (including for overlapping ObsSpace distributions).
+
 :ref:`NearSSTRetCheckIR <NearSSTRetCheckIR>`
   NCEP-GDAP near-sea-surface temperature IR retrieval
 
@@ -198,6 +201,7 @@ filters into separate parts would have an obfuscating effect.
    InterChannelConsistencyCheck
    MetOfficeRelativeHumidityCorrection
    ModelLevelIndex
+   MPIRank
    NearSSTRetCheckIR
    ObsErrorBoundIR
    ObsErrorBoundMW
