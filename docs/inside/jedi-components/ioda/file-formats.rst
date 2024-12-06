@@ -333,10 +333,24 @@ The :code:`ioda-filterObs.x` application provides a means to filter observation 
 Examples would be thinning data using an algorithm that randomly selects a subset of the data, and throwing out unrealistic data such as negative temperature values when the units are in Kelvin.
 Filters requiring additional data such as the forecast background must use the filter operators in UFO.
 
-Currently, :code:`ioda-filterObs.x` offers one filter which is throwing out observations that are outside of a given time window.
-This filter is always applied when the application is run.
+Currently, :code:`ioda-filterObs.x` offers the following filters:
 
-:code:`ioda-filterObs.x` is based on :code:`oops::Application` and as such takes a configuration YAML file as a required arguemnt, plus an optional second argument that specifies a log file for saving messages from the application.
+1. Time window filter
+
+   This filter is always applied and will reject observations that are outside of the given time window.
+
+2. Receipt time filter
+
+   This filter is optional (disabled by default) and will reject observations that have a receipt time beyond (i.e., newer than) a given cutoff time.
+   The receipt time filter is enabled with a YAML :code:`receipt time filter` specification, which contains two parameters: a cutoff time and a variable name.
+   The specified variable is expected to exist in the ObsSpace, to be in the epoch datetime format, and to contain the receipt time for each location.
+   The specified cutoff time is expected to be a string value in ISO-8601 datetime format.
+   The filter will read in the receipt time variable and for each entry in the variable, compare that to the cutoff time and reject locations that are newer than the cutoff time. 
+
+   Note that the receipt time filter is primarily useful for contriving data from existing ioda files for demo or research purposes.
+   In these contexts, the filter can be used to remove observations that haven't "arrived" yet.
+
+:code:`ioda-filterObs.x` is based on :code:`oops::Application` and as such takes a configuration YAML file as a required argument, plus an optional second argument that specifies a log file for saving messages from the application.
 By default the application writes all of its messages to stdout and stderr.
 Here is the usage for :code:`ioda-filterObs.x`.
 
@@ -352,7 +366,7 @@ Note that in this case both the :code:`obs space.obsdatain` and :code:`obs space
 (Normally the :code:`obs space.obsdataout` section is optional.)
 The specified :code:`time window` will be applied to the data contained in the input file(s) given in the :code:`obs space.obsdatain` section and the results are written to the output file given in the :code:`obs space.obsdataout` section.
 
-Here is an example YAML configuration for reading a single input file.
+Here is an example YAML configuration for reading a single input file and applying only the time window filter.
 
 .. code-block:: yaml
 
@@ -396,4 +410,30 @@ Here is a similar example except for reading multiple input files.
       engine:
         type: H5File
         obsfile: "FilteredData/sonde_obs_example.nc4"
+
+And here is an example enabling the optional receipt time filter.
+The variable "MetaData/r2d2ReceiptTime" contains the receipt times for each location, and the cutoff time is set to 15 minutes into the time window.
+
+.. code-block:: yaml
+
+  ---
+  time window:
+    begin: "2024-01-10T00:00:00Z"
+    end: "2024-01-10T06:00:00Z"
+
+  obs space:
+    name: "Single File Input"
+    simulated variables: ['airTemperature']
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: "Data/sonde_obs_example.nc4"
+    obsdataout:
+      engine:
+        type: H5File
+        obsfile: "FilteredData/sonde_obs_example.nc4"
+
+  receipt time filter:
+    cutoff time: "2024-01-10T00:15:00Z"
+    variable name: "MetaData/r2d2ReceiptTime"
 
