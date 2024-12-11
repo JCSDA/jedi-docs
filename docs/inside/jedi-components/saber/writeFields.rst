@@ -26,18 +26,18 @@ Example :code:`write fields` block:
 .. code-block:: yaml
 
   saber block name: write fields
-    # save netCDF file: True # optional parameter with default of 'True'
-    # field names: {fld1, fld2} # Optional list of fields to write out.
-                                #If not present, all fields get written
-    outputPath: </path/to/output> # REQUIRED path to directory where
-                                  # output files will be written
-    xb filename: background # OPTIONAL will write background given 
-                            # to constructor with filename "background_1.nc"
-    fg filename: firstGuess # OPTIONAL will write first guess given 
-                            # to constructor with filename "firstGuess_1.nc"
-    multiply fset filename: fset_multiply # OPTIONAL writes fieldSet
-                                          # passed to multiply()
-    multiplyad fset filename: fset_multiplyAD # OPTIONAL writes fieldSet
-                                              # passed to multiplyAD()
-    left inverse fset filename: fset_left_inv_multiply # OPTIONAL writes fieldSet
+    # save netCDF file: True       # (OPTIONAL) parameter with default of 'True'
+    # field names: {fld1, fld2}    # (OPTIONAL) list of fields to write out.
+                                   # If not present, all fields get written
+    output path: </path/to/output> # (REQUIRED) path to directory where
+                                   # output files will be written
+    xb filename: background   # (OPTIONAL) will write background given 
+                              # to constructor with filename "background_1.nc"
+    fg filename: firstGuess   # (OPTIONAL) will write first guess given 
+                              # to constructor with filename "firstGuess_1.nc"
+    multiply fset filename: fset_multiply   # (OPTIONAL) writes fieldSet
+                                            # passed to multiply()
+    multiplyad fset filename: fset_multiplyAD   # (OPTIONAL) writes fieldSet
+                                                # passed to multiplyAD()
+    left inverse fset filename: fset_left_inv_multiply # (OPTIONAL) writes fieldSet
                                                        # passed to leftInverseMultiply()
