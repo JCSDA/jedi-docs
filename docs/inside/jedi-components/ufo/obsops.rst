@@ -304,8 +304,202 @@ In the example above, the `VertInterp` operator is used to simulate only the win
 
 In the above example wind observations are simulated and scaled near the surface. The preferred coordinate to use for interpolation is height but in the case that height observations are missing the code will fall back on using pressure as the coordinate.
 
-Atmosphere Vertical Layer Interpolation
-----------------------------------------
+
+Column Retrieval Operator
+-------------------------
+
+Algorithmic Description:
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Observation operator for profile and columns satellite retrievals with averaging kernel functions and apriori terms. It computes the model equivalent to the observation :math:`\mathbf{X}_{\text{c}}` using the retrieval equation as follows:
+
+.. math::
+
+   \mathbf{X}_{\text{c}} = \mathbf{A}\mathbf{X}_{\text{background}} + (\mathbf{I} - \mathbf{A})\mathbf{X}_{\text{apriori}}
+
+The operator recieves the geovals profiles :math:`\mathbf{X}_{\text{background}}` after the :code:`getvalues` procedure and then applies, if needed, the averaging kernel matrix information :math:`\mathbf{A}`. If needed as well it can apply an apriori term :math:`(\mathbf{I} - \mathbf{A})\mathbf{X}_{\text{apriori}}`. For each geoval profile the operator computes the :code:`tropospheric column` or :code:`total column` of any given atmospheric molecule concentration (**dry volume mixing ratio**) by integrating the geovals levels over a pressure range. such as:
+
+.. math::
+
+   X = \frac{1}{M_{\text{dry}} g} \int_{\alpha}^{\beta} C \, dp
+
+Where :math:`X` is the partial column, :math:`M_{dry}` is the dry air molecular mass, :math:`g` the earth gravitational constant, :math:`\alpha` and :math:`\beta` the pressure vertices (also known as pressure retrieval interfaces), :math:`C` the geoval concentration and :math:`p` the geoval pressure. In a discrete algorithmic form this equation is defined in two cases described in the figure below:
+
+.. image:: images/ColumnRetreival_levels.png
+   :alt: Schematic representation for the column calculations comprehension
+
+**Case1** - The vertices are over multiple pressure levels :math:`N`:
+
+.. math::
+
+   X = \frac{1}{M_{\text{dry}} g} \sum_{i=0}^{N}w_{i}C_{i}\left( p_{i+1} - p_{i} \right)
+
+where :math:`w` is the interpolation weight, that is 1 if the geoval level pressure range is within the vertices range or a :math:`w_{i}\in ]0,1[, \forall i\in \left\{ \alpha,\beta \right\}` to account for the vertice to pressure interface staggering.
+
+**Case2** - The vertices are within the same pressure level :math:`N`:
+
+.. math::
+
+   X = \frac{1}{M_{\text{dry}} g} \left( w_{\alpha} - w_{\beta} \right)C_{N}\left( p_{N+1} - p_{N} \right)
+
+The result of that first part of the operator is to either calculate a partial/total column if the averaging kernel and apriori option aren't provided (see below) the code returns the column values without "smoothing". Otherwise the operator applies the averaging kernel and/or the apriori as follows:
+
+.. math::
+
+   X_{c}=\sum_{k=0}^{M}\left( A_{k}X_{k} \right) + P_{c}
+
+where :math:`A_{k}` the averaging kernel value at the retrieval level :math:`k`, :math:`X_{k}` the partial column corresponding to the retrieval level and :math:`P_{c}=(\mathbf{I} - \mathbf{A})\mathbf{X}_{\text{apriori}}` which is calculated within the iodaconverter and put as scalar value per observation location.
+
+The code of the non-linear and tangent linear and adjoint of this operator is in:
+:code:`ufo/operators/columnretrieval/ufo_satcolumn_mod.F90`
+
+Option descriptions:
+^^^^^^^^^^^^^^^^^^^^
+Yaml options are defined in :code:`ufo/operators/columnretrieval/ObsColumnRetrievalParameters.h`
+
+* :code:`nlayers_retrieval`: Integer, optional and default is 1. It defines the number of retrieval layers in the obs file. Number of vertices will be and must be :code:`nlayers_retrieval +1`
+* :code:`tracer variables`: String, required. It specify the names of model tracer variables in Geovals.
+* :code:`isApriori`: Boolean, optional and default is false. It adds the a priori retrieval term if set to True.
+* :code:`isAveragingKernel`: Boolean, optional and default is false. It adds the averaging kernel term if set to True.
+* :code:`stretchVertices`: String, optional and default value is None. This option allows top and/or bottom retrieval vertices to match the geovals top of the atmosphere and/or surface pressure vertices. Options are: top, bottom, topbottom and none (default).
+* :code:`model units coeff`: Double, optional and default is 1.0. It adds a conversion factor if background geovals values are not in the correct required unit: **dry volume mixing ratio** which is **mol of molecule considered per mol of dry air**
+* :code:`totalNoVertice`: Boolean, optional and default is false. This option, if set to true, is valid if :code:`isAveragingKernel` is false and :code:`nlayers_retrieval` is 1. This then calculates the total column with all the geovals level values using all the pressure ranges. No pressure vertice information is needed.
+
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+Example of using O3 OMPS Total Column without the Averaging Kernel Information. Here no vertices are needed. This is the simplest total column calculation that the operator can perform.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: ColumnRetrieval
+    nlayers_retrieval: 1
+    tracer variables: [mole_fraction_of_ozone_in_air]
+    isApriori: false
+    isAveragingKernel: false
+    totalNoVertice: true
+    stretchVertices: topbottom
+
+Example of using O3 OMPS Nadir Profiler without the Averaging Kernel Information. Here vertices are provided to define the pressure ranges of each of profile values. Since no averaging kernel is used in this case, each retrieval profile level is considered as a separate observation (partial columns) and the 2D structure of the original observation (retrieval pixel, retrieval layers) can be flatten in the :code:`Location` dimension in the observation file.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: ColumnRetrieval
+    nlayers_retrieval: 1
+    tracer variables: [mole_fraction_of_ozone_in_air]
+    isApriori: false
+    isAveragingKernel: false
+    totalNoVertice: false
+    stretchVertices: none
+    model units coeff: 2.1415E-3 #for GFS backgrounds, will be different or not needed with other models
+
+
+
+
+Example of using NO2 TropOMI retrievals. Here the averaging kernel function is used but no apriori term (DOAS retrieval). :code:`pressureVertice` and :code:`averagingKernel` terms are needed in the :code:`RetrievalAncillaryData` group in the observation file (see observation file structure section below).
+
+.. code-block:: yaml
+
+  obs operator:
+    name: ColumnRetrieval
+    nlayers_retrieval: 34
+    tracer variables: [volume_mixing_ratio_of_no2]
+    isApriori: false
+    isAveragingKernel: true
+    stretchVertices: topbottom
+    model units coeff: 1e-6 # ppmv to ppv
+
+
+Example of using CO MOPITT retrievals. Here the :code:`aprioriTerm` is added.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: ColumnRetrieval
+    nlayers_retrieval: 10
+    tracer variables: [volume_mixing_ratio_of_co]
+    isApriori: true
+    isAveragingKernel: true
+    stretchVertices: topbottom
+    model units coeff: 1e-6 # ppmv to ppv
+
+An observation file structure example:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+All codes to produce IODA observation files from raw format are in :code:`ioda-converters/tree/develop/src/compo`. For the name of the observable per convention we use the the camelCase format with :code:`<moleculeTypeofcolumn>`.  :code:`Total` will be used for total columns and :code:`Column` will be used for partial columns (e.g. :code:`nitrogendioxideColumn`, :code:`ozoneTotal`).
+
+.. code-block::
+
+  netcdf mopitt_co_2020090318_m {                                     # MOPITT CO as an example
+  dimensions:
+  	Location = 1901 ;                                                 # number of data points
+  	Layer = 10 ;                                                      # number of retrieval layers if using averaging kernel
+  	Vertice = 11 ;                                                    # number of pressure vertices, if used, it is always layer + 1
+  variables:
+  	int Location(Location) ;
+  		Location:suggested_chunk_dim = 1901LL ;
+  		Location:_FillValue = -2147483647 ;
+  	int Layer(Layer) ;
+  		Layer:suggested_chunk_dim = 10 ;
+  	int Vertice(Vertice) ;
+  		Vertice:suggested_chunk_dim = 11LL ;
+
+  group: MetaData {
+    variables:
+    	int64 dateTime(Location) ;
+    		dateTime:_FillValue = -9223372036854775801LL ;
+    		dateTime:units = "seconds since 2020-09-03T15:00:00Z" ;
+    	float latitude(Location) ;
+    		latitude:_FillValue = -3.368795e+38f ;
+    		latitude:units = "degrees_north" ;
+    	float longitude(Location) ;
+    		longitude:_FillValue = -3.368795e+38f ;
+    		longitude:units = "degrees_east" ;
+    } // group MetaData
+
+  group: ObsError {
+    variables:
+    	float carbonmonoxideTotal(Location) ;
+    		carbonmonoxideTotal:_FillValue = -3.368795e+38f ;
+    		carbonmonoxideTotal:coordinates = "longitude latitude" ;
+    		carbonmonoxideTotal:units = "mol m-2" ;                         # mol m-2 is the default unit choosen for the operator to return column values, therefore geovals must be provided in mol/mol. the conversion factor should be used to accomodate for this
+    } // group ObsError
+
+  group: ObsValue {
+    variables:
+    	float carbonmonoxideTotal(Location) ;
+    		carbonmonoxideTotal:_FillValue = -3.368795e+38f ;
+    		carbonmonoxideTotal:coordinates = "longitude latitude" ;
+    		carbonmonoxideTotal:units = "mol m-2" ;                         # mol m-2 is the default unit choosen for the operator to return column values, therefore geovals must be provided in mol/mol. the conversion factor should be used to accomodate for this
+    } // group ObsValue
+
+  group: PreQC {
+    variables:
+    	int64 carbonmonoxideTotal(Location) ;
+    		carbonmonoxideTotal:_FillValue = -9223372036854775801LL ;
+    		carbonmonoxideTotal:coordinates = "longitude latitude" ;
+    		carbonmonoxideTotal:units = "unitless" ;
+    } // group PreQC
+
+  group: RetrievalAncillaryData {
+    variables:
+    	float aprioriTerm(Location) ;
+    		aprioriTerm:_FillValue = -3.368795e+38f ;
+    	float averagingKernel(Location, Layer) ;
+    		averagingKernel:_FillValue = -3.368795e+38f ;
+    		averagingKernel:coordinates = "longitude latitude" ;
+    		averagingKernel:units = "" ;
+    	float pressureVertice(Location, Vertice) ;
+    		pressureVertice:_FillValue = -3.368795e+38f ;
+    } // group RetrievalAncillaryData
+  }
+
+
+Atmosphere Vertical Layer Interpolation (deprecated)
+----------------------------------------------------
 
 Description:
 ^^^^^^^^^^^^
@@ -320,30 +514,6 @@ Examples of yaml:
   obs operator:
     name: AtmVertInterpLay
 
-Averaging Kernel Operator
--------------------------
-
-Description:
-^^^^^^^^^^^^
-
-Observation operator for satellite retrievals with averaging kernel functions. Using the retrieval equation: :math:`\mathbf{x}_{retrieval} = \mathbf{A}\mathbf{x}_{truth} + (\mathbf{I}-\mathbf{A})\mathbf{x}_{apriori}`
-The operator uses :code:`AtmVertInterpLay` to interpolate the :code:`tropospheric column` or :code:`total column` to the averaging kernel levels :code:`AvgKernelVar` function using pressure coordinates :code:`PresLevVar`.
-The vertical profile is then summed vertically using the averaging kernel coefficients values as weights.
-
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-
-.. code-block:: yaml
-
-  obs operator:
-    name: AvgKernel
-    nlayers_kernel: 34
-    AvgKernelVar: averaging_kernel_level
-    PresLevVar: pressure_level
-    tracer variables: [no2]
-    tropospheric column: true
-    total column: false
 
 Community Radiative Transfer Model (CRTM)
 -----------------------------------------
