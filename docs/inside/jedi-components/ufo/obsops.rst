@@ -529,7 +529,7 @@ Configuration options:
 The CRTM operator has some required geovals (see varin_default in ufo/crtm/ufo_radiancecrtm_mod.F90). The configurable geovals are as follows:
 
 * :code:`Absorbers` : CRTM atmospheric absorber species that will be requested as geovals.  H2O and O3 are always required. So far H2O, O3, CO2 are implemented. More species can be added readily by extending UFO_Absorbers and CRTM_Absorber_Units in ufo/crtm/ufo_crtm_utils_mod.F90.
-* :code:`Clouds` [optional] : CRTM cloud constituents that will be requested as geovals; can include any of Water, Ice, Rain, Snow, Graupel, Hail
+* :code:`Clouds` [optional] : CRTM cloud constituents that will be requested as geovals; can include any of Water, Ice, Rain, Snow, Graupel, Hail. Clouds water contents and effective radius can be re-set as zero in the atmospheric profiles for CRTM by assigning a value 1 to :code:`MetaData/zeroCloudInCRTM` in certain conditions in :code:`obs prior filters`. An example to zero-out cloud constituents above surface where :code:`GeoVaLs/water_area_fraction` is less than 0.99 is provided.
 * :code:`Cloud_Fraction` [optional] : sets the CRTM Cloud_Fraction to a constant value across all profiles (e.g., 1.0). Omit this option in order to request cloud_area_fraction_in_atmosphere_layer as a geoval from the model.
 * :code:`SurfaceWindGeoVars` [str, optional, options: :code:`vector` - default, :code:`uv`] : specify which two surface wind GeoVaLs are requested from the model.  :code:`vector` indicates that surface wind direction and magnitude are requested.  :code:`uv` indicates that surface eastward and northward wind components are requested.
 
@@ -593,6 +593,25 @@ Examples of valid yaml:
       Sensor_ID: abi_g16
       EndianType: little_endian
       CoefficientPath: Data/
+
+.. code-block:: yaml
+
+  ## Zero-out cloud constituents above surface where water area fraction is less than 0.99.
+  obs prior filters:
+  - filter: Variable Assignment
+    assignments:
+    - name: MetaData/zeroCloudInCRTM
+      type: int
+      function:
+        name: ObsFunction/Conditional
+        options:
+          defaultvalue: 0 # Will not zero clouds by default
+          cases:
+          - where:
+            - variable:
+                name: GeoVaLs/water_area_fraction
+              maxvalue: 0.99
+            value: 1 # Will zero clouds by default
 
 RTTOV
 -----------------------------------------
