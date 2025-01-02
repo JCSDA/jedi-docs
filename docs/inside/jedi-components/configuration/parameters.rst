@@ -330,16 +330,29 @@ The :code:`priorityVariable` parameter would be used like this (assuming that :c
 Constraints
 -----------
 
-It is possible to restrict the allowed values of :code:`Parameter`, :code:`OptionalParameter` and :code:`RequiredParameter` objects by passing a vector of one or more shared pointers to constant :code:`ParameterConstraint` objects to their constructor. For convenience, functions returning shared pointers to new instances of subclasses of :code:`ParameterConstraint` representing particular constraint types have been defined. For example, the code below constrains the :code:`iterations` parameter to be positive:
+It is possible to restrict the allowed values of :code:`Parameter`, :code:`OptionalParameter` and :code:`RequiredParameter` objects by passing a vector of one or more shared pointers to constant :code:`ParameterConstraint` objects to their constructor. For convenience, functions returning shared pointers to new instances of subclasses of :code:`ParameterConstraint` representing particular constraint types have been defined. For example, the code below constrains the :code:`iterations` parameter to be positive, and the `variables` parameter to contain at least one element:
 
 .. code-block:: c++
 
+  #include "oops/util/parameters/ArrayConstraints.h"
   #include "oops/util/parameters/NumericConstraints.h"
   #include "oops/util/parameters/RequiredParameter.h"
   
   RequiredParameter<int> iterations{"iterations", this, {minConstraint(1)}};
+  RequiredParameter<std::vector<int>> variables{"variables", this, {nonEmptyConstraint<std::vector<int>>()}};
 
-If the value loaded from the configuration file does not meet this constraint, :code:`validateAndDeserialize()` will throw an exception. At present, four types of constraints are available: greater than or equal to (:code:`minConstraint()`), less than or equal to (:code:`maxConstraint()`), greater than (:code:`exclusiveMinConstraint()`), and less than (:code:`exclusiveMaxConstraint()`).
+If the value loaded from the configuration file does not meet this constraint, :code:`validateAndDeserialize()` will throw an exception. At present, four types of constraints on numeric parameters are available: 
+
+* greater than or equal to (:code:`minConstraint()`), 
+* less than or equal to (:code:`maxConstraint()`), 
+* greater than (:code:`exclusiveMinConstraint()`), 
+* less than (:code:`exclusiveMaxConstraint()`),
+
+and three types of constraints on vector-valued parameters:
+
+* lower bound on the number of items (:code:`minItemsConstraint()`),
+* upper bound on the number of items (:code:`maxItemsConstraint()`), 
+* non-empty (:code:`nonEmptyConstraint()`), technically a special case of the lower bound constraint.
 
 Polymorphic Parameters
 ----------------------

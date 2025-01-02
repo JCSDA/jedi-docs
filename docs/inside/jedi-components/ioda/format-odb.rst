@@ -111,11 +111,8 @@ Here is an example ODB mapping file:
             name: relative_humidity
           - varno: 110
             name: surface_pressure
-    complementary variables:
-      - input names: [site_name_1, site_name_2, site_name_3, site_name_4]
-        output name: MetaData/station_id
 
-A mapping file may contain up to three top-level sections: ``varno-independent columns``, ``varno-dependent columns`` and ``complementary variables``. All of them are optional, but at least the first two will typically be present. The syntax of each section is described below, followed by a detailed explanation of the mappings defined in the above YAML file.
+A mapping file may contain up to two top-level sections: ``varno-independent columns``, ``varno-dependent columns``. Both are optional but will typically be present. The syntax of each section is described below, followed by a detailed explanation of the mappings defined in the above YAML file.
 
 The ``varno-independent columns`` Section
 .........................................
@@ -191,16 +188,6 @@ This section contains a list of items defining the mapping of individual varno-d
    
    Variables created from varno-dependent columns are always filled with values extracted from rows selected with the ``from rows with matching varnos`` strategy (see :ref:`above <varno-independent columns.reader>` for more details).
   
-The ``complementary variables`` section
-............................................
-
-This section contains a list of items defining groups of varno-independent ODB text columns that should be merged into single ``ioda`` variables. This merging is required because entries of ODB text columns are limited to 8 characters each. Within each item, the following keys are recognized:
-
-* ``input names`` (required): ordered list of names of ODB columns that should be merged;
-* ``output name`` (required): name of the ``ioda`` variable that will hold the contents of the merged columns;
-* ``output variable data type`` (optional): if present, must be set to ``string``;
-* ``merge method`` (optional): if present, must be set to ``concat``.
-
 Example Mapping File: Detailed Discussion
 .........................................
 
@@ -218,11 +205,13 @@ The example YAML file shown above defines the following mappings:
 
 * Elements of the ``duplicate`` member of the ``datum_event1`` bitfield column located in rows storing observations of varnos 29 and 110 are transferred to the ``DiagnosticFlags/Duplicate/relative_humidity`` and ``DiagnosticFlags/Duplicate/surface_pressure`` Boolean ``ioda`` variables.
 
-* Strings from the ``site_name_1``, ``site_name_2``, ``site_name_3`` and ``site_name_4`` columns are concatenated and transferred to the ``MetaData/station_id`` ``ioda`` variable. Only one row per location is kept.
-
 .. note::
 
    Certain variables are handled in a special way.  Columns for date and time (``date``, ``time``, ``receipt_date``, ``receipt_time``) are not specified in the mapping file; instead they are converted into the date/time representations used by ``ioda`` and stored in ``ioda`` variables ``MetaData/dateTime`` and ``MetaData/receiptdateTime``.  They still need to be provided in the ``variables`` list in the query file.
+
+.. note:: 
+
+   Entries of ODB text columns are limited to 8 characters each; longer strings need to be split across multiple *complementary columns*. By convention, their names are constructed by appending an underscore and a numeric suffix to the column name that would be used if all strings were at most 8 characters in length; for example, ``site_name_1``, ``site_name_2`` and so on. The ODB writer automatically stores the contents of ``ioda`` variables of type ``string`` in as many complementary columns as necessary; likewise, the ODB reader automatically identifies complementary columns and concatenates their contents into individual ``ioda`` variables. This process is transparent to the user and does not need to be configured explicitly in mapping or query YAML files.
 
 Query files
 ^^^^^^^^^^^
