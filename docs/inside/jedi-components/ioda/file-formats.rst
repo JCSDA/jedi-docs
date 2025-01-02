@@ -341,11 +341,12 @@ Currently, :code:`ioda-filterObs.x` offers the following filters:
 
 2. Receipt time filter
 
-   This filter is optional (disabled by default) and will reject observations that have a receipt time beyond (i.e., newer than) a given cutoff time.
-   The receipt time filter is enabled with a YAML :code:`receipt time filter` specification, which contains two parameters: a cutoff time and a variable name.
+   This filter is optional (disabled by default) and will reject observations that have a receipt time outside a given acceptance time window.
+   The receipt time filter is enabled with a YAML :code:`receipt time filter` specification, which contains two parameters: an accept (time) window and a
+   variable name.
    The specified variable is expected to exist in the ObsSpace, to be in the epoch datetime format, and to contain the receipt time for each location.
-   The specified cutoff time is expected to be a string value in ISO-8601 datetime format.
-   The filter will read in the receipt time variable and for each entry in the variable, compare that to the cutoff time and reject locations that are newer than the cutoff time. 
+   The specified accept window is expected to be in the format required for an oops :code:`util::TimeWindow`.
+   The filter will read in the receipt time variable and for each entry in the variable, compare that to the accept window and reject locations that are outside the accept window. 
 
    Note that the receipt time filter is primarily useful for contriving data from existing ioda files for demo or research purposes.
    In these contexts, the filter can be used to remove observations that haven't "arrived" yet.
@@ -402,7 +403,7 @@ Here is a similar example except for reading multiple input files.
     obsdatain:
       engine:
         type: H5File
-        obsfile:
+        obsfiles:
          - "Data/sonde_obs_example_receipt1.nc4"
          - "Data/sonde_obs_example_receipt2.nc4"
          - "Data/sonde_obs_example_receipt3.nc4"
@@ -412,7 +413,7 @@ Here is a similar example except for reading multiple input files.
         obsfile: "FilteredData/sonde_obs_example.nc4"
 
 And here is an example enabling the optional receipt time filter.
-The variable "MetaData/r2d2ReceiptTime" contains the receipt times for each location, and the cutoff time is set to 15 minutes into the time window.
+The variable "MetaData/r2d2ReceiptTime" contains the receipt times for each location, and the accept window is set to the initial 15 minutes of the time window.
 
 .. code-block:: yaml
 
@@ -434,6 +435,8 @@ The variable "MetaData/r2d2ReceiptTime" contains the receipt times for each loca
         obsfile: "FilteredData/sonde_obs_example.nc4"
 
   receipt time filter:
-    cutoff time: "2024-01-10T00:15:00Z"
+    accept window:
+      begin: "2024-01-10T00:00:00Z"
+      end: "2024-01-10T00:15:00Z"
     variable name: "MetaData/r2d2ReceiptTime"
 
