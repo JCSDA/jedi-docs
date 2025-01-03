@@ -344,12 +344,19 @@ Currently, :code:`ioda-filterObs.x` offers the following filters:
    This filter is optional (disabled by default) and will reject observations that have a receipt time outside a given acceptance time window.
    The receipt time filter is enabled with a YAML :code:`receipt time filter` specification, which contains two parameters: an accept (time) window and a
    variable name.
-   The specified variable is expected to exist in the ObsSpace, to be in the epoch datetime format, and to contain the receipt time for each location.
+   The specified variable is normally expected to exist in the ObsSpace (see the optional receipt time generator option below), to be in the epoch datetime format, and to contain the receipt time for each location.
    The specified accept window is expected to be in the format required for an oops :code:`util::TimeWindow`.
    The filter will read in the receipt time variable and for each entry in the variable, compare that to the accept window and reject locations that are outside the accept window. 
 
    Note that the receipt time filter is primarily useful for contriving data from existing ioda files for demo or research purposes.
    In these contexts, the filter can be used to remove observations that haven't "arrived" yet.
+
+   The receipt time filter provides an optional generator of receipt times.
+   This generator is disabled by default (i.e., the receipt time variable is expected to exist in the input file) and can be enabled using the :code:`generate receipt times` YAML control.
+   The generator creates receipt times that lie within a range of delays after the corresponding observation time stamp (:code:`MetaData/dateTime` value), and uses an algorithm that produces a somewhat uniform distribution of delays while being reproducible.
+   Three parameters for the generator are specified in the YAML configuration: a minimum delay, a maximum delay and a number of delay bins to split the delay range into.
+   The delay parameters are specified in seconds, and the number of delay bins parameter needs to be an integer greater than zero.
+   The generator algorithm uses the remainder from applying a modulo operation with the observation time stamp and the number of bins parameter to calculate a delay value within the given mininum and maximum delay specifications and adds that delay to the observation time stamp.
 
 :code:`ioda-filterObs.x` is based on :code:`oops::Application` and as such takes a configuration YAML file as a required argument, plus an optional second argument that specifies a log file for saving messages from the application.
 By default the application writes all of its messages to stdout and stderr.
@@ -412,7 +419,7 @@ Here is a similar example except for reading multiple input files.
         type: H5File
         obsfile: "FilteredData/sonde_obs_example.nc4"
 
-And here is an example enabling the optional receipt time filter.
+Here is an example enabling the optional receipt time filter.
 The variable "MetaData/r2d2ReceiptTime" contains the receipt times for each location, and the accept window is set to the initial 15 minutes of the time window.
 
 .. code-block:: yaml
@@ -440,3 +447,36 @@ The variable "MetaData/r2d2ReceiptTime" contains the receipt times for each loca
       end: "2024-01-10T00:15:00Z"
     variable name: "MetaData/r2d2ReceiptTime"
 
+Here is the above example repeated, except with a receipt time generator specified.
+
+.. code-block:: yaml
+
+  ---
+  time window:
+    begin: "2024-01-10T00:00:00Z"
+    end: "2024-01-10T06:00:00Z"
+
+  obs space:
+    name: "Single File Input"
+    simulated variables: ['airTemperature']
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: "Data/sonde_obs_example.nc4"
+    obsdataout:
+      engine:
+        type: H5File
+        obsfile: "FilteredData/sonde_obs_example.nc4"
+
+  receipt time filter:
+    accept window:
+      begin: "2024-01-10T00:00:00Z"
+      end: "2024-01-10T00:15:00Z"
+    variable name: "MetaData/r2d2ReceiptTime"
+    generate receipt times:
+      delay min: 300
+      delay max: 900
+      number of delay bins: 50
+
+In this example, receipt times are generated and stored into the :code:`MetaData/r2d2ReceiptTime` variable.
+The receipt times are delays lying within the range of 300 to 900 seconds, and the generator algorithm is applying a modulo 50 operation on each of the observation time stamp values, giving 50 delay bins in this delay range.
