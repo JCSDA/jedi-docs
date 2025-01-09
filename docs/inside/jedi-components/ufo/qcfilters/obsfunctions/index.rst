@@ -170,6 +170,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`SetSeaIceEmiss <SetSeaIceEmiss>`
   Calculate MW emissivity for surfaces classified as Ice by AAPP.
 
+:ref:`StableLayersCloudTopPressure <StableLayersCloudTopPressure>`
+  Calculate the cloud-top pressure from satellite radiance input using the "stable layers" method
+
 :ref:`TropopauseEstimate <TropopauseEstimate>`
   First-guess extimate of tropopause pressure from climatology
 
@@ -237,6 +240,7 @@ filters into separate parts would have an obfuscating effect.
    SCATRetMW
    SetSurfaceType
    SetSeaIceEmiss
+   StableLayersCloudTopPressure
    TropopauseEstimate
    TropopauseHeight
    WindDirAngleDiff
