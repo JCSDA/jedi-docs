@@ -46,9 +46,10 @@ The :code:`Variable Transforms` filter has the following available yaml settings
  - **FillMissingDerivedFromOriginal** [*Optional* | *default = false*]
    If *true*, fill any missing entries of a vector in a Derived group (e.g. DerivedObsValue) with
    the non-missing entries of the vector in the equivalent original group (e.g. ObsValue).
- - **SkipWhenNoObs** [*Optional* | *default = true*]
-   If *true*, the variable transform will not be performed on a core if there are no observations on that core. If creating a new
-   variable it might be pertinent to set to false as the code may fail when saving that variable.
+ - **SkipWhenNoObs** [*Optional* | *default = false*]
+   If *false*, the variable transform will be performed on an MPI rank when there are no observations on that rank. This ensures that all ranks
+   create new variables. If *true*, the variable transform will not be performed on a rank with no observations. If the variable transform
+   creates a new variable then the executable will hang when attempting to write out the :code:`ObsSpace` because each rank does not have the new variable.
 
    .. warning:: If :code:`UseValidDataOnly=true`, the variable transform is
       **not** applied to observations that have a :code:`QCflag` equal to either
