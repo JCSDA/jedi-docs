@@ -296,6 +296,7 @@ The action taken on observations flagged by the filter can be adjusted using the
 * :code:`accept`: observations flagged by the filter are marked as accepted if they have previously been rejected for any reason other than missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator.
 * :code:`passivate`: observations flagged by the filter are marked as passive.
 * :code:`inflate error`: the error estimates of observations flagged by the filter are multiplied by a factor. This can be either a constant (specified using the :code:`inflation factor` option) or a variable (specified using the :code:`inflation variable` option).
+* :code:`RONBAMErrInflate`: the previously assigned observation errors are inflated by a factor, replicating the operational GNSS RO NBAM operator. The inflation factor is the square root of the number of observations (those that passed QCs) within two adjacent model layers.
 * :code:`assign error`: the error estimates of observations flagged by the filter are set to a specified value. Again, this can be either a constant (specified using the :code:`error parameter` option) or a variable (specified using the :code:`error function` option).
 * :code:`set` and :code:`unset`: the diagnostic flag indicated by the :code:`flag` option will be set to :code:`true` or :code:`false`, respectively, at observations flagged by the filter. These actions recognize a further optional keyword :code:`ignore`, which can be set to:
 
