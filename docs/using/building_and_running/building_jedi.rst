@@ -139,7 +139,7 @@ Alternatively, developers with access to the internal repositories should instea
 Step 2: Choose your Repos
 -------------------------
 
-As executed above in Step 1, cloning a bundle will create a directory :code:`<JEDI_ROOT>/<your-bundle>`. This checkout of the bundle will be referred to as the :code:`JEDI_SRC` (source). Export this as an evironment variable like you did for the :code:`JEDI_ROOT`. For the :code:`jedi-bundle`:
+As executed above in Step 1, cloning a bundle will create a directory :code:`<JEDI_ROOT>/<your-bundle>`. This checkout of the bundle will be referred to as the :code:`JEDI_SRC` (source). Export this as an environment variable like you did for the :code:`JEDI_ROOT`. For the :code:`jedi-bundle`:
 
 .. code-block:: bash
 
@@ -208,10 +208,10 @@ Then, from that build directory, run :code:`ecbuild`, specifying the path to the
 
 .. code-block:: bash
 
-    cd $JEDI_ROOT/build
+    cd $JEDI_BUILD
     ecbuild $JEDI_SRC
 
-Here we have used :code:`$JEDI_SRC` as our source directory and :code:`$JEDI_ROOT/build` as our build directory.  Feel free to change this as you wish, but just **make sure that your source and build directories are different**. This command should work for most bundles, and in particular when working on a preconfigured HPC or AWS instance. The ecbuild command may take several minutes to run.
+Here we have used :code:`$JEDI_SRC` as our source directory and :code:`$JEDI_BUILD` as our build directory.  Feel free to change this as you wish, but just **make sure that your source and build directories are different**. This command should work for most bundles, and in particular when working on a preconfigured HPC or AWS instance. The ecbuild command may take several minutes to run.
 
 In case :code:`cmake` is picking up the wrong :code:`python3` interpreter, an optional argument to the :code:`ecbuild` command can be used to specify the correct :code:`python3` interpreter during the build process. When using the modules provided by :code:`spack-stack`, the argument :code:`-DPython3_EXECUTABLE=${python_ROOT}/bin/python3` will guarantee that the spack-stack :code:`python3` interpreter is getting used. A similar method can be used to point to another :code:`python3` installation.
 

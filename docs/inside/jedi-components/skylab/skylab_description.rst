@@ -1,8 +1,10 @@
+.. _skylab-experiment-description:
+
 SkyLab experiments: Parameters and description
 ==============================================
 
 This page describes which parameters are available in SkyLab experiments, and the implementation
-of the four flagship experiments ran by the JSCDA team. You can see results from these on
+of the four flagship experiments developed and run by the JSCDA team. You can see results from these on
 the `JCSDA SkyLab website <https://skylab.jcsda.org/>`_.
 
 Experiment configuration
@@ -23,6 +25,8 @@ The experiment yaml has to contain the following information:
 
     workdir: # path to tmp work directory
     flowdir: # path to tmp scripts directory
+
+    build_jedi: # Optional, use `True` to build jedi during the experiment (default; will use your $JEDI_SRC)
 
     suite: # Choice between including path to `cyclingDA.py`, `skylab.py` (full DA), `hofx.py`, `forecast.py`..
     model: # Choice between `qg`, `mpas`, `gfs`, `gfs_aero`, `geos_cf`, `ufs`..
@@ -87,7 +91,7 @@ The experiment yaml has to contain the following information:
       type: metplus        # 'metplus' or 'basic'
       verif_grid: G002     # if type is metplus, can select evaluation on which grid definition, GXXX
                            # (more info https://www.nco.ncep.noaa.gov/pmb/docs/on388/tableb.html)
-      grid_stat_template: !ENV ${JEDI_SRC}/skylab/eval/metplus/GridStat.conf.IN  # the template to run GridStat in METplus
+      grid_stat_template: !ENV ${JEDI_WORKFLOW}/skylab/eval/metplus/GridStat.conf.IN  # the template to run GridStat in METplus
 
 Retrieving experiment configuration
 -----------------------------------
@@ -124,9 +128,9 @@ And adding the line ``print(yaml_text)`` to the script would return the configur
   workdir: !ENV ${EWOK_WORKDIR}
   flowdir: !ENV ${EWOK_FLOWDIR}
 
-  suite: !ENV ${JEDI_SRC}/ewok/src/ewok/suites/cyclingDA.py
+  suite: !ENV ${JEDI_WORKFLOW}/ewok/src/ewok/suites/cyclingDA.py
   model: l95
-  model_path: !ENV ${JEDI_SRC}/skylab/models/l95
+  model_path: !ENV ${JEDI_WORKFLOW}/skylab/models/l95
   init_cycle: 2020-01-01T00:00:00Z
   last_cycle: 2020-01-01T18:00:00Z
   step_cycle: PT6H
@@ -141,24 +145,24 @@ And adding the line ``print(yaml_text)`` to the script would return the configur
   forecast_length: P2D
   forecast_output_frequency: PT3H
 
-  GEOMETRY: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/resol.yaml
-  MODEL: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/model.yaml
+  GEOMETRY: !INCLUDE ${JEDI_WORKFLOW}/skylab/models/l95/defaults/resol.yaml
+  MODEL: !INCLUDE ${JEDI_WORKFLOW}/skylab/models/l95/defaults/model.yaml
 
   cost_function: 4D-Var
-  AN_VARIABLES: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/an_variables.yaml
+  AN_VARIABLES: !INCLUDE ${JEDI_WORKFLOW}/skylab/models/l95/defaults/an_variables.yaml
 
-  BACKGROUND_ERROR: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/bstatic.yaml
+  BACKGROUND_ERROR: !INCLUDE ${JEDI_WORKFLOW}/skylab/models/l95/defaults/bstatic.yaml
 
   OBSERVATIONS:
-  - !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/obs.yaml
+  - !INCLUDE ${JEDI_WORKFLOW}/skylab/models/l95/defaults/obs.yaml
 
-  JC: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/jc.yaml
-  MINIMIZER: !INCLUDE ${JEDI_SRC}/skylab/algorithms/drplanczos.yaml
+  JC: !INCLUDE ${JEDI_WORKFLOW}/skylab/models/l95/defaults/jc.yaml
+  MINIMIZER: !INCLUDE ${JEDI_WORKFLOW}/skylab/algorithms/drplanczos.yaml
 
   ninner: 10
   reduc: 1.0e-5
-  MIN_GEOMETRY: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/resol.yaml
-  LINEAR_MODEL: !INCLUDE ${JEDI_SRC}/skylab/models/l95/defaults/tlm.yaml
+  MIN_GEOMETRY: !INCLUDE ${JEDI_WORKFLOW}/skylab/models/l95/defaults/resol.yaml
+  LINEAR_MODEL: !INCLUDE ${JEDI_WORKFLOW}/skylab/models/l95/defaults/tlm.yaml
 
 More information on R2D2 can be found in the
 `R2D2 README <https://github.com/JCSDA-internal/r2d2?tab=readme-ov-file#research-repository-for-data-and-diagnostics-r2d2>`_.
@@ -221,7 +225,7 @@ The :code:`lon_gridlines` and :code:`lat_gridlines` lists manually set the gridl
 in the plot. :code:`data_range` is similar to :code:`image_extent`, except this is (1) what will be used
 to slice out the data for your region out of the global data set (so that the histogram & colorbar only
 include data from your chosen region) and (2) expects longitudes in the range [0, 360). The entries in
-:code:`image_extent` and :code:`data_range` should *nearly* correspond to eachother; the longitude bounds in
+:code:`image_extent` and :code:`data_range` should *nearly* correspond to each other; the longitude bounds in
 :code:`data_range` will likely need extend a little beyond the ones in :code:`image_extent` so that the plotted
 data fills your entire plot window. When running an experiment, leave the :code:`plot_region: conus` line in
 the plot configuration yaml.
@@ -249,7 +253,7 @@ can run them on a local machine (look for :code:`experiment-name-small.yaml`).
 -------------------
 
 The :code:`skylab-aero` experiment runs an EDA with 3 members at a c96 resolution, for 17 days
-in August 2021. At the moment it is non cycling and running the ID model (as a placeholder for
+in August 2021. At the moment it is non-cycling and runs the ID model (as a placeholder for
 future gfs-aero model integration).
 It is using a static B and a 3D-Var cost function. The four instruments being assimilated are:
 
