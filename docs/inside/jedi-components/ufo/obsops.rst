@@ -364,7 +364,7 @@ Yaml options are defined in :code:`ufo/operators/columnretrieval/ObsColumnRetrie
 * :code:`stretchVertices`: String, optional and default value is None. This option allows top and/or bottom retrieval vertices to match the geovals top of the atmosphere and/or surface pressure vertices. Options are: top, bottom, topbottom and none (default).
 * :code:`model units coeff`: Double, optional and default is 1.0. It adds a conversion factor if background geovals values are not in the correct required unit: **dry volume mixing ratio** which is **mol of molecule considered per mol of dry air**
 * :code:`totalNoVertice`: Boolean, optional and default is false. This option, if set to true, is valid if :code:`isAveragingKernel` is false and :code:`nlayers_retrieval` is 1. This then calculates the total column with all the geovals level values using all the pressure ranges. No pressure vertice information is needed.
-
+* :code:`tropopause pressure`: Force the tropopause level when the observation product tropopause level could be above the chemical tropopause. Unit is in Pa and default value is 0 (top of the atmosphere).
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -411,7 +411,7 @@ Example of using NO2 TropOMI retrievals. Here the averaging kernel function is u
     isAveragingKernel: true
     stretchVertices: topbottom
     model units coeff: 1e-6 # ppmv to ppv
-
+    tropopause pressure: 25000
 
 Example of using CO MOPITT retrievals. Here the :code:`aprioriTerm` is added.
 
