@@ -4,8 +4,9 @@ Write Fields
 ============
 
 The :code:`write fields` block writes the content of an :code:`oops::FieldSet3D`
-to a NetCDF file. This block will not have any other affect on the
-:code:`oops::FieldSet3D` passed through it.
+to a NetCDF file. It can also output a Gmsh file if the fieldSet is on a
+:code:`NodeColumns` or :code:`StructuredColumns` functionspace. This block will
+not have any other affect on the :code:`oops::FieldSet3D` passed through it.
 
 Writing the contents of a :code:`oops::FieldSet3D` can be a useful debugging tool,
 and this feature is also used in spectral applications to write out ensemble members
@@ -26,7 +27,8 @@ Example :code:`write fields` block:
 .. code-block:: yaml
 
   saber block name: write fields
-    # save netCDF file: True       # (OPTIONAL) parameter with default of 'True'
+    # save netCDF file: True       # (OPTIONAL) with default of 'True'
+    # save GMSH file: False        # (OPTIONAL) with default of 'False'
     # field names: {fld1, fld2}    # (OPTIONAL) list of fields to write out.
                                    # If not present, all fields get written
     output path: </path/to/output> # (REQUIRED) path to directory where
