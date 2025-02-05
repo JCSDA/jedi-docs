@@ -1,6 +1,17 @@
 # jedi-docs
 
-This repository is for all [JEDI documentation](https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com) that doesn't have a logical home in a code repository.
+This is the [JEDI documentation](https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com) repository for users and developers of JEDI.
+
+To make updates:
+1. Edit docs directly in github by clicking the "pen" icon on an already
+   existing page. This is best for making small edits/additions/changes.
+   When ready, make a Pull Request by clicking the green "Commit changes..."
+   button.
+2. Clone the repository, make a branch, and commit/push your changes. This
+   is recommended for larger changes (like adding new pages). Please test
+   the changes in your branch before making a Pull Request (see section on
+   [Testing updates](#testing-updates) since the build will catch more errors
+   & warnings than the CI especially on equation and code-block rendering.
 
 ## Testing updates
 
@@ -13,7 +24,7 @@ make html
 open _build/html/index.html
 ```
 
-## Writing documentation
+## Tips on writing documentation
 
 The jedi-docs are written in reStructuredText (reST) markup plaintext files and are
 built by [Sphinx](https://www.sphinx-doc.org/en/master/). For an introduction and
