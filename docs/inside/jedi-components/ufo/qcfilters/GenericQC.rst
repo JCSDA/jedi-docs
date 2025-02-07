@@ -198,10 +198,9 @@ Bayesian Background check currently only works for single-level observations, no
 Bayesian Background QC Flags filter
 -----------------------------------
 
-The Bayesian Background QC Flags filter sets Met Office OPS QC flags based on values of probability of gross error (PGE).
+The Bayesian Background QC Flags filter sets diagnostic flags based on values of probability of gross error (PGE).
 This filter should be invoked after any other filters which modify PGE, such as the Bayesian background check and the buddy check, have been run.
 If the PGE is larger than a chosen threshold then the observation is rejected by setting flags at the observation location.
-Eventually the Met Office QC flags will be replaced with Diagnostic Flags, but the core functionality will remain the same.
 
 The following filter parameters can be set:
 
@@ -258,8 +257,8 @@ For each filter variable, the following groups must be available from the ObsSpa
 * :code:`GrossErrorProbability/`: the latest value of GrossErrorProbability,
 * :code:`GrossErrorProbabilityInitial/`: the initial value of GrossErrorProbability before updates by any other filter, which can be saved using the Variable Assignment filter,
 * :code:`GrossErrorProbabilityTotal/`: the total (combined) probability distribution, which is optionally saved the Bayesian Background Check filter,
-* :code:`QCFlags/`: Met Office QC flags, which will eventually be replaced with Diagnostic Flags, must be initialized before this filter.
-      
+* :code:`DiagnosticFlags/BackgroundCheckRejection/`: the :code:`BackgroundCheckRejection` diagnostic flags must be initialized before this filter.
+
 Additionally, the prior probability of gross error applying to the whole report must be available from :code:`MetaData/grossErrorProbabilityReport`. 
 
 Example:
