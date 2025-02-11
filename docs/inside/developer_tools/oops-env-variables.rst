@@ -86,4 +86,20 @@ For example:
 
 Note that this doesn't work with :code:`ctest` commands.
 
-Other debugging tools and more information about the use of these variables is available here: :doc:`Unit testing </inside/testing/unit_testing>`
+Other debugging tools and more information about the use of these variables is available here: :ref:`jedi-testing`.
+
+Turn on Parameter validation
+----------------------------
+
+An :code:`eckit::Configuration` object can be converted to an :code:`oops::Parameter` object in the code allowing for validation of the settings. When an :code:`oops::Parameter` object is
+used in a class the :code:`validateAndDeserialize` option is often called.  In this routine the :code:`eckit::Configuration` is deserialized to create the :code:`oops::Parameter`
+object and the configuration is validated using a JSON (JavaScript Object Notation) schema. The validation is turned on and off using an environment variable called 
+:code:`VALIDATE_PARAMETERS`. By default this is set to zero and therefore the validation is not performed. In order to make the
+validation active the option needs to be set to a none zero value e.g.
+
+.. code-block:: bash
+
+    export VALIDATE_PARAMETERS=1  # Will turn on the validation where used.
+
+This has been turned off by default because validation can prove expensive when repetitive validation occurs such-as when a large numbers of filters
+are used in an ensemble data assimilation run.
