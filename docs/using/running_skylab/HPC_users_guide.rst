@@ -51,7 +51,7 @@ HPCs using SBATCH: Orion, Discover, Hera, and S4
    export HDF5_USE_FILE_LOCKING=FALSE
 
    cd <path-to-bundle-build-directory>
-   ctest -E get_
+   ctest
 
    exit 0
 
@@ -127,7 +127,7 @@ The following is a sample batch script to run the remaining unit tests.  Note th
     cd <build-directory>
 
     # now run ctest
-    ctest -E get_
+    ctest
 
 System Specific Information
 ---------------------------
@@ -202,7 +202,7 @@ For Intel, when using :code:`ecbuild`, use:
 
    ecbuild -DMPIEXEC_EXECUTABLE="/usr/local/intel/oneapi/2021/mpi/2021.5.0/bin/mpirun" -DMPIEXEC_NUMPROC_FLAG="-np"
 
-Run the :code:`get_` ctests also on the login-node, but run the rest of the tests interactively on a compute node using the :code:`salloc` command as described in the documentation below or using :ref:`SBATCH <sbatch>`. It will take about an hour and a half to run the tests, so be sure to request at least 90 minutes for the interactive job. FYI, it will likely take a while for the request for the interactive session to be granted.
+Run the tests interactively on a compute node using the :code:`salloc` command as described in the documentation below or using :ref:`SBATCH <sbatch>`. It will take about an hour and a half to run the tests, so be sure to request at least 90 minutes for the interactive job. FYI, it will likely take a while for the request for the interactive session to be granted.
 
 **GNU build**
 
