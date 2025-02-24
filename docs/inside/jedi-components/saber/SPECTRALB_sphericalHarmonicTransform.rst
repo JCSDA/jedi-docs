@@ -14,7 +14,7 @@ This block performs the following:
 Requirements
 ~~~~~~~~~~~~
 
-This SABER block uses ECMWF libraries `Atlas`, `ectrans` and `fiat` and requires them to work.
+This SABER block uses ECMWF libraries ``Atlas``, ``ectrans`` and ``fiat`` and requires them to work.
 
 Both the SABER block and the ECMWF libraries have been written to run in MPI and OpenMP contexts.
 
@@ -41,36 +41,37 @@ This transforms spectral fields onto a Gaussian mesh.  Note that the resolution 
 
 The highest total wavenumber represented in the spectral space is currently fixed to :math:`2 N - 1` where :math:`N` is the Gaussian resolution. Formally the spherical harmonic transform can support total wavenumbers up to :math:`2 N`. However, only :math:`2 N - 1` are exact. Also the transformation from spectral fields to horizontal winds require a maximum of :math:`2 N - 1`, due to using a recursive formula for calculating the derivative of Legendre polynomials.
 
-For active variables that are neither `eastward_wind` nor `northward_wind`, the standard scalar inverse spherical harmonic transform is used [#f2]_. Scientific details are explained in more detail in section `Analytical representation 2`.
+For active variables that are neither ``eastward_wind`` nor ``northward_wind``, the standard scalar inverse spherical harmonic transform is used [#f2]_. Scientific details are explained in more detail in section :ref:`inverse-spec-trans`.
 
-For the horizontal wind components the spectral Helmholtz decomposition formula is used in conjunction with the standard scalar inverse spherical harmonic transform. In that case the active variables needs to include either `streamfunction` and `velocity_potential` or `vorticity` and `divergence`. The spectral fields of those variables need to be available from the the SABER block that is either the central block or one step closer to the central block [#f3]_.
+For the horizontal wind components the spectral Helmholtz decomposition formula is used in conjunction with the standard scalar inverse spherical harmonic transform. In that case the active variables need to include either ``streamfunction`` and ``velocity_potential`` or ``vorticity`` and ``divergence``. The spectral fields of those variables need to be available from the the SABER block that is either the central block or one step closer to the central block [#f3]_.
 
-Further scientific details are given in section `Analytical representation 3`.
+Further scientific details are given in section :ref:`inverse-vector-trans`.
 
 
 Overview of the ``multiplyAD`` method
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As this is the adjoint of the `multiply` method, it is somewhat similar in nature, but the steps are reversed. It transforms the data from a grid-point Gaussian mesh to spectral space and uses the adjoint of the scalar inverse spherical harmonic transform [#f4]_.
+As this is the adjoint of the ``multiply`` method, it is somewhat similar in nature, but the steps are reversed. It transforms the data from a grid-point Gaussian mesh to spectral space and uses the adjoint of the scalar inverse spherical harmonic transform [#f4]_.
 
-When the outer active variables include `eastward_wind`, `northward_wind` the adjoint of the inverse spherical harmonic transform is used with the adjoint of a spectral Helmholtz decomposition transformation [#f5]_.
+When the outer active variables include ``eastward_wind``, ``northward_wind`` the adjoint of the inverse spherical harmonic transform is used with the adjoint of a spectral Helmholtz decomposition transformation [#f5]_.
 
 Overview of the ``leftInverseMultiply`` method
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This uses the direct spherical harmonic transform that converts fields on a Gaussian mesh onto a spectral space [#f6]_.
 
-When the outer active variables include `eastward_wind`, `northward_wind` the inverse of the spectral Helmholtz decomposition is used with the direct spherical harmonic transform [#f7]_.
+When the outer active variables include ``eastward_wind``, ``northward_wind`` the inverse of the spectral Helmholtz decomposition is used with the direct spherical harmonic transform [#f7]_.
 
-Further details are given in section `Analytical representation 4`.
+Further details are given in section :ref:`direc-trans`.
 
+.. _LegendrePolys:
 
-Analytical representation 0: Total, meridional wavenumber and normalised Legendre Polynomials
+Analytical representation 0: Total, meridional wavenumber and normalized Legendre Polynomials
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The spherical harmonic formulation considers a triangular truncation of zonal and meridional complex spectral coefficients.
 
-Imagine a Gaussian mesh with :math:`Resolution=2` e.g. `F2`. Then the spectral truncation is :math:`N = 2 * Resolution-1` which equal :math:`3` in this case.
+Imagine a Gaussian mesh with ``Resolution=2`` e.g. ``F2``. Then the spectral truncation is ``N = 2 * Resolution-1`` which equal :math:`3` in this case.
 
 The triangular truncation can be visualised by the diagram below:
 
@@ -92,7 +93,7 @@ Spherical harmonics :math:`Y^m_n (\theta, \lambda)`, where :math:`\theta` is the
 
 - complex exponent :math:`e^{i m \lambda}`
 - an associated Legendre polynomial of degree :math:`n` and order :math:`m` i.e.  :math:`P^m_n (\sin \theta)`,
-- and a normalisation coefficient  :math:`s^m_n`
+- and a normalization coefficient  :math:`s^m_n`
 
 i.e.
 
@@ -100,27 +101,29 @@ i.e.
 
   Y^m_n (\lambda, \theta) = s^m_n P^m_n (\sin \theta) e^{i m \lambda}
 
-Henceforth in this note we will consider the `normalised associated Legendre polynomial`, denoted by :math:`\tilde{P^m_n} = s^m_n P^m_n`.
+Henceforth in this note we will consider the `normalized associated Legendre polynomial`, denoted by :math:`\tilde{P^m_n} = s^m_n P^m_n`.
 
 
 A few notes:
 
-(1) The normalisation is defined as in `Belousov 1962, p.5 eq.8` such that
+(1) The normalization is defined as in `Belousov 1962, p.5 eq.8` such that
 
 .. math::
 
   \int_{-1}^{1} \biggl( \tilde{P^m_n} \biggr)^2 \mathrm{d}[\sin{\theta}] = 1
 
-and the normalisation coefficient is effectively
+and the normalization coefficient is effectively
 
 .. math::
 
   s^m_n = \sqrt{\frac{2n+1}{2\pi}\frac{(n-m)!}{(n+m)!}}.
 
 
-(2) The Condon-Shortley phase term (Condon, 1970) is not included in the normalised associated Legendre Polynomial :math:`\tilde{P^m_n}`.
+(2) The Condon-Shortley phase term (Condon, 1970) is not included in the normalized associated Legendre Polynomial :math:`\tilde{P^m_n}`.
 
-(3) The normalised associated Legendre Polynomials for :math:`m=0` and :math:`m=1` are calculated using the Newton-Raphson method. The other normalised Legendre Polynomials are calculated recursively (Wedi, 2013).
+(3) The normalized associated Legendre Polynomials for :math:`m=0` and :math:`m=1` are calculated using the Newton-Raphson method. The other normalized Legendre Polynomials are calculated recursively (Wedi, 2013).
+
+.. _spec-trans:
 
 Analytical representation 1: The direct spherical harmonic transform
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -140,7 +143,7 @@ For each :math:`m` a Gaussian quadrature is employed to get the spectral coeffic
 
   (a+bi)^m_n = \sum_{k=1}^{k=K} w_k \xi^m (x_k) \tilde{P^m_n} (x_k)
 
-where :math:`w_k` is a Gaussian weight at the :math:`k^{\text{th}}` Gaussian latitudes. Gaussian latitudes are where the roots of the normalised associated Legendre polyomials are 0 for :math:`P^0_N`.
+where :math:`w_k` is a Gaussian weight at the :math:`k^{\text{th}}` Gaussian latitudes. Gaussian latitudes are where the roots of the normalized associated Legendre polynomials are 0 for :math:`P^0_N`.
 
 The Gaussian weights are calculated as in Swatztrauber (2002), namely from
 
@@ -148,7 +151,9 @@ The Gaussian weights are calculated as in Swatztrauber (2002), namely from
 
   w_k = \frac{2 N + 1} { [\tilde{P}^{m=1}_N (\sin \theta) ] ^2 }
 
-The Gaussian weights are equal to the ratio of surface area segments that are associated with each Gaussian latitude to the surface area of the sphere. So the sum of the Gaussian weights across all Gaussian latitudes will sum to 1. This is different to the standard textbook set of weights which are typically twice as large (but then use a different normalisation for the normalised associated Legendre polynomials).
+The Gaussian weights are equal to the ratio of surface area segments that are associated with each Gaussian latitude to the surface area of the sphere. So the sum of the Gaussian weights across all Gaussian latitudes will sum to 1. This is different to the standard textbook set of weights which are typically twice as large (but then use a different normalization for the normalized associated Legendre polynomials).
+
+.. _inverse-spec-trans:
 
 Analytical representation 2: The inverse spherical harmonic transform
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -161,12 +166,12 @@ The inverse transform is defined as (Wedi, 2013)
 
 Note that the actual code does not use this formulation, but takes numerous shortcuts to the same result.
 
-
+.. _inverse-vector-trans:
 
 Analytical representation 3: The inverse spherical harmonic transform for horizontal winds
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This section explains the transformations that convert the horizontal spectral `vorticity` and `divergence` to horizontal wind components on the Gaussian mesh [#f8]_.
+This section explains the transformations that convert the horizontal spectral ``vorticity`` and ``divergence`` to horizontal wind components on the Gaussian mesh [#f8]_.
 
 A spectral equivalent version of the 2D Helmholtz equation is used for this.
 
@@ -197,15 +202,16 @@ The actual wind components are calculated by dividing by :math:`\cos \theta`.
   u &= \frac{1}{\cos \theta} U \\
   v &= \frac{1}{\cos \theta} V 
 
+.. _direct-trans:
 
 Analytical representation 4: The direct spherical harmonic transform for horizontal winds
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This section explains the transformation from horizontal wind components on the Gaussian mesh to the spectral `vorticity` and `divergence` fields [#f9]_.
+This section explains the transformation from horizontal wind components on the Gaussian mesh to the spectral ``vorticity`` and ``divergence`` fields [#f9]_.
 
 The input to this transformation comprises the zonal and meridional wind components which are stored in a single Atlas vector field on a Gaussian mesh. The output is the two-dimensional vorticity and divergence stored as spectral coefficients.
 
-In general the steps are the inverse of `Analytical representation 3`.
+In general the steps are the inverse of :ref:`inverse-vector-trans`.
 
 The trick that is used to solve the former is to scale the grid point wind components (u,v) into two scalar fields (U,V)
 
@@ -241,7 +247,7 @@ Wedi, N. P., M. Hamrud, and G. Mozdzynski, 2013: A Fast Spherical Harmonics Tran
 
 .. rubric:: Footnotes (for developers)
 
-.. [#f1] The Gaussian mesh geometry is passed to the saber block from the ``outerGeometryData`` object when the 'gauss to spectral` SABER block is instantiated.
+.. [#f1] The Gaussian mesh geometry is passed to the saber block from the ``outerGeometryData`` object when the ``gauss to spectral`` SABER block is instantiated.
 
 .. [#f2] The SABER method ``multiplyScalarField`` is used for the inverse spherical harmonic transform. Within this method the Atlas method ``invtrans`` is called which is an interface to the underlying ECMWF spherical harmonic transform code.
 
