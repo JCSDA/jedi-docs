@@ -5,6 +5,9 @@ Observation Functions are more advanced filtering routines that are encapsulated
 a unit. They usually combine several complicated logic operations, and decomposing these
 filters into separate parts would have an obfuscating effect.
 
+:ref:`Arithmetic <Arithmetic>`
+  Perform a variety of mathematical functions on input variables.
+
 :ref:`AssignValueEqualChannels <AssignValueEqualChannels>`
   Assign values to a variable, depending on a value of another (channel-by-channel)
 
@@ -124,6 +127,7 @@ filters into separate parts would have an obfuscating effect.
 
 :ref:`ObsFunctionLinearCombination <ObsFunctionLinearCombination>`
   Compute linear combination of given variables weighted by given coefficients.
+  This ObsFunction name is deprecated but has been retained for backwards compatibility. Please use :code:`Arithmetic` instead.
 
 :ref:`ObsFunctionSelectStatistic <ObsFunctionSelectStatistic>`
   Output all 0's, except for 1 in locations corresponding (or closest) to the minimum, maximum, median or mean of the input variable within each record.
@@ -185,6 +189,7 @@ filters into separate parts would have an obfuscating effect.
 .. toctree::
    :hidden:
 
+   Arithmetic
    AssignValueEqualChannels
    BennartzScatIndex
    BgdDepartureAnomaly
