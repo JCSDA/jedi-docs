@@ -2391,3 +2391,78 @@ References
 ^^^^^^^^^^
 
 Simonin, D., Ballard, S.P. and Li, Z. (2014), Doppler radar radial wind assimilation using an hourly cycling 3D-Var with a 1.5 km resolution version of the Met Office Unified Model for nowcasting. Q.J.R. Meteorol. Soc., 140: 2298-2314. https://doi.org/10.1002/qj.2298.
+
+.. _parameter-substitution-filter:
+
+Parameter Substitution filter
+-----------------------------
+
+This filter can be used to run another filter multiple times with selected parameters of that filter varied each time.
+
+The base filter configuration is specified in the :code:`section to repeat` parameter.
+All parameters that the user wishes to substitute must be present in the filter's configuration.
+These parameters can be assigned arbitrary values in this section, but it is recommended
+to use :code:`{}` to signify a parameter that will be substituted.
+For example, to indicate that the parameter :code:`min_horizontal_spacing` will be repeated, the
+user can use the following line:
+
+.. code-block:: yaml
+
+   min_horizontal_spacing: {}
+
+The :code:`repetitions` parameter contains a list of parameters to repeat.
+Each of these parameters is assigned a list of the values that will be used when repeating
+the filter. On the first iteration of the filter, the first value of each parameter is
+substituted into the relevant part of the base filter configuration, and the filter is run.
+The same then occurs for any subsequent repetitions.
+Changes made in an earlier repetition do not carry over to subsequent repetitions.
+
+For example, to indicate that a filter should be run twice, first with its :code:`shuffle`
+parameter set to :code:`true`, and then to :code:`false`, the following syntax should be used:
+
+.. code-block:: yaml
+
+   repetitions:
+   - shuffle:
+     - true
+     - false
+
+It is possible to repeat complex parameters such as a :code:`where` block.
+To ensure a compact and readable yaml, it is recommended to use the 'yaml flow' syntax, e.g.
+
+.. code-block:: yaml
+
+   repetitions:
+   - where:
+     - [{variable: {name: MetaData/superObservation}, is_in: 0}]
+     - [{variable: {name: MetaData/superObservation}, is_in: 1}]
+
+Note the need to use :code:`[{` and :code:`}]` around the values of interest.
+
+Exceptions are thrown in the following circumstances:
+* Attempting to replace an invalid filter parameter.
+* Specifying an inconsistent number of repetitions for different parameters.
+
+An example yaml is as follows:
+
+.. code-block:: yaml
+
+   - filter: Parameter Substitution
+     section to repeat:
+       filter: Poisson Disk Thinning
+       min_horizontal_spacing: {}
+       exclusion_volume_shape: ellipsoid
+       shuffle: {}
+     repetitions:
+     - min_horizontal_spacing:
+       - { "0": 2000, "1": 1000 }
+       - { "0": 3000, "1": 2000 }
+       - { "0": 4000, "1": 3000 }
+     - shuffle
+       - true
+       - false
+       - true
+
+In this case, the :code:`Poisson Disk Thinning` filter is run three times; each time
+different values of :code:`min_horizontal_spacing` and :code:`shuffle` are used.
+The :code:`exclusion volume shape` parameter remains the same each repetition.
