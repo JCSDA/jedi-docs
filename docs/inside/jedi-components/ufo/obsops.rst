@@ -1573,9 +1573,37 @@ In the example above H(x) will be calculated as :math:`H(x) = \log_2(x)` where :
 
 In the example above, the :code:`Logarithm` operator is applied to the horizontal visibility variable with base 10; the :code:`VertInterp` operator is applied to the wind components.
 
-
-In situ particulate matter (PM) operator
+Generic particulate matter (PM) operator
 ----------------------------------------
+
+This operator performs a simple vertical interpolation from PM geovals using the :code:`VertInterp` operator. Those geovals can be extracted directly from model outputs or from vader transforms to obtain PM values. See the vader documentation.
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  obs operator: 
+    name: VertInterp 
+    observation alias file: test/testinput/obsop_name_map.yaml
+    vertical coordinate: height 
+    observation vertical coordinate: height 
+    observation vertical coordinate group: MetaData
+
+Alias obsop_name_map.yaml
+
+.. code-block:: yaml
+
+  - name: particulatematter2p5Surface 
+    alias: mass_density_of_particulate_matter_2p5_in_air
+
+CMAQ particulate matter (PM) operator (**deprecated**)
+------------------------------------------------------
+
+Warning:
+^^^^^^^^
+
+**This operator is model specific and is breaking the UFO paradigm of model genericity. An alternative has been implemented using variable transform using Vader capabilities. Please refer to this the Vader part of the documentation for more details. This operator will be removed from the JEDI code at some point.**
 
 Description:
 ^^^^^^^^^^^^
