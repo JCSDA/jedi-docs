@@ -59,6 +59,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`FillAveragedProfileData <FillAveragedProfileData>`
    Copy values from an observed atmospheric profile to the same profile averaged onto model levels.
 
+:ref:`GeoCloudCreateCloudColumn <GeoCloudCreateCloudColumn>`
+   Create cloud fraction column on model levels for GeoCloud observation type
+
 :ref:`HydrometeorCheckAMSUA <HydrometeorCheckAMSUA>`
   AMSU-A cloud and precipitation checks
 
@@ -207,6 +210,7 @@ filters into separate parts would have an obfuscating effect.
    DrawObsErrorFromFile
    DrawValueFromFile
    FillAveragedProfileData
+   GeoCloudCreateCloudColumn
    HydrometeorCheckAMSUA
    HydrometeorCheckATMS
    InterChannelConsistencyCheck
