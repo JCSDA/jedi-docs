@@ -1853,6 +1853,49 @@ Cotton, J., 2018. Update on surface wind activities at the Met Office.
 Proceedings for the 14 th International Winds Workshop, 23-27 April 2018, Jeju City, South Korea.
 Available from http://cimss.ssec.wisc.edu/iwwg/iww14/program/index.html.
 
+SfcCorrected
+---------------------------------------
+
+Description:
+^^^^^^^^^^^^
+This forward operator contains three schemes to correct the computation of surface variables at a location for the discrepancy in model topography
+at the observation location. 
+
+To note:
+* Currently the 2m temperature using the WRFDA and UKMO method for the forward operators are the only ones implemented. 
+* The non-linear operators have not been implemented for any of the operators yet and in a variational application 
+the `Linear` operator can be used in most cases.
+* The geopotential height conversion has not yet been implemented. 
+
+This is the start of having a single operator for surface height corrections which can be used for all surface variables.
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+* variable - list of variables to be simulated which must be a subset of the simulated variables in the ObsSpace.
+* geovar_geomz - model variable for height of vertical levels. Geopotential heights will be converted to height above mean sea level.
+* geovar_sfc_geomz - model variable for surface height. Geopotential heights will be converted to height above mean sea level.
+* station_altitude - variable in the ObsSpace which will be used for the staion height of the observation.
+* correction shceme to use - the scheme to use to correct the variable.  Currently available are 'WRFDA', 'UKMO' and 'GSL'.
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+.. code-block:: yaml
+
+  observations:
+    observers:
+    - obs space:
+      name: Surface operator 2M temperature WRFDA method
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/surface_tquv_obs_2022052700.nc4
+      simulated variables: [airTemperatureAt2M]
+    obs operator:
+      name: SfcCorrected
+      correction scheme to use: WRFDA
+    linear obs operator:
+      name: Identity
+
 SfcPCorrected
 ---------------------------------------
 
