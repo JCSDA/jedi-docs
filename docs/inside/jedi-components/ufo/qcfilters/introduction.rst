@@ -42,7 +42,25 @@ Most filters are written once and used with many observation types; several such
         threshold: 3.0
 
 An alternative to using :code:`obs filters` is to specify the sequence of filters explicitly using the :code:`obs pre filters`, :code:`obs prior filters`
-and :code:`obs post filters` options. Further information on that can be found in the following section.
+and :code:`obs post filters` options. Further information on those options can be found below.
+
+
+QCmanager and Final Check
+-------------------------
+
+Two filters, :code:`QCmanager` and :code:`Final Check`, are always run if at least one filter has been configured.
+
+The :code:`QCmanager` performs the following steps:
+
+* Before any other filters have run, assigns the :code:`missing` QC flag to any observed or derived variables that have missing observations.
+* Prints a summary of QC decisions and diagnostic flags at the end of the application run. (This is achieved by calling the :code:`print` function in the filter destructor.)
+
+The :code:`Final Check` performs the following steps after all other filters have run:
+
+* Ensures any variables marked as :code:`derived` are present in either the :code:`ObsValue` or :code:`DerivedObsValue` groups.
+* All observations that have not yet been rejected but have missing error estimates are assigned the :code:`missing` QC flag.
+* All observations that have been processed but are not going to be assimilated are assigned the :code:`processed` QC flag.
+
 
 Order of Filter Application
 ---------------------------
@@ -64,6 +82,8 @@ Checks are run on the filters to ensure they are not requesting data that are no
 For example, a filter in the :code:`obs pre filters` section cannot request HofX data. If such a request is made then an exception will be thrown.
 
 It is not possible to mix automatic and explicit ordering; an exception will be thrown in that case.
+
+Note that the :code:`QCmanager` is always run first, and the :code:`Final Check` is always run last, irrespective of the choice of automatic or explicit filter ordering.
 
 
 Examples
