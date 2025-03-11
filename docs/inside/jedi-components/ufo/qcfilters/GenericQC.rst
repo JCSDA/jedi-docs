@@ -1812,7 +1812,7 @@ The following are the options contained in the :code:`surface emissivity` sectio
 * :code:`EmissSeaDefault`:  the default emissivity value to use over sea surface types. Default: :code:`0.0`.
 * :code:`EmissLandDefault`:  the default emissivity value to use over land surface types. Default: :code:`0.95`.
 * :code:`EmissSeaIceDefault`:  the default emissivity value to use over seaice surface types. Default: :code:`0.92`.
-* :code:`group in obs space`:  the group in the :code:`ObsSpace` where the :code:`emissivity` (and :code:`emissivityError` if requested) are read from.  This is relevant for the :code:`readfromdb` and :code:`readfromdbwitherror` types.
+* :code:`group in obs space`:  the group in the :code:`ObsSpace` where the :code:`emissivity` (and :code:`emissivityError` if requested) are read from.  This is relevant for the :code:`readfromdb`, :code:`readfromdbwitherror` and (when :code:`obs options.UseSurfaceEmissivityAtlas` is true) :code:`principalcomponent` types.
 * :code:`EmisEigVecPath`:  the filename for the eigenvector file needed when the :code:`type` is :code:`principalcomponent`.
 * :code:`EmisAtlas`:  the filename for the emissivity eigenvector atlas to setup the first values of the emissivity.  This is used with the :code:`principalcomponent` type and is optional.  If this file is not included a first guess value for each channel is available from the file specified by the `EmisEigVecPath`.
 * :code:`mwEmissRetrieval`:  a flag to set the emissivity retrieval as active for the mw instruments.  The b-matrix file must contain entries for this retrieval to work correctly.  Default is :code:`false`.

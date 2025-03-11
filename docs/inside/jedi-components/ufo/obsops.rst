@@ -752,6 +752,9 @@ Optional
 * :code:`obs options.BoundQToSaturation` (boolean, default :code:`true`): Check the humidity profile and surface humidity does not exceed saturation.  If they do then reset to saturation. (requires :code:`SatRad_compatibility` to be true).
 * :code:`obs options.UseRHWaterForQC` (boolean, default :code:`true`): Use liquid water only in the saturation calculation (requires :code:`SatRad_compatibility` and :code:`BoundQToSaturation` to both be set to true).
 * :code:`obs options.UseMinimumQ` (boolean, default :code:`true`): Check the humidity profile and surface humidity is not less than min_q.  If the humidity is then it is reset to min_q.  Where the humidity profile has been reset to zero the Jacobian used in the TL and AD is set the zero. (requires :code:`SatRad_compatibility` to be true).
+* :code:`obs options.UseSurfaceEmissivityAtlas` (boolean, default :code:`false`): Initialise and read a surface emissivity atlas.
+* :code:`obs options.SurfaceEmissivityAtlasName` (string, default :code:`default`): Surface emissivity atlas name, valid options are: UWIREmis, CAMEL, CAMELClim, TELSEM2, CNRM
+* :code:`obs options.SurfaceEmissivityAtlasPath` (string): Surface emissivity atlas relative path
 
 Additionally, each option that may be modified within the RTTOV options structure may be accessed by prefixing :code:`RTTOV_` ahead of the option name, regardless of where it resides within the RTTOV option structure.
 For example, :code:`RTTOV_addrefrac: true` will enable the option within RTTOV to account for atmospheric refraction during the optical depth calculation.
