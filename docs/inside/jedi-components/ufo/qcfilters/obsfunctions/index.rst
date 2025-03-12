@@ -134,9 +134,9 @@ filters into separate parts would have an obfuscating effect.
 
 :ref:`ObsFunctionSelectStatistic <ObsFunctionSelectStatistic>`
   Output all 0's, except for 1 in locations corresponding (or closest) to the minimum, maximum, median or mean of the input variable within each record.
-  
+
 :ref:`ObsFunctionStringManipulation <ObsFunctionStringManipulation>`
-  Perform an operation on a string to change its format i.e slice. 
+  Perform an operation on a string to change its format i.e slice.
 
 :ref:`ObsFunctionVelocity <ObsFunctionVelocity>`
   Compute wind speed from u- and v- components
@@ -173,7 +173,7 @@ filters into separate parts would have an obfuscating effect.
 
 :ref:`SetSurfaceType <SetSurfaceType>`
   Determine and output surface type for use with observation operator
-  
+
 :ref:`SetSeaIceEmiss <SetSeaIceEmiss>`
   Calculate MW emissivity for surfaces classified as Ice by AAPP.
 
@@ -185,6 +185,9 @@ filters into separate parts would have an obfuscating effect.
 
 :ref:`TropopauseHeight <TropopauseHeight>`
   Calculate tropopause height from model fields
+
+:ref:`VisibilityDiagnostic <VisibilityDiagnostic>`
+  Compute a visibility (in meters) given input obs space variables and a set of parameters
 
 :ref:`WindDirAngleDiff <WindDirAngleDiff>`
   Compute wind direction angle different between observation and model
@@ -252,4 +255,5 @@ filters into separate parts would have an obfuscating effect.
    StableLayersCloudTopPressure
    TropopauseEstimate
    TropopauseHeight
+   VisibilityDiagnostic
    WindDirAngleDiff

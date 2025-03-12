@@ -196,6 +196,10 @@ The following method names are available to control :math:`h(T)` in the default 
   The table used here covers temperatures from 183.15 K to 338.15 K in 0.1 K increments.
   The source of the extra values in the table is unclear but has been included to allow exact reproduction of the UKMO OPS code.
 
+- **GoffGratchLandoltBornsteinWater**
+  As above, but with over water for all temperatures.
+  Values are taken from an alternative lookup table from the same source.
+
 - **NCAR**
   Uses Rogers.
 
@@ -323,24 +327,16 @@ Example yaml block
       Method: Sonntag
 
 
------------------------------
-Observation parameters needed
------------------------------
-
-- Relative humidity (:math:`RH`) - The variable name can be configured with the parameter ``relative humidity variable``.
-- Dew point temperature (:math:`T_d`) - Only looked for if a relative humidity variable is not found. The variable name can be configured with the parameter ``dew point temperature variable``.
-- Air temperature (:math:`T`) - The variable name can be configured with the parameter ``temperature variable``.
-- Pressure (:math:`P` reported in :math:`Pa`) - The variable name can be configured with the parameters ``pressure variable`` and ``pressure group variable``. If this variable is empty then the ``pressure at 2m variable`` is used instead: it is looked for in the ``ObsValue`` group.
-
 -------
 Methods
 -------
 
-All methods use the same equations, with the only difference being the formulation used to calculate the saturation vapor pressure from the temperature.
-These methods are the same as those used in the default method family of the :ref:`Relative Humidity <VT-Relative-Humidity>` transform (see :ref:`default method names <VT-_SatVaporPres_fromTemp_Methods>`), with the addition of the following:
+There are once again two sets of methods, those which use the default recipe with varying formulations for calculating the saturation vapor pressure from temperature (:math:`h(T)` above), and the more complex ``UKMOQsatWater`` and ``UKMOQsatIceWater`` methods.
 
-- **UKMO** Uses Sonntag
-- **UKMOmixingratio** Uses GoffGratchLandoltBornsteinIceWater
+Default Recipe
+^^^^^^^^^^^^^^
+
+These use the same equations, with differences being the formulation used to calculate the saturation vapor pressure from the temperature (:math:`h(T)`).
 
 If the relative humidity is supplied as an input, these methods **assume that the relative humidity has been calculated as the ratio of the mixing ratio of water vapor in dry air to the saturation mixing ratio of water vapor in dry air**
 
@@ -348,12 +344,28 @@ If the relative humidity is supplied as an input, these methods **assume that th
 
     RH = \frac{r}{r_\text{sat}}.
 
-----------------
+Method Names for Default Recipe
+"""""""""""""""""""""""""""""""
+
+These methods are the same as those used in the default method family of the :ref:`Relative Humidity <VT-Relative-Humidity>` transform (see :ref:`default method names <VT-_SatVaporPres_fromTemp_Methods>`), with the addition of the following:
+
+- **UKMO** Uses Sonntag for :math:`h(T)`.
+- **UKMOmixingratio** Uses GoffGratchLandoltBornsteinIceWater for :math:`h(T)`.
+
+
+Observation parameters needed
+"""""""""""""""""""""""""""""
+
+- Relative humidity (:math:`RH`) - The variable name can be configured with the parameter ``relative humidity variable``.
+- Dew point temperature (:math:`T_d`) - Only looked for if a relative humidity variable is not found. The variable name can be configured with the parameter ``dew point temperature variable``.
+- Air temperature (:math:`T`) - The variable name can be configured with the parameter ``temperature variable``.
+- Pressure (:math:`P` reported in :math:`Pa`) - The variable name can be configured with the parameters ``pressure variable`` and ``pressure group variable``. If this variable is empty then the ``pressure at 2m variable`` is used instead: it is looked for in the ``ObsValue`` group.
+
 Calculation Used
-----------------
+""""""""""""""""
 
 Relative humidity available
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+'''''''''''''''''''''''''''
 
 If the relative humidity :math:`RH` is available, the saturation vapor pressure :math:`e_\text{sat w/i}` is calculated using the formulation specified by the method
 
@@ -398,7 +410,7 @@ where, since :math:`r = m_\text{water vapor}/m_\text{dry air}`,
 i.e. it is assumed that :math:`m_\text{total air} = m_\text{dry air} + m_\text{water vapor}`.
 
 Relative humidity unavailable
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+'''''''''''''''''''''''''''''
 
 If the dew point temperature (:math:`T_d`) is reported, the vapor pressure and mixing ratio can be calculated directly (i.e. without the need to calculate anything at saturation):
 
@@ -413,6 +425,57 @@ If the dew point temperature (:math:`T_d`) is reported, the vapor pressure and m
     q = r/(1+r).
 
 Note that relative humidity is not used, so no assumptions are made about how it is defined.
+
+
+UKMOQsatWater amd UKMOQsatIceWater Recipe
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These methods **assume that the relative humidity is defined as the ratio of the specific humidity to the saturation specific humidity**
+
+.. math::
+
+    RH = \frac{q}{q_\text{sat}}.
+
+Observation parameters needed
+"""""""""""""""""""""""""""""
+
+- Relative humidity (:math:`RH`) - The variable name can be configured with the parameter ``relative humidity variable``.
+- Air temperature (:math:`T`) - The variable name can be configured with the parameter ``temperature variable``.
+- Pressure (:math:`P` reported in :math:`Pa`) - The variable name can be configured with the parameters ``pressure at 2m variable`` and is looked for inside the ``ObsValue`` group. If this variable is empty then the parameters ``pressure variable`` and ``pressure group variable`` are used instead.
+
+Note that the dew point temperature is not currently supported.
+
+Calculation Used
+""""""""""""""""
+
+The saturation vapor pressure of pure water vapor over water or ice :math:`e_\text{sat w/i}` is calculated at the given temperature
+
+.. math::
+
+    e_\text{sat w/i} = h(T).
+
+If the ``UKMOQsatWater`` method is used, this is calculated using the ``GoffGratchLandoltBornsteinWater`` formulation.
+If the ``UKMOQsatIceWater`` method is used, this is calculated using the ``GoffGratchLandoltBornsteinIceWater`` formulation (see :ref:`default method names <VT-_SatVaporPres_fromTemp_Methods>`).
+
+This is converted to the saturation vapor pressure in moist air :math:`e'_\text{sat w/i}`
+
+.. math::
+
+    e'_\text{sat w/i} = f_\text{w/i}(P, T) e_\text{sat w/i}
+
+where the enhancement factor :math:`f_\text{w/i}` is taken from Eq. A4.6 of Gill (1982) "Atmosphere-Ocean Dynamics".
+
+The saturation specific humidity :math:`q_\text{sat}` is, as in the relative humidity ``UKMOmixingratio`` method, calculated as
+
+.. math::
+
+    q_\text{sat} = \frac{\epsilon \times e'_\text{sat w/i}}{P - (1 - \epsilon) e'_\text{sat w/i}}.
+
+Lastly, the specific humidity :math:`q` is calculated as
+
+.. math::
+
+    q = q_\text{sat} \times \text{RH}.
 
 
 .. _VT-Virtual-Temperature:
