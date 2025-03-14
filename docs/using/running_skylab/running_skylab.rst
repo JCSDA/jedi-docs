@@ -54,21 +54,21 @@ platform you are planning on running JEDI-Skylab on.
   You will need to create or edit your ``~/.aws/config`` and
   ``~/.aws/credentials`` to make sure they contain:
 
-  .. code-block:: bash
+  .. code-block:: ini
     :caption: ~/.aws/config
 
     [default]
     region=us-east-1
 
     # NOAA AWS acct config for the ``jcsda-noaa-aws-us-east-1`` R2D2 Data Hub
-    [jcsda-noaa-aws-us-east-1]
+    [profile jcsda-noaa-aws-us-east-1]
     region=us-east-1
 
     # USAF AWS acct config for the ``jcsda-usaf-aws-us-east-2`` R2D2 Data Hub
-    [jcsda-usaf-aws-us-east-2]
+    [profile jcsda-usaf-aws-us-east-2]
     region=us-east-2
 
-  .. code-block:: bash
+  .. code-block:: ini
     :caption: ~/.aws/credentials
 
     # NOAA AWS acct credentials if default in config is us-east-1
