@@ -295,6 +295,7 @@ The action taken on observations flagged by the filter can be adjusted using the
 * :code:`reject`: observations flagged by the filter are marked as rejected.
 * :code:`accept`: observations flagged by the filter are marked as accepted if they have previously been rejected for any reason other than missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator.
 * :code:`passivate`: observations flagged by the filter are marked as passive.
+* :code:`reduce obs space`: observations flagged by a pre filter (exclusive) will be physically removed from the obs space. The flagged observations will not participate in any future processing, and will not be written out in the output obs space. This option is useful for example for observation thinning, since the memory footprint can be significantly reduced when using it.
 * :code:`inflate error`: the error estimates of observations flagged by the filter are multiplied by a factor. This can be either a constant (specified using the :code:`inflation factor` option) or a variable (specified using the :code:`inflation variable` option).
 * :code:`RONBAMErrInflate`: the previously assigned observation errors are inflated by a factor, replicating the operational GNSS RO NBAM operator. The inflation factor is the square root of the number of observations (those that passed QCs) within two adjacent model layers.
 * :code:`assign error`: the error estimates of observations flagged by the filter are set to a specified value. Again, this can be either a constant (specified using the :code:`error parameter` option) or a variable (specified using the :code:`error function` option).
@@ -559,6 +560,17 @@ Note that any diagnostic flags in the original space that are already set remain
 
 The example above matches up each observation level in the original space of :code:`DerivedObsValue/depthBelowWaterSurface` with its corresponding model level in the extended space of :code:`HofX/depthBelowWaterSurface`; for every unset observation-level flag in :code:`DiagnosticFlags/BayBgCheckReject/salinity` and :code:`DiagnosticFlags/BayBgCheckReject/waterPotentialTemperature`, for which :code:`ObsValue/waterPotentialTemperature` is non-missing (due to the 'where' statement), the flag value at the corresponding model-level overwrites it. Be wary when using 'where' statements with this filter, because the 'where' statement covers all the filter variables listed - any where-excluded locations' flag values remain unchanged.
 
+Example 8: ``reduce obs space`` action
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``reduce obs space`` action can be used in a pre filter to physically remove flagged observations from the obs space, reducing its memory footprint. For example, this action can be used when running the ``Thinning`` filter:
+
+.. code-block:: yaml
+
+    - filter: Thinning
+      amount: 0.75
+      action:
+        name: reduce obs space
 
 Outer Loop Iterations
 ---------------------

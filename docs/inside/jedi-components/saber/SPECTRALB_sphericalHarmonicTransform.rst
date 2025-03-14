@@ -22,7 +22,7 @@ Example yaml
 ~~~~~~~~~~~~
 
 .. code-block:: yaml
- 
+
   saber outer blocks:
   - (...)
   - saber block name: spectral to gauss
@@ -62,7 +62,7 @@ This uses the direct spherical harmonic transform that converts fields on a Gaus
 
 When the outer active variables include ``eastward_wind``, ``northward_wind`` the inverse of the spectral Helmholtz decomposition is used with the direct spherical harmonic transform [#f7]_.
 
-Further details are given in section :ref:`direc-trans`.
+Further details are given in section :ref:`direct-trans`.
 
 .. _LegendrePolys:
 
@@ -205,7 +205,7 @@ The actual wind components are calculated by dividing by :math:`\cos \theta`.
 .. _direct-trans:
 
 Analytical representation 4: The direct spherical harmonic transform for horizontal winds
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This section explains the transformation from horizontal wind components on the Gaussian mesh to the spectral ``vorticity`` and ``divergence`` fields [#f9]_.
 
@@ -217,7 +217,7 @@ The trick that is used to solve the former is to scale the grid point wind compo
 
 .. math::
   U &= (\cos \theta) u \\
-  V &= (\cos \theta) v 
+  V &= (\cos \theta) v
 
 Each :math:`U` and :math:`V` is decomposed into spectral coefficients and treated as if they were scalars.
 
@@ -276,8 +276,4 @@ Wedi, N. P., M. Hamrud, and G. Mozdzynski, 2013: A Fast Spherical Harmonics Tran
 .. [#f8] The Atlas routine ``invtrans_vortdiv2wind`` is the interface to the ECWMF code which calculates the grid point horizontal wind components from the horizontal spectral vorticity and the divergence.
 
 .. [#f9] The Atlas routine ``dirtrans_wind2vortdiv`` is the interface to the ECMWF code which calculates the horizontal spectral vorticity and the divergence from the horizontal wind components on the Gaussian mesh.
-
-
-
-
 
