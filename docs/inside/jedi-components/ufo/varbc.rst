@@ -229,6 +229,23 @@ Example
 
 A predictor equal to one at all locations.
 
+The following option is supported:
+
+* :code:`surface`: Name of the surface type where the predictor will be applied. By default, :code:`all`. The applicable values are
+ 
+   :code:`all`: :code:`1` at all locations;
+   :code:`land only`: :code:`1` over land, :code:`0` elsewhere; 
+   :code:`sea only`: :code:`1` over sea, :code:`0` elsewhere;
+   :code:`land sea mask`: :code:`1` over land, :code:`-1` elsewhere.
+
+Example
+.......
+
+.. code-block:: yaml
+
+  - name: constant
+    surface: land only
+
 `cosine_of_latitude_times_orbit_node`
 +++++++++++++++++++++++++++++++++++++
 
