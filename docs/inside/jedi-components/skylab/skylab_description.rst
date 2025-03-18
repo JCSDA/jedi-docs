@@ -103,10 +103,10 @@ Update `<my_exp_name>` to the experiment id (expid).
 
 .. code-block:: python
 
-  from r2d2 import R2D2Index
-  experiment_index_object = R2D2Index.get(item='experiment', name=<my_exp_name>)
-  yaml_name = experiment_index_object.get_property('yaml_name')
-  yaml_text = experiment_index_object.get_property('yaml_text')
+  import r2d2
+  experiment = r2d2.get(item='experiment', name=<my_exp_name>)
+  yaml_name = experiment['yaml_name']
+  yaml_text = experiment['yaml_text']
 
 Then adding the line ``print(yaml_text)`` to the above script would return the yaml name, such as:
 
@@ -164,8 +164,8 @@ And adding the line ``print(yaml_text)`` to the script would return the configur
   MIN_GEOMETRY: !INCLUDE ${JEDI_WORKFLOW}/skylab/models/l95/defaults/resol.yaml
   LINEAR_MODEL: !INCLUDE ${JEDI_WORKFLOW}/skylab/models/l95/defaults/tlm.yaml
 
-More information on R2D2 can be found in the
-`R2D2 README <https://github.com/JCSDA-internal/r2d2?tab=readme-ov-file#research-repository-for-data-and-diagnostics-r2d2>`_.
+More information on R2D2's client can be found in the
+`R2D2 Client README <https://github.com/JCSDA-internal/r2d2-client>`_.
 
 Plots configuration
 -------------------

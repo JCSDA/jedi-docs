@@ -190,7 +190,7 @@ Supplemental Instructions
 
   If you got to Step 3 above and decided that you will be building JEDI during
   your Skylab experiment. You only need to build the workflow applications
-  needed for the JEDI Skylab Environment which include simobs, solo, r2d2,
+  needed for the JEDI Skylab Environment which include simobs, r2d2-client,
   ewok, skylab, and the related data repositories r2d2-data and static-data.
   This is automated in :code:`jedi-tools/buildscripts/build_workflow_apps.sh`
   script. The default branches are set to develop, but if you need to specify
@@ -211,9 +211,9 @@ Manual Build Guide
 """"""""""""""""
 
 First, you need to load all the modules needed to build jedi-bundle and the
-jedi workflow applications, :code:`solo/r2d2/ewok/simobs/skylab.`
+jedi workflow applications, :code:`r2d2-client/ewok/simobs/skylab.`
 Loading modules only sets up the environment for you. You still need
-to build jedi-bundle, run ctests, install :code:`solo/r2d2/ewok/simobs` and
+to build jedi-bundle, run ctests, install :code:`r2d2-client/ewok/simobs` and
 clone skylab.
 
 Currently we only support Orion, Hercules, Derecho, Discover, S4, and AWS
@@ -294,7 +294,7 @@ From this point, we will use three environment variables:
 
     export JEDI_BUILD=$JEDI_ROOT/build
 
-* :code:`$JEDI_WORKFLOW` which should point to the base directory containing the JEDI-Skylab workflow applications of EWOK, R2D2, SIMOBS, Skylab, and SOLO. (ie :code:`$JEDI_ROOT/jedi-workflow`). Note, you are also able to still place these repos inside :code:`$JEDI_SRC` but make sure :code:`$JEDI_WORKFLOW` still gets set to that location.
+* :code:`$JEDI_WORKFLOW` which should point to the base directory containing the JEDI-Skylab workflow applications of EWOK, R2D2-Client, SIMOBS, and Skylab. (ie :code:`$JEDI_ROOT/jedi-workflow`). Note, you are also able to still place these repos inside :code:`$JEDI_SRC` but make sure :code:`$JEDI_WORKFLOW` still gets set to that location.
 
   .. code-block:: bash
 
@@ -374,19 +374,18 @@ congratulations! You have successfully built JEDI!
   Run :code:`ctest --help` for more information on the test options. For even
   more information, see section :ref:`jedi-testing`.
 
-3 - Clone and install solo/r2d2/ewok/simobs, clone skylab only
+3 - Clone and install r2d2-client/ewok/simobs, clone skylab only
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 We recommend that you use a python3 virtual environment (venv) for
-building :code:`solo/r2d2/ewok/simobs`. As indicated above in the note about
+building :code:`r2d2-client/ewok/simobs`. As indicated above in the note about
 the :code:`$JEDI_WORKFLOW` environment variable, these can be placed in a
 directory your choosing and does not need to be in :code:`$JEDI_ROOT/jedi-bundle`.
 
 .. code-block:: bash
 
   cd $JEDI_WORKFLOW
-  git clone https://github.com/jcsda-internal/solo
-  git clone https://github.com/jcsda-internal/r2d2
+  git clone https://github.com/jcsda-internal/r2d2-client
   git clone https://github.com/jcsda-internal/ewok
   git clone https://github.com/jcsda-internal/simobs
   git clone https://github.com/jcsda-internal/skylab
@@ -397,8 +396,7 @@ repository branches:
 .. code-block:: bash
 
   cd $JEDI_WORKFLOW
-  git clone --branch 1.3.0 https://github.com/jcsda-internal/solo
-  git clone --branch 2.4.0 https://github.com/jcsda-internal/r2d2
+  git clone --branch 3.0.0 https://github.com/jcsda-internal/r2d2-client
   git clone --branch 0.8.0 https://github.com/jcsda-internal/ewok
   git clone --branch 1.6.0 https://github.com/jcsda-internal/simobs
   git clone --branch 8.0.0 https://github.com/jcsda-internal/skylab
@@ -407,9 +405,7 @@ You can then proceed with
 
 .. code-block:: bash
 
-  cd $JEDI_WORKFLOW/solo
-  python3 -m pip install -e .
-  cd $JEDI_WORKFLOW/r2d2
+  cd $JEDI_WORKFLOW/r2d2-client
   python3 -m pip install -e .
   cd $JEDI_WORKFLOW/ewok
   python3 -m pip install -e .
@@ -442,11 +438,11 @@ sample script. Note that these locations are experiment specific, i.e. you can
 run several experiments at the same time, each having their own definition for
 these variables.
 
-The user further has to set two environment variables :code:`R2D2_HOST` and
-:code:`R2D2_COMPILER` in the script. :code:`R2D2_HOST` and
-:code:`R2D2_COMPILER` are required by r2d2 and ewok. They are used to
+The user further has to set four environment variables :code:`R2D2_HOST`,
+:code:`R2D2_COMPILER`, :code:`R2D2_USER`, and :code:`R2D2_API_KEY` in the script.
+These are required by r2d2-client and ewok and are used to
 initialize the location :code:`EWOK_STATIC_DATA` of the static data used by
-skylab and bind r2d2 to your current environment. :code:`EWOK_STATIC_DATA` is
+skylab and call r2d2's REST service to your current environment. :code:`EWOK_STATIC_DATA` is
 staged on the preconfigured platforms. On generic platforms, the script sets
 :code:`EWOK_STATIC_DATA` to :code:`${JEDI_WORKFLOW}/static-data/static`.
 
@@ -469,10 +465,8 @@ server connected.
 """"""""""""""""""""""""""""""""""""""""""""""""
 
 If you are running skylab locally on the MacOS or an AWS single node instance,
-you will also have to set up R2D2. This step should be skipped if you are on any
-other supported platforms. As with the previous step, it is recommended to
-complete these steps inside the python virtual environment that was activated
-above.
+you will also have to set up R2D2's server using a Docker container.
+This step should be skipped if you are on any other supported platforms.
 
 **Clone the r2d2-data Repo**
 
@@ -489,32 +483,13 @@ Create a local copy of the R2D2 data store:
 .. code-block:: bash
 
   mkdir $HOME/r2d2-experiments-localhost
-  cp -R $JEDI_WORKFLOW/r2d2-data/r2d2-experiments-tutorial/* $HOME/r2d2-experiments-localhost
+  cp -R $JEDI_WORKFLOW/r2d2-data/r2d2-experiments-localhost/* $HOME/r2d2-experiments-localhost
 
 
-**Install, Start, and Configure the MySQL Server**
+**Install, Start, and Configure the R2D2 Server**
 
-Execution of R2D2 on MacOS and AWS single nodes requires that MySQL is
-installed, started, and configured properly. For new site configurations
-see the `spack-stack instructions
-<https://spack-stack.readthedocs.io/en/latest/NewSiteConfigs.html#newsiteconfigs>`_
-for the needed prerequisites for macOS, Ubuntu, and Red Hat. Note, if you are
-reading these instructions, it is likely you have already setup the spack-stack
-environment.
-
-You should have installed MySQL when you were setting up the spack-stack
-environment. To check this, enter :code:`brew list` to the terminal and check
-the output for :code:`mysql`.
-
-Follow the directions for setting up the MySQL server found in the R2D2
-tutorial starting at the `Prerequisites for MacOS and AWS Single Nodes Only
-<https://github.com/JCSDA-internal/r2d2/blob/develop/TUTORIAL.md#prerequisites-for-hpc-macos-and-aws-single-nodes>`_
-section. (If the link doesn't work, the directions can be found in the
-:code:`TUTORIAL.md` file in the r2d2 repository).
-
-Note: The command used to set up the the local database should be run from the
-:code:`$JEDI_WORKFLOW/r2d2` directory. And the :code:`r2d2-experiments-tutorial.sql`
-file is in :code:`$JEDI_WORKFLOW/r2d2-data`.
+Execution of R2D2 on MacOS and AWS single nodes requires Docker. Please follow the instructions found in
+https://github.com/JCSDA-internal/r2d2/tree/develop/server/README.md#localhost-docker-with-database.
 
 .. _Run-Skylab:
 
