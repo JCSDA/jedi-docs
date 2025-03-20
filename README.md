@@ -41,8 +41,8 @@ Here are a few important standards to follow when writing (or editing) documenta
    exact location of the handle. Write the pre-rendered link in this format:
    :ref:\`my-handle\`. Typically, the handle should be placed above a title
    or heading in which case the title/heading will appear as the hyperlinked
-   text in the rendered documentation. You may also specify your own text
-   for the hyperlink.
+   text in the rendered documentation. You may also specify your own custom
+   text for the hyperlink with the syntax: :ref:\`CustomText \<my-handle\>\`
 
    Please **do not** link to another page using the relative path to the target
    `.rst` file as files can be moved.

@@ -375,7 +375,7 @@ congratulations! You have successfully built JEDI!
   more information, see section :ref:`jedi-testing`.
 
 3 - Clone and install r2d2-client/ewok/simobs, clone skylab only
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 We recommend that you use a python3 virtual environment (venv) for
 building :code:`r2d2-client/ewok/simobs`. As indicated above in the note about
