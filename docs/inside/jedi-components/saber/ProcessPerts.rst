@@ -1,14 +1,13 @@
 .. _ProcessPerts:
 
+The *ProcessPerts* Application
+==============================
+
 .. toctree::
    :hidden:
 
    SPECTRALB_analyticalFilter.rst
    SPECTRALB_sphericalHarmonicTransform.rst
-
-
-The *ProcessPerts* Application
-==============================
 
 Main idea
 ---------
@@ -103,11 +102,11 @@ The high-pass filtered perturbation :math:`x_h'` is given by the second band, wh
 Main idea (waveband filter mode)
 --------------------------------
 
-The idea here is to allow us to split the increment into more than 2 bands. In the example below there are 3 bands. The split of the bands is done in such a way that if the original increment was on a Gaussian mesh, the variance of that increment will be the sum of the variance of the associated waveband increments. (Even though the wavebands overlap we are assuming that there is no cross-covariance between the waveband increments.) The main switch enforcing this is  `preserving variance: true`.  If you want to do spatial-dependent localization without spectral localization you should set `preserving variance: false`.
+The idea here is to allow us to split the increment into more than 2 bands. In the example below there are 3 bands. The split of the bands is done in such a way that if the original increment was on a Gaussian mesh, the variance of that increment will be the sum of the variance of the associated waveband increments. (Even though the wavebands overlap we are assuming that there is no cross-covariance between the waveband increments.) The main switch enforcing this is  ``preserving variance: true``.  If you want to do spatial-dependent localization without spectral localization you should set ``preserving variance: false``.
 
-The `spectral analytical filter` uses a function `waveband filter` which as a default has a triangular function in terms of total wavenumber with a peak value at `waveband peak` that linearly drops to zero and `waveband min` and `waveband max`. For the lowest waveband the wavenumbers between and including `waveband min` and `waveband peak` are constant. Similarly for any waveband that includes the highest wavenumber, the wavenumbers between  `waveband max` and `waveband peak` is constant. When `preserving variance: true` we use the square root of the triangular function.
+The :ref:`spectralb_analytical_filter` uses a function ``waveband filter`` which as a default has a triangular function in terms of total wavenumber with a peak value at ``waveband peak`` that linearly drops to zero and ``waveband min`` and ``waveband max``. For the lowest waveband the wavenumbers between and including ``waveband min`` and ``waveband peak`` are constant. Similarly for any waveband that includes the highest wavenumber, the wavenumbers between  `waveband max` and `waveband peak` is constant. When ``preserving variance: true`` we use the square root of the triangular function.
 
-In addition to this, in this yaml, there is something special done for the final waveband increment. It is called here the double subtraction method. By setting `complement filter: true` we first calculate not the high-pass filter directly but instead the low-pass filter complement.  Then by setting `use residual from filter: true` we subtract the low pass filter increment from the original increment.  The advantage of this approach is that we avoid interpolating the high-pass filter increment onto the model grid. We know that the interpolation can smooth small-scale features and we want to be able to avoid this.
+In addition to this, in this yaml, there is something special done for the final waveband increment. It is called here the double subtraction method. By setting ``complement filter: true`` we first calculate not the high-pass filter directly but instead the low-pass filter complement.  Then by setting ``use residual from filter: true`` we subtract the low pass filter increment from the original increment.  The advantage of this approach is that we avoid interpolating the high-pass filter increment onto the model grid. We know that the interpolation can smooth small-scale features and we want to be able to avoid this.
 
 Note that we do not need to store all the waveband increments at the model grid resolution, we can also store the lower wavebands at lower Gaussian resolutions and reduce the size of files.
 
@@ -201,6 +200,10 @@ Typical yaml (waveband filter mode)
         filepath: <output_directory_for_application>/wb3_%GRID%_mb%MEM%_inc
         member pattern: '%MEM%'
         grid pattern: '%GRID%'
+
+.. note::
+
+  See the page for the :ref:`spectralb_analytical_filter` Block for more information on its filter parameters under the ``shape`` yaml key.
 
 See this SABER test for the full example: `process_perts_from_csdual_states_2.yaml <https://github.com/JCSDA/saber/blob/develop/test/testinput/process_perts_from_csdual_states_2.yaml>`_
 
