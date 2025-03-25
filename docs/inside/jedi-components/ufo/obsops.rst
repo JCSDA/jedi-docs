@@ -1867,8 +1867,7 @@ at the observation location.
 To note:
 * Currently the 2m temperature using the WRFDA and UKMO method for the forward operators are the only ones implemented. 
 * The non-linear operators have not been implemented for any of the operators yet and in a variational application 
-the `Linear` operator can be used in most cases.
-* The geopotential height conversion has not yet been implemented. 
+the `Linear` operator can be used in most cases. 
 
 This is the start of having a single operator for surface height corrections which can be used for all surface variables.
 
