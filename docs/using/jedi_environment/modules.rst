@@ -3,7 +3,7 @@
 Using spack-stack modules to build and run JEDI
 ===============================================
 
-The instructions in this section are specific to the use of spack-stack environment modules (``lmod/lua`` or ``tcl/tk``) for building and running JEDI applications. For general information on using spack-stack to build and run software, see the `spack-stack documentation <https://spack-stack.readthedocs.io/en/1.7.0>`_.
+The instructions in this section are specific to the use of spack-stack environment modules (``lmod/lua`` or ``tcl/tk``) for building and running JEDI applications. For general information on using spack-stack to build and run software, see the `spack-stack documentation <https://spack-stack.readthedocs.io/en/latest/>`_.
 
 One of the big advantages of spack-stack is that it automatically generates modules for all compiled packages and Python packages and works in exactly the same way on HPCs, on the cloud, and on a personal computer. Environment modules are available on basically all HPC systems and any modern macOS or Linux distribution, and are an easy and effective way to manage software libraries. There are two main flavors, the older ``tcl/tk`` modules and the newer ``lmod/lua`` modules, with the latter being superior and therefore preferred, if available. The two implementations share similar commands, such as:
 
@@ -36,7 +36,7 @@ General Instructions
 
 This section outlines the general steps to set up spack-stack modules for the desired HPC. Please see :ref:`hpc_users_guide` for more information on how to run jobs on the different HPCs.
 
-1. Load HPC specific modules from `spack-stack pre-configured sites documentation <https://spack-stack.readthedocs.io/en/1.7.0/PreConfiguredSites.html>`_.
+1. Load HPC specific modules from `spack-stack pre-configured sites documentation <https://spack-stack.readthedocs.io/en/latest/PreConfiguredSites.html>`_.
 
 2. Load appropriate modules for JEDI and the ``{skylab_v}`` release.
 
@@ -52,7 +52,7 @@ This section outlines the general steps to set up spack-stack modules for the de
 JEDI and Skylab environment set up using jedi-tools
 """""""""""""""""""""""""""""""""""""""""""""""""""
 
-Setup scripts are available in the `jedi-tools github repository <https://github.com/JCSDA-internal/jedi-tools>`_. These scripts will allow you to correctly set up your JEDI environment in order to build JEDI and also run Skylab experiments. The systems (and compilers) that are currently supported are localhost (gnu, intel, clang), aws-pcluster (gnu, intel), derecho (intel, gnu), discover (intel, gnu), hercules (intel, gnu), orion (intel, gnu), and s4 (intel).
+Setup scripts are available in the `jedi-tools github repository <https://github.com/JCSDA-internal/jedi-tools>`_. These scripts will allow you to correctly set up your JEDI environment in order to build JEDI and also run Skylab experiments.
 
 1. On certain HPCs, like Hercules and Discover, you will need to load the ``git-lfs`` module first. You can verify by running ``module show git-lfs`` to see if the module is available. This needs to be done before you check out any JEDI repository. Note, some HPCs have ``git lfs`` installed via the OS and do not provide a git-lfs module. If that is the case, this step can be skipped.
 
@@ -69,7 +69,7 @@ Setup scripts are available in the `jedi-tools github repository <https://github
       cd $JEDI_ROOT
       git clone https://github.com/JCSDA-internal/jedi-tools
 
-3. Edit the header of ``jedi-tools/buildscripts/setup.sh`` to fill in your ``JEDI_ROOT`` location, ``HOST``, and ``COMPILER``. Then source the updated ``setup.sh`` script. Note, there is more information needed to be filled out if you are running on ``localhost``.
+3. Edit the header of ``jedi-tools/buildscripts/setup.sh`` to fill in your ``JEDI_ROOT`` location, ``HOST``, ``COMPILER``, ``USER``, and ``API_KEY``. Then source the updated ``setup.sh`` script. Note, there is more information needed to be filled out if you are running on ``localhost``.
 
    .. code-block:: bash
 

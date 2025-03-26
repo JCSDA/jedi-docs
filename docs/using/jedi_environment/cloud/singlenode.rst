@@ -12,7 +12,7 @@ As described elsewhere in :doc:`this chapter <index>`, there are several steps y
 
 When you have completed these steps, you are ready to launch a single JEDI EC2 instance through the `EC2 Dashboard <https://console.aws.amazon.com/ec2>`_ on the AWS console.
 
-As part of this release, an Amazon Media Image (AMI) is available that has the necessary `spack-stack-1.7.0` environment for ``{skylab_version}`` pre-installed. For more information on how to find this AMI, refer to :ref:`Building and running SkyLab <build-run-skylab>` in this documentation.
+As part of this release, an Amazon Media Image (AMI) is available that has the necessary `spack-stack-1.9.1` environment for ``{skylab_version}`` pre-installed. For more information on how to find this AMI, refer to :ref:`Building and running SkyLab <build-run-skylab>` in this documentation.
 
 
 .. _singlenode-launch:
@@ -97,7 +97,7 @@ After launching the instance through the AWS console, select the instance and cl
          [jcsda-usaf-aws-us-east-2]
          region = us-east-2
 
-**For AWS Red Hat 8:** After logging in, follow the instructions in https://spack-stack.readthedocs.io/en/1.7.0/PreConfiguredSites.html#amazon-web-services-red-hat-8 to load the basic spack-stack modules for GNU. Proceed with loading the appropriate modules for your application, for example for the ``{skylab_version}`` release:
+**For AWS Red Hat 8:** After logging in, follow the `Red Hat <https://spack-stack.readthedocs.io/en/latest/PreConfiguredSites.html#amazon-web-services-single-node-red-hat-8>`_ instructions to load the basic spack-stack modules for GNU. Proceed with loading the appropriate modules for your application, for example for the ``{skylab_version}`` release:
 
 .. code-block:: bash
 

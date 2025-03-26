@@ -8,27 +8,17 @@ List of spack, software, and AMIs
 
 Versions used:
 
-- spack-stack-1.7.0 from April 2024
+- spack-stack-1.9.1 from March 2025
 
-  * https://github.com/JCSDA/spack-stack/tree/1.7.0
+  * https://github.com/JCSDA/spack-stack/tree/release/1.9.0
 
-  * https://spack-stack.readthedocs.io/en/1.7.0
-
-- AMI available in us-east-1 region (N. Virginia)
-
-  - Red Hat 8 with gnu-11.2.1 and openmpi-5.0.1:
-
-    AMI Name {skylab_version}-redhat8
-
-    AMI ID ami-09b779bf476173702 (https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#ImageDetails:imageId=ami-09b779bf476173702)
+  * https://spack-stack.readthedocs.io/en/1.9.1
 
 - AMI available in us-east-2 region (Ohio)
 
-  - Red Hat 8 with gnu-11.2.1 and openmpi-5.0.1:
+  - Ubuntu 24.04 with gcc and oneapi:
 
-    AMI Name {skylab_version}-redhat8
-
-    AMI ID ami-0f5458fa2920d1df2 (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-0f5458fa2920d1df2)
+    AMI ID ami-0e1056b9bfde93698 (https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#ImageDetails:imageId=ami-0e1056b9bfde93698)
 
 .. note::
 
@@ -225,18 +215,6 @@ separate sections for :doc:`HPC platforms <../jedi_environment/modules>`
 and :doc:`AWS instances (AMIs) <../jedi_environment/cloud/singlenode>`.
 Users need to execute these commands before proceeding with the build of
 ``jedi-bundle`` below.
-
-.. warning::
-
-  If you are using ``spack-stack 1.4.0`` or ``spack-stack 1.4.1`` you need to
-  unload the CRTM v2.4.1-jedi module after loading the Spack-Stack modules.
-
-  .. code-block:: bash
-
-    module unload crtm
-
-  Make sure you are building CRTMV3 within the jedi-bundle using the
-  `ecbuild_bundle command <https://github.com/JCSDA-internal/jedi-bundle/blob/5.0.0/CMakeLists.txt#L38>`_.
 
 .. warning::
 

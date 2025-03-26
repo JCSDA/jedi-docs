@@ -38,16 +38,18 @@ Step 0: System Configuration
 
 Before jumping into building JEDI, there are a few system settings to configure. First, load the spack environment on your system (see :ref:`top-modules`). Supported HPC platforms have a year's worth of the latest spack-stack releases pre-built and installed. If you will be using a publicly released version of JEDI, make sure to use the corresponding spack-stack version (see the table below):
 
+.. _spack_stack_jedi_release_table:
+
 +--------------+---------------------+---------------------+
 | Release Date | JEDI-bundle Version | Spack-Stack Version |
 +==============+=====================+=====================+
-| develop      | develop             | version 1.8.0       |
+| March 2025   | develop             | version 1.9.0       |
++--------------+---------------------+---------------------+
+| October 2024 | develop             | version 1.8.0       |
 +--------------+---------------------+---------------------+
 | April 2024   | skylab-v8.0.0       | version 1.7.0       |
 +--------------+---------------------+---------------------+
 | Jan 2024     | skylab-v7.0.0       | version 1.6.0       |
-+--------------+---------------------+---------------------+
-| Sept 2023    | skylab-v6.0.0       | version 1.5.1       |
 +--------------+---------------------+---------------------+
 
 For building the development version of the JEDI-bundle, use the latest spack stack release. If you are working on a local machine or a non-supported platform, you will have to build the spack-stack.
