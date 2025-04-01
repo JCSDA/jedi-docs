@@ -294,7 +294,7 @@ The action taken on observations flagged by the filter can be adjusted using the
 
 * :code:`reject`: observations flagged by the filter are marked as rejected.
 * :code:`accept`: observations flagged by the filter are marked as accepted if they have previously been rejected for any reason other than missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator.
-* :code:`passivate`: observations flagged by the filter are marked as passive.
+* :code:`passivate`: observations flagged by the filter are marked as passive. (passive observations are not used in the data assimilation)
 * :code:`reduce obs space`: observations flagged by a pre filter (exclusive) will be physically removed from the obs space. The flagged observations will not participate in any future processing, and will not be written out in the output obs space. This option is useful for example for observation thinning, since the memory footprint can be significantly reduced when using it.
 * :code:`inflate error`: the error estimates of observations flagged by the filter are multiplied by a factor. This can be either a constant (specified using the :code:`inflation factor` option) or a variable (specified using the :code:`inflation variable` option).
 * :code:`RONBAMErrInflate`: the previously assigned observation errors are inflated by a factor, replicating the operational GNSS RO NBAM operator. The inflation factor is the square root of the number of observations (those that passed QCs) within two adjacent model layers.
