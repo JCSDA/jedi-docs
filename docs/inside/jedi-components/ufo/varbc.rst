@@ -249,7 +249,7 @@ Example
 `cosine_of_latitude_times_orbit_node`
 +++++++++++++++++++++++++++++++++++++
 
-Cosine of the observation latitude multiplied by the sensor azimuth angle.
+Cosine of the observation latitude is positive during the ascending node of the orbit and negative during the descending node
 
 `emissivity`
 ++++++++++++
