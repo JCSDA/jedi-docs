@@ -1110,3 +1110,70 @@ It is expected that the :code:`model vertical coordinate` should contain values 
 In the example above, a variable called :code:`DerivedObsValue/salinity` is created. It contains the same values as :code:`ObsValue/salinity` in its original space, while its extended space is filled with the values of :code:`ObsValue/salinity` averaged on to the model levels specified by :code:`model vertical coordinate`.
 
 This filter supports use of :ref:`"where" statements <where-statement>`: any where-excluded observation locations are excluded from the calculation of the average increments.
+
+
+.. _aveobstogeovallevs:
+
+Average Observations To GeoVals Model Levels
+------------------------------------------------
+
+For each of the filter variables given, this filter averages the observations within each given model layer and assigns them to that layer. The resulting observation values, averaged onto model levels, are written to the :code:`DerivedObsValue`'s extended space. The original space of :code:`DerivedObsValue` remains the same as that of :code:`ObsValue`.  
+
+A new variable, :code:`modelLayer`, is added in :code:`MetaData`, with values ranging from 1 to the number of model layers. It is the user's responsibility to extend the :code:`ObsSpace` based on the number of model levels.
+
+If there are observations within the model level then observations are averaged, otherwise set to missing. This filter adds a new variable for QC flags in :code:`MetaData` named :code:`actObsAvgQC`. The QC flag is set to 1 when there is at least one obseravtions to be assigned to the new model level.
+
+**Summary of yaml parameters**
+
+- :code:`filter variables`: the (Derived)ObsValue(s) whose observation-level values are to be averaged on to model levels.
+
+- :code:`observation vertical coordinate`: variable containing the observation levels (e.g. height) in its original space (required).
+
+- :code:`model vertical coordinate`: variable containing the model levels (e.g. geopotential height) in its extended space (required).
+
+**Example**
+
+.. code-block:: yaml
+
+    time window:
+      begin: 2020-12-31T23:59:00Z
+      end: 2021-01-01T00:01:00Z
+    observations:
+    - obs space:
+      name: dpr_gpm
+        obsdatain:
+        engine:
+          type: H5File
+        obsgrouping:
+          group variables: ["sequenceNumber"]
+          sort variable: "Layer"
+          sort order: "descending"
+      extension:
+         allocate companion records with length: &num_levels 127
+      obsdataout:
+        engine:
+          type: H5File
+          allow overwrite: true
+      _source: testing
+      simulated variables: [ReflectivityAttenuated]
+      channels: 1-2
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3]
+      Clouds: [Water, Rain, Snow]
+      Cloud_Fraction: 1.0
+      obs options:
+        Sensor_ID: dpr_gpm
+        EndianType: little_endian
+    - filter: Average Observations To GeoVals Model Levels
+      filter variables:
+      - name: ObsValue/ReflectivityAttenuated
+        channels: 1-2
+      observation vertical coordinate: MetaData/height
+      model vertical coordinate: GeoVaLs/geopotential_height_levels
+
+In order for this filter to work correctly, the observations must be grouped into records (profiles) using the :code:`obsgrouping.group variables` option. The filter works whether the observation vertical coordinate is in increasing or decreasing order.
+
+The ObsSpace must also have been extended with :code:`obs space.extension` as in the example above, to accommodate the averaged observation values on model levels, in the extended space.
+
+In the example above, a variable called :code:`DerivedObsValue/ReflectivityAttenuated` is created. It contains the same values as :code:`ObsValue/ReflectivityAttenuated` in its original space, while its extended space is filled with the values of :code:`ObsValue/ReflectivityAttenuated` averaged on to the model levels specified by :code:`model vertical coordinate`.
