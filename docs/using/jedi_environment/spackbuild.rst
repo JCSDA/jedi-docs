@@ -7,9 +7,9 @@ The instructions in this section are specific to building spack-stack environmen
 ({skylab_v} release). For general information on using spack-stack to build and run software, see the
 `latest spack-stack documentation <https://spack-stack.readthedocs.io/en/latest/>`_. Note, the
 :ref:`JEDI and spack-stack release table <spack_stack_jedi_release_table>` contains information for the corresponding
-spack-stack version and JEDI release. Make sure you have read through the documentation for the **compatible** version of spack-stack and JEDI before attempting to
-build your own stack. The commands below only highlight the differences to the general documentation, steps in
-between that are not written down here are identical.
+spack-stack version and JEDI release. Make sure you have read the install/building documentation for the **compatible
+versions** of spack-stack and JEDI before attempting to build your own stack. The commands below only highlight the
+differences to the general documentation, steps in between that are not written down here are identical.
 
 Supported in this release are macOS with ``clang`` (``ewok`` graphics dependencies don’t build with ``gcc``), Red Hat with
 ``gcc``, Ubuntu with ``gcc``, Ubuntu with ``intel``.
