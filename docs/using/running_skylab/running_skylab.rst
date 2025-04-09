@@ -466,7 +466,14 @@ Create a local copy of the R2D2 data store:
 
 **Install, Start, and Configure the R2D2 Server**
 
-Execution of R2D2 on MacOS and AWS single nodes requires Docker. Please follow the instructions found in
+Execution of R2D2 on MacOS and AWS single nodes requires Docker. If you are on macOS and have
+not previously installed Docker, install it using brew:
+
+.. code-block:: bash
+
+  brew install docker
+
+Then follow the instructions found in: 
 https://github.com/JCSDA-internal/r2d2/tree/develop/server/README.md#localhost-docker-with-database.
 
 .. _Run-Skylab:
