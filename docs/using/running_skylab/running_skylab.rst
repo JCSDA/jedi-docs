@@ -118,9 +118,9 @@ in the `jedi-tools README <https://github.com/JCSDA-internal/jedi-tools/blob/dev
   :code:`jedi-tools/buildscripts/setup.sh`. This script is designed to be
   reused each time you need to setup your environment and it is recommended to
   place in :code:`$JEDI_ROOT`. Edit the file header to set :code:`JEDI_ROOT`,
-  :code:`HOST`, :code:`COMPILER`, and :code:`WORKFLOW_ROOT`. If you are running
-  on localhost, uncomment the spack-stack module statements and fill in for
-  your local spack-stack location.
+  :code:`HOST`, :code:`COMPILER`, :code:`R2D2_USER`, :code:`R2D2_API_KEY`,
+  and optional :code:`WORKFLOW_ROOT`. If you are running on localhost, uncomment
+  the spack-stack module statements and fill in for your local spack-stack location.
 
   .. note::
 
@@ -131,7 +131,8 @@ in the `jedi-tools README <https://github.com/JCSDA-internal/jedi-tools/blob/dev
 
     cp $JEDI_ROOT/jedi-tools/buildscripts/setup.sh $JEDI_ROOT/
     vi $JEDI_ROOT/setup.sh
-    # Edit the header for JEDI_ROOT, HOST, COMPILER, and optional WORKFLOW_ROOT
+    # Edit the header for JEDI_ROOT, HOST, COMPILER, R2D2_USER, R2D2_API_KEY
+    # and optional WORKFLOW_ROOT
     # If on localhost, uncomment and fill out your spack-stack information
     source $JEDI_ROOT/setup.sh
 
