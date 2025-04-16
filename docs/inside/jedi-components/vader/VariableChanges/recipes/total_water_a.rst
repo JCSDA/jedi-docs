@@ -5,9 +5,10 @@ Total water mixing ratio wrt moist air and condensed water from specific humidit
 
 * **Description**: Produces total water mixing ratio wrt moist air and condensed water from (Met Office defined) specific humidity, and water vapor and cloud liquid water mixing ratios
 * **Name**: TotalWater_A
-* **Variable produced**: qt (total_water_mixing_ratio_wrt_moist_air_and_condensed_water)
+* **Variable produced**: total_water_mixing_ratio_wrt_moist_air_and_condensed_water
 * **Input Variables**: cloud_ice_mixing_ratio_wrt_moist_air_and_condensed_water, cloud_liquid_water_mixing_ratio_wrt_moist_air_and_condensed_water, specific_humidity (water_vapor_mixing_ratio_wrt_moist_air_and_condensed_water)
-* **Number of Levels** - The same number of levels as the input specific_humidity Field
-* **FunctionSpace** - The same FunctionSpace as the input specific_humidity Field
-* **hasTLAD** - True
+* **Trajectory Variables**: None
+* **Number of Levels**: The same number of levels as the input specific_humidity Field
+* **FunctionSpace**: The same FunctionSpace as the input specific_humidity Field
+* **hasTLAD**: True
 * **Optional Parameters**: None

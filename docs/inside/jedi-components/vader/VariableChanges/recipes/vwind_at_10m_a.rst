@@ -7,7 +7,8 @@ V-wind at 10m from northward wind
 * **Name**: vwind_at_10m_A
 * **Variable produced**: vwind_at_10m
 * **Input Variables**: northward_wind
-* **Number of Levels** - 1
-* **FunctionSpace** - The same FunctionSpace as the input northward wind Field
-* **hasTLAD** - True
+* **Trajectory Variables**: None
+* **Number of Levels**: 1
+* **FunctionSpace**: The same FunctionSpace as the input northward wind Field
+* **hasTLAD**: True
 * **Optional Parameters**: None

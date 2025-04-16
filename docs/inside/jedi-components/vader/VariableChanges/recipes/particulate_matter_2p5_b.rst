@@ -11,8 +11,9 @@ PM2.5 fields from RRFS smoke-dust scheme
   - dry_air_density
   - mixing_ratio_of_smoke_wrt_dry_air
   - mixing_ratio_of_dust_wrt_dry_air
-  
-* **Number of Levels** - The same number of levels as the input Fields
-* **FunctionSpace** - The same FunctionSpace as the input Fields
-* **hasTLAD** - True
+
+* **Trajectory Variables**: dry_air_density
+* **Number of Levels**: The same number of levels as the input Fields
+* **FunctionSpace**: The same FunctionSpace as the input Fields
+* **hasTLAD**: True
 * **Optional Parameters**: None

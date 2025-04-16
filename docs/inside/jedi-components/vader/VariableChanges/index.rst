@@ -9,10 +9,12 @@ Each variable change that can be performed by Vader is defined by code called a 
 * **Name** - The name of the recipe which can be used in yaml to specify the recipe parameters. (Follows the recipe naming standard.)
 * **Variable Produced** - The variable that will be created by the algorithm, usually called the "product".
 * **Input Variables** - Usually called "ingredients", these are the variables required as input for the algorithms.
+* **Trajectory Variables** - These are the trajectory variables that are required for the TL/AD algorithms, if present and necessary.
 * **Number of Levels** - The number of levels for the Atlas Field for the product. Must be a constant or a function of the number of levels of the ingredients.
 * **FunctionSpace** - The Atlas FunctionSpace for the Atlas Field for the product. Can be specific FunctionSpace or the same as one of the ingredients.
-* **hasTLAD** - This is a boolean flag indicating whether the recipe has implemented the tangent linear and adjoint (TL/AD) of the transformation. (These are optional, while the non-linear transformation is required.)
-* **Algorithms** - Put into methods called ``executeNL`` (and ``executeTL`` and ``executeAD`` if ``hasTLAD`` is ``true``), this code performs the calculations on the inputs and produces the output.
+* **hasTLAD** - This is a boolean flag indicating whether the recipe has implemented the tangent linear and adjoint (TL/AD) of the transformation.
+* **hasNL** - This is a boolean flag indicating whether the recipe has implemented the non-linear (NL) transformation.
+* **Algorithms** - Put into methods called ``executeNL``, ``executeTL``, and ``executeAD``, this code performs the calculations on the inputs and produces the output.
 * **Required Configuration Variables** - Some recipes reference values that are stored in VADER's configuration variables. These variables must be defined in the `VaderConstructConfig` class that is passed to the VADER constructor.
 * **Parameters** - Recipes can have optional parameters which can configure their behavior. These parameters should not be required.
 
@@ -23,6 +25,7 @@ Below is a list of the recipes that have been implemented in VADER:
 
     airtemperature
     airpressure
+    airdensity
     atmospherewater
     wind
     marine

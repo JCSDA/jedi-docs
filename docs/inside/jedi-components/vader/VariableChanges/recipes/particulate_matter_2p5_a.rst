@@ -83,7 +83,8 @@ PM2.5 fields from CMAQ aerosols scheme AERO6 version
   - mixing_ratio_of_ano3k_wrt_dry_air
   - mixing_ratio_of_anh4k_wrt_dry_air
   
-* **Number of Levels** - The same number of levels as the input Fields
-* **FunctionSpace** - The same FunctionSpace as the input Fields
-* **hasTLAD** - True
+* **Trajectory Variables**: pm2p5_fraction_of_aitken_mode, pm2p5_fraction_of_accumulation_mode, pm2p5_fraction_of_coarse_mode, dry_air_density
+* **Number of Levels**: The same number of levels as the input Fields
+* **FunctionSpace**: The same FunctionSpace as the input Fields
+* **hasTLAD**: True
 * **Optional Parameters**: None

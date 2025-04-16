@@ -1,4 +1,4 @@
-.. _top-vader-recipe-temptoptemp:
+.. _top-vader-recipe-airpotentialtemperaturea:
 
 Potential Temperature from temperature and surface pressure
 ===========================================================
