@@ -2298,12 +2298,9 @@ The priority variable name is :code:`MetaData/thinningPriority`; observations wi
 SuperOb filter
 --------------
 
-The SuperOb filter can be used to produce superobs (super-observations) by combining multiple observation (:math:`O`) and model background (:math:`B`) values in a chosen region into a single quantity. This quantity is assigned to the :code:`DerivedObsValue` group for each filter variable at a chosen location. It is possible to perform this procedure at more than one location in the region. After the assignments have concluded, all other locations in the superob region are flagged as rejected. Typically, superobbing is used when the density of observations is very high and the observation error covariances have not been fully specified. Superobbing can also be used to reduce the computational load experienced when dealing with very high-density observations.
+The SuperOb filter can be used to produce superobs (super-observations) by combining multiple observation (:math:`O`) values (and optionally model background (:math:`B`) values) in a chosen region into a single quantity. This quantity is assigned to the :code:`DerivedObsValue` group for each filter variable at a chosen location. It is possible to perform this procedure at more than one location in the region. After the assignments have concluded, all other locations in the superob region are flagged as rejected. Typically, superobbing is used when the density of observations is very high and the observation error covariances have not been fully specified. Superobbing can also be used to reduce the computational load experienced when dealing with very high-density observations.
 
-There are two pre-requisites that must be true for this filter to be used:
-
-* H(x) must be available, so the filter must be run as a post-filter.
-* The ObsSpace must have been divided into records.
+The ObsSpace must have been divided into records for this filter to be used.
 
 The :code:`algorithm` parameter selects the algorithm that is used to compute one or more superobs in each ObsSpace record.
 
@@ -2313,10 +2310,27 @@ Available superobbing algorithms
 
 The following superobbing algorithms are available:
 
+* :code:`mean obs`: Computes superob using mean :math:`O` in each record,
 * :code:`mean OmB`: Computes superob using mean :math:`O - B` in each record,
 * :code:`radar`: Computes superob for weather radar data.
 
 These algorithms are described in more detail in the following sections.
+
+
+**mean obs**
+
+This algorithm computes the mean :math:`O` of each filter variable in each record, ignoring missing values. The mean value is assigned to the first location in the record. All other entries in the record are flagged as rejected. Note the choice of the first location in the record is arbitrary and could lead to different results depending on the ordering of the input data.
+
+Example usage:
+
+.. code:: yaml
+
+  - filter: SuperOb
+    filter variables:
+    - name: airTemperature
+    - name: windEastward
+    algorithm:
+      name: mean obs
 
 
 **mean OmB**
@@ -2333,8 +2347,6 @@ Example usage:
     - name: windEastward
     algorithm:
       name: mean OmB
-    action:
-      name: reject
 
 
 **radar**
