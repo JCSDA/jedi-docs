@@ -237,6 +237,28 @@ In this case, when there are 6 tasks in the io pool the output files that are cr
 - ...
 - Data/sondes_obs_2018041500_m_out_0005.nc4
 
+The ``obs space.obsdataout.empty obs space action`` YAML configuration option is used to control the action taken
+when an empty ObsSpace object is encountered during the writing process.
+Valid settings include ``create output`` (default, create a corresponding empty output file) and
+``skip output`` (do not create an output file). 
+An empty obs space is understood to be one that contains zero locations across all MPI ranks, meaning that
+if some ranks contain zero obs and other ranks contain greater than zero obs, the output file will still
+be created when the ``skip output`` setting is used.
+Here is an example YAML configuration that uses the ``skip output`` setting.
+
+.. code-block:: YAML
+
+    obs space:
+      ...
+      obsdataout:
+        empty obs space action: "skip output"
+        engine:
+          type: H5File
+          obsfile: Data/sondes_obs_2018041500_m_out.nc4
+      io pool:
+        max pool size: 6
+
+
 Specific File Formats
 ^^^^^^^^^^^^^^^^^^^^^
 
