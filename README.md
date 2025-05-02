@@ -26,7 +26,7 @@ open _build/html/index.html
 
 ## Tips on writing documentation
 
-The jedi-docs are written in reStructuredText (reST) markup plaintext files and are
+The jedi-docs are written in reStructuredText (reST) plain text markup files and are
 built by [Sphinx](https://www.sphinx-doc.org/en/master/). For an introduction and
 reference for reST see the [reStructuredText Primer](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) in the
 Sphinx documentation.
