@@ -47,7 +47,7 @@ Adjoint of the bias model
 
     .. math::
 
-        H(\vec{x}, \beta) \approx H(\overline{\vec{x}}, \beta) & = H(\overline{\vec{x}}) + \sum_{i=0}^{N} \beta_i p_i(\overline{\vec{x}}) \\
+        H(\vec{x}, \beta) \approx H(\overline{\vec{x}}, \beta) & = H(\overline{\vec{x}}) + \sum_{i=0}^{N} \beta_i p_i(\overline{\vec{x}}) \\
         & = H(\overline{\vec{x}}) + \mathcal{P}(\overline{\vec{x}}) \cdot \vec{\beta}
 
   where :math:`\mathcal{P}(\overline{\vec{x}})` is a :math:`m × n` predictor matrix consisting of :math:`n` predictors evaluated on :math:`m` observation locations.
@@ -127,7 +127,8 @@ To use the bias correction in an observation operator, add the :code:`obs bias` 
           Sensor_ID: &Sensor_ID amsua_n19
         ...
       obs bias:
-        input file: Data/obs/satbias_crtm_in_amsua_n19.nc4
+        input file: Data/obs/satbias_crtm_20250401T0000Z_amsua_n19.nc4
+        output file: Data/obs/satbias_crtm_20250401T0600Z_amsua_n19.nc4
         variational bc:
           predictors:
           - name: constant
@@ -139,6 +140,14 @@ To use the bias correction in an observation operator, add the :code:`obs bias` 
           - name: scan_angle
             order: 2
           - name: scan_angle
+        covariance:
+          minimal required obs number: 20
+          prior:
+            input file: Data/obs/satbias_crtm_covariance_20250401T0000Z.nc4
+            inflation
+              ratio: 1.1
+              ratio for small dataset: 2.0
+          output file: Data/obs/satbias_crtm_covariance_20250401T0600Z.nc4
 
 Here is the detailed explanation:
 
@@ -167,6 +176,30 @@ Here is the detailed explanation:
     .. code-block:: yaml
 
       input file: Data/obs/satbias_crtm_in_amsua_n19.nc4
+      
+  3. Defines the output file for the bias coefficients (optional)
+
+     Usually, this will provide the prior from the next data assimilation cycle.
+
+    .. code-block:: yaml
+
+      input file: Data/satbias_crtm_out_amsua_n19.nc4
+  
+  4. The covariance section is an example of including the covariance form a file and writing out the matrix at the end of the variational calculations. (optional)
+
+     Usually the output covariance will be used as the input to the next data assimilation cycle.  If this section is not included a series of defaults are
+     used to create a covariance matrix.  The defaults can be found in `ObsBiasParameters.h <https://github.com/JCSDA-internal/ufo/blob/develop/src/ufo/ObsBiasParameters.h>`_.
+
+    .. code-block:: yaml
+
+        covariance:
+          minimal required obs number: 20
+          prior:
+            input file: Data/obs/satbias_crtm_covariance_20250401T0000Z.nc4
+            inflation
+              ratio: 1.1
+              ratio for small dataset: 2.0
+          output file: Data/satbias_crtm_covariance_20250401T0600Z.nc4
 
 Static Bias Correction in UFO
 =============================
