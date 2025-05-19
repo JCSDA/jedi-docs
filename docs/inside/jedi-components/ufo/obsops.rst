@@ -1861,15 +1861,15 @@ SfcCorrected
 
 Description:
 ^^^^^^^^^^^^
-This forward operator contains three schemes to correct the computation of surface variables at a location for the discrepancy in model topography
+This forward operator contains three schemes(WRFDA, UKMO, GSL) to correct the computation of surface variables(2m air temperature, station pressure) at a location for the discrepancy in model topography
 at the observation location. 
 
 To note:
-* Currently the 2m temperature using the WRFDA and UKMO method for the forward operators are the only ones implemented. 
-* The non-linear operators have not been implemented for any of the operators yet and in a variational application 
-the `Linear` operator can be used in most cases. 
+* Currently the 2m temperature using the WRFDA and UKMO method and station pressure for all schemes of forward operators are the ones implemented.
+* The `Non-linear` operators can be used in simulation of OBS only.
+* The `Linear` operators have not been implemented.
 
-This is the start of having a single operator for surface height corrections which can be used for all surface variables.
+The unified SfcCorrected operator is an initial framework to apply a consistent model terrain height discrepancy correction for many of surface observation types.
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -1879,31 +1879,55 @@ Configuration options:
 * station_altitude - variable in the ObsSpace which will be used for the staion height of the observation.
 * correction shceme to use - the scheme to use to correct the variable.  Currently available are 'WRFDA', 'UKMO' and 'GSL'.
 
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
+Example of surface air temperature correction yaml:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. code-block:: yaml
 
   observations:
-    observers:
-    - obs space:
-      name: Surface operator 2M temperature WRFDA method
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: Data/ufo/testinput_tier_1/surface_tquv_obs_2022052700.nc4
-      simulated variables: [airTemperatureAt2M]
-    obs operator:
-      name: SfcCorrected
-      correction scheme to use: WRFDA
-    linear obs operator:
-      name: Identity
+  - obs operator:
+    name: SfcCorrected
+    correction scheme to use: UKMO
+    geovar_sfc_geomz: geopotential_height_at_surface
+    geovar_geomz: geopotential_height
+  obs space:
+    name: Surface operator 2M temperature UKMO method with geopotential values
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/surface_tquv_obs_2022052700.nc4
+    simulated variables: [airTemperatureAt2M]
+  geovals:
+    filename: Data/ufo/testinput_tier_1/surface_tquv_geovals_2022052700.nc4
+  rms ref: 290.1876
+  tolerance: 1.e-5
 
-SfcPCorrected
----------------------------------------
+Example of surface pressure correction yaml:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. code-block:: yaml
 
-Description:
-^^^^^^^^^^^^
-This forward operator contains several schemes to correct the computation of surface atmospheric pressure at a location for the discrepancy in model topography at the observation location. Note that only the nonlinear operator is included, and to use it in variational applications will require specifying the linear obs operator (Identity).
+  observations:
+  - obs operator:
+    name: SfcCorrected
+    correction scheme to use: WRFDA
+  obs space:
+    name: Surface operator station pressure WRFDA method
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sfc_obs_2018041500_m.nc4
+    simulated variables: [stationPressure]
+  geovals:
+    filename: Data/ufo/testinput_tier_1/ps_geovals_2018041500_0000.nc4
+  rms ref: 98240.77327572
+  tolerance: 1.e-08
+  linear obs operator test:
+    coef TL: 0.1
+    tolerance TL: 1.0e-13
+    tolerance AD: 1.0e-11
+
+Algorithmic Description:
+^^^^^^^^^^^^^^^^^^^^^^^^
+The surface corrector operator, based on the correction scheme selected, performs simulation for station pressure as described below.
 
 Schemes:
 
@@ -1952,9 +1976,7 @@ where `L` is the constant lapse rate (0.0065 K/m),
   T_{m2o} = T_{model} + L*(H_{model} - H_{ob})
 
 
-:code:`WRFDA`: This option is based on a subroutine from WRFDA da_intpsfc_prs.inc file
-corresponding to `sfc_assi_options = 1` in WRFDA's namelist.
-If the observed surface height and pressure are not missing, the pressure output from this option is the corrected
+:code:`WRFDA`: If the observed surface height and pressure are not missing, the pressure output from this option is the corrected
 model pressure as such:
 
 .. math::
@@ -1974,38 +1996,6 @@ where `Tv_avg` is the averged virtual temperature of the model surface virtual t
 Where the observed virtual temperature value is computed from the observed temperature and humidity, or using the observed
 temperature or model temperature if there are missing values for any observed quantities.
 
-
-
-Configuration options:
-^^^^^^^^^^^^^^^^^^^^^^
-* da_psfc_scheme - choice of `UKMO`, `GSI`, or `WRFDA` methods
-* geovar_geomz - name of height geovar
-* geovar_sfc_geomz - name of surface altitude/elevation geovar
-
-Examples of yaml:
-^^^^^^^^^^^^^^^^^
-.. code-block:: yaml
-
-  observations:
-    observers:
-    - obs space:
-      name: sondes_ps
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: sondes_ps_obs_2022082300.nc4
-      obsdataout:
-        engine:
-          type: H5File
-          obsfile: sondes_ps_diag_2022082300.nc4
-      simulated variables: [stationPressure]
-    obs operator:
-      name: SfcPCorrected
-      da_psfc_scheme: GSI
-      geovar_sfc_geomz: surface_geopotential_height
-      geovar_geomz: geopotential_height
-    linear obs operator:
-      name: Identity
 
 Background Error Vertical Interpolation
 ---------------------------------------
