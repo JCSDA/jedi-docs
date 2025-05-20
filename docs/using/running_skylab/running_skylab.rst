@@ -461,8 +461,8 @@ Create a local copy of the R2D2 data store:
 
 .. code-block:: bash
 
-  mkdir $HOME/r2d2-experiments-localhost
-  cp -R $JEDI_WORKFLOW/r2d2-data/r2d2-experiments-localhost/* $HOME/r2d2-experiments-localhost
+  mkdir $JEDI_WORKFLOW/r2d2-experiments-localhost
+  cp -R $JEDI_WORKFLOW/r2d2-data/r2d2-experiments-localhost/* $JEDI_WORKFLOW/r2d2-experiments-localhost
 
 
 **Install, Start, and Configure the R2D2 Server**
