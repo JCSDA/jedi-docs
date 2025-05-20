@@ -210,6 +210,65 @@ To help with the setting up of these configurations, the standalone application 
 In these examples the ``prep_file_info`` file will contain attributes holding the expected io pool size (6) and the expected main communicator size (100), plus variables holding information describing the io pool configuration that the input file set was built for.
 These values are checked by the IODA reader in the DA flow and if these do not match up an exception, with messages indicating what is wrong, is thrown and the job quits.
 
+Reading ODB Files in Parallel 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To read ODB files in parallel, set the io pool reader name to ``NonoverlappingPool`` and the distribution to ``ReaderDependentDistribution``, as shown in the snippet below:
+
+.. code-block:: YAML
+
+    obs space:
+      name: ATMS
+      simulated variables: [brightnessTemperature]
+      channels: 1-22
+      obsdatain:
+        engine:
+          type: ODB
+          obsfile: "Data/testinput_tier_1/atms.odb"
+          mapping file: ../share/test/testinput/odb_default_name_map.yaml
+          query file: ../share/test/testinput/iodatest_odb_atms.yaml
+          frame distribution spread: 4  # optional; 4 is the default value
+      distribution:
+        name: ReaderDependentDistribution
+      io pool:
+        reader name: NonoverlappingPool
+        
+This will cause each MPI process to read a separate subset of frames from the input ODB file. If consecutive rows with the same value in the ``seqno`` column (typically used to distinguish between e.g. different aircraft tracks, radiosonde profiles or satellite observation locations) are found in multiple frames read by different processes, the ODB reader will arrange for the contents of all these rows to be transferred to a single process.
+
+.. warning::
+    Record grouping criteria that might assign locations associated with ODB rows with different seqnos to the same record are incompatible with the parallel ODB reader and will not be respected. For example, the parallel ODB reader cannot be used if locations need to be grouped into records by latitude or longitude.
+
+.. warning::
+    Only ``ReaderDependentDistribution`` is compatible with ``NonoverlappingPool``; an attempt to use a different distribution will cause an exception to be thrown.
+   
+Load Balancing Control
+......................
+
+The ``ReaderDependentDistribution`` keeps locations on the MPI processes on which they have been placed by the ODB reader. The resulting distribution may not be balanced very well, especially if ODB rows are ordered roughly chronologically and a lot of initial and final rows lie outside the assimilation window and are filtered out. To mitigate against this issue, by default, each process reads 4 separate "chunks" of frames located in different parts of the input file (unless the number of frames is less than four times the number of processes, in which case the number of chunks per process is reduced to ensure all processes receive approximately the same number of frames). The maximum number of chunks per process can be adjusted by setting the ``frame distribution spread`` option in the ``obsdatain.engine`` YAML section to a value different than 4. Larger values may improve load balancing but will also increase the cost of MPI communication required to ensure consecutive rows with the same ``seqno`` are not split across multiple processes. 
+
+If the number of frames in the file is less than the number of processes, some processes will not be assigned any frames to read. The ``NonoverlappingPool`` will take care to produce a valid ObsSpace in this case too (e.g. by ensuring that these processes create the same ``ioda`` variables as ones with frames assigned).
+
+As an example, consider an input file with 15 frames. If this file is read with 2 MPI processes, each of them will by default be assigned four separate contiguous chunks of frames, as shown in the diagram below:
+
+.. figure:: images/IODA_NonoverlappingReaderPool_example_1.png
+   :align: center
+
+If the ``frame distribution spread`` is reduced from 4 to 1, each process will be assigned just a single large chunk of frames:
+
+.. figure:: images/IODA_NonoverlappingReaderPool_example_2.png
+   :align: center
+
+Conversely, if ``frame distribution spread`` is increased to 8 or more, process 0 will be assigned eight and process 1 seven chunks, each consisting of just a single frame:
+
+.. figure:: images/IODA_NonoverlappingReaderPool_example_3.png
+   :align: center
+
+If ``frame distribution spread`` is left at its default value of 4, but the number of MPI processes is increased to 5, each process will receive three chunks, since there not enough frames to form 4 × 5 = 20 chunks:
+
+.. figure:: images/IODA_NonoverlappingReaderPool_example_4.png
+   :align: center
+
+
 Io Pool Based Writing
 ^^^^^^^^^^^^^^^^^^^^^
 
