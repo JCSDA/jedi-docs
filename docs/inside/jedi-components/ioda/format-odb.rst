@@ -378,7 +378,10 @@ Channel indices
 
 If the data associated with any varnos should be extracted into variables with a channel dimension, the ``multichannel varnos`` key needs to be set to the list of these varnos.
 
-In that case the ``channel indexing`` section must also be present. The ``method`` key in that section specifies the method used to assign channel indices. The following methods are currently available:
+In that case the ``channel indexing`` section must also be present. The ``method`` key in that section specifies the method used to assign channel indices. 
+
+The following methods are currently available:
+
 
 * ``sequential``: Assign sequential channel indices starting from the number specified in the ``first channel index`` key (by default, 1). By default, the number of channels is determined by counting rows associated with the first location and containing any of the varnos specified in the ``varnos`` key or, if that key is absent, the varno read from the first row associated with that location. Alternatively, if the number of channels is fixed and known in advance, it can be specified in the ``number of channels`` key. Example:
     
@@ -411,6 +414,17 @@ In that case the ``channel indexing`` section must also be present. The ``method
          method: constant
          channel index: 1
          varnos: [266]
+         
+* ``read from yaml``: Read channel indices from a comma-separated string ``channel numbers`` passed in from the odb query file, ``channel numbers`` is a required parameter of this method. Hyphens may be used to denote a channel range. The channel dimension is created under the DerivedObsValue group from a string independent of the input data (in order to index ObsValue by channel, ``multichannel varnos`` is required). Example: 
+  
+  .. code-block:: YAML
+  
+     where:
+         varno: [233]
+     channel indexing:
+         method: read from yaml
+         channel numbers: 1, 3, 97, 156-159, 230
+
   
 .. note::
   
