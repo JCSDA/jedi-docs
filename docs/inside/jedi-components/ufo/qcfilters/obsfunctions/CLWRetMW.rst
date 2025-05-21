@@ -3,8 +3,16 @@
 CLWRetMW
 --------------------------------------------------------
 
+Contains capability to retrieve various indices using the specific frequencies and polarizations that occur on multiple instruments
+
 Retrieve cloud liquid water using 23.8 GHz and 31.4 GHz channels from AMSU-like instruments.
 Follows the Grody et al., 2001 screening method, see publication or source code for specific implementation
+
+Retreive using 37 GHz and the Vertical and Horizontal Polarization (e.g. GPM GMI)
+
+Retreive using 89 GHz and 157 GHz (e.g. MHS)
+
+Retreive using 18 GHz and 36 GHz both Vertical and Horizontal Polarization (e.g. AMSR/2)
 
 References:
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -35,6 +43,7 @@ Optional yaml parameters:
   Name of the bias correction group used to replace the default group (default is ObsBiasData). Could be a group name from the input file. This option is usually used for testing/validation purposes.
 
 The following parameters are intended for cloud index for some sensors, e.g., GMI.
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 :code:`clwret_ch37h`
   Channel number corresponding to 37H channel. 
@@ -42,7 +51,11 @@ The following parameters are intended for cloud index for some sensors, e.g., GM
 :code:`clwret_ch37v`
   Channel number corresponding to 37V channel. 
 
+:code:`use bias-corrected HofX_at_ch37GHz`
+  The function will use the Hofx and HofX-in-clear-sky of brightness temperature at 37H and 37V GHz before bias correction to derive cloud index by setting it "false". Bias-corrected HofX and HofX-in-clear-sky at these two channels are used by default. 
+
 The following parameters are intended for cloud index for some sensors, e.g., MHS
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 :code:`clwret_ch89h`
   Channel number corresponding to 89H channel. 
@@ -51,6 +64,7 @@ The following parameters are intended for cloud index for some sensors, e.g., MH
   Channel number corresponding to 166V channel. 
 
 The following parameters are intended for cloud index for some sensors, e.g., AMSR2
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 :code:`clwret_ch18h`
   Channel number corresponding to 18H channel.
