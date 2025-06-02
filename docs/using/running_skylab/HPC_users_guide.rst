@@ -282,18 +282,32 @@ Hera documentation:
 
 * `Heradoc <https://heradocs.rdhpcs.noaa.gov>`_ (only available with NOAA SSO)
 
-.. _hercules:
+.. _MSU:
 
-Hercules
---------
+Hercules & Orion
+----------------
 
-Hercules is an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
+Hercules and Orion are two partitions of an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
 
-It shares a file system and log-in credentials with :ref:`orion`, so see that section (below) for more information.
-
-Hercules documentation:
+Hercules and Orion have a common file system and log-in credentials. For more information on the two systems see the MSU HPC documentation:
 
 * `MSU Cluster Computing Basics documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/clusters_getting_started.php>`_
+* `Orion Usage and Guidelines documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/orion_guide.php>`_
+* `Hercules Usage and Guidelines documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/hercules_guide.php>`_
+
+When running :code:`ecbuild` on either Hercules or Orion use the following to direct CMake to use :code:`srun` for CTest MPI jobs.
+
+.. code-block:: bash
+
+   ecbuild -DMPIEXEC_EXECUTABLE=$(which srun) -DMPIEXEC_NUMPROC_FLAG="-n"
+
+We do not recommend running the ctests on login nodes because of the computational requirements of these tests. Instead you can submit ctests as a batch job or use an interactive node. To request an interactive session on an MSU system, you can run the following. Make sure you use the correct account number. This command requests for one node with 24 MPI tasks.
+
+.. code-block:: bash
+
+   salloc -N1 -n 24 -A <account> --qos=batch --partition=orion --time=480 -I
+
+MSU uses SBATCH and an example job submission script is shown :ref:`here <sbatch>`.
 
 .. _narwhal:
 
@@ -321,33 +335,6 @@ Narwhal uses PBS and an example job submission script is shown :ref:`here <pbs>`
 Narwhal documentation:
 
 * `Narwhal user guide <https://www.navydsrc.hpc.mil/docs/narwhalUserGuide.html>`_
-
-.. _orion:
-
-Orion
------
-
-Orion is an HPC system located at Mississippi State University for the purpose of furthering NOAA’s scientific research and collaboration.
-
-When running :code:`ecbuild` use the following to direct CMake to use :code:`srun` for CTest MPI jobs.
-
-.. code-block:: bash
-
-   ecbuild -DMPIEXEC_EXECUTABLE=$(which srun) -DMPIEXEC_NUMPROC_FLAG="-n"
-
-We do not recommend running the ctests on login nodes because of the computational requirements of these tests. Instead you can submit ctests as a batch job or use an interactive node. To request an interactive session on Orion, you can run the following. Make sure you use the correct account number. This command requests for one node with 24 MPI tasks.
-
-.. code-block:: bash
-
-   salloc -N1 -n 24 -A <account> --qos=batch --partition=orion --time=480 -I
-
-Orion uses SBATCH and an example job submission script is shown :ref:`here <sbatch>`.
-
-Orion documentation:
-
-* `MSU Cluster Computing Basics documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/clusters_getting_started.php>`_
-
-* `the Orion Usage and Guidelines documentation <https://intranet.hpc.msstate.edu/helpdesk/resource-docs/cluster_guide.php#orion-use>`_
 
 .. _s4:
 
