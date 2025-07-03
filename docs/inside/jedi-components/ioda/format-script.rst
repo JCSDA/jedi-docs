@@ -1,14 +1,16 @@
 .. _ioda-format-script:
 
-Script
-------
+Script Backend
+--------------
 
-The script backend allows you to run python scripts in order to generate any ObsGroup object you want. In order to use
-it there are 2 pieces.
+IODA Configuration
+~~~~~~~~~~~~~~~~~~
 
-The ioda configuration file has to be configured as follows. The args section can list any number of arguments that
-you want, but the python script has to take these as arguments to the create_obs_group function. The types need to be
-consistent as well.
+The script backend allows you to run Python scripts to generate any ObsGroup object. To use it, there are two parts.
+
+The IODA configuration must include the following section. The `args` mapping can list any number of key/value pairs,
+which the Python script must accept as parameters in the ``create_obs_group`` function with matching types. The
+values may be ints, floats, strs, or lists and dicts of these types.
 
 .. code-block:: yaml
 
@@ -26,64 +28,116 @@ consistent as well.
           script file: "make_a_line.py"
           args:
             varname: "lineData"
-            start: 0
-            stop: 10
+            interval: [0, 10]
 
+Python Script
+~~~~~~~~~~~~~
 
-The following is an example of the script file itself. Basically it consists of a python function called
-**create_obs_group** that takes the arguments that were configured in the yaml file. Arguments in the python function
-that have default values are optional in the YAML file. The argument types are validated as far as it is possible to do
-so. Python 3 style type indications are supported and the types are inferred from defaulted objects. The only other rule
-is that the function has to return an ObsGroup object.
+The script must be a valid Python file defining a function called ``create_obs_group``. It should accept the parameters
+from the config and an optional dictionary parameter ``env``. The function must return an `ioda.ObsGroup` instance.
+Below is a basic example:
 
 .. code-block:: python
 
-  import numpy as np
-  from pyioda import ioda_obs_space as ioda_ospace
+   import numpy as np
+   from pyioda import ioda
 
-  def create_obs_group(varname, start, stop:int, fillvalue=-999):
-      print ("Creating ObsGroup with variable: ", varname)
+   def create_obs_group(varname:str, interval:list, env:dict=None) -> ioda.ObsGroup:
+       start, stop = interval
+       numLocs = int((stop - start) / 100)
+       the_line = np.linspace(start, stop, numLocs)
 
-      if (step == 0):
-          step = (stop - start) / 100
+       g = ioda.Engines.HH.createMemoryFile(name = "the_line.hdf5",
+                                            mode = ioda.Engines.BackendCreateModes.Truncate_If_Exists)
 
-      numLocs = int((stop - start) / step)
+       dims = [ioda.NewDimensionScale.int32('Location', numLocs, ioda.Unlimited, numLocs)]
+       og = ioda.ObsGroup.generate(g, dims)
 
-      datetime = np.array(["2020-01-01"]*numLocs, dtype=np.dtype('datetime64[s]'))
-      lat = np.linspace(-89, 89, numLocs)
-      lon = np.linspace(-179, 179, numLocs)
-      data = np.linspace(start, stop, numLocs)
+       p1 = ioda.VariableCreationParameters()
+       p1.compressWithGZIP()
+       p1.setFillValue.float(-999)
 
-      # Create the dimensions
-      dims = {'Location': data.shape[0]}
+       var = og.vars.create(f'ObsVal/{varname}', ioda.Types.float,
+                            scales=[og.vars.open('Location')], params=p1)
+       var.atts.create('units', ioda.Types.str).writeVector.str([''])
+       var.writeNPArray.float(the_line)
 
-      # Create the IODA ObsSpace
-      obsspace = ioda_ospace.ObsSpace("test.nc", mode='w', dim_dict=dims, is_memory_file=True)
+       return og
 
-      # Create the global attributes
-      obsspace.write_attr('MyGlobal_str', 'My Global String Data')
-      obsspace.write_attr('MyGlobal_int', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+Env argument
+~~~~~~~~~~~~
 
-      # Create the variables
-      obsspace.create_var('MetaData/dateTime', dtype=datetime.dtype, fillval=fillvalue) \
-          .write_attr('long_name', 'Timestamp') \
-          .write_data(datetime)
+The MPI communicator name, begin time, and end time are provided in the optional ``env`` dictionary, which includes:
 
-      obsspace.create_var('MetaData/latitude', dtype=lat.dtype, fillval=fillvalue) \
-          .write_attr('units', 'degrees_north') \
-          .write_attr('long_name', 'Latitude') \
-          .write_attr('valid_range', [-90.0, 90.0]) \
-          .write_data(lat)
+* ``comm_name``: MPI communicator identifier
+* ``start_time``: start of the time window
+* ``end_time``: end of the time window
 
-      obsspace.create_var('MetaData/longitude', dtype=lon.dtype, fillval=fillvalue) \
-          .write_attr('units', 'degrees_east') \
-          .write_attr('long_name', 'Longitude') \
-          .write_attr('valid_range', [-180.0, 180.0]) \
-          .write_data(lon)
+Examples
+~~~~~~~~
 
-      obsspace.create_var(f'ObsValue/{varname}', dtype=data.dtype, dim_list=['Location'], fillval=fillvalue) \
-          .write_attr('units', 'imaginary') \
-          .write_attr('long_name', 'My line') \
-          .write_data(data)
+The following examples use the script backend to wrap a BUFR reader.
 
-      return obsspace.obsgroup
+Here is an example of the IODA configuration file that might be used in the following examples:
+
+.. code-block:: yaml
+
+  ---
+  time window:
+    begin: "2018-04-14T21:00:00Z"
+    end: "2023-12-15T03:00:00Z"
+
+  observations:
+  - obs space:
+      name: "MHS"
+      simulated variables: ['antennaTemperature']
+      obsdatain:
+        engine:
+          type: script
+          script file: "testinput/mhs_reader.py"
+          args:
+            input_path: "Data/testinput_tier_1/gdas.t18z.1bmhs.tm00.bufr_d"
+            category: "metop-b"
+            cache categories:
+              - "metop-a"
+              - "metop-b"
+              - "metop-c"
+
+
+Serial Example
+~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+  import bufr
+  from pyioda.ioda.Engines.Bufr import Encoder
+
+  def create_obs_group(input_path, category, cache_categories, env):
+      YAML_PATH = "./bufr_mhs_mapping.yaml"
+
+      container = bufr.Parser(input_path, YAML_PATH).parse()
+      data = Encoder(YAML_PATH).encode(container)
+
+      return data[(category, )]
+
+
+Parallel Example
+~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+  import bufr
+  from pyioda.ioda.Engines.Bufr import Encoder
+
+  def create_obs_group(input_path, category, cache_categories, env):
+      YAML_PATH = "./bufr_mhs_mapping.yaml"
+
+      comm = bufr.mpi.Comm(env["comm_name"])
+      container = bufr.Parser(input_path, YAML_PATH).parse(comm)
+
+      container.all_gather(comm) # Gather data from all ranks to all ranks
+
+      data = Encoder(YAML_PATH).encode(container)
+
+      return data[(category, )]
+
