@@ -210,6 +210,8 @@ To help with the setting up of these configurations, the standalone application 
 In these examples the ``prep_file_info`` file will contain attributes holding the expected io pool size (6) and the expected main communicator size (100), plus variables holding information describing the io pool configuration that the input file set was built for.
 These values are checked by the IODA reader in the DA flow and if these do not match up an exception, with messages indicating what is wrong, is thrown and the job quits.
 
+.. _reading_odb_files_in_parallel:
+
 Reading ODB Files in Parallel 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -233,10 +235,25 @@ To read ODB files in parallel, set the io pool reader name to ``NonoverlappingPo
       io pool:
         reader name: NonoverlappingPool
         
-This will cause each MPI process to read a separate subset of frames from the input ODB file. If consecutive rows with the same value in the ``seqno`` column (typically used to distinguish between e.g. different aircraft tracks, radiosonde profiles or satellite observation locations) are found in multiple frames read by different processes, the ODB reader will arrange for the contents of all these rows to be transferred to a single process.
+This will cause each MPI process to read a separate subset of frames from the input ODB file. If consecutive rows with the same value in the ``seqno`` column (typically used to distinguish between e.g. different aircraft tracks, radiosonde profiles or satellite observation locations) are found in multiple frames read by different processes, the ODB reader will arrange for the contents of all these rows to be transferred to a single process. 
+
 
 .. warning::
-    Record grouping criteria that might assign locations associated with ODB rows with different seqnos to the same record are incompatible with the parallel ODB reader and will not be respected. For example, the parallel ODB reader cannot be used if locations need to be grouped into records by latitude or longitude.
+    Record grouping criteria that might assign locations associated with ODB rows with different seqnos to the same record will not automatically be respected. In other words, by default, the parallel ODB reader will not ensure that locations with identical values of the grouping variables are placed on the same MPI process. 
+    
+    However, if the ODB rows belonging to each record are placed next to each other in the input ODB file, then it is possible to prevent the reader from splitting them across multiple MPI processes. To this end, set the ``record grouping columns`` option in the ODB query file to the list of ODB columns by which the records are grouped; for example,
+    
+        .. code-block:: YAML
+        
+            record grouping columns:
+            - date
+            - time
+            - radar_beam_elevation
+            - radar_identifier
+
+    The parallel reader will then ensure that all **consecutive** rows with identical values of all these columns are placed on the same MPI process. 
+    
+    In contrast, if the ODB rows belonging to each record are not placed next to each other -- for example, locations need to be grouped into records by latitude, but ODB rows are not sorted by latitude -- then there is currently no way to force the parallel ODB reader to keep such rows together. Such files need to be read serially.
 
 .. warning::
     Only ``ReaderDependentDistribution`` is compatible with ``NonoverlappingPool``; an attempt to use a different distribution will cause an exception to be thrown.

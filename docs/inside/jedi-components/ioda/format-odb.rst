@@ -492,3 +492,5 @@ There are a few other options that can be set in the query file:
 * ``default reader``: configuration of the default method of selecting rows from which values of variables mapped to varno-independent columns should be extracted. See :ref:`above <varno-independent columns.reader>` for more details. If this option is not set, the ``from rows with non-missing values`` strategy is used.
 
 * ``skip variables corresponding to missing varnos``: should be set to ``false`` if variables should be created also for varnos present in the query but absent from the ODB file. By default such variables are not created.
+
+* ``record grouping columns``: the list of ODB columns used to group consecutive rows into records that should not be split across multiple MPI processes if the ODB file is read in parallel. See :ref:`reading_odb_files_in_parallel` for more details and an example.
