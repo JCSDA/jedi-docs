@@ -156,6 +156,13 @@ The variable transforms available are:
 
    transforms/radfromscaledrad
 
+**Satellite radiance from principal component scores**
+
+.. toctree::
+   :maxdepth: 1
+
+   transforms/radfrompcscores
+
 **Satellite zenith angle correction**
 
 .. toctree::

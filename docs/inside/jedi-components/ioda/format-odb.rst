@@ -373,6 +373,8 @@ The ``method`` key in the ``rows into locations split`` section specifies the me
   
   The set of methods that can be used to map rows to locations is extensible. New methods can be added by subclassing the  ``ioda::Engines::ODC::RowsIntoLocationsSplitterBase`` interface and registering the subclass in the ``RowsIntoLocationsSplitterBaseFactory``.
   
+.. _ioda-format-odb-channel-indices:
+
 Channel indices  
 ...............
 
