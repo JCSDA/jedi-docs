@@ -242,7 +242,7 @@ the 'outer' outer block chain, the :math:`\mathbf{V}_l` represents a variable ch
 and makes up the 'inner' outer block chain, and :math:`\mathbf{C}_l` is the central
 block for the localization. The quantities with the :math:`l` subscript are part of
 the full block chain for the localization operator :math:`\boldsymbol{\mathcal{L}}`,
-and are encasulated within the 'outer' central block in the yaml outline above. 
+and are encapsulated within the 'outer' central block in the yaml outline above.
 
 While convoluted, especially to new users, this modularization is a powerful feature
 allowing for more options and flexibility in building covariance models.
