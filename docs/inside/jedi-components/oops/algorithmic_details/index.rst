@@ -7,3 +7,4 @@ OOPS Algorithmic details
 
    solvers
    weak_4D
+   ETKF
