@@ -247,6 +247,19 @@ and are encapsulated within the 'outer' central block in the yaml outline above.
 While convoluted, especially to new users, this modularization is a powerful feature
 allowing for more options and flexibility in building covariance models.
 
+Computationally, in a variational application, the SABER ensemble localization
+is mathematically applied to the residual vector at the :math:`k`-th minimization
+iteration, :math:`\delta x_k`, according to the equation:
+
+.. math::
+  :label: eq-localization-application
+
+  \left( \boldsymbol{\mathcal{L}} \circ \textbf{B}_{\text{ens}}\right) \delta x = \sum\limits^{N_e}_{m=1} e_m \circ \left\lbrace
+  \boldsymbol{\mathcal{L}} \left( e_m \circ \delta x_k \right) \right\rbrace,
+
+where :math:`e_m` is an ensemble member's deviations from the ensemble means, and
+:math:`N_e` is the ensemble size.
+
 .. note::
 
   With settings of :code:`covariance model: hybrid` or :code:`covariance model: ensemble` computations will
