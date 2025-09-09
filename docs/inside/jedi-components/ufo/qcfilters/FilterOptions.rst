@@ -42,7 +42,7 @@ Consider the following set of observations:
 and suppose that we want to reject air temperature observations below 230 K taken in the tropical zone (between 30°S and 30°N). We could do this using the Bounds Check filter with a :code:`where` statement:
 
 .. code-block:: yaml
-    
+
     - filter: Bounds Check
       filter variables: airTemperature
       minvalue: 230
@@ -53,7 +53,7 @@ and suppose that we want to reject air temperature observations below 230 K take
           name: MetaData/latitude
         minvalue: -30
         maxvalue:  30
-    
+
 This would cause the filter to be applied only to air temperature observations `selected` by the :code:`where` statement, i.e. meeting the specified condition :code:`-30 <= MetaData/latitude <= 30`. Please note this does not mean all these observations would be rejected; rather, it means the Bounds Check filter would inspect only these observations and apply its usual criteria (in this case, "is the air temperature below the minimum allowed value of 230 K?") to decide whether any of them should be rejected. In our example, only observation 1 would be rejected, since this is the only observation (a) taken in the range of latitudes selected by the :code:`where` statement and (b) with a value lying below the minimum value passed to the Bounds Check filter.
 
 The list passed to the :code:`where` keyword can contain more than one item, each representing a separate condition imposed on a particular variable. The filter is applied only to observations meeting all of these conditions. The following kinds of conditions are accepted:
@@ -83,7 +83,7 @@ Example 1
 ^^^^^^^^^
 
 .. code-block:: yaml
-    
+
     where:
     - variable:
         name: GeoVaLs/sea_surface_temperature
@@ -98,7 +98,7 @@ Example 1
     - variable:
         name: MetaData/stationIdentification
       is_in: 3, 6, 11-120
-    
+
 In this example, the filter will be applied only to observations for which all of the following four criteria are met:
 
 - the sea surface temperature is within the range of [200, 300] K,
@@ -112,7 +112,7 @@ Example 2
 ^^^^^^^^^
 
 .. code-block:: yaml
-    
+
     where:
     - variable:
         name: MetaData/datetime
@@ -122,26 +122,26 @@ Example 2
         name: MetaData/datetime
       minvalue: "****-**-**T09:00:00Z"
       maxvalue: "****-**-**T18:00:00Z"
-    
+
 In this example, the filter will be applied only to observations taken between 09:00:00 and 18:00:00, between 1st January and 25th May of every year (end inclusive).  Note that datetime components are not yet 'loop aware'.  That is, a where clause between May and February for example would require two filters: one covering the Jan-Feb period and a second to cover the May-Dec period.
 
 Example 3
 ^^^^^^^^^
 
 .. code-block:: yaml
-    
+
     where:
     - variable:
         name: PreQC/chlorophyllMassConcentration
       any_bit_set_of: 0, 1
-    
+
 In this example, the filter will be applied only to observations for which the :code:`PreQC/chlorophyllMassConcentration` variable is an integer whose binary representation has a 1 at position 0 and/or position 1. (Position 0 denotes the least significant bit -- in other words, bits are numbered "from right to left".)
-    
+
 Example 4
 ^^^^^^^^^
 
 .. code-block:: yaml
-    
+
     where:
     - variable:
         name: PreQC/chlorophyllMassConcentration
@@ -149,69 +149,69 @@ Example 4
     - variable:
         name: PreQC/chlorophyllMassConcentration
       any_bit_unset_of: 10-12
-    
+
 In this example, the filter will be applied only to observations for which the :code:`PreQC/chlorophyllMassConcentration` variable is an integer whose binary representation has a 1 at position 4 and a 0 at any of positions 10 to 12.
-    
+
 Example 5
 ^^^^^^^^^
 
 .. code-block:: yaml
-    
+
     where:
     - variable:
         name: MetaData/stationIdentification
       matches_regex: 'EUR[A-Z]*'
-    
+
 In this example, the filter will be applied only to observations taken by stations whose IDs match the regular expression :code:`EUR[A-Z]*`, i.e. consist of the string :code:`EUR` followed by any number of capital letters.
-    
+
 Example 6
 ^^^^^^^^^
 
 .. code-block:: yaml
-    
+
     where:
     - variable:
         name: MetaData/stationIdentification
       matches_wildcard: 'EUR??TEST*'
-    
+
 In this example, the filter will be applied only to observations taken by stations whose IDs match the wildcard pattern :code:`EUR??TEST*`, i.e. consist of the string :code:`EUR` followed by two arbitrary characters, the string :code:`TEST` and any number of arbitrary characters.
-    
+
 Example 7
 ^^^^^^^^^
 
 .. code-block:: yaml
-    
+
     where:
     - variable:
         name: MetaData/observationTypeNum
       matches_any_wildcard: ['102*', '103*']
-    
+
 In this example, assuming that :code:`MetaData/observationTypeNum` is an integer variable, the filter will be applied only to observations whose types have decimal representations starting with :code:`102` or :code:`103`.
 
 Example 8
 ^^^^^^^^^
 
 .. code-block:: yaml
-    
+
     where:
     - variable:
         name: GeoVaLs/model_elevation
       is_close_to_any_of: [0.0, 1.0]
       absolute_tolerance: 1.0e-12
-    
+
 In this example, assuming that :code:`GeoVaLs/model_elevation` is a float variable, the filter will be applied only to observations whose :code:`model_elevation` is within :code:`1.0e-12` of either :code:`0.0` or :code:`1.0`.
 
 Example 9
 ^^^^^^^^^
 
 .. code-block:: yaml
-    
+
     where:
     - variable:
         name: GeoVaLs/model_elevation
       is_not_close_to_any_of: [100.0, 200.0]
       relative_tolerance: 0.1
-    
+
 In this example, assuming that :code:`GeoVaLs/model_elevation` is a float variable, the filter will be applied only to observations whose :code:`model_elevation` is not within 10 % of either :code:`100.0` or :code:`200.0`.
 
 Example 10
@@ -278,7 +278,7 @@ Warning: ObsFunctions are evaluated for all observations, including those that h
   - In the constructor of the filter, ensure that the diagnostic is added to the :code:`allvars_` variable.  For instance: :code:`allvars_ += Variable("ObsDiag/refractivity");`.  This step informs the code to set up the object, ready for use in the operator.
   - In the observation operator, make sure that the :code:`ObsDiagnostics` object is received, check that this contains the variables that you are expecting to save, and save the variables.  An example of this (in Fortran) is in `Met Office GNSS-RO operator <https://github.com/JCSDA-internal/ufo/blob/develop/src/ufo/gnssro/BendMetOffice/ufo_gnssro_bendmetoffice_mod.F90#L95>`_
   - Use the variable in the filter via the :code:`data_.get()` routine.  For instance add::
-  
+
       Variable refractivityVariable = Variable("ObsDiag/refractivity");
       data_.get(refractivityVariable, iLevel, inputData);
 
@@ -290,7 +290,14 @@ Warning: ObsFunctions are evaluated for all observations, including those that h
 
 Filter Actions
 --------------
-The action taken on observations flagged by the filter can be adjusted using the :code:`action` option recognized by each filter.  The following actions are available:
+In general, filters select a set of observations and then apply an action to those observations.  By default, the action is to reject the selected observations, but this can be overridden using the :code:`action` or :code:`actions` options.
+
+.. warning::
+
+  Providing a filter with an :code:`action` or :code:`actions` section will overwrite the default behavior of the filter.
+  For example, if actions are supplied to the :ref:`RejectList filter <rejectlist-filter>`, one of the actions must be :code:`reject` for it to actually reject observations.
+
+The following actions are available:
 
 * :code:`reject`: observations flagged by the filter are marked as rejected.
 * :code:`accept`: observations flagged by the filter are marked as accepted if they have previously been rejected for any reason other than missing observation value, a pre-processing flag indicating rejection, or failure of the observation operator.
@@ -307,15 +314,22 @@ The action taken on observations flagged by the filter can be adjusted using the
 * :code:`set flag bit`: the bit of the bitmap diagnostic flag indicated by the :code:`bit` option will be set at observations flagged by filter.
 * :code:`flag original and average profiles`: rejects any observations in the original profiles that have been flagged by the filter, and also rejects all observations in any averaged profile whose corresponding original profile contains at least one flagged observation. See the example below for further details.
 
-To perform multiple actions, replace the :code:`action` option, which takes a single action, by :code:`actions`, which takes a list of actions. This list may contain at most one action altering quality control flags, namely :code:`reject`, :code:`accept` and :code:`passivate`; if present, such an action must be the last in the list. The :code:`action` and :code:`actions` options are mutually exclusive.
+.. attention::
 
-The default action for almost all filters (taken when both the :code:`action` and :code:`actions` keywords are omitted) is :code:`reject`. There are two exceptions: the default action of the :code:`AcceptList` filter is :code:`accept` and the :code:`Perform Action` filter has no default action (either the :code:`action` or :code:`actions` keyword must be present).
+  The :code:`actions` option takes a list of actions.
+  The list may contain at most one action altering quality control flags, namely :code:`reject`, :code:`accept` or :code:`passivate`; if present, **such an action must be the last in the list**.
+  The :code:`action` and :code:`actions` options are mutually exclusive.
+
+.. note::
+
+  The default action for almost all filters (taken when both the :code:`action` and :code:`actions` keywords are omitted) is :code:`reject`.
+  There are two exceptions: the default action of the :ref:`AcceptList filter <acceptlist-filter>` is :code:`accept` and the :ref:`Perform Action <performaction-filter>` filter has no default action (either the :code:`action` or :code:`actions` keyword must be present).
 
 Example 1 - rejection, error inflation and assignment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: yaml
-    
+
     - filter: Background Check
       filter variables:
       - name: airTemperature

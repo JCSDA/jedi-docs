@@ -124,7 +124,7 @@ Similar to the standard Background Check filter, which rejects observations base
 A useful reference describing the practical implementation of Bayes Theorem for meteorological observations is:
 
 Lorenc, A.C. and Hammon, O. (1988), Objective quality control of observations using Bayesian methods. Theory, and a practical implementation. Q.J.R. Meteorol. Soc., 114: 515-543.
- 
+
 The .yaml file requires that one of the following two filter parameters are set to define the probability distribution for the observation to be bad:
 
 - :code:`prob density bad obs` (:code:`PdBad`): In this case the same value is applied to all the observations on which the filter is applied (typically this is set to the inverse of the climatological range e.g. 0.1/K for a domain 273-283 K for some temperature observation).
@@ -151,7 +151,7 @@ The .yaml file can also contain optional filter parameters, which override the d
 
 - :code:`bg error group` (:code:`BkgErrGroup`, default "ObsDiag"):
   group name which background errors for each variable are stored in;
-  
+
 - :code:`save total pd` (:code:`SaveTotalPd`, default false): if true, save the total (combined) probability distribution to the :code:`GrossErrorProbabilityTotal` group. This is required as an input by the Bayesian Whole Report filter.
 
 - :code:`max error variance` (:code:`ErrVarMax`): a maximum value for the error variance. If not set, no maximum is applied.
@@ -259,7 +259,7 @@ For each filter variable, the following groups must be available from the ObsSpa
 * :code:`GrossErrorProbabilityTotal/`: the total (combined) probability distribution, which is optionally saved the Bayesian Background Check filter,
 * :code:`DiagnosticFlags/BackgroundCheckRejection/`: the :code:`BackgroundCheckRejection` diagnostic flags must be initialized before this filter.
 
-Additionally, the prior probability of gross error applying to the whole report must be available from :code:`MetaData/grossErrorProbabilityReport`. 
+Additionally, the prior probability of gross error applying to the whole report must be available from :code:`MetaData/grossErrorProbabilityReport`.
 
 Example:
 
@@ -343,10 +343,14 @@ This filter behaves like the exact opposite of Domain Check: it rejects all obse
          name: MetaData/stationIdentification
        is_in: 1, 7, 100-199
 
+.. _rejectlist-filter:
+
 RejectList Filter
 -----------------
 
 This is an alternative name for the BlackList filter.
+
+.. _acceptlist-filter:
 
 AcceptList Filter
 -----------------
@@ -363,6 +367,8 @@ Below, the filter is configured to accept only observations taken by stations wi
      - variable:
          name: MetaData/stationIdentification
        is_in: 1, 7, 100-199
+
+.. _performaction-filter:
 
 Perform Action Filter
 ---------------------
@@ -562,9 +568,9 @@ The following YAML parameters are supported:
   * :code:`records_are_single_obs`: When set to :code:`true`, thinning is performed on whole records (profiles), rather than treating every observation in every record as an individual observation. (See :ref:`here <radiosonde_example_yaml>` for an example of using the :code:`obs space.obsdatain.obsgrouping` YAML option to group observations into records.) Thus if a record (specifically the earliest non-missing observation in a record) is deemed to be thinned, or accepted, every observation in that record is respectively thinned or accepted. This option does nothing if observations are not grouped into records. Can be used in combination with other options, such as :code:`priority_variable` and :code:`category_variable`. If :code:`category_variable` is not empty and :code:`records_are_single_obs` is :code:`true`, an exception will be thrown if the elements in any profile lie in two or more categories.
 
   * :code:`select_median`: When set to :code:`true`, retain the observation whose :code:`ObsValue` (or :code:`DerivedObsValue` - the latest modified valid type) is closest to the median value of all observations in the cell. (Cells containing no observations are ignored; option not tested with :code:`priority_variable` or :code:`category_variable` set.) The name of one (and only one) filter variable must be passed to the filter. Default: :code:`false`.
-  
+
   * :code:`select_mean`: When set to :code:`true`, calculate the mean of the :code:`ObsValue` (or :code:`DerivedObsValue` - the latest modified valid type) of all observations in the cell. This value is written to the :code:`DerivedObsValue` of the filter variable. (Cells containing no observations are ignored; option not tested with :code:`priority_variable` or :code:`category_variable` set.) The name of one (and only one) filter variable must be passed to the filter. Default: :code:`false`.
-  
+
   * :code:`min_num_obs_per_bin`: Set to an integer to retain observations only from cells with greater than or equal to this number of observations in the cell. All observations in cells with less than this many observations are rejected. If set to <= :math:`1`, accept the single observation in any cell with only one observation. (Only applies when :code:`select_median: true` or :code:`select_mean: true`; otherwise this option does nothing; if :code:`min_num_obs_per_bin` is not set when :code:`select_median: true` or :code:`select_mean: true`, the default value is :math:`5`.)
 
   * :code:`tiebreaker_pick_latest`: Set this option to :code:`true` to make the filter select the
@@ -800,7 +806,7 @@ The following YAML parameters are supported:
     is expected to be deprecated once this requirement no longer exists.
 
   * :code:`write median`: If true, the median observation value in each exclusion volume is written
-    to the :code:`DerivedObsValue` group. Values that contributed to the median but which were not 
+    to the :code:`DerivedObsValue` group. Values that contributed to the median but which were not
     the median are set to missing. If there are an even number of observations contributing to the
     median, the value that is written is the mean of the two central observations. Default: false.
 
@@ -943,7 +949,7 @@ identical air temperature measured values. A streak is rejected if it is longer 
   - filter: Stuck Check:
     filter variables: [airTemperature]
     percentage stuck tolerance: 50
-    
+
 Say we have 5 observations in one record: 274, 274, 274, 275, 275; and 4 in another: 274, 274, 275, 275. The first 3 observations in the first record form a streak and are rejected (3 is greater than 50 % of 5). They are the only ones rejected. This is because the next record comprises 2 streaks each 2 observations long, and 2 is exactly 50 % of 4, not greater than 50 % of 4; therefore neither clear the threshold for rejection.
 
 
@@ -1460,7 +1466,7 @@ obs space, with an earlier start time than the assimilation window and either th
 end time. The equivalent observations to those which were flagged in the auxiliary obs space are then
 flagged in the original obs space. This filter is motivated by the fact that the Ship Track Check
 and Stuck Check filters both rely on viewing observations within the context of their surrounding
-observations. Thus, this filter makes the underlying filters more reliable for observations close to the 
+observations. Thus, this filter makes the underlying filters more reliable for observations close to the
 temporal boundaries of the assimilation window. The filters are run independently: any observations within the assimilation
 window flagged by either of the sub-filters will be flagged by this filter.
 
@@ -1473,7 +1479,7 @@ The following YAML parameters are supported:
 * :code:`time before start of window`: The duration of time before the start of the assimilation
   window to collect for the history check. This required parameter must be entered in ISO 8601
   duration format.
-  
+
 * :code:`time after end of window`: The duration of time after the end of the assimilation
   window to collect for the history check. This optional parameter must be entered in ISO 8601
   duration format.
@@ -1888,7 +1894,7 @@ The following are optional YAML parameters to provide diagnostics for developers
         obs options:
           RTTOV_default_opts: UKMO_PS45
           SatRad_compatibility: false
-          RTTOV_GasUnitConv: true 
+          RTTOV_GasUnitConv: true
           UseRHwaterForQC: false
           UseColdSurfaceCheck: false
           Do_MW_Scatt: true
@@ -2169,7 +2175,7 @@ Satname Filter
 --------------
 
 This filter creates a string variable that makes it simpler to
-identify Satwind (AMV) observations by combining satellite and channel information. 
+identify Satwind (AMV) observations by combining satellite and channel information.
 This is useful for later processing where we want to apply filters to subsets of observations.
 
 To identify the type of motion that has been tracked, AMV BUFR observations
@@ -2179,7 +2185,7 @@ as described in code table 002023 below:
 ==== ================ =========================================================
 Num  Method           Description
 ==== ================ =========================================================
-  0  Reserved         
+  0  Reserved
   1  Infrared         Motion observed in the infrared channel
   2  Visible          Motion observed in the visible channel
   3  Vapour cloud     Motion observed in the water vapour channel
@@ -2187,7 +2193,7 @@ Num  Method           Description
   5  Vapour clear     Motion observed in the water vapour channel in clear air
   6  Ozone            Motion observed in the ozone channel
   7  Vapour           Motion observed in water vapour channel (cloud or clear)
-  13 Root-mean-square 
+  13 Root-mean-square
 ==== ================ =========================================================
 
 The most common use of the wind computation method is to distinguish between clear-sky and
@@ -2213,8 +2219,8 @@ This filter requires the following YAML parameters:
 
 * :code:`min WMO Satellite id`: Minimum WMO platform number to consider
 * :code:`max WMO Satellite id`: Maximum WMO platform number to consider
-* :code:`min frequency`: For each channel, the minimum central frequency (Hz) 
-* :code:`max frequency`: For each channel, the maximum central frequency (Hz) 
+* :code:`min frequency`: For each channel, the minimum central frequency (Hz)
+* :code:`max frequency`: For each channel, the maximum central frequency (Hz)
 * :code:`wind channel`: For each channel, the string name to call this channel
 * :code:`Sat ID`: For each satellite, the WMO identifier for each platform
 * :code:`Sat name`: For each satellite, the string name for this platform
