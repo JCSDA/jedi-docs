@@ -6,11 +6,13 @@ Observation Operators in UFO
 Introduction
 ------------
 
-There are three meta-operators which, when selected, run other operators and manipulate their output:
+There are four meta-operators which, when selected, run other operators and manipulate their output:
 
 * :ref:`Categorical <obsops_categorical>`,
 
 * :ref:`Composite <obsops_composite>`,
+
+* :ref:`Density reduction <obsops_densred>`
 
 * Time interpolation (documentation to be added).
 
@@ -199,6 +201,102 @@ vertical interpolation of the variables simulated by this operator.
       - name: windEastward
       vertical coordinate: air_pressure_levels
       observation vertical coordinate: pressure
+
+.. _obsops_densred:
+
+Density Reduction
+-----------------
+
+Description
+^^^^^^^^^^^
+
+This operator can be used to reduce the number of locations passed to the GetValues class, leading to a faster execution time at the cost of
+potentially reduced accuracy in the subsequent H(x) calculations.
+
+This operator wraps an underlying observation operator. This operator passes to the underlying operator a set of GeoVaLs of length equal to
+the number of ObsSpace locations, but requests from OOPS a smaller number of GeoVaLs.
+
+The GeoVaLs passed to the underlying operator are referred to as the 'reduced' GeoVaLs, and those retrieved from OOPS are referred to as the 'sampled' GeoVaLs.
+There are, in general, more reduced than sampled GeoVaLs, and this operator actually increases the number of GeoVaLs present.
+This is contrary to the behaviour in other operators for which there are more sampled than reduced GeoVaLs, but we retain the nomenclature here for consistency.
+
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`operator`: The name and configuration options of the underlying observation operator.
+
+* :code:`algorithm`: The density reduction algorithm to use. See below for details.
+
+Available density reduction algorithms
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`simple`: Simple GeoVaLs density reduction algorithm.
+
+Given a :code:`reduction factor` :math:`k`, this algorithm divides the observation locations into consecutive blocks of length :math:`k`.
+The GeoVaLs associated with the first location are copied to the subsequent :math:`k - 1` locations.
+If :math:`k` is equal to :math:`1`, there is no change relative to the standard behaviour of the underlying observation operator.
+There is no guarantee that the observation locations are spatially close, so this algorithm achieves
+a speed-up in GetValues at the potential cost to accuracy in H(x).
+
+* :code:`lat lon grid`: Lat-lon grid GeoVaLs density reduction algorithm.
+
+This algorithm divides the model domain into a regular lat-lon grid whose dimensions and resolution are specified by the user
+via the options :code:`latitude grid length`, :code:`longitude grid length`, :code:`latitude lower bound`,
+:code:`latitude upper bound` and :code:`longitude lower bound`.
+
+A bin number is assigned to each observation using the following procedure, given latitude :math:`\phi` and longitude :math:`\lambda`:
+
+* Let the latitude bin number :math:`\text{bin}_\phi = \text{trunc}((\phi - \phi_{\text{min}}) / \Delta\phi)`, where :math:`\phi_{\text{min}}` corresponds to :code:`latitude lower bound`, :math:`\Delta\phi` corresponds to :code:`latitude grid length`, and :math:`\text{trunc}` is the integer truncation operator that discards any fractional part of its argument.
+* Let the longitude bin number :math:`\text{bin}_\lambda = \text{trunc}((\lambda - \lambda_{\text{min}}) / \Delta\lambda)`, where :math:`\lambda_{\text{min}}` corresponds to :code:`longitude lower bound` and :math:`\Delta\lambda` corresponds to :code:`longitude grid length`.
+* Let the number of latitude bins :math:`n_{\phi} = (\phi_{\text{max}} - \phi_{\text{min}}) / \Delta\phi + 1`, where :math:`\phi_{\text{max}}` corresponds to :code:`latitude upper bound`. Adding one ensures that values of latitude that lie exactly on the upper bound are handled correctly.
+* Let the overall bin number equal :math:`\text{bin}_\phi + n_{\phi} \text{bin}_\lambda`.
+
+Note that, because it is not required in the above calculation, there is no option called :code:`longitude upper bound`.
+
+One observation location is chosen for each unique overall bin number and passed to GetValues in order to draw the GeoVaLs.
+Any additional locations associated with that bin number are assigned copies of the GeoVaLs that were produced for the selected location.
+
+Example
+^^^^^^^
+
+The examples below are used to reduce the number of GeoVaLs retrieved prior to the application of the :code:`VertInterp` operator.
+
+* Example using the :code:`simple` density reduction algorithm with :math:`k = 5`:
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Density Reduction
+    component:
+      name: VertInterp
+      observation alias file: ../resources/namemap/test_name_map.yaml
+      observation vertical coordinate: pressure
+      vertical coordinate: air_pressure
+      interpolation method: log-linear
+    algorithm:
+      name: simple
+      reduction factor: 5
+
+* Example using the :code:`lat lon grid` density reduction algorithm with grid boxes of size :math:`0.1^\circ \times 0.1^\circ`, spanning the entire global domain:
+
+.. code-block:: yaml
+
+  obs operator:
+    name: Density Reduction
+    operator:
+      name: VertInterp
+      observation alias file: ../resources/namemap/test_name_map.yaml
+      observation vertical coordinate: pressure
+      vertical coordinate: air_pressure
+      interpolation method: log-linear
+    algorithm:
+      name: lat lon grid
+      latitude lower bound: 0.0
+      latitude upper bound: 180.0
+      longitude lower bound: 0.0
+      latitude grid length: 0.1
+      longitude grid length: 0.1
+
 
 .. _obsops_vertinterp:
 
