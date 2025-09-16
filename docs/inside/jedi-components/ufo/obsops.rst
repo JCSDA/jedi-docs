@@ -1961,13 +1961,12 @@ SfcCorrected
 
 Description:
 ^^^^^^^^^^^^
-This forward operator contains three schemes(WRFDA, UKMO, GSL) to correct the computation of surface variables(2m air temperature, station pressure) at a location for the discrepancy in model topography
-at the observation location. 
+This forward operator contains three schemes (WRFDA, UKMO, GSL) to correct the computation of surface variables (2m air temperature, station pressure) caused by the discrepancy of model topography at observed locations.
 
 To note:
-* Currently the 2m temperature using the WRFDA and UKMO method and station pressure for all schemes of forward operators are the ones implemented.
+* Currently the 2m temperature using the WRFDA and UKMO method and station pressure for all schemes of forward operators are the ones implemented. Surface correction for Humidity is not implemented.
 * The `Non-linear` operators can be used in simulation of OBS only.
-* The `Linear` operators have not been implemented.
+* The `Linear` operators have not been implemented. Until TL/AD is available, must specify Identity Obs Operator in assimilation.
 
 The unified SfcCorrected operator is an initial framework to apply a consistent model terrain height discrepancy correction for many of surface observation types.
 
