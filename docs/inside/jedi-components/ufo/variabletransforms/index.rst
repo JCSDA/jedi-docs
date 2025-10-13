@@ -149,6 +149,13 @@ The variable transforms available are:
 
    transforms/btfromrad
 
+**Satellite ice thickness from ice freeboard**
+
+.. toctree::
+   :maxdepth: 1
+
+   transforms/icethicknessfromfreeboard
+
 **Satellite radiance from scaled radiance**
 
 .. toctree::
