@@ -249,6 +249,44 @@ Parameter of RTPS inflation is controlled by :code:`inflation.rtps` configuratio
    * - GETKF
      - RTPP, RTPS
 
+Cross validation supported in the ensemble solvers
+--------------------------------------------------
+
+In order to use cross validation (`Buehner, 2020 <https://doi.org/10.1175/MWR-D-19-0402.1>`_), one can specify:
+
+.. code-block:: yaml
+
+  local ensemble DA:
+    cross validation:
+      number of subensembles: 5
+
+This makes use of a :code:`SubensembleSplitter` class to split the ensemble of :math:`N_{e}` members into :math:`N_{sub}` subensembles. The value of :math:`N_{sub}` is assigned using the mandatory :code:`number of subensembles` configuration value. The value of :code:`number of subensembles` must be between 2 and the number of ensemble members :math:`N_{e}`, and must cleanly divide the number of ensemble members :math:`N_{e}`.
+
+Currently there are two splitting methods implemented to split the ensemble. The contiguous split divides the ensemble into :math:`N_{sub}` subensembles evenly, with the first :math:`N_{e}/N_{sub}` members belonging to subensemble 1, the second :math:`N_{e}/N_{sub}` members belonging to subensemble 2, etc.
+
+The contiguous split happens by default if no :code:`splitting method` is specified, but if one wishes to explicitly split via this method:
+
+.. code-block:: yaml
+
+  local ensemble DA:
+    cross validation:
+      number of subensembles: 5
+      splitting method: Contiguous #default value
+
+Alternatively, one can split the ensemble randomly (with an optional seed):
+
+.. code-block:: yaml
+
+  local ensemble DA:
+    cross validation:
+      number of subensembles: 5
+      splitting method: Random
+      random seed: 0 #default value
+
+This method also splits the ensemble into :math:`N_{sub}` subensembles evenly, except each ensemble member will be assigned to a subensemble at random.
+
+Note that if one is using a modulated ensemble by using the stochastic GETKF solver, no further options need to be specified as the entire modulated ensemble is split evenly for you. Cross validation for the deterministic GETKF solver is not yet supported.
+
 NOTE about obs distributions
 -----------------------------
 Currently Local Ensemble DA supports :code:`InefficientDistribution` and :code:`Halo` obs distribution. When :code:`InefficientDistribution` distribution is used, all observations and H(x) are replicated on all PEs. When :code:`Halo` distribution is used, only observations needed on this PE are stored on each PE. :code:`Halo`  distribution allows for more efficient memory management compared to :code:`distribution.name: InefficientDistribution`, however at the expense of potentially poor load management compared to :code:`distribution.name: RoundRobin`. For optimal combination of memory and load balancing, we developed an option to run Local Ensemble DA in the observer-only mode with :code:`distribution.name: RoundRobin`. Then one can read ensemble of H(x) from disk using :code:`driver.read HX from disk == true`, :code:`distribution.name: Halo` obs distribution, and :code:`driver.do posterior observer == false`.   
