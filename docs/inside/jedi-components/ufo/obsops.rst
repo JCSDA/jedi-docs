@@ -855,6 +855,8 @@ Optional
 * :code:`obs options.UseSurfaceEmissivityAtlas` (boolean, default :code:`false`): Initialise and read a surface emissivity atlas.
 * :code:`obs options.SurfaceEmissivityAtlasName` (string, default :code:`default`): Surface emissivity atlas name, valid options are: UWIREmis, CAMEL, CAMELClim, TELSEM2, CNRM
 * :code:`obs options.SurfaceEmissivityAtlasPath` (string): Surface emissivity atlas relative path
+* :code:`obs options.ReconstructedRadianceCorrection` (boolean, default :code:`false`): Apply a correction to simulated radiances to account for the effect of reconstruction from PC scores. The theory of this correction can be found <a href="https://itwg.ssec.wisc.edu/wordpress/wp-content/uploads/2025/06/poster.4p.04.Migliorini_itsc25.pdf" target="_blank">here</a>. If this option is set to true then :code:`CMatrixPath` must also be set. Note that when this option is set to true, :code:`RTTOV_switchrad` is set to false.
+* :code:`obs options.CMatrixPath` (string): Relative path to the files required the apply the corrections for the reconstructed radiance observation operator. Required if :code:`ReconstructedRadianceCorrection` is set to true.
 
 Additionally, each option that may be modified within the RTTOV options structure may be accessed by prefixing :code:`RTTOV_` ahead of the option name, regardless of where it resides within the RTTOV option structure.
 For example, :code:`RTTOV_addrefrac: true` will enable the option within RTTOV to account for atmospheric refraction during the optical depth calculation.
