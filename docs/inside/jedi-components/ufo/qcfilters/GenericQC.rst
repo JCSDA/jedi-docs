@@ -60,7 +60,7 @@ If there is only one entry in the :code:`test variables` list, the same criterio
 Background Check Filter
 -----------------------
 
-This filter checks for bias corrected distance between observation value and model simulated value (:math:`y-H(x)`) and rejects obs where the absolute difference is larger than :code:`absolute threshold`, or :code:`threshold` * :math:`{\sigma}_o`, or :code:`threshold` * :math:`{\sigma}_b`, where :math:`{\sigma}_o` is observation error and :math:`{\sigma}_b` is background error. This filter can also adjust observation error through a constant inflation factor when the filter action is set to :code:`inflate error`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
+This filter checks for bias corrected distance between observation value and model simulated value (:math:`y-H(x)`) and rejects observations where the absolute difference is larger than :code:`absolute threshold`, :code:`threshold` * :math:`{\sigma}_o`, :code:`threshold` * :math:`{\sigma}_b`, or :code:`threshold` * :math:`{\sigma}_e`,where :math:`{\sigma}_o` is observation error, :math:`{\sigma}_b` is background error, and :math:`{\sigma}_e` is the ensemble spread (standard deviation of model equivalents on ensemble members) calculated beforehand by the :code:`Ensemble Statistics` filter. This filter can also adjust observation error through a constant inflation factor when the filter action is set to :code:`inflate error`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
 
 .. code-block:: yaml
 
@@ -90,7 +90,6 @@ This filter checks for bias corrected distance between observation value and mod
      threshold wrt background error: true
      threshold: 2.0
 
-
 The first filter would flag temperature observations where :math:`|y-(H(x)+bias)| > \min (` :code:`absolute_threshold`, :code:`threshold` * :math:`{\sigma}_o)`, and
 then the flagged data are rejected due to the filter action being set to :code:`reject`.
 
@@ -100,7 +99,7 @@ Please see the :ref:`Filter Actions <filter-actions>` section for more detail.
 
 The third filter compares the departure against the background error rather than the observation error. It would flag sea surface height observations where :math:`|y-(H(x)+bias)| >` :code:`threshold` * :math:`{\sigma}_b`, and reject the flagged observations as no filter action is specified. If :code:`threshold wrt background error` is set to :code:`true`, then :code:`threshold` must be set and :code:`absolute threshold` must not.
 
-There is an option for the background check filter to check for distance between observation value and model simulated value without bias correction (:math:`y-H(x)`) when the additional parameter :code:`bias correction parameter` is set to 1.0 and rejects obs where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * :math:`{\sigma}_o` when the filter action is set to :code:`reject`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
+There is an option for the background check filter to check for distance between observation value and model simulated value without bias correction (:math:`y-H(x)`) when the additional parameter :code:`bias correction parameter` is set to 1.0 and rejects observations where the absolute difference is larger than :code:`absolute threshold` or :code:`threshold` * :math:`{\sigma}_o` when the filter action is set to :code:`reject`. If no action section is included in the yaml, the filter is set to reject the flagged observations.
 
 .. code-block:: yaml
 
@@ -115,6 +114,19 @@ There is an option for the background check filter to check for distance between
 
 This filter would flag temperature observations where :math:`|y-H(x)| > \min (` :code:`absolute_threshold`, :code:`threshold` * :math:`{\sigma}_o)`, and then the flagged data are rejected due to filter action is set to reject.
 
+It is also possible to compare observations against the ensemble mean of model equivalents and scale the tolerance threshold by the ensemble spread. To this end, these quantities need to be calculated beforehand by the :code:`Ensemble Statistics` filter, as in the example below:
+
+.. code-block:: yaml
+
+   - filter: Ensemble Statistics
+     statistics:
+     - MeanHofX                           # Compute ensemble mean
+     - HofXStdDev                         # Compute ensemble spread
+   - filter: Background Check
+     test_hofx: MeanHofX                  # Compare with ensemble mean
+     threshold wrt ensemble spread: true  # Scale threshold by ensemble spread
+     threshold: 2.0
+     defer to post: true                  # Ensure the filter is treated as a post-filter
 
 Bayesian Background Check Filter
 --------------------------------
@@ -2486,3 +2498,34 @@ An example yaml is as follows:
 In this case, the :code:`Poisson Disk Thinning` filter is run three times; each time
 different values of :code:`min_horizontal_spacing` and :code:`shuffle` are used.
 The :code:`exclusion volume shape` parameter remains the same each repetition.
+
+Ensemble Statistics
+-------------------
+
+This "filter" (not really a genuine filter; rather, a "processing step") calculates statistics of model equivalents (H(x) vectors) over ensemble members and saves them to the ObsSpace. They can then be referenced in quality checks made by subsequent filters; for instance, the Background Check can be configured to compare observations to the ensemble mean of model equivalents rather than the model equivalent computed on each ensemble member independently.
+
+The following YAML option is required:
+
+- :code:`statistics`: List of statistics to be calculated; one or more of
+
+  * :code:`MeanHofX`: ensemble mean of model equivalents;
+  
+  * :code:`HofXStdDev`: ensemble spread (i.e. standard deviation) of model equivalents.
+  
+The standard :code:`filter variables` option is supported as well and can be used to limit the list of simulated variables (and channels) for whose model equivalents ensemble statistics should be calculated.
+
+The filter writes the calculated statistics to ObsSpace variables with names and groups derived from :code:`filter variables` and :code:`statistics`, respectively.
+
+Example:
+
+.. code-block:: yaml
+
+    - filter: Ensemble Statistics
+      statistics:
+      - MeanHofX
+      - HofXStdDev
+      filter variables:
+      - name: windEastward
+      - name: windNorthward
+
+In this case, the filter is configured to calculate the mean and spread of the model equivalents of horizontal wind velocity components. The results will be written to ObsSpace variables :code:`MeanHofX/windEastward`, :code:`MeanHofX/windNorthward`, :code:`HofXStdDev/windEastward`, and :code:`HofXStdDev/windNorthward`.
