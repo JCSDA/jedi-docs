@@ -269,4 +269,4 @@ You would have to design your application to produce a text output file as descr
 in :ref:`Application Testing <app-testing>` and you would have to provide a reference
 output file to compare against.  These reference output files can be specified in the
 test configuration file (YAML file) under :code:`test` section as described  :ref:`here <test-apps>`.
-No additional modifications is needed in :code`CMakeLists.txt`.
+No additional modifications is needed in :code:`CMakeLists.txt`.
