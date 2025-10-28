@@ -612,6 +612,23 @@ Examples of yaml:
   obs operator:
     name: AtmVertInterpLay
 
+Atmosphere Surface Interpolation (deprecated)
+----------------------------------------------------
+
+Note:
+Surface Corrected operator :ref:`SfcCorrected <obsops_sfc_corrected>` for Temperature and Pressure can be used instead.
+
+Description:
+^^^^^^^^^^^^
+
+Observational operator for surface interpolation of model surface values to observation locations.
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+.. code-block:: yaml
+
+  obs operator:
+    name: GSISfcModel
 
 Community Radiative Transfer Model (CRTM)
 -----------------------------------------
@@ -1958,6 +1975,7 @@ Cotton, J., 2018. Update on surface wind activities at the Met Office.
 Proceedings for the 14 th International Winds Workshop, 23-27 April 2018, Jeju City, South Korea.
 Available from http://cimss.ssec.wisc.edu/iwwg/iww14/program/index.html.
 
+.. _obsops_sfc_corrected:
 SfcCorrected
 ---------------------------------------
 
