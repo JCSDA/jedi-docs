@@ -49,6 +49,12 @@ UseAAPPSurfaceClass_
   | Use additional surface type information derived by AAPP using radiances to reclassify surfaces.
   | (default false)
 
+.. _AAPPsurftest:
+
+AAPPsurftest_
+  | Name of the version of AAPP used to derive the surface class. One of original (for ATOVS) or sg (for EPSSG instruments such as MWS). Used in conjunction with UseAAPPSurfaceClass_
+  | (default original)
+  
 .. _UseSurfaceWaterFraction:
 
 UseSurfaceWaterFraction_
