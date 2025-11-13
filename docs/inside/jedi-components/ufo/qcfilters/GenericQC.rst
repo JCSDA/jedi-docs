@@ -114,6 +114,19 @@ There is an option for the background check filter to check for distance between
 
 This filter would flag temperature observations where :math:`|y-H(x)| > \min (` :code:`absolute_threshold`, :code:`threshold` * :math:`{\sigma}_o)`, and then the flagged data are rejected due to filter action is set to reject.
 
+A list of absolute thresholds can be added through the optional input :code:`absolute threshold vector` in order to set variable-specific thresholds, i.e., different channels in satellite data. Here is an example to conduct Background Check of brightness temperature observations with 13 channels:
+
+.. code-block:: yaml
+
+  - filter: Background Check
+    filter variables:
+    - name: brightnessTemperature
+      channels: 1-13
+      threshold: 2.0
+      absolute threshold vector: [30.0,30.0,15.0,30.0,15.0,
+                                  30.0, 5.0,15.0,20.0,20.0,
+                                  20.0,10.0,10]
+
 It is also possible to compare observations against the ensemble mean of model equivalents and scale the tolerance threshold by the ensemble spread. To this end, these quantities need to be calculated beforehand by the :code:`Ensemble Statistics` filter, as in the example below:
 
 .. code-block:: yaml
