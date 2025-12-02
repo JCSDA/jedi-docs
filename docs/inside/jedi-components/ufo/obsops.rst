@@ -1976,6 +1976,7 @@ Proceedings for the 14 th International Winds Workshop, 23-27 April 2018, Jeju C
 Available from http://cimss.ssec.wisc.edu/iwwg/iww14/program/index.html.
 
 .. _obsops_sfc_corrected:
+
 SfcCorrected
 ---------------------------------------
 
@@ -2101,7 +2102,7 @@ model pressure as such:
 .. math::
   H(x) = Ps_{model}+(Ps_{obs}-Ps_{o2m})
 
-where `Ps_o2m` is the observed pressure adjusted from station hight to model surface height as such
+where `Ps_o2m` is the observed pressure adjusted from station height to model surface height as such
 
 .. math::
   Ps_{o2m} = Ps_{ob} * exp(- (H_{model} - H_{ob}) * gravity / (Rd * Tv_{avg}))
@@ -2112,9 +2113,17 @@ where `Tv_avg` is the averged virtual temperature of the model surface virtual t
    Tv_{avg} = (Tv_{model} + Tv_{ob})/2.0
 
 
-Where the observed virtual temperature value is computed from the observed temperature and humidity, or using the observed
+where the observed virtual temperature value is computed from the observed temperature and humidity, or using the observed
 temperature or model temperature if there are missing values for any observed quantities.
 
+When both observed temperature `T_{ob}` and observed humidity `Q_{ob}` have non-missing values then the observed virtual temperature `Tv_{ob}` is calculated as such:
+
+.. math::
+   q = std::max(1e-12 or Q_{ob}/(1.0-Q_{ob}))
+   Tv_{ob} = T_{ob} * (1.0 + (t2tv * q));
+
+
+where `t2tv`=0.608 is the constant factor used in conversion defined in ufo/utils/Constants.h.
 
 Background Error Vertical Interpolation
 ---------------------------------------
