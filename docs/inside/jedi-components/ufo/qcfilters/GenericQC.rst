@@ -1004,6 +1004,22 @@ The options for YAML include:
 
 Note that :code:`threshold` supersedes :code:`minvalue` and :code:`maxvalue` in the filter.
 
+The YAML may also include list of channels whose differences are to be checked. For example:
+
+.. code-block:: yaml
+
+   - filter: Difference Check
+     reference:
+       name: Hofx/brightnessTemperature
+       channels: 1,3,5,7
+     value:
+        name: ObsValue/brightnessTemperature
+        channels: 1,3,5,7
+     minvalue: -2.5
+
+In this case, the filter will check the difference between :code:`ObsValue/brightnessTemperature` and :code:`Hofx/brightnessTemperature`  of channels 1, 3, 5, and 7,
+and flag the varaibles at all locations if the difference is less than the :code:`minvalue` of -2.5.
+
 Derivative Check Filter
 -----------------------
 
