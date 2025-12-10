@@ -1352,6 +1352,136 @@ Examples of yaml:
        - name: [atmosphericRefractivity]
        threshold: 3
 
+GNSS RO non-local pseudo excess phase (NLPEP 2D)
+------------------------------------------------
+
+Description:
+^^^^^^^^^^^^
+
+The RefNLPEP2D forward operator is a JEDI UFO implementation of the non-local 
+pseudo excess phase approach of Sokolovskiy, et al, 2005. This is logically similar
+to the GPSEPH forward operator in WRFDA, but shares no code with that earlier 
+implementation.
+
+RefNLPEP2D is a 2D forward operator based integrating excess refractive index, 
+computed from refractivity, over a predefined GNSS RO ray path that does not
+change during the data assimilation process. The same ray path is used to compute a 
+derived observation of non-local pseudo excess phase from refractivity observations 
+and the assumption of spherical symmetry. This operator allows a model's horizontal 
+variations in refractivity to be used when simulating GNSS RO observations.
+
+The RefNLPEP2D operator assumes that observations of nonLocalPseudoExcessPhase
+have been generated prior to entering the forward operator code. These 
+observations must have used the same ray path definition that is used in the
+forward operator. This is most easily accomplished within JEDI using the 
+:code:`NonLocalPseudoExcessPhase` variable transform to convert observed
+atmosphericRefractivity to nonLocalPseudoExcessPhase.
+
+Configuration options (ObsOperator):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+All obs operator options are under the variable-grouping :code:`obs options`.
+
+* :code:`n_horiz`: the horizontal points the operator integrates along the 2d plane. Default is 11. Has to be an odd number > 0.
+
+* :code:`res`: The horizontal resolution of the 2d plane in km. Default is 11 km. The length of the ray path is :code:`n_horiz` times :code:`res`.
+
+* :code:`ray_length`: An alternate way to specify the ray path length in km. If set, it will override :code:`n_horiz` and :code:`res`. However, the ray length is only approximate, as it may need to be adjusted to ensure :code:`n_horiz` is an odd number. Therefore, use of this parameter is not recommended.
+
+* :code:`top_2d`: the highest geometric height to apply the 2d operator. Default is 90 km. Heights above :code:`top_2d` will use only a single vertical column of model data located at the tangent point and assume a spherically-symmetric atmosphere. Otherwise each ray will use n_horiz columns of model data.
+
+* :code:`ray_path_gen_type`: Subclass of GnssroRayPathGenerator to use to create the pre-defined ray path. Default is :code:`StraightLine`. This is currently the only option, but other path geometries are planned in the future. 
+
+* :code:`refr_algo`: Subclass of RefractivityCalculator to use to compute refractivity and its derivatives from temperature, pressure, and specific humidity. Default is :code:`ReugerBevis`, which uses the Reuger, 2002 model if :code:`use_compress` is true, and the Bevis, 1994 model is :code:`use_compress` is false. No other values are currently supported, but this configuration could be used in the future to test other refractivity models.
+
+* :code:`use_compress`: true if atmospheric compressibility should be used; false otherwise. Defaults is true.
+
+Configuration options (ObsSpace):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`obsgrouping`: Applying sequenceNumber as group_variable can get RO observations to be grouped into vertical profiles. Otherwise RO data will be treated as single observations. Because 2D rays can use information from multiple levels in the same RO profile, grouping by RO profiles is necessary for proper data handling in this operator.
+
+Configuration options (ObsFilter):
+
+* :code:`Variable Transform`: filter = :code:`NonLocalPseudoExcessPhase` is required to compute derived observations of non-local pseudo excess phase from observations of atmosphericRefractivity read from input files. This filter is required unless input observations files contain nonLocalPseudoExcessPhase as a pre-computed ObsValue. Configuration of :code:`res`, :code:`top_2d`, and :code:`n_horiz` within the variable transform must match the configuration of the GnssroRefNLPEP2D forward operator. :code:`SkipWhenNoObs` must be false if any MPI rank has no obs in it or filter FinalCheck will fail.
+
+* :code:`Variable Transform`: filter = :code:`GnssroRefractivityGradient`: This transform is optional and is only needed for diagnostic purposes. It computes the vertical derivative of refractivity with respect to geometric height (dN/dz) and saves this as a derived observation. It optionally computes and saves a ducting category for each vertical level if :code:`calculate ducting flag` is true, and the ducting category of the most extreme level, constant for all levels in a single RO profile, if :code:`calculate profile ducting flag` is true. The ducting category as defined as fractions of the critical ducting value -1/Rearth. The smallest fraction isgiven by the configuration parameter :code:`min super refraction` and must be >= 0 and < 0.6. The other ducting category thresholds are are hard-coded as 0.6, 0.7, 0.8, 0.9, and 1.0. :code:`SkipWhenNoObs` must be false if any MPI rank has no obs in it or filter FinalCheck will fail. 
+
+* :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation.
+
+* :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`. 
+
+  * options: :code:`filter variables`. The :code:`name` = :code:`nonLocalPseudoExcessPhase` must be specified when used with the RefNLPEP2D forward operator.
+  * options: :code:`errmodel` = :code:`NCEP`, with more to come. The default errmodel is :code:`NBAM`, but this value is not supported for the nonLocalPseudoExcessPhase variable. One must specify errmodel explicitly for the RefNLPEP2D forward operator.
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+ observations:
+   observers:
+   - obs space:
+       name: GnssroRefNLPEP2D
+       obsdatain:
+         engine:
+           type: H5File
+           obsfile: Data/ufo/testinput_tier_1/gnssro_obs_2025070400_refnlpep2d.nc4
+         obsgrouping:
+           group_variables: 
+           - sequenceNumber
+           sort_variable: "height"
+           sort order: ascending
+       obsdataout:
+         engine:
+           type: H5File
+           obsfile: Data/gnssro_output_2025070400_refnlpep2d.nc4
+       observed variables: []
+       derived variables: [nonLocalPseudoExcessPhase]
+       simulated variables: [nonLocalPseudoExcessPhase]
+     obs operator:
+       name: GnssroRefNLPEP2D 
+       obs options:
+         res: 11.0
+         top_2d: 60.0
+         n_horiz: 19
+         refr_algo: "RuegerBevis"
+         use_compress: true
+     obs filters:
+     - filter: Variable Transforms
+       Transform: NonLocalPseudoExcessPhase
+       UseValidDataOnly: false
+       SkipWhenNoObs: false
+       res: 11.0
+       top_2d: 60.0
+       n_horiz: 19
+       group: "ObsValue"
+       refractivity variable: "atmosphericRefractivity"
+       nlpep variable: "nonLocalPseudoExcessPhase"
+     - filter: ROobserror
+       filter variables:
+       - name: nonLocalPseudoExcessPhase
+       errmodel: NCEP
+     - filter: Variable Transforms
+       Transform: GnssroRefractivityGradient
+       UseValidDataOnly: false
+       SkipWhenNoObs: false
+       group: "ObsValue"
+       min super refraction: 0.5
+       calculate ducting flag: true
+       calculate profile ducting flag: true
+     - filter: Domain Check
+       where:
+       - variable:
+           name: MetaData/height
+         minvalue: 0
+         maxvalue: 62000
+
+References:
+^^^^^^^^^^^
+
+* Sokolovskiy, S., Y. Kuo, and W. Wang, 2005: Assessing the Accuracy of a Linearized Observation Operator for Assimilation of Radio Occultation Data: Case Simulations with a High-Resolution Weather Model. Mon. Wea. Rev., 133, 2200–2212, https://doi.org/10.1175/MWR2948.1.
+
 Ground Based GNSS observation operator (Met Office)
 ---------------------------------------------------
 
