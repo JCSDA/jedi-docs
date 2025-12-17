@@ -57,6 +57,17 @@ In practice, one would be more likely to want to filter out wind component obser
 
 If there is only one entry in the :code:`test variables` list, the same criterion is applied to all filter variables. Otherwise the number of test variables needs to match that of filter variables, and each filter variable is filtered according to the values of the corresponding test variable.
 
+If an observation value happens to be exactly equal to :code:`minvalue` or :code:`maxvalue`, the default filter behavior is for that observation to pass QC. (*i.e.* the passing range of values is inclusive of the endpoints.) This behavior can be changed by setting the :code:`min_exclusive` and/or :code:`max_exclusive` parameters to :code:`true`, in which case observations equal to the specified limits will be rejected. For example, the following filter rejects all temperature observations that are less than *or equal to* 230:
+
+.. code-block:: yaml
+
+   - filter: Bounds Check
+     filter variables:
+     - name: airTemperature
+     minvalue: 230
+     min_exclusive: true
+
+
 Background Check Filter
 -----------------------
 
@@ -1025,6 +1036,17 @@ The YAML may also include list of channels whose differences are to be checked. 
 
 In this case, the filter will check the difference between :code:`ObsValue/brightnessTemperature` and :code:`Hofx/brightnessTemperature`  of channels 1, 3, 5, and 7,
 and flag the varaibles at all locations if the difference is less than the :code:`minvalue` of -2.5.
+
+If the difference happens be exactly equal to :code:`minvalue` or :code:`maxvalue`, the default behavior for this filter is for it to pass QC. (*i.e.* The passing range of values is inclusive of the endpoints.) This behavior can be changed by setting the :code:`min_exclusive` and/or :code:`max_exclusive` parameters to :code:`true`, in which case differences equal to the specified limits will be rejected. For example, the following filter rejects all differences that are less than *or equal to* 0:
+
+.. code-block:: yaml
+
+   - filter: Difference Check
+     reference: ObsValue/brightnessTemperature_8
+     value: ObsValue/brightnessTemperature_9
+     minvalue: 0
+     min_exclusive: true
+
 
 Derivative Check Filter
 -----------------------
