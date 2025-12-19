@@ -27,6 +27,6 @@ Below is a list of the recipes that have been implemented in VADER:
     airpressure
     airdensity
     atmospherewater
+    atmosphericcomposition
     wind
     marine
-    particulatematter
