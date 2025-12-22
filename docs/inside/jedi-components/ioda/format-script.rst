@@ -98,10 +98,6 @@ Here is an example of the IODA configuration file that might be used in the foll
           args:
             input_path: "Data/testinput_tier_1/gdas.t18z.1bmhs.tm00.bufr_d"
             category: "metop-b"
-            cache categories:
-              - "metop-a"
-              - "metop-b"
-              - "metop-c"
 
 
 Serial Example
@@ -112,7 +108,7 @@ Serial Example
   import bufr
   from pyioda.ioda.Engines.Bufr import Encoder
 
-  def create_obs_group(input_path, category, cache_categories, env):
+  def create_obs_group(input_path, category, env):
       YAML_PATH = "./bufr_mhs_mapping.yaml"
 
       container = bufr.Parser(input_path, YAML_PATH).parse()
@@ -129,7 +125,7 @@ Parallel Example
   import bufr
   from pyioda.ioda.Engines.Bufr import Encoder
 
-  def create_obs_group(input_path, category, cache_categories, env):
+  def create_obs_group(input_path, category, env):
       YAML_PATH = "./bufr_mhs_mapping.yaml"
 
       comm = bufr.mpi.Comm(env["comm_name"])
