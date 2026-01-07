@@ -14,20 +14,82 @@ Supported cost functions
 ^^^^^^
 
 Uses 3D state in the update and in the observer. Does not require model TL/AD.
+Background, background error covariance and analysis increment are all defined at a single time in the middle of the assimilation window.
+
+3D-FGAT
+^^^^^^^
+
+3D-FGAT (First Guess at Appropriate Time). The model (including pseudo model) is run to generate the background trajectory, so
+the observer can use model states at several times throughout the assimilation window. Background error covariance and
+analysis increment are still defined at a single time in the middle of the assimilation window.
+
+To turn on linear time interpolation of observation operators, set the following option in the yaml file for each 
+of the observation types that need it:
+
+.. code-block:: yaml
+
+    observers:
+      ...
+      get values:
+        time interpolation: linear
 
 4D-Ens-Var
 ^^^^^^^^^^
 
-4DEnVar uses ensembles for estimating ensemble background error covariances. Does not require model TL/AD.
+4DEnVar uses ensembles for estimating 4-dimensional ensemble background error covariances. Does not require model TL/AD.
+
+To configure 4DEnVar in the yaml file, use the following structure:
+
+.. code-block:: yaml
+
+    cost type: 4D-Ens-Var
+    time window:
+      begin: ...
+      length: PT6H
+    subwindow: PT1H
+    parallel subwindows: true    # optional, default is true
+
+The number of subwindows is determined from the time window length and the subwindow length. 
+If "parallel subwindows" is set to true, the subwindows are processed in parallel, and the number of MPI tasks needs to be a multiple of the number of subwindows.
+Configuring 4DEnVar requires specifying backgrounds and ensemble backgrounds (for ensemble background error covariances) for each of the subwindows, e.g.:
+
+.. code-block:: yaml
+
+    cost function:
+      cost type: 4D-Ens-Var
+      time window:
+        begin: 2010-01-01T00:00:00Z
+        length: PT6H
+      subwindow: PT3H
+      background:
+        states:
+        - date: 2010-01-01T00:00:00Z
+          ...
+        - date: 2010-01-01T03:00:00Z
+          ...
+        - date: 2010-01-01T06:00:00Z
+          ...
+      background error:
+        covariance model: ensemble
+        localization:
+          ...
+        members from template:
+          template:
+            states:
+            - date: 2010-01-01T00:00:00Z
+              ...
+            - date: 2010-01-01T03:00:00Z
+              ...
+            - date: 2010-01-01T06:00:00Z
+              ...
+          pattern: %mem%
+          nmembers: 100
+
 
 4D-Var
 ^^^^^^
 
 The 4D-Var cost function name is reserved for the strong-constraint (perfect model) 4DVar. Requires model TL/AD.
-
-.. note::
-
-   Special case: 3D-FGAT. One could use 4D-Var cost function for running 3DVar-FGAT (first guess at appropriate time) by using an identity tangent-linear model. The resulting analysis increment would be located at the beginning of the assimilation window.
 
 4D-Var-Weak
 ^^^^^^^^^^^

@@ -443,6 +443,23 @@ For the :code:`Hybrid` SABER covariance, one can specify a different model Geome
         saber outer blocks:
           ...
 
+SABER and 4DEnVar covariances
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+SABER covariances can be used in 4DEnVar applications. For 4DEnVar, the user needs to specify ensembles for each of the subwindows, a 
+single localization for all subwindows for the ensemble covariance, and a single parametric covariance for all subwindows (if using hybrid background error
+covariances). Parametric block chains (used for ensemble covariance localization and for parametric covariances) take into account
+time dimension and include time cross-covariances unless otherwise specified. 
+
+.. code-block:: yaml
+
+    background error:
+      covariance model: SABER
+      time covariance: univariate  # optional, default is "multivariate duplicated"
+      saber central block:
+        ...
+      saber outer blocks:
+      - ...
 
 Interfaces
 ^^^^^^^^^^

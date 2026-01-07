@@ -27,9 +27,8 @@ Data assimilation helper applications
 -------------------------------------
 * EstimateParams
 * :doc:`GenEnsPertB<genenspertb>`: generates an ensemble of states distributed according to a specifed background error covariance, and runs an ensemble forecast from that ensemble.
-* StaticBInit
 * ExternalDFI
-* EnsVariance
+* EnsMeanAndVariance
 * :doc:`GenHybridLinearModelCoeffs<gen-hybrid-linear-model-coeffs>`: generates hybrid tangent linear model coefficients via ensemble forecasts
 
 Applications operating on model states and increments
