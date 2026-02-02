@@ -945,6 +945,41 @@ Example of a yaml:
        AerosolOption: aerosols_gocart_default
        model units coef: 1e9
 
+Aerosol Optical Depth (AODMassFraction)
+---------------------------------------
+
+Description:
+^^^^^^^^^^^^
+
+This operator calculates the Aerosol Optical Depth (AOD) for a given model and extinction coefficient calculation method. For each model, a list of species is defined in the ObsAodMassFraction constructor in ObsAodMassFraction.cc, along with the variable names for their mass fractions. The variable names for number fractions can also optionally be defined. The AOD is then calculated as a function of mass fractions per species, extinction coefficient per species and level, :code:`air_pressure_levels` and :code:`air_pressure_at_surface`, summing over all levels and species. :code:`air_pressure_levels` is assumed to be on staggered levels in relation to the aerosol mass and number fractions.
+
+The operator is currently implemented for the GLOMAP/UKCA dust modal model, which has two defined 'species': the dust accumulation and coarse modes. The only method for calculating the extinction coefficient that is currently implemented is the :code:`MetOfficeLUTFit`. In this method the extinction coefficient for a given atmospheric level is calculated as a function of the median modal diameter for the UKCA dust model, using a best fit function. The best fit function parameters are defined in the yaml. The median modal diameter is itself derived from the mass and number fraction for each mode (assuming a log-normal distribution of sizes).
+
+In future, other models with different species lists could be added, as could other methods for calculating the extinction coefficient per level and species. For example a Look-Up Table approach could be implemented for the extinction coefficient calculation, such as is currently used for AODCRTM.
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^
+- :code:`aerosolModel` (required parameter): the aerosol model to calculate the AOD for.
+- :code:`extinctionMethod` (required parameter): method for calculating the extinction coefficient per level and species.
+- :code:`coarseModeParams` (optional parameter, no default): vector of 4 best fit parameters for the UKCA dust coarse mode extinction coefficient calculation. Although this is an optional parameter, it is needed for the :code:`MetOfficeLUTFit` :code:`extinctionMethod` and a userError will be raised if :code:`coarseModeParams` is not provided with this option.
+- :code:`accumulationModeParams` (optional parameter, no default): vector of 7 best fit parameters for the UKCA dust accumulation mode extinction coefficient calculation. As for :code:`coarseModeParams`, this parameter is optional but if the :code:`MetOfficeLUTFit` :code:`extinctionMethod` is used and :code:`accumulationModeParams` is not provided then a userError will be raised.
+
+Example of a yaml:
+^^^^^^^^^^^^^^^^^^
+
+Note that the parameters given for :code:`coarseModeParams` and :code:`accumulationModeParams` in the below example are dummy values.
+
+.. code-block:: yaml
+
+    obs operator:
+      name: AodMassFraction
+      aerosolModel: UKCA_Dust
+      extinctionMethod: MetOfficeLUTFit
+      coarseModeParams: [0.00001, -1.2, 30000, 5.2]
+      accumulationModeParams: [-78694.00351517955, -33703.77308488245, -5961.088273152457,
+                               -557.8611937150873, -29.158406179998607, -0.8077018771540053,
+                               -0.009270394299237103]
+
 Aerosol Optical Depth (AOD) for dust (Met Office)
 -------------------------------------------------
 
