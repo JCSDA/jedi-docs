@@ -2158,7 +2158,7 @@ When both observed temperature `T_{ob}` and observed humidity `Q_{ob}` have non-
    Tv_{ob} = T_{ob} * (1.0 + (t2tv * q));
 
 
-where `t2tv`=0.608 is the constant factor used in conversion defined in ufo/utils/Constants.h.
+where `t2tv=0.608` is the constant factor used in conversion defined in ufo/utils/Constants.h.
 
 Background Error Vertical Interpolation
 ---------------------------------------
