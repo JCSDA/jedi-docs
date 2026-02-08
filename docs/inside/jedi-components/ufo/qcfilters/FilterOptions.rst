@@ -287,7 +287,6 @@ Warning: ObsFunctions are evaluated for all observations, including those that h
 
 .. _filter-actions:
 
-
 Filter Actions
 --------------
 In general, filters select a set of observations and then apply an action to those observations.  By default, the action is to reject the selected observations, but this can be overridden using the :code:`action` or :code:`actions` options.

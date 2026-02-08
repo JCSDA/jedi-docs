@@ -1,47 +1,23 @@
 .. _top-oops-obserror:
 
-Diagonal observation error covariance
-=====================================
+Diagonal observation error covariance (l95/QG/UFO)
+==================================================
 
-The diagonal observation error covariance :math:`R` implementation in OOPS can be used both for any of the :doc:`toy models <../toy-models/index>`, and for the models that use :doc:`UFO <../../ufo/index>`.
+The generic diagonal observation error covariance :math:`R` implementation in OOPS has been removed and replaced with specific implementations where one is required (in the l95 and QG toy models, in UFO, and in some model interfaces). For the vast majority of use cases, the new generic diagonal :math:`R` implmentation can be used instead and will exactly replicate the old OOPS implementation.
 
-Observation error standard deviations for :math:`R` are read as an :code:`ObsError` group from the observation file.
-
-The covariance can be configured using the following options:
-
-* :code:`obs perturbations amplitude` (optional, default value is 1.0) -- a multiplier used when generating a random sample of observation perturbations using the observation error covariance matrix (standard deviations are multiplied by this number)
-* :code:`zero-mean perturbations`: logical variable with a default of :code:`false`. Set to :code:`true` to constrain observation perturbations to have a zero ensemble mean (can be used in the :doc:`Ensemble of Data Assimilations (EDA) <../applications/ensemble-applications>`). If this option is set to :code:`true`, the following options also have to be set:
-
-  - :code:`member`: ensemble member index (1-based);
-  - :code:`number of members`: number of ensemble members.
-
-.. important::
-  For the zero-mean perturbations option to work, the following requirements must be satisfied:
-
-  1. The :code:`obs perturbations seed` option in the :code:`obs space` section must be set to the same value for all ensemble members.
-  2. All ensemble members must use the same observations in the same order.
-
-A diagonal :math:`R` can be configured as:
+The old behavior of defaulting to a diagonal ObsError when not including an :code:`ObsError:` has been preserved, and can still also be explicitly included as:
 
 .. code-block:: yaml
 
- obs error:
-   covariance model: diagonal
+    obs error:
+      covariance model: diagonal
 
-For an EDA experiment where the amplitude of observation perturbations is half of its default value, the following YAML settings can be used:
-
-.. code-block:: yaml
-
- obs error:
-   covariance model: diagonal
-   obs perturbations amplitude: 0.5
-
-For an EDA experiment with 10 ensemble members, and perturbing observations ensuring zero-mean perturbations, a diagonal :math:`R` for the 2nd ensemble member can be set up as:
+For EDA experiments, the :code:`obs perturbations amplitude` setting remains in all implementations and can be included in the same format as before:
 
 .. code-block:: yaml
 
- obs error:
-   covariance model: diagonal
-   zero-mean perturbations: true
-   member: 2
-   number of members: 10
+    obs error:
+      covariance model: diagonal
+      obs perturbations amplitude: 0.5
+
+Availability of the :code:`zero-mean perturbations` feature for EDA is now implementation specific, but is available in the new generic diagonal observation error covariance in UFO. See :ref:`ufoObsErrorDiag` for more information.

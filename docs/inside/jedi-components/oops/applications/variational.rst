@@ -82,7 +82,7 @@ Configuring 4DEnVar requires specifying backgrounds and ensemble backgrounds (fo
               ...
             - date: 2010-01-01T06:00:00Z
               ...
-          pattern: '%mem%'
+          pattern: '%mem%'  # remove apostrophes around %mem% if using this in a JEDI application
           nmembers: 100
 
 
