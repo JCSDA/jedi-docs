@@ -94,7 +94,7 @@ This filter checks for bias corrected distance between observation value and mod
        maxvalue: 60.0
      action:
        name: inflate error
-       inflation: 2.0
+       inflation factor: 2.0
    - filter: Background Check
      filter variables:
      - name: sea_surface_height
@@ -421,7 +421,7 @@ Here the filter is configured to inflate errors of all observations from the Sou
    - filter: Perform Action
      action:
        name: inflate error
-       inflation: 2.0
+       inflation factor: 2.0
      where:
      - variable: latitude
        maxvalue: 0
