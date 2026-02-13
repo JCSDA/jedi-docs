@@ -92,11 +92,14 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ObsErrorFactorConventional <ObsErrorFactorConventional>`
   Compute observation error inflation factor for conventional observations based on vertical spacing
 
-:ref:`ObsErrorFactorPressureCheck <ObsErrorFactorPressureCheck>`
-  Compute observation error inflation factor for observations above model top or below model surface
+:ref:`ObsErrorFactorDuplicateCheck <ObsErrorFactorDuplicateCheck>`
+  Compute observation error inflation factor for observations based on temporal spacing
 
 :ref:`ObsErrorFactorLatRad <ObsErrorFactorLatRad>`
   Observation error bound reduction within tropics
+
+:ref:`ObsErrorFactorPressureCheck <ObsErrorFactorPressureCheck>`
+  Compute observation error inflation factor for observations above model top or below model surface
 
 :ref:`ObsErrorFactorQuotient <ObsErrorFactorQuotient>`
   Reject observations based on comparing final observation error to initial error estimate
