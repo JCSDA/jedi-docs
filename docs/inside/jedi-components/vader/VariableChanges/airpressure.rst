@@ -9,6 +9,7 @@ Air Pressure
     recipes/air_pressure_at_interface_a
     recipes/air_pressure_at_interface_b
     recipes/air_pressure_at_interface_c
+    recipes/ln_air_pressure_a
     recipes/ln_air_pressure_at_interface_a
     recipes/air_pressure_thickness_a
     recipes/air_pressure_to_kappa_a
