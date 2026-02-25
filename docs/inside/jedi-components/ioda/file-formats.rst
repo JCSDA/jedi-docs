@@ -215,7 +215,7 @@ These values are checked by the IODA reader in the DA flow and if these do not m
 Reading ODB Files in Parallel 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To read ODB files in parallel, set the io pool reader name to ``NonoverlappingPool`` and the distribution to ``ReaderDependentDistribution``, as shown in the snippet below:
+To read ODB files in parallel, set the io pool reader name to ``NonoverlappingPool`` and the distribution to ``Identity``, as shown in the snippet below:
 
 .. code-block:: YAML
 
@@ -231,7 +231,7 @@ To read ODB files in parallel, set the io pool reader name to ``NonoverlappingPo
           query file: ../share/test/testinput/iodatest_odb_atms.yaml
           frame distribution spread: 4  # optional; 4 is the default value
       distribution:
-        name: ReaderDependentDistribution
+        name: Identity
       io pool:
         reader name: NonoverlappingPool
         
@@ -256,12 +256,12 @@ This will cause each MPI process to read a separate subset of frames from the in
     In contrast, if the ODB rows belonging to each record are not placed next to each other -- for example, locations need to be grouped into records by latitude, but ODB rows are not sorted by latitude -- then there is currently no way to force the parallel ODB reader to keep such rows together. Such files need to be read serially.
 
 .. warning::
-    Only ``ReaderDependentDistribution`` is compatible with ``NonoverlappingPool``; an attempt to use a different distribution will cause an exception to be thrown.
+    Only the ``Identity`` distribution is compatible with ``NonoverlappingPool``; an attempt to use a different one will cause an exception to be thrown.
    
 Load Balancing Control
 ......................
 
-The ``ReaderDependentDistribution`` keeps locations on the MPI processes on which they have been placed by the ODB reader. The resulting distribution may not be balanced very well, especially if ODB rows are ordered roughly chronologically and a lot of initial and final rows lie outside the assimilation window and are filtered out. To mitigate against this issue, by default, each process reads 4 separate "chunks" of frames located in different parts of the input file (unless the number of frames is less than four times the number of processes, in which case the number of chunks per process is reduced to ensure all processes receive approximately the same number of frames). The maximum number of chunks per process can be adjusted by setting the ``frame distribution spread`` option in the ``obsdatain.engine`` YAML section to a value different than 4. Larger values may improve load balancing but will also increase the cost of MPI communication required to ensure consecutive rows with the same ``seqno`` are not split across multiple processes. 
+The ``Identity`` distribution keeps locations on the MPI processes on which they have been placed by the ODB reader. The resulting distribution may not be balanced very well, especially if ODB rows are ordered roughly chronologically and a lot of initial and final rows lie outside the assimilation window and are filtered out. To mitigate against this issue, by default, each process reads 4 separate "chunks" of frames located in different parts of the input file (unless the number of frames is less than four times the number of processes, in which case the number of chunks per process is reduced to ensure all processes receive approximately the same number of frames). The maximum number of chunks per process can be adjusted by setting the ``frame distribution spread`` option in the ``obsdatain.engine`` YAML section to a value different than 4. Larger values may improve load balancing but will also increase the cost of MPI communication required to ensure consecutive rows with the same ``seqno`` are not split across multiple processes. 
 
 If the number of frames in the file is less than the number of processes, some processes will not be assigned any frames to read. The ``NonoverlappingPool`` will take care to produce a valid ObsSpace in this case too (e.g. by ensuring that these processes create the same ``ioda`` variables as ones with frames assigned).
 
