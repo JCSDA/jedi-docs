@@ -1,4 +1,4 @@
-.. _top-vader-recipe-watervapormixingratiowrtdryairb:
+.. _top-vader-recipe-watervapormixingratiowrtdryair-b:
 
 Water vapor mixing ratio wrt dry air (from total and vapor wrt moist air)
 ==========================================================================

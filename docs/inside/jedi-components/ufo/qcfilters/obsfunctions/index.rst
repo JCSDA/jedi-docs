@@ -230,6 +230,7 @@ filters into separate parts would have an obfuscating effect.
    ObsErrorBoundIR
    ObsErrorBoundMW
    ObsErrorFactorConventional
+   ObsErrorFactorDuplicateCheck
    ObsErrorFactorPressureCheck
    ObsErrorFactorLatRad
    ObsErrorFactorQuotient
