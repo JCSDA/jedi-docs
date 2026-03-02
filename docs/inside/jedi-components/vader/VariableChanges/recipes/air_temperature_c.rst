@@ -1,7 +1,7 @@
 .. _top-vader-recipe-airtemperaturec:
 
-Temperature from base state and perturbation of potential temperature
-=====================================================================
+Temperature from air potential temperature and air pressure
+===========================================================
 
 * **Description**: Produces temperature from air potential temperature and air pressure
 * **Name**: AirTemperature_C
