@@ -39,8 +39,8 @@ model that introduces some flow-dependence through dependence on the background
 state. An ensemble **B** uses an ensemble of forecasts to update/evolve the
 background error in time. A hybrid **B** combines a set of parametric and ensemble
 models using a weighted sum.
- 
-More details here: 
+
+More details here:
 
 .. toctree::
    :maxdepth: 1
@@ -114,6 +114,17 @@ Diffusion blocks
 
    Explicit Diffusion<explicitDiffusion>
 
+
+ML Balance Operator
+^^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   Torch Balance<torchBalance>
+
+
 GSI blocks
 ^^^^^^^^^^
 
@@ -133,7 +144,7 @@ UK Met Office specific blocks
 
    UKMO-specfic saber blocks<UKMO>
 
- 
+
 SABER applications
 ------------------
 .. _SABER_applications:
@@ -152,7 +163,7 @@ Calibration of SABER error covariance
 
 A SABER error covariance can be calibrated from ensemble data:
 
-.. toctree:: 
+.. toctree::
    :maxdepth: 1
 
    calibration.rst
@@ -163,7 +174,7 @@ SABER testing
 SABER has its own pseudo-model for testing purposes, called **QUENCH**. Also, SABER has an automated testing
 process which will require a few more steps for adding new tests.
 
-For more details here: 
+For more details here:
 
 .. toctree::
    :maxdepth: 1
