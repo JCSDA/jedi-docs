@@ -1042,7 +1042,7 @@ Configuration options (ObsFilters):
 
 * :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation.Default value is 50 km.
 
-* :code:`ROobserror`: A RO specific filter. use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
+* :code:`ROobserror`: A RO specific filter. use generic filter class to apply observation error method.  More information on this filter is found in :ref:`obsFilterErrors`.
 
   * options: :code:`NBAM`, :code:`NRL`, :code:`ECMWF`, and more to come (default is :code:`NBAM`)
 
@@ -1120,7 +1120,7 @@ Configuration options (ObsFilters):
 
 * :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
 
-* :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
+* :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :ref:`obsFilterErrors`.
 
   * options: :code:`NBAM`, :code:`NRL`, :code:`ECMWF`, and more to come (default is :code:`NBAM`, but not recommended for ROPP operators). One has to specific a error model.
 
@@ -1199,7 +1199,7 @@ Configuration options (ObsFilter):
 
 * :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation. Default value is 50 km.
 
-* :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
+* :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :ref:`obsFilterErrors`.
 
   * options: :code:`NBAM`, :code:`NRL`, :code:`ECMWF`, and more to come (default is :code:`NBAM`, but not recommended for ROPP operators). One has to specific a error model.
 
@@ -1344,7 +1344,7 @@ Configuration options (ObsFilters):
 
 * :code:`Domain Check`: a generic filter used to control the maximum height one wants to assimilate RO observation. Suggested value is 30 km for GnssroRefNCEP.
 
-* :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :doc:`observation uncertainty documentation <obserrors>`
+* :code:`ROobserror`: a RO specific filter. Use generic filter class to apply observation error method.  More information on this filter is found in the :ref:`obsFilterErrors`.
 
   * options: Only :code:`NBAM` (default) is implemented now.
 

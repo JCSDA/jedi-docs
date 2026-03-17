@@ -1,3 +1,5 @@
+.. _qc-filter-options:
+
 Additional QC Filter Options
 ============================
 

@@ -20,5 +20,5 @@ These documents give a high-level overview of the UFO code repository.  A low-le
    newobsop
    qcfilters/index.rst
    variabletransforms/index.rst
-   obserrors
+   obserrors/index.rst
    varbc
