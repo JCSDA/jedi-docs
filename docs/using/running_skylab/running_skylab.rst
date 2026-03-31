@@ -104,6 +104,11 @@ in the `jedi-tools README <https://github.com/JCSDA-internal/jedi-tools/blob/dev
   :code:`$JEDI_ROOT` is the directory you will clone the JEDI code and all the files
   needed to build, test, and run JEDI and SkyLab.
 
+  .. note::
+
+  On some HPC systems, the git-lfs module must be loaded before cloning. If you get an
+  error when cloning run :code:`module load git-lfs` to allow the clone to succeed.
+
   .. code-block:: bash
 
     export JEDI_ROOT=/path/to/where/you/want/JEDI
