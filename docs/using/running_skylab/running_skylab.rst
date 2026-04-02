@@ -443,7 +443,8 @@ value for :code:`ECF_PORT` is somewhere between 5000 and 20000. On some systems
 (e.g. your own macOS laptop), the user ID is a large integer well outside the
 allowed port range. Note that changing your :code:`ECF_PORT` will require you
 to reconnect the ecflow server, so keeping it constant will keep your ecflow
-server connected.
+server connected. You can ignore this variable if you are planning on running
+your experiments with cylc instead of ecflow.
 
 5 - Set up R2D2 (for MacOS and AWS Single Nodes)
 """"""""""""""""""""""""""""""""""""""""""""""""
@@ -487,6 +488,8 @@ https://github.com/JCSDA-internal/r2d2/tree/develop/server/README.md#localhost-d
 6 - Run SkyLab
 """"""""""""""
 
+**Run with ecflow**
+
 Now you are ready to start an ecflow server and run an experiment.
 Make sure you are in your python virtual environment (venv).
 
@@ -526,42 +529,59 @@ To stop the ecflow server:
 
   ecflow_stop.sh -p $ECF_PORT
 
-To start your ewok experiment:
+To start your ewok experiment where :code:`your-experiment.yaml` is the path to
+the experiment you want to run and :code:`workflow engine: ecworkflow` is the
+workflow engine you are using:
 
 .. code-block:: bash
 
   create_experiment.py $JEDI_WORKFLOW/skylab/experiments/your-experiment.yaml
 
-**Note for MacOS Users:**
+.. note:: for MacOS Users
 
-If attempting to start the ecflow server on the MacOS gives you an error
-message like this:
+  If attempting to start the ecflow server on the MacOS gives you an error
+  message like this:
 
-.. code-block::
+  .. code-block::
 
-  Failed to connect to <machineName>:<PortNumber>. After 2 attempts. Is the server running ?
+    Failed to connect to <machineName>:<PortNumber>. After 2 attempts. Is the server running ?
 
-  ...
+    ...
 
-  restart of server failed
+    restart of server failed
 
-You will need to edit your :code:`/etc/hosts` file (which will require sudo
-access). Add the name of your machine on the :code:`localhost` line. So if the
-name of your local machine is :code:`SATURN`, then edit your :code:`/etc/hosts`
-to:
+  You will need to edit your :code:`/etc/hosts` file (which will require sudo
+  access). Add the name of your machine on the :code:`localhost` line. So if the
+  name of your local machine is :code:`SATURN`, then edit your :code:`/etc/hosts`
+  to:
+
+  .. code-block:: bash
+
+    ##
+    # Host Database
+    #
+    # localhost is used to configure the loopback interface
+    # when the system is booting. Do not change this entry.
+    ##
+    127.0.0.1	localhost SATURN
+    255.255.255.255	broadcasthost
+    ::1       localhost
+
+**Run with cylc**
+
+Now you are ready to run an experiment with cylc.
+Make sure you are in your python virtual environment (venv). You will also
+need to have cylc installed in you venv. Follow the instructions in the
+`EWOK README <https://github.com/JCSDA-internal/ewok?tab=readme-ov-file#ewok-and-cylc>`__
+for more information.
+
+To start your ewok experiment where :code:`your-experiment.yaml` is the path to
+the experiment you want to run and :code:`workflow engine: cylcworkflow` is the
+workflow engine you are using:
 
 .. code-block:: bash
 
-  ##
-  # Host Database
-  #
-  # localhost is used to configure the loopback interface
-  # when the system is booting. Do not change this entry.
-  ##
-  127.0.0.1	localhost SATURN
-  255.255.255.255	broadcasthost
-  ::1       localhost
-
+  create_experiment.py $JEDI_WORKFLOW/skylab/experiments/your-experiment.yaml
 
 7 - Existing SkyLab experiments
 """""""""""""""""""""""""""""""

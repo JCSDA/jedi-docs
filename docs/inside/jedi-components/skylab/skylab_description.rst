@@ -21,7 +21,7 @@ The experiment yaml has to contain the following information:
 
 .. code-block:: yaml
 
-    workflow engine: # workflow manager, only `ecworkflow` is supported at the moment
+    workflow engine: # workflow manager, can be `ecworkflow` or `cylcworkflow`
 
     workdir: # path to tmp work directory
     flowdir: # path to tmp scripts directory
@@ -170,7 +170,9 @@ More information on R2D2's client can be found in the
 Plots configuration
 -------------------
 
-Yaml configuration for the plots (included in :code:`plots` section of the experiment configuration yaml) allows the user to configure plots of variational diagnostics, and plots of model fields on lat-lon grid. The following options are available:
+Yaml configuration for the plots (included in :code:`plots` section of the experiment configuration
+yaml) allows the user to configure plots of variational diagnostics, and plots of model fields on
+lat-lon grid. The following options are available:
 
 .. code-block:: yaml
 
