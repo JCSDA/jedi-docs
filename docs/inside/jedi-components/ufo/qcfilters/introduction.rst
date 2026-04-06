@@ -53,6 +53,7 @@ Two filters, :code:`QCmanager` and :code:`Final Check`, are always run if at lea
 The :code:`QCmanager` performs the following steps:
 
 * Before any other filters have run, assigns the :code:`missing` QC flag to any observed or derived variables that have missing observations.
+* If :code:`post filters` are being used, all observed variables that have not been rejected but have a missing HofX value are assigned the :code:`Hfailed` QC flag.
 * Prints a summary of QC decisions and diagnostic flags at the end of the application run. (This is achieved by calling the :code:`print` function in the filter destructor.)
 
 The :code:`Final Check` performs the following steps after all other filters have run:
