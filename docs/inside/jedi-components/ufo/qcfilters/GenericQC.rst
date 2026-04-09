@@ -672,6 +672,21 @@ Example 2 (thinning observations from multiple categories and with non-equal pri
       priority_variable:
         name: MetaData/thinningPriority
 
+Example 3 (Calculating Mean with extra variable):
+
+.. code-block:: yaml
+
+    simulated variables: [seaSurfaceTemperature, other_variable]
+  obs filters:
+  - filter: Gaussian Thinning
+    filter variables:
+    - name: seaSurfaceTemperature
+    select_mean: true
+
+If the :code:`filter variables` was not specified the :code:`simulated variables` will be assumed as
+the default variable for filtering. If :code:`simulated variables` is a list this will result in error
+during mean calculation as only one variable needs to be specified. The same applies for median calculation.
+
 .. _TemporalThinningFilter:
 
 Temporal Thinning Filter
