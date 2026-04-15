@@ -143,6 +143,31 @@ An example of using LGETKF solver in FV3:
        lengthscale units: logP
 
 
+Obs Error Covariances in the ensemble solvers
+---------------------------------------------
+
+Available `R`-matrix representations in the local solvers are model dependent, with models generally either using :ref:`obs error classes from UFO <ObsErrorOperatorsUFO>` or implementing their own diagonal representation. The `R`-matrix representation is specified as follows for each obs space:
+
+.. code-block:: yaml
+
+   observations:
+     observers:
+     - obs space:
+         name: radiosonde
+       ...
+       obs error:
+         covariance model: diagonal
+
+For models which use UFO `R`-matrices, an additional representation is currently supported, using cross-variable/inter-channel correlations. This is declared as follows:
+
+.. code-block:: yaml
+
+   obs error:
+     covariance model: cross variable covariances
+     input file: obserror_correlations.nc4
+
+Here, :code:`input file` is a file containing cross-variable or inter-channel correlations. See :ref:`obsErrorCrossVar` for more information, including the required format for :code:`input file`. As with the diagonal `R`-matrix, the observation error standard deviations are read as an :code:`ObsError` group from the observation file.
+
 Localization supported in the ensemble solvers
 ----------------------------------------------
 
