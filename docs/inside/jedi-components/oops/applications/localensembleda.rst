@@ -88,6 +88,26 @@ An example of using the GETKF solver in FV3 is as follows:
        lengthscale units: logp
        lengthscale: 1.5
 
+
+Sequential EnKF
+^^^^^^^^^^^^^^^^
+
+A sequential ensemble Kalman filter framework has been implemented that processes observations one at a time, updating the ensemble state after each observation using regression-based updates (`Anderson and Collins 2007 <https://doi.org/10.1175/JTECH2049.1>`_). Unlike the LETKF and GETKF, which update each grid point using all observations within a local volume simultaneously, the sequential EnKF assimilates observations one at a time and propagates each observation's impact to the state and remaining observation ensembles. See :ref:`top-oops-sequential-enkf` for algorithmic details.
+
+The only flavor currently implemented is the Ensemble Adjustment Kalman Filter (EAKF):
+
+.. code-block:: yaml
+
+   local ensemble DA:
+     solver: EAKF
+
+The sequential EnKF supports the same inflation methods (multiplicative, RTPP, RTPS), observation localizations, and 4D (multi-time) updates as the other solvers. The key difference in localization behavior is that the sequential EnKF applies obs-obs localization (between pairs of observations) in addition to the usual grid-obs localization applied during the state update.
+
+.. note::
+
+   The sequential EnKF currently runs through the ``LocalEnsembleDA`` application and inherits from ``LocalEnsembleSolver``. This is a temporary arrangement — the sequential EnKF is not a local ensemble solver. A future refactor will extract a common ``EnsembleSolver`` base class.
+
+
 Use linear observer
 ^^^^^^^^^^^^^^^^^^^
 
@@ -198,6 +218,8 @@ An example of horizontal localization using the Gaspari-Cohn function is:
        - localization method: Horizontal Gaspari-Cohn    # inflate errors with Gaspari-Cohn function, based on the
                                                          #   horizontal distance from the updated grid point
          lengthscale: 1000e3                             # horizontal localization distance in meters
+
+When using the EAKF solver, the same :code:`obs localizations` are also applied as obs-obs localization between pairs of observations during the sequential update, in addition to the grid-obs localization applied during the state update.
 
 The Gaspari-Cohn, SOAR, and Box Car methods are also supported for vertical localization. An example of vertical localization using the Gaspari-Cohn function is:
 
