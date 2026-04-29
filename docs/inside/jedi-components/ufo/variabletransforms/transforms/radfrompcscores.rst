@@ -49,6 +49,10 @@ The following parameters are optional with default values:
   default this group name is :code:`MetaData`.
 * :code:`reconstruction scaling factor` is a scalar multiplier which ensures the output spectral
   radiance units are :math:`W / (m^{2}.sr.m^{-1})` - by default this scaling factor is 0.5.
+* :code:`operator mean data group` is the name of the group in the reconstrction operator file
+  containing a mean value which may be part of the reconstructed radiance operator depending upon
+  the data provider. By default this is an empty string and a value of zero is added to the
+  product of the PCscores and MetaData/principalComponentScore. 
 
 **Reconstruction operator file**
 
@@ -105,3 +109,13 @@ where the default scaling factor of 0.5 has been applied.
 Eumetsat provide three separate reconstruction operator matrices for the three IASI spectral bands.
 Here, the matrices have been combined so that a single reconstruction operator matrix covering the
 whole spectrum is used.
+
+Instruments such as Meteosat Third Generation - Infrared Sounder (MTG-IRS) require a mean value added as part of the 
+reconstruction process as follows:
+
+.. math::
+
+   {\mathbf{r^\prime}} = 1.0 {\mathbf{R}}^{T} {\mathbf{p}} + {\mathbf{\overline r}}
+
+where a specified scaling factor of 1.0 is applied and a mean value of :math:`{\mathbf{\overline r}}` is present
+in the operator file, and whose group is specified using :code:`operator mean data group`.
