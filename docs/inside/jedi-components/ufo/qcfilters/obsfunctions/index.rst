@@ -20,6 +20,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ChannelUseflagCheckRad <ChannelUseflagCheckRad>`
   Channel usage flag check for radiances
 
+:ref:`CircularDifference <CircularDifference>`
+  Compute the circular (angular) difference between two variables, accounting for wrap-around at the circular period boundary
+
 :ref:`CloudCostFunction <CloudCostFunction>`
   Bayesian cost function for detecting cloud-affected radiances
 
@@ -206,6 +209,7 @@ filters into separate parts would have an obfuscating effect.
    BennartzScatIndex
    BgdDepartureAnomaly
    ChannelUseflagCheckRad
+   CircularDifference
    CloudCostFunction
    CloudDetectMinResidualAVHRR
    CloudDetectMinResidualIR
