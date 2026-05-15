@@ -71,6 +71,7 @@ The options for the operator include:
 * :code:`correlation variable names`: the names of variables to which the operator will be applied. **Currently, this operator is only supported for use with a single variable.**
 * :code:`correlation lengthscale`: length scale corresponding to the standard deviation of the gaussian profile this operator will emulate applying.
 * :code:`normalization iterations`: number of iterations used to calculate the set of grid-dependent normalization coefficients. See the documentation of the SABER :ref:`diffusion` block for more details on the normalization procedure. For an operational/scientifically valid situation a value of at least ~10000 is recommended.
+* :code:`output diffusion mesh` *(default: false)*: write the diffusion mesh to a gmsh file (filename will be ``diffusion_mesh.msh``).
 * :code:`control grid` *(optional)*: parameters for the optional control grid:
 
   * :code:`grid spacing`: resolution of the control grid in degrees. Choose this carefully based on obs network geometry to avoid unwanted connections
@@ -86,6 +87,7 @@ Below is an example of a YAML configuration of the diffusion-based R operator wi
     obs channels: [11]  #redundant with channels in obsSpace parameters
     correlation lengthscale: 200000. # meters
     normalization iterations: 10000
+    output diffusion mesh: true      # if not present will default to false
     control grid:
       grid spacing: 5      # degrees
       remove within: 50000 # meters
