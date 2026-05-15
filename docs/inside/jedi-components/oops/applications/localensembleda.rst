@@ -376,7 +376,7 @@ Driver configuration
 ..
   Warning: the link below may change in the future.
 
-* Save posterior mean. Requires a top-level :code:`output` section to be defined in the yaml file. The contents of this section must adhere to the `DataSetBase::write() <https://github.com/JCSDA-internal/oops/blob/develop/src/oops/base/DataSetBase.h#414>`_ syntax, including any model-specific options.
+* Save posterior mean. Requires a top-level :code:`output` section to be defined in the yaml file. The contents of this section must adhere to the `DataSetBase::write() <https://github.com/JCSDA-internal/oops/blob/develop/src/oops/base/DataSetBase.h#414>`__ syntax, including any model-specific options.
 
 .. code:: yaml
 
@@ -386,7 +386,7 @@ Driver configuration
 ..
   Warning: the link below may change in the future.
 
-* Save posterior ensemble. Requires a top-level :code:`output` section to be defined in the yaml file. The contents of this section must adhere to the `DataSetBase::write() <https://github.com/JCSDA-internal/oops/blob/develop/src/oops/base/DataSetBase.h#L140>`_ syntax, including any model-specific options.
+* Save posterior ensemble. Requires a top-level :code:`output` section to be defined in the yaml file. The contents of this section must adhere to the `DataSetBase::write() <https://github.com/JCSDA-internal/oops/blob/develop/src/oops/base/DataSetBase.h#L140>`__ syntax, including any model-specific options.
 
 .. code:: yaml
 
@@ -396,7 +396,7 @@ Driver configuration
 ..
   Warning: the link below may change in the future.
 
-* Save prior mean. Requires a top-level :code:`output mean prior` section to be defined in the yaml file. The contents of this section must adhere to the `DataSetBase::write() <https://github.com/JCSDA-internal/oops/blob/develop/src/oops/base/DataSetBase.h#L140>`_ syntax, including any model-specific options.
+* Save prior mean. Requires a top-level :code:`output mean prior` section to be defined in the yaml file. The contents of this section must adhere to the `DataSetBase::write() <https://github.com/JCSDA-internal/oops/blob/develop/src/oops/base/DataSetBase.h#L140>`__ syntax, including any model-specific options.
 
 .. code:: yaml
 
@@ -406,7 +406,7 @@ Driver configuration
 ..
   Warning: the link below may change in the future.
 
-* save posterior mean increment. Requires a top-level :code:`output increment` section to be defined in the yaml file. The contents of this section must adhere to the `DataSetBase::write() <https://github.com/JCSDA-internal/oops/blob/develop/src/oops/base/DataSetBase.h#L140>`_ syntax, including any model-specific options.
+* save posterior mean increment. Requires a top-level :code:`output increment` section to be defined in the yaml file. The contents of this section must adhere to the `DataSetBase::write() <https://github.com/JCSDA-internal/oops/blob/develop/src/oops/base/DataSetBase.h#L140>`__ syntax, including any model-specific options.
 
 .. code:: yaml
 
@@ -416,7 +416,7 @@ Driver configuration
 ..
   Warning: the link below may change in the future.
 
-* save prior variance. Requires a top-level :code:`output variance prior` section to be defined in the yaml file. The contents of this section must adhere to the `DataSetBase::write() <https://github.com/JCSDA-internal/oops/blob/develop/src/oops/base/DataSetBase.h#L140>`_ syntax, including any model-specific options.
+* save prior variance. Requires a top-level :code:`output variance prior` section to be defined in the yaml file. The contents of this section must adhere to the `DataSetBase::write() <https://github.com/JCSDA-internal/oops/blob/develop/src/oops/base/DataSetBase.h#L140>`__ syntax, including any model-specific options.
 
 .. code:: yaml
 
@@ -434,8 +434,8 @@ Driver configuration
    save posterior variance: false #default value
 
 * This option is needed for the :code:`Halo` distribution to work properly. In that case, each MPI rank must know the center of the local grid patch (i.e. the region specified in the model domain decomposition)
-and the radius of the circle (centered on the center of the grid patch) that can encircle all points on the local grid.
-If not using the :code:`Halo` distribution, or using models that do not implement model domain decomposition (e.g. L95), one might choose to not update obs config by setting :code:`update obs config with geometry info: false`.
+  and the radius of the circle (centered on the center of the grid patch) that can encircle all points on the local grid.
+  If not using the :code:`Halo` distribution, or using models that do not implement model domain decomposition (e.g. L95), one might choose to not update obs config by setting :code:`update obs config with geometry info: false`.
 
 .. code:: yaml
 

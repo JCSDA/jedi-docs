@@ -186,6 +186,74 @@ to reach the length scale set in the calibration is pre-calculated by the block.
           levels: *levels
           filepath: <path/to/data>/<vertical_normalization_filename>
 
+Implicit Vertical Diffusion (optional)
+--------------------------------------
+
+The vertical direction can optionally use an **implicit** scheme instead of the
+explicit forward-stepping described above. It is selected per group by adding
+:code:`method: implicit` (and optionally :code:`iterations:`) to that group's
+:code:`vertical:` block — i.e. the same nesting as in the calibration and
+variational YAML examples above:
+
+.. code-block:: yaml
+
+  saber central block:
+    saber block name: diffusion
+    calibration:
+      normalization:
+        iterations: 1000
+      groups:
+      - horizontal:
+          fixed value: 3000.0e3
+        vertical:
+          fixed value: 2.0
+          levels: *levels
+          as gaussian: true     # optional; default false (GC half-width)
+          method: implicit      # "explicit" (default) or "implicit"
+          iterations: 4         # number of implicit iterations M (must be even, >= 2; default 4)
+        write:
+          filepath: <path/to/data>/<vertical_normalization_filename>
+
+The implicit scheme solves :math:`(I - \alpha \nabla^2_z)^M \psi = \psi_0` per
+column by applying :math:`M` successive tridiagonal solves of
+:math:`(I - \alpha \nabla^2_z)` rather than forming or solving the powered
+operator directly. The single tridiagonal factor :math:`I - \alpha \nabla^2_z`
+is symmetric and is pre-factorized once (:math:`LDL^T`) at setup and reused
+on every multiplication. The scheme is
+**unconditionally stable**, so the vertical iteration count no longer grows
+with the CFL-like constraint that the explicit scheme must respect — especially
+useful on stretched vertical grids (e.g. near-surface layers in ocean models)
+where the explicit path requires many iterations.
+
+**Length scale convention.** The resulting correlation kernel is a Matern
+function with smoothness parameter :math:`\nu = M - 1/2` in 1D (so
+:math:`M=2` gives Matern-3/2, :math:`M=4` gives Matern-7/2,
+:math:`M \to \infty` gives a Gaussian). In 1D the kernel's Daley length scale
+:math:`L_d` satisfies :math:`L_d^2 = \alpha \cdot (2M - 3)` for :math:`M \ge 2`,
+so the block computes
+
+.. math::
+
+    \alpha = \frac{L_d^2}{2M - 3}
+
+at each interface, with :math:`L_d` being the **Daley length scale** of the
+output kernel (in levels). For :math:`M=2` this reduces to
+:math:`\alpha = L_d^2`. This matches the convention in variational DA
+(Weaver et al. 2021) and is consistent with the explicit scheme's length
+scale (for the Gaussian kernel there, Daley length = :math:`\sigma`).
+
+**Gaspari-Cohn input.** When :code:`as gaussian: false` (the default), the
+user-supplied length is interpreted as a GC compact half-width and the same
+empirical :math:`1/3.67` factor the explicit scheme uses is applied to get the
+Daley length. The output kernel is still Matern (not GC) — the factor matches
+effective range, not kernel shape. Users who need a genuinely compactly supported
+localization should use the explicit scheme.
+
+Horizontal diffusion is unaffected and still uses the explicit scheme. See
+Mirouze & Weaver (2010, https://doi.org/10.1002/qj.643) for the mathematical
+background of implicit diffusion, and Weaver et al. (2021,
+https://doi.org/10.1002/qj.3918) for normalization details.
+
 More Information
 ----------------
 
