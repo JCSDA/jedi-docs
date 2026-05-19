@@ -159,6 +159,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`ProfileLevelCount <ProfileLevelCount>`
   Count the number of locations in each profile that satisfy a particular condition.
 
+:ref:`ProfileVerticalSmoothing <ProfileVerticalSmoothing>`
+  Compute a smoothed version of the input data using local polynomial regression.
+
 :ref:`RadarScanEdgeFlag <RadarScanEdgeFlag>`
   Clean the edges of radar scans using a variety of techniques.
 
@@ -255,6 +258,7 @@ filters into separate parts would have an obfuscating effect.
    OceanPressureToDepth
    ProfileAverageObsPressure
    ProfileLevelCount
+   ProfileVerticalSmoothing
    RadarScanEdgeFlag
    RecordNumberToObsSpace
    ROobserrInflation
