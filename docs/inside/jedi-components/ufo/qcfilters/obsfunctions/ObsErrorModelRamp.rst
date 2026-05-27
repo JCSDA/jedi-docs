@@ -171,3 +171,65 @@ Example configurations:
               err1: [{ERR1}]
  
 
+.. code-block:: yaml
+
+    ### example configurations using OmB in ObsErrorModelRamp: ###
+
+
+  obs post filters:
+  - filter: Variable Assignment
+    assignments:
+      - name: DerivedObsValue/observation_minus_background
+        channels: *all_channels
+        type: float
+        function:
+          name: ObsFunction/LinearCombination
+          options:
+            variables:
+            - name: ObsValue/brightnessTemperature
+              channels: *all_channels
+            - name: HofX/brightnessTemperature
+              channels: *all_channels
+            coefs: [1.0,-1.0]
+  - filter: BlackList
+    filter variables:
+    - name: brightnessTemperature
+      channels: *all_channels
+    action:
+      name: assign error
+      error function:
+        name: ObsFunction/ObsErrorModelRamp
+        channels: *all_channels
+        options:
+          xvar:
+            name: ObsFunction/Arithmetic
+            channels: *all_channels
+            options:
+              variables:
+              - name: DerivedObsValue/observation_minus_background
+                channels: *all_channels
+              absolute value: [true]
+          channels: *all_channels
+          x0:    [ 2.500,  2.000,  1.500,  0.750,  0.500,
+                   0.500,  0.500,  0.850,  1.500,  1.500,
+                   1.000,  1.000,  1.500,  1.600,  1.500,
+                   2.500,  2.000,  1.500,  0.750,  0.500,
+                   1.500,  1.850]
+          x1:    [ 10.00,  8.500,  7.500,  4.500,  3.500,
+                   3.000,  3.000,  3.000,  10.00,  9.000,
+                   10.00,  8.500,  7.500,  4.500,  3.500,
+                   3.000,  3.000,  3.000,  10.00,  9.000,
+                   8.500,  10.00]
+          err0:  [ 9.000,  4.500,  2.500,  2.000,  1.500,
+                   1.000,  1.000,  1.250,  4.500,  3.850,
+                   9.000,  4.500,  2.500,  2.000,  1.500,
+                   1.000,  1.000,  1.250,  4.500,  3.850,
+                   3.500,  5.000]
+          err1:  [ 25.00,  20.00,  10.00,  7.500,  6.000,
+                   4.000,  4.000,  5.000,  20.00,  15.00,
+                   35.00,  20.00,  10.00,  7.500,  6.000,
+                   4.000,  4.000,  5.000,  20.00,  15.00,
+                   15.00,  20.00]
+          save: true  # save values from ObsFunction/Arithmetic [absolute value of OmB] in observation space
+
+
