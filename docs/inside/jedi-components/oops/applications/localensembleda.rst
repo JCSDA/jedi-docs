@@ -111,9 +111,25 @@ The sequential EnKF supports the same inflation methods (multiplicative, RTPP, R
 Use linear observer
 ^^^^^^^^^^^^^^^^^^^
 
-:code:`use linear observer`
+The local ensemble solver application offers the flexibility to use either the full non-linear observation operator or a linearized approximation of the observation operator to produce observation space equivalents of model states.
 
-**to be added**
+This functionality is toggled by the boolean option :code:`use linear observer`, which is set to :code:`false` by default.
+
+Default behaviour ensures the non-linear observation operator is used to calculate both the background ensemble mean and background ensemble perturbations in observation space.
+
+When this is set to :code:`true` the observation operator is used in two ways:
+
+* The full non-linear observation operator is used to compute the background ensemble mean in observation space, :math:`\mathbf{\overline{y}} = \mathcal{H}(\mathbf{\overline{x}})`.
+
+* The linearized approximation to the observation operator is used to compute the background ensemble perturbations in observation space, :math:`\mathbf{Y} = \mathbf{H}\mathbf{X}'`.
+
+The following yaml snippet shows how this option can be configured for use with a deterministic LETKF solver:
+
+.. code-block:: yaml
+
+   local ensemble DA:
+     solver: Deterministic GETKF
+     use linear observer: true
 
 
 Unperturbed member
@@ -325,7 +341,7 @@ This method also splits the ensemble into :math:`N_{sub}` subensembles evenly, e
 
 Note that if one is using a modulated ensemble by using the stochastic GETKF solver, no further options need to be specified as the entire modulated ensemble is split evenly for you. Cross validation for the deterministic GETKF solver is not yet supported.
 
-NOTE about obs distributions
+Note about obs distributions
 -----------------------------
 Currently Local Ensemble DA supports :code:`InefficientDistribution` and :code:`Halo` obs distribution. When :code:`InefficientDistribution` distribution is used, all observations and :math:`\mathcal{H}(\mathbf{x})` are replicated on all MPI ranks. When :code:`Halo` distribution is used, only observations needed on this rank are stored on each rank. :code:`Halo`  distribution allows for more efficient memory management compared to :code:`distribution.name: InefficientDistribution`, however at the expense of potentially poor load management compared to :code:`distribution.name: RoundRobin`. For optimal combination of memory and load balancing, we developed an option to run Local Ensemble DA in the observer-only mode with :code:`distribution.name: RoundRobin`. Then one can read ensemble of :math:`\mathcal{H}(\mathbf{x})` from disk using :code:`driver.read HX from disk == true`, :code:`distribution.name: Halo` obs distribution, and :code:`driver.do posterior observer == false`.
 

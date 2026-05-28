@@ -1,49 +1,49 @@
 ﻿.. _top-oops-ETKF:
 
-Local volume solvers 
+Local volume solvers
 ======================
 
-This note describes the formulation of local volume ensemble transform solvers and the implementations available in OOPS. A more detailed description of the deterministic solvers implemented in can be found in :cite:`FrolovEnKF24`, though note that, whilst the equations are equivilent, they are not identical as this documentation descibes the current equations implemented in the code. Further general details on stochastic solvers and for a comprehensive review of ensemble Kalman filters can be found in :cite:`BuehnerEnKF20` and :cite:`HoutekamerEnKF16` respectivly, though note that these refernces do not describe the specific JEDI implementations. 
+This note describes the formulation of local volume ensemble transform solvers and the implementations available in OOPS. A more detailed description of the deterministic solvers implemented in can be found in :cite:`FrolovEnKF24`, though note that, whilst the equations are equivalent, they are not identical as this documentation descibes the current equations implemented in the code. Further general details on stochastic solvers and for a comprehensive review of ensemble Kalman filters can be found in :cite:`BuehnerEnKF20` and :cite:`HoutekamerEnKF16` respectivly, though note that these references do not describe the specific JEDI implementations.
 
-We begin by providing a generic description and notation, and then describe the specific algebra applicable for each of the solvers currently in JEDI. These solvers are: 
+We begin by providing a generic description and notation, and then describe the specific algebra applicable for each of the solvers currently in JEDI. These solvers are:
 
 * Stochastic Local Ensemble Transform Kalman filter (Stochastic LETKF)
 * Deterministic Local Ensemble Transform Kalman filter (Deterministic LETKF)
 * Stochastic Gain form of the local Ensemble Transform Kalman filter (Stochastic GETKF)
 * Deterministic Gain form of the local Ensemble Transform Kalman filter (Deterministic GETKF)
 
-General description and notation 
-----------------------------------------------
+General description and notation
+--------------------------------
 
-In general, ensemble Kalman filters aim to provide a set of analysis ensemble state vectors :math:`\{\mathbf{x}_j^a\}` with :math:`j=1 \ldots N_e` members by assimilating the vector :math:`\mathbf{y}` of :math:`p` observations, into the set of ensemble background state vectors, :math:`\{\mathbf{x}_j^b\}`. Note, here we describe only the update step at a single time, and assume that all vectors and matrices described are valid at this time. 
+In general, ensemble Kalman filters aim to provide a set of analysis ensemble state vectors :math:`\{\mathbf{x}_j^a\}` with :math:`j=1 \ldots N_e` members by assimilating the vector :math:`\mathbf{y}` of :math:`p` observations, into the set of ensemble background state vectors, :math:`\{\mathbf{x}_j^b\}`. Note, here we describe only the update step at a single time, and assume that all vectors and matrices described are valid at this time.
 
-The key vectors and matrices used in the ensemble Kalman filters are: 
+The key vectors and matrices used in the ensemble Kalman filters are:
 
-* The matrix of ensemble members, 
-
-  .. math::
-    \mathbf{X} = [\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_{N_e}], 
-
-  of size :math:`m \times N_e`, where :math:`m` is the size of the state vector. 
-
-* The ensemble mean, 
+* The matrix of ensemble members,
 
   .. math::
+    \mathbf{X} = [\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_{N_e}],
 
-    \overline{\mathbf{x}} = \frac{1}{N_e}\sum_{j=1}^{N_e} \mathbf{x}_j, 
-  
-  of size :math:`m`.  
+  of size :math:`m \times N_e`, where :math:`m` is the size of the state vector.
 
-* The mean of the model-observation equivalents, 
+* The ensemble mean,
 
   .. math::
 
-    \overline{\mathbf{y}} = \frac{1}{N_e}\sum_{j=1}^{N_e} {\mathcal H}(\mathbf{x}_j), 
+    \overline{\mathbf{x}} = \frac{1}{N_e}\sum_{j=1}^{N_e} \mathbf{x}_j,
 
-  of size :math:`p`, where :math:`{\mathcal H}` is the possibly non-linear observation operator. 
+  of size :math:`m`.
 
-* The ensemble perturbation matrix, 
-  
+* The mean of the model-observation equivalents,
+
+  .. math::
+
+    \overline{\mathbf{y}} = \frac{1}{N_e}\sum_{j=1}^{N_e} {\mathcal H}(\mathbf{x}_j),
+
+  of size :math:`p`, where :math:`{\mathcal H}` is the possibly non-linear observation operator.
+
+* The ensemble perturbation matrix,
+
   .. math::
 
     \begin{eqnarray}
@@ -363,4 +363,35 @@ which are used to update the analysis
 
     \begin{eqnarray}
       \mathbf{X}_l^a &&= \mathbf{X}_l^b + {\mathbf{Z}'}_{l}^b \sum_{s = 1}^{N_{\text{sub}}} \mathbf{W}^{\text{CV}}_s.
+    \end{eqnarray}
+
+Note on linearized observation operators
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When the option to use the linearized approximation to the observation operator is chosen for the local ensemble solvers, the method prescribed follows that in :cite:`shlyaeva2018linearH`. We take advantage of the fact that with a linear observation operator :math:`\mathbf{H}`
+
+.. math::
+    :label: Linear_Observer
+
+    \begin{eqnarray}
+      \overline{\mathbf{y}} &&= \mathbf{H}\overline{\mathbf{x}}, \\
+      \mathbf{Y} &&= \mathbf{H}\mathbf{X'},
+    \end{eqnarray}
+
+To obtain :math:`\mathbf{H}` we consider the full non-linear observation operator, :math:`\mathcal{H}` and compute it's Jacobian about the ensemble mean, :math:`\overline{\mathbf{x}}`
+
+.. math::
+    :label: NonLinear_Observer_Jacobian
+
+    \begin{eqnarray}
+      \tilde{\mathbf{H}} = \frac{\partial \mathcal{H}}{\partial \mathbf{x}} \bigg|_{\mathbf{x}=\overline{\mathbf{x}}},
+    \end{eqnarray}
+
+which in turn is used to approximate the observation space ensemble perturbations as
+
+.. math::
+    :label: Linear_ObsEnsemble_Perts
+
+    \begin{eqnarray}
+      \mathbf{Y} = \tilde{\mathbf{H}}\mathbf{X'}.
     \end{eqnarray}
