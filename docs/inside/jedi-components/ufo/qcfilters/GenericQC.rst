@@ -339,6 +339,56 @@ This filter rejects all observations with a `PreQC` value either greater than a 
      action:
        name: reject
 
+Polygon Check Filter
+--------------------
+
+This pre-filter rejects all observations outside a polygonal region on the sphere.
+
+The ``Polygon Check`` filter accepts any valid polygon (concave or convex) and has been tested from 3 up to 12,000 vertices. Vertices are connected via **great circle arcs**, representing the shortest path on a sphere. 
+
+.. note::
+   Great circle arcs appear curved on 2D map projections, particularly near the poles. Ensure vertex density is sufficient to maintain the intended shape.
+
+The filter is coordinate-agnostic regarding longitude wrapping. Both commonly-used ranges have been tested:
+
+* :math:`[-180^\circ, 180^\circ]`
+* :math:`[0^\circ, 360^\circ]`
+
+Specify the polygon using the vertices and a point inside the polygon. Any observations on the opposite side of the polygon from the "inside point" are flagged. What happens to points precisely on a polygon edge will be inconsistent. If you want the edges to be included, then you should enlarge the polygon slightly.
+
+Required input parameters:
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+vertex longitudes
+  Longitudes of all vertices of the polygon. Must match latitudes.
+
+vertex latitudes
+  Latitudes of all vertices of the polygon. Must match longitudes.
+
+inside point longitude
+  Longitude of a point inside the polygon but not on an edge or vertex.
+
+inside point latitude
+  Latitude of the same point used in "inside point longitude"
+
+Polygon Filter Example
+^^^^^^^^^^^^^^^^^^^^^^
+
+In this example, we have a concave polygon of 5 vertices over the continental US. We list the vertices as 110 W, 30 N; 100 W, 45 N; 80 W, 40 N; 90 W, 25 N; 95 W, 35 N; and 110 W, 30 N. The first point is the last point, making a closed loop. Our inside point is 95 W, 39 N.
+
+.. code-block:: yaml
+
+    - filter: Polygon Check
+      inside point longitude: -95
+      inside point latitude: 39
+      vertex longitudes: [ -110, -100, -80, -90, -95, -110 ]
+      vertex latitudes: [ 30, 45, 40, 25, 35, 30 ]
+      action:
+        name: reduce obs space
+
+.. figure:: images/polygon-check-example.png
+
+
 Domain Check Filter
 -------------------
 
