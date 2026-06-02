@@ -74,6 +74,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`InterChannelConsistencyCheck <InterChannelConsistencyCheck>`
   Inter-channel consistency check for radiances
 
+:ref:`LinearTimeInterpolate <LinearTimeInterpolate>`
+  Perform piecewise linear time interpolation or extrapolation of input values to a target datetime.
+
 :ref:`MetOfficeRelativeHumidityCorrection <MetOfficeRelativeHumidityCorrection>`
   Produce correction to Met Office relative humidity H(x).
 
@@ -230,6 +233,7 @@ filters into separate parts would have an obfuscating effect.
    HydrometeorCheckAMSUA
    HydrometeorCheckATMS
    InterChannelConsistencyCheck
+   LinearTimeInterpolate
    MetOfficeRelativeHumidityCorrection
    ModelLevelIndex
    MPIRank
