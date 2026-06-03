@@ -45,22 +45,31 @@ An alternative to using :code:`obs filters` is to specify the sequence of filter
 and :code:`obs post filters` options. Further information on those options can be found below.
 
 
-QCmanager and Final Check
--------------------------
+QCmanager
+-----------
 
-Two filters, :code:`QCmanager` and :code:`Final Check`, are always run if at least one filter has been configured.
+:code:`QCmanager` is not a filter but is always run if at least one filter has been configured.
+It updates QC flags before and after other filters have run. It also prints a summary of QC and diagnostic flags.
+The QCmanager is not listed in the YAML file as it is automatically instantiated, if at least one filter is configured.
 
-The :code:`QCmanager` performs the following steps:
+The :code:`QCmanager` performs the following steps before any filters run:
 
-* Before any other filters have run, assigns the :code:`missing` QC flag to any observed or derived variables that have missing observations.
-* If :code:`post filters` are being used, all observed variables that have not been rejected but have a missing HofX value are assigned the :code:`Hfailed` QC flag.
-* Prints a summary of QC decisions and diagnostic flags at the end of the application run. (This is achieved by calling the :code:`print` function in the filter destructor.)
+* Assigns the :code:`missing` QC flag to any observed or derived variables that have missing observations.
 
-The :code:`Final Check` performs the following steps after all other filters have run:
+The :code:`QCmanager` performs the following steps if :code:`post filters` are being used or after the HofX values
+have been calculated:
+
+* Before any other post filters have run or after the HofX values have been calculated, all observed variables that have not been
+rejected but have a missing HofX value are assigned the :code:`Hfailed` QC flag.
+
+
+The :code:`QCmanager` performs the following steps after all other filters have run:
 
 * Ensures any variables marked as :code:`derived` are present in either the :code:`ObsValue` or :code:`DerivedObsValue` groups.
 * All observations that have not yet been rejected but have missing error estimates are assigned the :code:`missing` QC flag.
 * All observations that have been processed but are not going to be assimilated are assigned the :code:`processed` QC flag.
+* Prints a summary of QC decisions and diagnostic flags at the end of the application run.
+(This is achieved by calling the :code:`print` function at end of :code:`finalSetQc` function.)
 
 
 Order of Filter Application
