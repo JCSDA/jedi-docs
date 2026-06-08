@@ -974,6 +974,72 @@ exclusion volume.
       shuffle: false
       select median: true
 
+.. _DuplicateThinningFilter:
+
+Duplicate Thinning Filter
+--------------------------
+
+The :code:`DuplicateThinning` filter identifies duplicate observations within groups defined
+by one or more grouping variables and thins them based on time.
+
+First the filter identifies groups of observations that fall into the same group bin based on the
+:code:`variable names` parameter. For float variables, values are rounded to integer bins based on
+:math:`\text{bin} = \text{lround}\left(\frac{\text{value}}{\text{tolerance}}\right)`
+using the corresponding :code:`tolerance` parameter. This bin is then split into groups.
+For non-float variables, they are grouped by exact match, but the :code:`tolerance` parameters
+need to be set, since there is a check to match the number of tolerance and variable names.
+
+Second each group is sorted by :code:`dateTime` and analysis_time window is applied:
+observations whose dateTime lies within :code:`analysis_time_tolerance` are kept,
+while the others are flagged as thinned.
+The default :code:`analysis_time` is the start of assimilation window and
+default :code:`analysis_time_tolerance` of PT0H disables windowing.
+
+Third, the filter applies temporal thinning within each group using :code:`min_spacing`.
+The default value of :code:`min_spacing` is PT6H, which means that if two observations
+in the same group are taken within 6 hours of each other, only one of them will be retained.
+When multiple observations in the same group fall within :code:`min_spacing` of each other,
+only one observation is retained. The retained observation is selected based on proximity to
+:code:`analysis_time`. If two observations are equidistant from :code:`analysis_time`,
+:code:`equidistant_time_selection` controls which one is retained. The default value,
+:code:`after`, retains the observation after :code:`analysis_time`; :code:`before` retains
+the observation before :code:`analysis_time`.
+
+The observtions that are not grouped with any observations are temporally thinned
+based on their proximity to :code:`analysis_time`.
+
+Finally all flagged observations have their QCflags set to :code:`QCflags::thinned`.
+The flagged observations are not removed from the observation space, unless specifed by the :code:`action` parameter.
+If the :code:`action` parameter is set to "reduce obs space", the observations flagged as thinned are removed.
+
+As with other QC filters, see :doc:`Where Statement <FilterOptions>`
+to limit which observations are considered by the filter.
+
+Example:
+^^^^^^^^
+
+.. code-block:: yaml
+
+  - filter: DuplicateThinning
+    simulated variables: [airTemperature]
+    analysis_time: 2024-05-06T00:00:00Z
+    analysis_time_tolerance: PT0S
+    min_spacing: PT90M
+    equidistant_time_selection: "after"
+    variable names:
+    - MetaData/stationIdentification
+    - MetaData/longitude
+    - MetaData/latitude
+    - MetaData/height
+    tolerance:
+    - 1
+    - 0.0001
+    - 0.0001
+    - 0.0001
+    action:
+      name: reduce obs space
+
+
 Stuck Check Filter
 ------------------
 
