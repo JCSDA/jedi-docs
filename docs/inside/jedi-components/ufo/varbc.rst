@@ -132,14 +132,14 @@ To use the bias correction in an observation operator, add the :code:`obs bias` 
         variational bc:
           predictors:
           - name: constant
-          - name: emissivity
-          - name: scan_angle
+          - name: emissivityJacobian
+          - name: sensorScanAngle
             order: 4
-          - name: scan_angle
+          - name: sensorScanAngle
             order: 3
-          - name: scan_angle
+          - name: sensorScanAngle
             order: 2
-          - name: scan_angle
+          - name: sensorScanAngle
         covariance:
           minimal required obs number: 20
           prior:
@@ -153,21 +153,21 @@ Here is the detailed explanation:
 
   1. Defines the predictors (required)
 
-    Here, we defined 6 predictors to be used for VarBC, which are :code:`constant`, :code:`emissivity`, and 1st, 2nd, 3rd, 4th order :code:`scan_angle`, respectively. To find what predictor functions are available, please refer to directory :code:`ufo/src/ufo/predictors/`.
+    Here, we defined 6 predictors to be used for VarBC, which are :code:`constant`, :code:`emissivityJacobian`, and 1st, 2nd, 3rd, 4th order :code:`sensorScanAngle`, respectively. To find what predictor functions are available, please refer to directory :code:`ufo/src/ufo/predictors/`.
 
     .. code-block:: yaml
 
       variational bc:
         predictors:
         - name: constant
-        - name: emissivity
-        - name: scan_angle
+        - name: emissivityJacobian
+        - name: sensorScanAngle
           order: 4
-        - name: scan_angle
+        - name: sensorScanAngle
           order: 3
-        - name: scan_angle
+        - name: sensorScanAngle
           order: 2
-        - name: scan_angle
+        - name: sensorScanAngle
 
   2. Defines the input file for the bias coefficients prior (optional)
 
@@ -231,8 +231,8 @@ above, which was written specifically with static bias correction in mind.
 Available Predictors
 ====================
 
-`cloud_liquid_water`
-++++++++++++++++++++
+`cloudWaterContent`
++++++++++++++++++++
 
 Cloud liquid water.
 
@@ -247,7 +247,7 @@ Example
 
 .. code-block:: yaml
 
-  name: cloud_liquid_water
+  name: cloudWaterContent
   satellite: SSMIS
   ch19h: 12
   ch19v: 13
@@ -279,13 +279,13 @@ Example
   - name: constant
     surface: land only
 
-`cosine_of_latitude_times_orbit_node`
-+++++++++++++++++++++++++++++++++++++
+`cosineOfLatitudeTimesOrbitNode`
+++++++++++++++++++++++++++++++++
 
-Cosine of the observation latitude is positive during the ascending node of the orbit and negative during the descending node
+Cosine of the observation latitude is positive during the ascending node of the orbit and negative during the descending node.
 
-`emissivity`
-++++++++++++
+`emissivityJacobian`
+++++++++++++++++++++
 
 Emissivity.
 
@@ -468,8 +468,8 @@ observations taken by stations other than XYZ; the second row, to observations t
 in the Southern hemisphere or on the equator (:code:`latitude` ≤ 0); and the third row, to
 observations taken by station XYZ in the Northern hemisphere.
 
-`lapse_rate`
-++++++++++++
+`lapseRate`
++++++++++++
 
 nth power of the lapse rate.
 
@@ -477,7 +477,7 @@ The following options are supported:
 
 * :code:`order` (Optional) Power to which to raise the lapse rate. By default, 1.
 
-`Legendre`
+`legendre`
 ++++++++++
 
 The Legendre polynomial :math:`P_n(x)` where `n` is the value of the :code:`order` option,
@@ -496,12 +496,12 @@ Example
 
 .. code-block:: yaml
 
-  name: Legendre
+  name: legendre
   number of scan positions: 32
   order: 2
 
-`orbital_angle`
-+++++++++++++++
+`satelliteOrbitalAngle`
++++++++++++++++++++++++
 
 A term of the Fourier series of the orbital angle :math:`\theta` (loaded from the :code:`MetaData/satellite_orbital_angle` variable), i.e. :math:`\sin(n\theta)` or :math:`\cos(n\theta)`.
 
@@ -515,7 +515,7 @@ Example
 
 .. code-block:: yaml
 
-  name: orbital_angle
+  name: satelliteOrbitalAngle
   component: cos
   order: 2
 
@@ -534,8 +534,8 @@ Example
   name: read_bias
   group name: ObsBiasCreated
 
-`scan_angle`
-++++++++++++
+`sensorScanAngle`
++++++++++++++++++
 
 nth power of the scan angle.
 
@@ -549,12 +549,12 @@ Example
 
 .. code-block:: yaml
 
-  name: scan_angle
+  name: sensorScanAngle
   var_name: sensorScanPosition
   order: 2
 
-`sine_of_latitude`
-++++++++++++++++++
+`sineOfLatitude`
+++++++++++++++++
 
 Sine of the observation latitude.
 
