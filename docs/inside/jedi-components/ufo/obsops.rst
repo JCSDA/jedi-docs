@@ -1274,6 +1274,14 @@ Configuration options (ObsSpace):
 
 :code:`pseudo_ops`: if true then calculate data on intermediate "pseudo" levels between model levels, to minimise interpolation artifacts.
 
+:code:`min_temp_grad`: The minimum vertical temperature gradient. Default: 1e-6. Any vertical gradients below this threshold will be treated as isothermal.
+
+:code:`no super-refraction check`: Switch off the super-refraction check in the forward operator (sometimes known as the impact parameter check).  Default: false.  If true, then the model profile will be altered to interpolate over any regions where the impact parameter co-ordinate in the model doesn't increase by at least 10m between model levels.
+
+:code:`dry_refractivity_constant`: Coefficient applied to the dry part of the refractivity equation. Default: 0.776 which is the value from :cite:`Smith1953`.
+
+:code:`wet_refractivity_constant`: Coefficient applied to the wet part of the refractivity equation. Default: 3730 which is the value from :cite:`Smith1953`.
+
 Configuration options (ObsFilters):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1290,6 +1298,10 @@ Examples of yaml:
       obs options:
         vert_interp_ops: true
         pseudo_ops: true
+        min_temp_grad: 1.0e-6
+        no super-refraction check: false
+        dry_refractivity_constant: 0.776
+        wet_refractivity_constant: 3730
     obs space:
       name: GnssroBnd
       obsdatain:
@@ -1387,6 +1399,68 @@ Examples of yaml:
        - name: [atmosphericRefractivity]
        threshold: 3
 
+GNSS RO refractivity (Met Office)
+---------------------------
+
+Description:
+^^^^^^^^^^^^
+
+A one-dimensional observation operator for calculating the Global
+Navigation Satellite System (GNSS) Radio Occultation (RO)
+refractivity data, based on the refractivity operator in the Met Office
+system. However, this operator is not used operationally, except in the
+NRT monitoring system used by the ROM SAF.
+
+Configuration options (ObsFilters):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:code:`vert_interp_ops`: if true, then use log(pressure) for vertical interpolation, if false then use exner function for vertical interpolation.
+
+:code:`pseudo_ops`: if true then calculate data on intermediate "pseudo" levels between model levels, to minimise interpolation artifacts.
+
+:code:`min_temp_grad`: The minimum vertical temperature gradient. Default: 1e-6. Any vertical gradients below this threshold will be treated as isothermal.
+
+:code:`dry_refractivity_constant`: Coefficient applied to the dry part of the refractivity equation. Default: 0.776 which is the value from :cite:`Smith1953`.
+
+:code:`wet_refractivity_constant`: Coefficient applied to the wet part of the refractivity equation. Default: 3730 which is the value from :cite:`Smith1953`.
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+:code:`ufo/test/testinput/gnssrorefmetoffice.yaml`
+
+.. code-block:: yaml
+
+ observations:
+   observers:
+    - obs operator:
+        name: GnssroRefMetOffice
+        vert_interp_ops: true
+        pseudo_ops: true
+        min_temp_grad: 1.0e-6
+        dry_refractivity_constant: 0.776
+        wet_refractivity_constant: 3730
+      obs space:
+        name: GnssroRef
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/ufo/testinput_tier_1/gnssro_obs_2019123006_refractivity.nc4
+        simulated variables: [atmosphericRefractivity]
+        obsdataout:
+          engine:
+            type: H5File
+            obsfile: Data/gnssro_obs_2019123006_refractivity_k1_ukmo_opr_out.nc4
+      geovals:
+        filename: Data/ufo/testinput_tier_1/gnssro_geoval_2019123006_refractivity.nc4
+      norm ref: MetOfficeHofX
+      tolerance: 1.0e-5
+      linear obs operator test:
+        coef TL: 1.0e-4
+        iterations TL:  10
+        tolerance TL: 1.0e-14
+        tolerance AD: 1.0e-13
+
 Ground Based GNSS observation operator (Met Office)
 ---------------------------------------------------
 
@@ -1422,6 +1496,8 @@ The operator requires these values to be set to the default values to work corre
 :code:`min_temp_grad`:
   Minimum value of the vertical temperature gradient when checking for isothermal
   levels in the pseudo-level calculation (default: 1e-6).
+:code:`dry_refractivity_constant`: Coefficient applied to the dry part of the refractivity equation. Default: 0.776 which is the value from :cite:`Smith1953`.
+:code:`wet_refractivity_constant`: Coefficient applied to the wet part of the refractivity equation. Default: 3730 which is the value from :cite:`Smith1953`.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -1432,6 +1508,8 @@ Examples of yaml:
   - obs operator:
       name: GroundgnssMetOffice
       min_temp_grad: 1.0e-6
+      dry_refractivity_constant: 0.776
+      wet_refractivity_constant: 3730
     obs space:
       name: Groundgnss
       obsdatain:
