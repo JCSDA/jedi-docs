@@ -60,7 +60,7 @@ The :code:`QCmanager` performs the following steps if :code:`post filters` are b
 have been calculated:
 
 * Before any other post filters have run or after the HofX values have been calculated, all observed variables that have not been
-rejected but have a missing HofX value are assigned the :code:`Hfailed` QC flag.
+  rejected but have a missing HofX value are assigned the :code:`Hfailed` QC flag.
 
 
 The :code:`QCmanager` performs the following steps after all other filters have run:
@@ -69,7 +69,7 @@ The :code:`QCmanager` performs the following steps after all other filters have 
 * All observations that have not yet been rejected but have missing error estimates are assigned the :code:`missing` QC flag.
 * All observations that have been processed but are not going to be assimilated are assigned the :code:`processed` QC flag.
 * Prints a summary of QC decisions and diagnostic flags at the end of the application run.
-(This is achieved by calling the :code:`print` function at end of :code:`finalSetQc` function.)
+  (This is achieved by calling the :code:`print` function at end of :code:`finalSetQc` function.)
 
 
 Order of Filter Application
