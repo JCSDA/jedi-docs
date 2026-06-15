@@ -54,7 +54,7 @@ For a simple example, consider how a gaussian shaped impulse is propagated by
 a diffusion operator:
 
 .. _diff-normalization:
-.. figure:: fig/figure_diff_normalization.png
+.. figure:: /inside/jedi-components/saber/fig/figure_diff_normalization.png
    :align: center
    :scale: 25%
 

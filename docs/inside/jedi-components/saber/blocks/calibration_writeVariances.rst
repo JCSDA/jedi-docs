@@ -119,7 +119,7 @@ An example of vertical covariances generated for overlapping latitude bands is b
 
 Note that for the bins including the North or South poles the weighting function still drops as one approaches the pole, due to the decrease in the surface area associated with such points. Below are the weights accumulated on each of the Gaussian latitude rings. The plot below shows the accumulated weights for each latitude ring. For an F12 grid (with 24 Gaussian latitudes) and 7 bins, the sum of the weights on each Gaussian latitude is:
 
-.. figure:: fig/weightOverlappingBins.png
+.. figure:: /inside/jedi-components/saber/fig/weightOverlappingBins.png
     :scale: 50%
     :alt: Accumulated weights on each Gaussian latitude.
 

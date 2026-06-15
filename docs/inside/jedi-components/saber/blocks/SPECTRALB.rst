@@ -16,7 +16,7 @@ Central blocks
 
 These two blocks can also be used to model 2D horizontal correlations or covariances, by activating the :code:`skip vertical convolution` key.
 This capability is not implemented in calibration mode, nor in outer blocks.
-It can typically be used in conjunction with the :code:`covariance profile` capability of the :doc:`ErrorCovarianceToolbox`, to extract a full column of horizontal covariance profiles.
+It can typically be used in conjunction with the :code:`covariance profile` capability of the :code:`ErrorCovarianceToolbox` :ref:`ECTB-dirac` to extract a full column of horizontal covariance profiles.
 
 Outer blocks
 ^^^^^^^^^^^^

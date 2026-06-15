@@ -25,7 +25,7 @@ This block can be used as a bandpass filter (applied to each vertical level) on 
 To use the triangle filter profile, the user provides a ``waveband min``, ``waveband peak``, and ``waveband max`` to specify the filter profile. If the lowest waveband (:math:`n = 0`) is the ``waveband min`` or the maximum waveband in your truncation is the ``waveband max``; then, the filter will create a trapezoidal profile and set the attenuation to 1 between the waveband end-point and the ``waveband peak``. To use the boxcar profile, the user provides a ``waveband min``, ``waveband max``, and ``waveband amplitude``. See :ref:`Filter Shapes <filter-shapes>` and yaml examples below for more information.
 
 .. _filter-shapes:
-.. figure:: fig/figure_filter_shapes.png
+.. figure:: ../fig/figure_filter_shapes.png
    :align: center
    :scale: 60%
 
@@ -54,7 +54,7 @@ To use a triangle filter profile, choose ``waveband fitler`` for ``shape`` in th
 
 .. note::
 
-  For more information on the ``preserving variance`` parameter, see the :ref:`waveband-mode` section of the ProcessPerts documentation.
+  For more information on the ``preserving variance`` parameter, see the :ref:`bandpass-filter` section of the ProcessPerts documentation.
 
 Example yaml: Boxcar filter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

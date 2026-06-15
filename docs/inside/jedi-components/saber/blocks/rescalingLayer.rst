@@ -39,7 +39,7 @@ In this case, the interpolated correlations decay to :math:`(1+c)/2`, where :mat
 
 This phenomenon is illustrated for a Gaussian correlation model in next figure.
 
-.. figure:: fig/varloss.png
+.. figure:: /inside/jedi-components/saber/fig/varloss.png
     :scale: 50%
     :alt: Variance loss in a 1D Gaussian correlation model
 
@@ -139,7 +139,7 @@ For better accuracy, the Dirac test can be run in a zone where the grid is dense
 
 Here is an example of horizontal covariance profiles for a pressure variable.
 
-.. figure:: fig/nlev_ndist_correlation_profiles.png
+.. figure:: /inside/jedi-components/saber/fig/nlev_ndist_correlation_profiles.png
     :scale: 50%
     :alt: Short-scale horizontal covariance profiles for unbalanced pressure.
 
@@ -169,7 +169,7 @@ Here is an example multiplicative rescaling field for a bilinear interpolation f
 The signature of the source grid is clearly visible, with a smaller rescaling needed close to the source grid points.
 The latitudinal dependence reflects the higher density of source grid points near the Poles.
 
-.. figure:: fig/rescaling_field.jpg
+.. figure:: /inside/jedi-components/saber/fig/rescaling_field.jpg
     :scale: 35%
     :alt: Rescaling field for a bilinear interpolation from a Gaussian grid to a cubed-sphere dual grid
 

@@ -3,7 +3,11 @@
 Calibration of a SABER error covariance model
 =============================================
 
-Two options are available to calibrate a SABER error covariance: direct calibration or iterative calibration. 
+SABER blocks composing an error covariance model typically need to be calibrated (sometimes also
+referred to as 'trained' or 'fit') before use. Some blocks, like :ref:`diffusion` have a relatively
+simple calibration process which does not require a large set of ensemble/background data.
+
+Other blocks require a computationally heavy process of training from ensemble data. Two options are available to calibrate these covariance models from ensemble data: direct calibration or iterative calibration:
 
 Direct calibration
 ------------------
@@ -14,7 +18,7 @@ There is no enforced assumption on whether the ensemble mean has already been re
 
 Saber blocks with direct calibration assuming that the ensemble mean has been removed (not exhaustive list!)
 
-- :code:`spectral covariance`: calculates vertical covariances for each  `spectral` total wavenumber.
+- :code:`spectral covariance`: calculates vertical covariances for each `spectral` total wavenumber.
 - :ref:`write variances <calibration_write_variances>`: currently calculates variances and inter-variable cross-covariances either as a horizontal global average or per grid point. Also calculates vertical covariances or vertical cross-covariances.
 
 Iterative calibration

@@ -1,4 +1,4 @@
-.. _saber_testing:
+.. _saber_block_testing:
 
 SABER block testing
 ===================

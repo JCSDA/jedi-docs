@@ -3,12 +3,6 @@
 The *ProcessPerts* Application
 ==============================
 
-.. toctree::
-   :hidden:
-
-   SPECTRALB_analyticalFilter.rst
-   SPECTRALB_sphericalHarmonicTransform.rst
-
 Main idea
 ---------
 
@@ -196,6 +190,8 @@ In this case the 3 bands are used recursively, with:
 - A first high-pass filter (complementary of a low-pass filter of length-scale 2000 km).
 - A second high-pass filter (complementary of a low-pass filter of length-scale 5000 km).
 - A last band complementary to the two previous ones.
+
+.. _bandpass-filter:
 
 Spectral analytical filter as a band-pass filter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -3,6 +3,40 @@
 Introduction to SABER Error Covariance Model
 ============================================
 
+The **B** matrix is generally modeled as a series of linear operators,
+represented in SABER by "SABER blocks". Such blocks, even if they come from
+different components of SABER, are often interoperable. The full series of
+blocks (linear operators) used in a model for **B** is referred to as a
+"block-chain".
+
+A block-chain is composed of a central block surrounded, symmetrically, by a
+'backward' AKA 'adjoint' outer block chain on the left and a 'forward' AKA
+'tangent linear' outer block chain on the right. The forward and backward outer
+block-chains are always mirrored images of each other as shown in
+:numref:`blockchainfig`. When reading a block-chain in a YAML configuration,
+saber blocks are listed from top-to-bottom in the 'forward' order, but are first
+applied to an incoming model increment in the backwards (bottom-to-top) order.
+
+.. _blockchainfig:
+.. figure:: fig/figure_saber_blocks_2.jpg
+   :scale: 20%
+   :align: center
+
+   An outline of a SABER block-chain.
+
+The **B** matrix can be modeled in one of several ways, depending on the needs
+of the user. SABER has options for setting up parametric, ensemble, or hybrid
+background error covariances. A parametric **B**, sometimes called a "static"
+**B** in the literature, could be a model which does not evolve with time or a
+model that introduces some flow-dependence through dependence on the background
+state. An ensemble **B** uses an ensemble of forecasts to update/evolve the
+background error in time. A hybrid **B** combines a set of parametric and ensemble
+models using a weighted sum.
+
+
+Theoretical background
+----------------------
+
 In variational data assimilation (VAR), the background error covariance matrix
 **B** plays an important role in calculating the analysis (i.e., the best guess
 for the present state given a set of observations). For a linear observation
@@ -54,14 +88,15 @@ can define **B** (with a frequentist definition) as
     \textbf{B} = \dfrac{1}{N-1} \sum^{N}_{i=1} \boldsymbol{\eta}_i \boldsymbol{\eta}_i^{T}
 
 where :math:`i` represents a member in an ensemble of :math:`N` appropriate 'guesses' (or forecasts)
-:math:`\textbf{x}^b_i` for one specific true state. Since the scalar covariance is a commutative operation
-(i.e., :math:`\text{Cov}(A,B) = \text{Cov}(B,A)`), **B** will be a symmetric matrix (see :cite:`Bannister2008Pt1`
-for more details).
+:math:`\textbf{x}^b_i` for one specific true state. Since the scalar covariance is a commutative
+operation (i.e., :math:`\text{Cov}(A,B) = \text{Cov}(B,A)`), **B** will be a symmetric matrix (see
+:cite:`Bannister2008Pt1` for more details).
 
 The block chain model
 ^^^^^^^^^^^^^^^^^^^^^
 
-Mathematically, a covariance matrix can be split into a correlation part **C** and a variance part :math:`\boldsymbol{\Sigma}^2`.
+Mathematically, a covariance matrix can be factored into a correlation part **C** and a variance
+part :math:`\boldsymbol{\Sigma}^2`.
 
 .. math::
 
@@ -84,11 +119,11 @@ hats):
     \end{cases}
 
 Additionally, a balance operator **K**, a linear transformation which enforces
-physical constraints (such as hydrostatic or geostrophic balance) is included
-in the model **B** :cite:`Bannister2008Pt1`. Also, an interpolation operator
-**T** may be included to transform from the grid used for modeling **B** to the
-model grid. This will make a general model for **B** a series of matrix
-multiplications similar to the one shown below:
+physical constraints (such as hydrostatic and/or geostrophic balance) can be included
+in the model for **B** :cite:`Bannister2008Pt1`. An interpolation operator,
+**T**, also may be included to transform from the grid used for modeling **B** to the
+model grid. This will make a general model for **B** a series of matrix-like
+multiplication operations. An example of this form of operations is:
 
 .. math::
   :label: eq-modelB
@@ -102,7 +137,7 @@ outer blocks, and their transposes are called adjoints (AD).
 In the calculation of the analysis increment (see Eq. :eq:`eq-inc`), **B** is
 applied at the front of the expression for the increment vector. In the block
 chain model, this matrix multiplication is implemented as the application, from
-left to right, of the series of blocks in Eq. :eq:`eq-modelB`. So, first the
+right to left, of the series of blocks in Eq. :eq:`eq-modelB`. So, first the
 adjoints of the outer blocks are applied in reverse order. Next, the central
 block, which is considered to be auto-adjoint, is applied. Then, the direct
 outer blocks are applied in forward order (indicated as TL: tangent linear):
@@ -111,6 +146,8 @@ outer blocks are applied in forward order (indicated as TL: tangent linear):
    :align: center
    :scale: 20%
 
+
+.. _blockchain-intro:
 
 Block chain specification
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -133,8 +170,8 @@ the background covariances to evolve in time (sometimes referred to as 'flow-dep
 the 'errors-of-the-day'). Finally, the parametric and ensemble models can be combined into
 a hybrid **B** using a weighted sum. These models are described in the following sections.
 
-Parametric **B**
-----------------
+Parametric (Static) **B**
+-------------------------
 
 To setup a model for a parametric **B**, a user must specify their desired sequence of SABER blocks 
 in the yaml configuration file for their experiment following this general outline:
@@ -143,14 +180,14 @@ in the yaml configuration file for their experiment following this general outli
 
     covariance model: SABER
     saber central block:
-      - saber block name: <central block name>
-        ...
+      saber block name: <central block name>
+      ...
     saber outer blocks:
-      - saber block name: <outer block 1>
-          ...
-      - ...
-      - saber block name: <outer block N>
-          ...
+    - saber block name: <outer block 1>
+      ...
+    ...
+    - saber block name: <outer block N>
+      ...
 
 Each covariance model should have at least a central block, and may or may not
 have outer blocks. Thus, the simplest SABER covariance model is just the
@@ -160,7 +197,7 @@ Identity matrix:
 
   covariance model: SABER
   saber central block: 
-  - saber block name: ID
+    saber block name: ID
 
 .. note::
 
@@ -191,15 +228,14 @@ is the addition of the :code:`localization` heading in the localization block ch
 
   .. code-block:: yaml
 
-    saber block name: Ensemble
     localization:
       saber central block:
         saber block name: <central block for localization>
         ...
       saber outer blocks:
-        - saber block name: <outer block for localization>
-          ...
+      - saber block name: <outer block for localization>
         ...
+      ...
 
 When setting up an ensemble model, this configuration of the localization (above) will form the central
 block inside the full ensemble block chain:
@@ -207,22 +243,26 @@ block inside the full ensemble block chain:
   .. code-block:: yaml
 
     covariance model: SABER
-    ... # ensemble configuration goes here
-    saber central block: # 'outer' central block
-      saber block name: Ensemble      
-      localization:
+    covariance type: ensemble
+    ensemble:
+      ... # ensemble configuration goes here
+    localization:
+      saber central block: # 'inner' central block
+        saber block name: <central block for localization>
         ...
-        saber central block: # 'inner' central block
-          saber block name: <central block for localization>
-          ...
-        saber outer blocks: # 'inner' outer block chain
-          - saber block name: <outer block for localization>
-            ...
-        ...
-    saber outer blocks: # 'outer' outer block chain
-      - saber block name: <outer block for ensemble>
-        ...
+      saber outer blocks: # 'inner' outer block chain
+      - saber block name: <outer block for localization>
       ...
+    saber outer blocks: # 'outer' outer block chain
+    - saber block name: <outer block for ensemble>
+      ...
+    ...
+
+.. note::
+
+  SABER ensemble covariances support reading either raw ensembles or ensemble perturbations. The
+  :code:`ensemble:` key in the yaml above must be used when reading in raw ensembles. To read in
+  ensemble perturbations use the key :code:`ensemble pert:`.
 
 This nesting of block chains can make it difficult to keep track of all the SABER blocks
 used to make up a covariance model. In this general case (shown above) of an ensemble
@@ -288,44 +328,42 @@ of a static/parametric component and an ensemble component.
 
   background error:
     covariance model: SABER
-    saber central block:
-      saber block name: Hybrid
-      components:
-      - covariance:
-          saber central block:
-            saber block name: <central block for parametric>
-            ...
-          saber outer blocks:
-          - saber block name: <outer block 1 for parametric>
-            ...
-          - saber block name: <outer block N for parametric>
-            ...
+    covariance type: hybrid
+    run components recursively: true
+    components:
+    - covariance:
+        saber central block:
+          saber block name: <central block for static component>
+          <central block config>
+        saber outer blocks:
+        - saber block name: <outer block 1 for static component>
           ...
-        weight:
-          value: alpha
-      - covariance:
-          ... # ensemble configuration goes here
-          saber central block:
-            saber block name: Ensemble
-            localization:
-            ...
-              saber central block:
-                - saber block name: <central block for localization>
-                ...
-              saber outer blocks:
-                - saber block name: <outer block for localization>
-                ...
+        - saber block name: <outer block N for static component>
+          ...
+        ...
+      weight:
+        value: alpha
+    - covariance:
+        covariance type: ensemble
+        ensemble:
+         ... # ensemble configuration goes here
+        localization:
+            saber central block:
+              saber block name: <central block for localization>
+              <central block config>
             saber outer blocks:
-              - saber block name: <outer block for ensemble>
-              ...
+            - saber block name: <outer block for localization>
+            ...
+        saber outer blocks:
+        - saber block name: <outer block for ensemble>
           ...
-        weight:
-          value: beta
+      weight:
+        value: beta
     saber outer blocks: # 'outermost' outer block chain
     - saber block name: <outer block common to all components>
 
 
-Under the :code:`components` heading in the :code:`Hybrid` central block, list each individual component
+Under the :code:`components` heading, list each individual component
 of the full hybrid model, using the dash (:code:`-`) to mark each new member to the list. Each member in
 the list needs a :code:`covariance` key for specifying the specific covariance model and a :code:`weight`
 key for setting the weight value (e.g., the :math:`\alpha` and :math:`\beta` in :eq:`eq-hybridB`) for
@@ -341,7 +379,7 @@ SABER allows for a hybrid covariance to contain more than two components (equiva
   be done by OOPS. With :code:`covariance model: SABER` computations will be done by SABER.
 
 Geometries used in SABER covariances
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------
 
 When used as part of the Variational application, increments input to SABER (and any other implementation of ErrorCovariance) are at the inner loop Geometry, and backgrounds are at the outer loop Geometry. These geometries can be different, often with inner loop Geometry coarser than the outer loop one. By default no resolution changes are performed for the background (to save unnecessary computations), so the background and the increment may be at different resolutions. Yaml key :code:`change background resolution` can be set to :code:`true` (default :code:`false`) to interpolate the background to the same resolution as the increment before applying the SABER covariance, e.g.:
 
@@ -400,7 +438,7 @@ For the ensemble covariances, the ensemble by default is expected to be on the s
             saber block name: ID
           saber outer blocks:
           - saber block name: spectral analytical filter
-            ...
+          ...
           - saber block name: spectral to gauss
 
 For the :code:`Hybrid` SABER covariance, one can specify a different model Geometry for different components, using :code:`geometry` yaml section at the level of covariance components. For example, the yaml outline below has a two-component :code:`Hybrid` covariance with each component on `atlas` `RegularGaussianGrids <https://sites.ecmwf.int/docs/atlas/design/grid/#regulargaussiangrid>`_ with different resolutions:
@@ -444,7 +482,7 @@ For the :code:`Hybrid` SABER covariance, one can specify a different model Geome
           ...
 
 SABER and 4DEnVar covariances
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------
 
 SABER covariances can be used in 4DEnVar applications. For 4DEnVar, the user needs to specify ensembles for each of the subwindows, a 
 single localization for all subwindows for the ensemble covariance, and a single parametric covariance for all subwindows (if using hybrid background error
@@ -460,52 +498,3 @@ time dimension and include time cross-covariances unless otherwise specified.
         ...
       saber outer blocks:
       - ...
-
-Interfaces
-^^^^^^^^^^
-All SABER blocks have a constructor that takes as input arguments:
-
-- a oops GeometryData,
-- a list of outer variables,
-- a configuration with elements on the SABER error covariance,
-- a set of SABER block parameters (see next section),
-- a background,
-- a first guess,
-- a valid time.
-
-A single Atlas FieldSet is passed as argument for all the SABER block application methods.
-Blocks are sometimes interoperable in any order. Coordinate transformations
-and interpolations, however, are not generally interoperable. SABER blocks will implement each of
-the four following methods (except central blocks which will only implement the first two methods):
-
-- :code:`randomize`: Fill the input Atlas FieldSet with a a random vector of centered Gaussian distribution of unit variance and multiply by the "square-root" of the block. For central blocks only. 
-- :code:`multiply`: apply the block to an input Atlas FieldSet. Required for all blocks.
-- :code:`multiplyAD`: apply the adjoint of the block to an input Atlas FieldSet. For outer blocks only.
-- :code:`leftInverseMultiply`: apply the inverse of the block to an input Atlas FieldSet. For outer blocks only.
-
-Other methods are used to glue the blocks together when building a SABER error covariance, from the outermost block to the innermost: 
-
-- :code:`innerGeometryData()`: returns the oops GeometryData for the next block. For outer blocks only. 
-- :code:`innerVars()`: returns the oops Variables for the next block. For outer blocks only. 
-
-
-Methods that are only used to calibrate an error covariance model are presented in the :ref:`section on calibration <calibration>`. 
-
-Among the other methods, note that the :code:`read()` method should be used to read any calibration data, i.e. block data that can be estimated from an ensemble of forecasts.
-
-Base parameters
-^^^^^^^^^^^^^^^
-.. _SABER_blocks_parameters:
-
-All SABER blocks share some common base parameters, and have their own specific parameters (see :ref:`SABER blocks <SABER_blocks>`). These base parameters are:
-
-- :code:`saber block name`: the name of the SABER block. Only parameter that is not optional.
-- :code:`active variables`: variables modified by the block. This should include at least the variables returned by the :code:`mandatoryActiveVars()` block method.
-- :code:`read`: a configuration to be used by the block at construction time. If a configuration is given, the block is used in read mode. Cannot be used with :code:`calibration`.
-- :code:`calibration`: a configuration to be used by the block at construction time. If a configuration is given, the block is used in calibration mode. Cannot be used with :code:`read`.
-- :code:`ensemble transform`: transform parameters, for the :code:`Ensemble` block only.
-- :code:`localization`: localization parameters, for the :code:`Ensemble` block only.
-- :code:`skip inverse`: boolean flag to skip application of the inverse in calibration mode. Defaults is :code:`false`.
-- :code:`state variables to inverse`: state variables to be interpolated at construction time from one functionSpace to another. To be used for interpolation blocks only, when the outer and inner Geometry differ. Default is no variables.
-
-Other parameters related to testing are listed in :ref:`SABER block testing <saber_testing>`.
