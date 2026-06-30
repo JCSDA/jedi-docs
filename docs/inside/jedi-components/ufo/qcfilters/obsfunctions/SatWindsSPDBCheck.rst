@@ -1,22 +1,47 @@
 .. _SatWindsSPDBCheck:
 
 SatWindsSPDBCheck
-============================================
+=================
 
-This obsfunction follows a similar subroutine of GSI Observer and first computes the wind speed
-difference between the observation and model. Then, if model wind speed is greater than observed
-wind speed, a residual of the two wind components is computed as
-:math:`residual = \sqrt{(u_{ob}-u_{model})^2 + (v_{ob}-v_{model})^2}`. Next, the observational
-error is kept within lower/upper bounds defined by yaml parameters :code:`error_min` and :code:`error_max`
-(since it may have been inflated from prior steps).  These error bound limits were found in a GSI fix file.
-Lastly, the quotient of the residual over obsError is calculated as the final output value that is tested
-against a maximum value of gross error to reject the observation.
+This obsfunction first computes the wind speed difference between the observation and model.
+Then, if model wind speed is greater than observed wind speed, a residual of the two wind
+components is computed as :math:`residual = \sqrt{(u_{ob}-u_{model})^2 + (v_{ob}-v_{model})^2}`.
+Next, the observational error is kept within lower/upper bounds defined by yaml parameters
+:code:`error_min` and :code:`error_max` (since it may have been inflated from prior steps).
+Lastly, the function returns a maximum allowable tolerance for the component residual. 
+This threshold is the product of the :code:`cgross` and the observation Error.
+
+.. math::
+   Threshold_{u} = C_{gross} \cdot \sigma_{obs} \cdot \frac{|\Delta u|}{Residual}
+
+Observations are rejected if the component residual exceeds this calculated threshold.
+
+Required
+^^^^^^^^
+
+:code:`wndtype` is a required parameter. This is an integer value to group observations, if the incoming
+data are assumed alike a user defined value can be specified allowing use of this filter (example):
+
+.. code-block:: yaml
+
+     - filter: Variable Assignment
+       assignments:
+       - name: ObsType
+       value: 290
+       type: integer
+
+The length of the `wndtype` list asserts the length of the following `error_min`, `error_max` and `cgross`
+parameters. The ObsSpace must contain an ObsType/{variable} and this type (integer value) will be matched
+against `wndtype` in the configuration to be used to assign the error values.
+
+:code:`error_min` and :code:`error_max` are required parameters. They define the lowest/highest ObsError
+values considered by the filter.
+
+:code:`cgross` is a required parameter. It is a coefficient for gross error and is multiplied by the ObsError
+value which lies in the range defined by `error_min` and `error_max` to define the maximum residual allowable.
 
 Options
 ^^^^^^^
-
-:code:`error_min` and :code:`error_max` are required parameters set to the lowest/highest value desired
-for calculated ObsError value. Typically this was supplied by a GSI fix file.
 
 :code:`original_obserr` is the optional group name for the original value of ObsError before any inflation steps.
 This option is typically used for testing against prior datasets, but within UFO, the option is not needed
@@ -30,14 +55,26 @@ Example
 
 .. code-block:: yaml
 
-     - filter: Bounds Check
+     - filter: Background Check
        filter variables:
        - name: windEastward
+       test variables:
+       - name: ObsFunction/SatWindsSPDBCheck
+         options:
+           wndtype: 290
+           cgross: 5.0
+           error_min: 1.5
+           error_max: 6.0
+           variable: windEastward
+     - filter: Background Check
+       filter variables:
        - name: windNorthward
        test variables:
        - name: ObsFunction/SatWindsSPDBCheck
          options:
-           error_min: 1.4
-           error_max: 20.0
-       maxvalue: 1.75            # gross error * 0.7
+           wndtype: 290
+           cgross: 5.0
+           error_min: 1.5
+           error_max: 6.0
+           variable: windNorthward
 
