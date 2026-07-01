@@ -26,7 +26,10 @@ data are assumed alike a user defined value can be specified allowing use of thi
 
      - filter: Variable Assignment
        assignments:
-       - name: ObsType
+       - name: ObsType/windEastward
+       value: 290
+       type: integer
+       - name: ObsType/windNorthward
        value: 290
        type: integer
 
