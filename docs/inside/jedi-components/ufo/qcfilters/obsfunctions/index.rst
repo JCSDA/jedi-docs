@@ -192,6 +192,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`SetSeaIceEmiss <SetSeaIceEmiss>`
   Calculate MW emissivity for surfaces classified as Ice by AAPP.
 
+:ref:`Statistic <Statistic>`
+  Compute a global summary statistic (arithmetic mean, harmonic mean, median, mode, weighted mean, standard deviation, variance) across all MPI ranks and assign the result to ObsSpace locations.
+
 :ref:`StableLayersCloudTopPressure <StableLayersCloudTopPressure>`
   Calculate the cloud-top pressure from satellite radiance input using the "stable layers" method
 
@@ -272,6 +275,7 @@ filters into separate parts would have an obfuscating effect.
    SCATRetMW
    SetSurfaceType
    SetSeaIceEmiss
+   Statistic
    StableLayersCloudTopPressure
    TropopauseEstimate
    TropopauseHeight
