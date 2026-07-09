@@ -1400,7 +1400,7 @@ Examples of yaml:
        threshold: 3
 
 GNSS RO refractivity (Met Office)
----------------------------
+---------------------------------
 
 Description:
 ^^^^^^^^^^^^
@@ -1496,8 +1496,10 @@ The operator requires these values to be set to the default values to work corre
 :code:`min_temp_grad`:
   Minimum value of the vertical temperature gradient when checking for isothermal
   levels in the pseudo-level calculation (default: 1e-6).
-:code:`dry_refractivity_constant`: Coefficient applied to the dry part of the refractivity equation. Default: 0.776 which is the value from :cite:`Smith1953`.
-:code:`wet_refractivity_constant`: Coefficient applied to the wet part of the refractivity equation. Default: 3730 which is the value from :cite:`Smith1953`.
+:code:`dry_refractivity_constant`:
+  Coefficient applied to the dry part of the refractivity equation. Default: 0.776 which is the value from :cite:`Smith1953`.
+:code:`wet_refractivity_constant`:
+  Coefficient applied to the wet part of the refractivity equation. Default: 3730 which is the value from :cite:`Smith1953`.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
