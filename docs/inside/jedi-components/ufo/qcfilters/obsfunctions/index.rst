@@ -198,6 +198,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`StableLayersCloudTopPressure <StableLayersCloudTopPressure>`
   Calculate the cloud-top pressure from satellite radiance input using the "stable layers" method
 
+:ref:`TimeBinner <TimeBinner>`
+  Assign observations to discrete time bins, returning an integer bin number and optionally writing a bin label timestamp to the ObsSpace
+
 :ref:`TropopauseEstimate <TropopauseEstimate>`
   First-guess extimate of tropopause pressure from climatology
 
@@ -277,6 +280,7 @@ filters into separate parts would have an obfuscating effect.
    SetSeaIceEmiss
    Statistic
    StableLayersCloudTopPressure
+   TimeBinner
    TropopauseEstimate
    TropopauseHeight
    VisibilityDiagnostic
