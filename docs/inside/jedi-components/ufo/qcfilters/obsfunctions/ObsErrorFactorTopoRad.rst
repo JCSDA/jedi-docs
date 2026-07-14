@@ -11,7 +11,7 @@ H = surface height [m]
 
 X = surface-to-space transmittance
 
-IASI, CrIS, AIRS and AVHRR3:
+IASI, CrIS, AIRS, AVHRR3, SEVIRI and ABI:
 
   :math:`factor = (2000/H)^4`
 
@@ -19,21 +19,26 @@ IASI, CrIS, AIRS and AVHRR3:
 
 AMSU-A:
 
-  :math:`EIF = SQRT [ 1 / ( 2000 / H ) ]` if :math:`2000 < H < 4000`, for Channels 1-6,15
+  :math:`EIF = SQRT [ 1 / ( 2000 / H ) ]` if :math:`H > 2000`, for Channels 1-6, 15
 
   :math:`EIF = SQRT [ 1 / ( 4000 / H ) ]` if :math:`H > 4000`, for Channel 7
 
 ATMS:
 
-  :math:`EIF = SQRT [ 1 / ( 2000 / H ) ]` if :math:`2000 < H < 4000`, for Channels 1-7,16
+  :math:`EIF = SQRT [ 1 / ( 2000 / H ) ]` if :math:`H > 2000`, for Channels 1-7, and 16 and greater
 
   :math:`EIF = SQRT [ 1 / ( 4000 / H ) ]` if :math:`H > 4000`, for Channel 8
+
+MHS:
+
+  :math:`EIF = SQRT [ 1 / ( 2000 / H )]` if :math:`H > 2000`, for all the input channels
 
 Required input parameters:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Sensor
-  Sensor name: currently only works for these sensors :code:`iasi`, :code:`cris-fsr`, :code:`airs`, :code:`avhrr3`, :code:`amsua`, :code:`atms`
+  Sensor name:
+  Currently only works for these sensors :code:`iasi`, :code:`cris-fsr`, :code:`airs`, :code:`avhrr3`, :code:`seviri`, :code:`abi`, :code:`amsua`, :code:`atms`, :code:`mhs`
 
 Channels
   Used channels
