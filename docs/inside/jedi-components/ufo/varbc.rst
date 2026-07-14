@@ -558,6 +558,73 @@ Example
 
 Sine of the observation latitude.
 
+`SymmCldImpact`
++++++++++++++++
+
+Symmetric Cloud Impact (SCI) predictor for all-sky infrared radiance bias correction.
+Supports two formulations selected automatically based on the options provided:
+
+- **Harnish et al. (2016)**: used when :code:`btlim` is provided.
+- **Okamoto et al. (2014)**: used when :code:`btlim` is not provided.
+
+The following options are supported:
+
+* :code:`btlim`: (Optional) Per-channel clear-sky reference BT limits in Kelvin,
+  provided as a list in the same order as :code:`channels`. When provided, the
+  Harnish et al. (2016) formulation is used; otherwise the Okamoto et al. (2014)
+  formulation is used.
+* :code:`order`: (Optional) Power to which to raise the SCI value. By default, 1.
+  Including both :code:`order: 1` and :code:`order: 2` is recommended for all-sky
+  IR assimilation to capture nonlinear bias structures.
+* :code:`scale by omb`: (Optional) If true, scales the SCI by a sigmoid function
+  of the obs-minus-background departure. Only applies to the Okamoto et al. (2014)
+  formulation. By default, false.
+* :code:`sigmoid constant 1`: (Optional) Controls the slope of the sigmoid function.
+  Only applies to the Okamoto et al. (2014) formulation. By default, 10.0.
+* :code:`sigmoid constant 2`: (Optional) Controls the 50-percent value of the sigmoid
+  function. Only applies to the Okamoto et al. (2014) formulation. By default, 10.0.
+
+Example (Harnish et al. 2016)
+..............................
+
+.. code-block:: yaml
+
+  variational bc:
+    predictors:
+    - name: SymmCldImpact
+      channels: *channels
+      btlim: [234.27, 244.75, 255.98, 292.99]
+    - name: SymmCldImpact
+      channels: *channels
+      btlim: [234.27, 244.75, 255.98, 292.99]
+      order: 2
+
+Example (Okamoto et al. 2014)
+..............................
+
+.. code-block:: yaml
+
+  variational bc:
+    predictors:
+    - name: SymmCldImpact
+      channels: *channels
+    - name: SymmCldImpact
+      channels: *channels
+      order: 2
+      scale by omb: true
+
+References
+..........
+
+Harnisch, F., M. Weissmann, and Á. Periáñez, 2016: Error model for the assimilation
+of cloud-affected infrared satellite observations in an ensemble data assimilation
+system. *Quart. J. Roy. Meteor. Soc.*, **142**, 1797–1808,
+https://doi.org/10.1002/qj.2776.
+
+Okamoto, K., McNally, A.P. and Bell, W., 2014: Progress towards the assimilation of
+all-sky infrared radiances: an evaluation of cloud effects. *Quart. J. Roy. Meteor.
+Soc.*, **140**, 1603–1614, https://doi.org/10.1002/qj.2242.
+
 `thickness`
 +++++++++++
 

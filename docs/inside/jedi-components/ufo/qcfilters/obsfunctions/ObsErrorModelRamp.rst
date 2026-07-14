@@ -144,7 +144,7 @@ Example configurations:
             options:
               channels: *errassignchan
               xvar:
-                name: ObsFunction/SymmCldImpactIR
+                name: ObsFunction/SymmCldImpact
                 channels: *errassignchan
                 options:
                   channels: *errassignchan

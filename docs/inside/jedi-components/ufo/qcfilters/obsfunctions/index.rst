@@ -198,6 +198,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`StableLayersCloudTopPressure <StableLayersCloudTopPressure>`
   Calculate the cloud-top pressure from satellite radiance input using the "stable layers" method
 
+:ref:`SymmCldImpact <SymmCldImpact>`
+  Situation-dependent observation error using the Symmetric Cloud Impact (SCI) parameter by Okamoto et al. (2014) and Harnisch et al. (2016)
+
 :ref:`TimeBinner <TimeBinner>`
   Assign observations to discrete time bins, returning an integer bin number and optionally writing a bin label timestamp to the ObsSpace
 
@@ -280,6 +283,7 @@ filters into separate parts would have an obfuscating effect.
    SetSeaIceEmiss
    Statistic
    StableLayersCloudTopPressure
+   SymmCldImpact
    TimeBinner
    TropopauseEstimate
    TropopauseHeight
