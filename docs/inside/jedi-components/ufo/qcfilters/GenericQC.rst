@@ -2703,9 +2703,9 @@ The following YAML option is required:
 - :code:`statistics`: List of statistics to be calculated; one or more of
 
   * :code:`MeanHofX`: ensemble mean of model equivalents;
-  
+
   * :code:`HofXStdDev`: ensemble spread (i.e. standard deviation) of model equivalents.
-  
+
 The standard :code:`filter variables` option is supported as well and can be used to limit the list of simulated variables (and channels) for whose model equivalents ensemble statistics should be calculated.
 
 The filter writes the calculated statistics to ObsSpace variables with names and groups derived from :code:`filter variables` and :code:`statistics`, respectively.
@@ -2723,3 +2723,117 @@ Example:
       - name: windNorthward
 
 In this case, the filter is configured to calculate the mean and spread of the model equivalents of horizontal wind velocity components. The results will be written to ObsSpace variables :code:`MeanHofX/windEastward`, :code:`MeanHofX/windNorthward`, :code:`HofXStdDev/windEastward`, and :code:`HofXStdDev/windNorthward`.
+
+
+.. _percentile-filter:
+
+Percentile Filter
+-----------------
+
+The :code:`Percentile` filter rejects observations lying outside percentile-based
+thresholds computed independently for each record (for example, each station).
+
+For each filter variable and each record, the filter computes:
+
+- a lower threshold at :code:`lower percentiles` (default: 0),
+- an upper threshold at :code:`upper percentiles` (default: 100),
+- and keeps values inside the central range.
+
+Values outside the central range are rejected and set to missing.
+
+The central range can be inclusive
+(:math:`\mathrm{lower} \leq \mathrm{value} \leq \mathrm{upper}`) or exclusive
+(:math:`\mathrm{lower} < \mathrm{value} < \mathrm{upper}`) depending on
+:code:`inclusive central range`.
+
+Percentile threshold calculations use linear interpolation between closest
+datapoints where necessary to match the requested percentile value
+(the same behavior as `numpy.percentile(..., method='linear')
+<https://numpy.org/doc/stable/reference/generated/numpy.percentile.html>`_).
+
+The filter sets rejected observations to QC flag :code:`33`
+(:code:`QCflags::percentile`) and writes filtered values to
+:code:`DerivedObsValue/<variable>`.
+
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
+Required or conditionally required:
+
+- :code:`filter variables`: Variables to filter.
+- At least one of:
+
+  - :code:`lower percentiles`
+  - :code:`upper percentiles`
+
+Optional:
+
+- :code:`lower percentiles`: Lower percentile(s), one per filter variable.
+  Values must lie in [0, 100].
+- :code:`upper percentiles`: Upper percentile(s), one per filter variable.
+  Values must lie in [0, 100].
+- :code:`inclusive central range`: Boolean(s), one per filter variable.
+  :code:`true` keeps threshold values; :code:`false` rejects threshold values.
+  Default: :code:`[true]`. This can be a single value applied to all variables
+  (:code:`[true]` or :code:`[false]`) or a list of values with one value per
+  variable :code:`[true, false, ...]`.
+- :code:`station_id_variable`: Optional station identifier used when ObsSpace
+  record grouping is not configured.
+
+As with other QC filters, see :doc:`Where Statement <FilterOptions>`
+to limit which observations are considered by the filter.
+
+Example: central 90 percent, inclusive
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  - filter: Percentile
+    filter variables: [airTemperature]
+    lower percentiles: [5.0]
+    upper percentiles: [95.0]
+
+Note that the default value of :code:`inclusive central range` is :code:`true`,
+so it is not necessary to specify it explicitly here.
+
+Example: central 90 percent, exclusive
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  - filter: Percentile
+    filter variables: [airTemperature]
+    lower percentiles: [5.0]
+    upper percentiles: [95.0]
+    inclusive central range: [false]
+
+Example: lower-tail filter (keep lower 70 percent)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  - filter: Percentile
+    filter variables: [airTemperature]
+    upper percentiles: [70.0]
+
+Example: lower-tail filter, two variables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The below will keep values in the percentile range :math:`(0, 70)` for
+:code:`airTemperature` and :math:`[0, 60]` for :code:`dewPointTemperature`.
+
+.. code-block:: yaml
+
+  - filter: Percentile
+    filter variables: [airTemperature, dewPointTemperature]
+    upper percentiles: [70.0, 60.0]
+    inclusive central range: [false, true]
+
+Notes and constraints
+^^^^^^^^^^^^^^^^^^^^^
+
+- Percentile bounds must satisfy :math:`0 \leq \mathrm{lower} \leq \mathrm{upper} \leq 100`.
+- The number of values provided for list-style options must match the number
+  of filter variables.
+- If ObsSpace record grouping is not configured, use :code:`station_id_variable`
+  to define record grouping for this filter.

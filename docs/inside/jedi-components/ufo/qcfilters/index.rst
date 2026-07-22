@@ -1,6 +1,6 @@
 
 Quality Control in UFO
-======================   
+======================
 
 .. toctree::
    :maxdepth: 2
@@ -12,4 +12,3 @@ Quality Control in UFO
    FilterOptions
    PrintFilterData
    NewFilter
- 
