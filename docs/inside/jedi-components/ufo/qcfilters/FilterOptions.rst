@@ -315,6 +315,10 @@ The following actions are available:
 * :code:`set flag bit`: the bit of the bitmap diagnostic flag indicated by the :code:`bit` option will be set at observations flagged by filter.
 * :code:`flag original and average profiles`: rejects any observations in the original profiles that have been flagged by the filter, and also rejects all observations in any averaged profile whose corresponding original profile contains at least one flagged observation. See the example below for further details.
 
+The :code:`reject`, :code:`accept`, :code:`set` and :code:`unset` actions accept the optional :code:`apply to whole record` parameter (default: :code:`false`). When set to :code:`true`, if *any* observation in a record is flagged by the filter, the action is applied to *all* observations in that record, not just the ones flagged. This requires the ObsSpace to have been divided into records via the :code:`obsgrouping` configuration; using it without grouping will raise an error. Using :code:`apply to whole record: true` with any other action will also raise an error.
+
+Since records are typically grouped by station ID, this option provides a simple way for the pass or failure of a single observation (e.g. a bounds check on one level) to propagate to the entire station, rejecting or flagging all observations from that station.
+
 .. attention::
 
   The :code:`actions` option takes a list of actions.
@@ -575,7 +579,41 @@ Note that any diagnostic flags in the original space that are already set remain
 
 The example above matches up each observation level in the original space of :code:`DerivedObsValue/depthBelowWaterSurface` with its corresponding model level in the extended space of :code:`HofX/depthBelowWaterSurface`; for every unset observation-level flag in :code:`DiagnosticFlags/BayBgCheckReject/salinity` and :code:`DiagnosticFlags/BayBgCheckReject/waterPotentialTemperature`, for which :code:`ObsValue/waterPotentialTemperature` is non-missing (due to the 'where' statement), the flag value at the corresponding model-level overwrites it. Be wary when using 'where' statements with this filter, because the 'where' statement covers all the filter variables listed - any where-excluded locations' flag values remain unchanged.
 
-Example 8: ``reduce obs space`` action
+Example 8: ``apply to whole record`` option
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this example observations are grouped by station ID. The filter's :code:`where` clause identifies observations with :code:`MetaData/var1 <= 3`; because :code:`apply to whole record: true` is set, the entire record containing those observations is rejected, not just the matching locations.
+
+.. code-block:: yaml
+
+    - filter: BlackList
+      action:
+        name: reject
+        apply to whole record: true
+      where:
+        - variable:
+            name: MetaData/var1
+          maxvalue: 3
+
+The same option can be used with :code:`set` and :code:`unset` to propagate a diagnostic flag across an entire record when any observation in that record triggers the filter:
+
+.. code-block:: yaml
+
+    - filter: Create Diagnostic Flags
+      flags:
+      - name: FlagA
+        initial value: false
+    - filter: Perform Action
+      action:
+        name: set
+        flag: FlagA
+        apply to whole record: true
+      where:
+        - variable:
+            name: MetaData/var1
+          maxvalue: 3
+
+Example 9: ``reduce obs space`` action
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``reduce obs space`` action can be used in a pre filter to physically remove flagged observations from the obs space, reducing its memory footprint. For example, this action can be used when running the ``Thinning`` filter:
