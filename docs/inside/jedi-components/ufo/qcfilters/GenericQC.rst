@@ -1039,6 +1039,7 @@ Example:
     action:
       name: reduce obs space
 
+.. _stuck-check-filter:
 
 Stuck Check Filter
 ------------------
@@ -1426,6 +1427,8 @@ Example:
      rejection_threshold: 0.5
      station_id_variable: MetaData/stationIdentification
 
+.. _ship-track-check-filter:
+
 Ship Track Check Filter
 -----------------------
 
@@ -1466,7 +1469,9 @@ user-defined :code:`rejection threshold` fraction, the full track is rejected.
 The following YAML parameters are supported:
 
 * :code:`temporal resolution`: Assumed temporal resolution of the observations (i.e. absolute
-  accuracy of the reported observation times), used for the speed calculations. Required parameter.
+  accuracy of the reported observation times). Used as the time interval for the speed calculations
+  if it is greater than the reported time between two consecutive observations; otherwise the
+  reported time is used. Required parameter.
 
 * :code:`spatial resolution (km)`: Assumed spatial resolution of the observations (in km), i.e.
   absolute accuracy of the reported positions. Required parameter.
@@ -1660,7 +1665,7 @@ In calculation of the background error correlation, for both surface and multi-l
 History Check Filter
 --------------------
 
-This filter runs the Ship Track Check filter and/or the Stuck Check filter (depending on the
+This filter runs the :ref:`ship-track-check-filter` and/or the :ref:`stuck-check-filter` (depending on the
 observation type) on an auxiliary obs space. The auxiliary obs space should be a superset of the original
 obs space, with an earlier start time than the assimilation window and either the same, or optionally a later,
 end time. The equivalent observations to those which were flagged in the auxiliary obs space are then
@@ -1688,8 +1693,9 @@ The following YAML parameters are supported:
   the  subtype not be LNDSYN or LNDSYB. These must be filled in for the ship track check filter to
   run. The particular sub-parameters to fill in are :code:`temporal resolution`,
   :code:`spatial resolution (km)`, :code:`max speed (m/s)`, :code:`rejection threshold`, and
-  :code:`early break check`. Please refer to the Ship Track Check filter documentation for additional
-  details on how each of these sub-parameters works. Optional parameter.
+  :code:`early break check`. Note that :code:`records_are_single_obs` cannot be used in the History
+  Check and will throw an error. Please refer to the Ship Track Check filter documentation for
+  additional details on how each of these sub-parameters works. Optional parameter.
 
 * :code:`stuck check parameters`: The options for running the stuck check filter, should the subtype
   not be TEMP, BATHY, TESAC, or BUOYPROF. These must be filled in for the stuck check filter to run.
