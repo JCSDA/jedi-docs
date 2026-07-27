@@ -2380,7 +2380,6 @@ A comparison with results obtained using the Met Office OPS system is performed 
 
 This operator also accepts an optional :code:`variables` parameter, which controls which ObsSpace variables will be simulated. This option should only be set if this operator is used as a component of the Composite operator. If :code:`variables` is not set, the operator will simulate all ObsSpace variables. Please see the documentation of the Composite operator for further details.
 
-
 Configuration options
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -2407,3 +2406,145 @@ Example
       model vertical coordinate: "air_pressure_levels"
       pressure coordinate: pressure
       pressure group: MetaData
+
+Vertical/Slant-path summation/integration Operator
+--------------------------------------------------
+
+The :code:`pathsum` operator computes a weighted summation of a GeoVaLs variable along a vertical or slant path:
+
+.. math::
+
+   H(x) = \alpha \sum_{i=1}^{N} v_i w_i
+
+where:
+
+* :math:`H(x)` is the simulated observation.
+* :math:`v_i` is the GeoVaL value at point :math:`i`
+* :math:`w_i` is the weight associated with point :math:`i`
+* :math:`\alpha` is an optional scaling factor. This factor can be used for H(x) unit conversion 
+
+Integration weights may be:
+
+* read from GeoVaLs
+* specified directly in YAML
+* computed internally using trapezoidal integration
+
+If weights are computed internally, segment lengths (distances between adjacent points along the path) are computed using WGS-84 Earth-Centered Earth-Fixed (ECEF) coordinates, converted from geodetic latitude, longitude and height read from GeoVals.
+
+When the weights correspond to segment lengths, the summation provides a numerical approximation to the path integral:
+
+.. math::
+
+   H(x) = \alpha \int_S V(s)\, ds.
+
+where:
+
+* :math:`H(x)` is the simulated observation.
+* :math:`\alpha` is an optional scaling factor.
+* :math:`S` is the integration path usually provided by observations.
+* :math:`V(s)` is the GeoVaL value at location :math:`s` along the path :math:`S`.
+
+The operator supports:
+
+* vertical-path integration/summation
+* slant-path integration/summation
+* optional height-range restriction
+* optional interpolation to exact height boundaries at two end points of the path, implemented only for vertical paths 
+
+Important notes:
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+This operator currently does not provide tangent-linear (TLM) or adjoint (ADJ) implementations. As a result, it can be used directly in ensemble-based data assimilation systems, but TLM and ADJ implementations are required for use in variational data assimilation.
+
+If weights are computed internally, segment lengths are calculated from WGS-84 ECEF coordinates. Therefore, for slant paths, geodetic latitude, longitude, and height must be available in GeoVaLs. If a model does not provide geodetic coordinates, a conversion to geodetic coordinates is required. 
+For vertical paths, the segment length reduces to the distance between adjacent height levels along the local vertical direction. In this case, geocentric height may be an acceptable approximation for some applications, provided that the resulting height differences between adjacent levels do not differ significantly from those obtained using geodetic height.
+
+
+Configuration options:
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+- :code:`geoval variable`: Name of the GeoVaLs variable to be summed/integrated along a path.
+
+- :code:`path type` [optional]: Summation path type. Supported values are :code:`vertical` and :code:`slant`. Default is :code:`vertical`.
+
+- :code:`weight variable` [optional]: GeoVaLs variable containing weights for weighted summation.
+
+- :code:`weights` [optional]: Weights specified directly in YAML.
+
+- :code:`height range` [optional]: Restrict summation to the specified height range :code:`[hmin, hmax]`.
+
+- :code:`interpolate boundaries` [optional]: If :code:`true`, linearly interpolate GeoVaL values to exact lower and upper height boundaries before summation Currently implemented only for :code:`path type: vertical`.  Default is :code:`false`.
+
+- :code:`use km for height` [optional]: If :code:`true`, heights from input GeoVals are in km.  Default is :code:`false`. Only applicable when the weighting for summation is from operator-computed weights.
+
+- :code:`scaling factor` [optional]: Multiplicative scaling factor applied to the final integrated value. Default is :code:`1.0`. This can be used for final unit conversion.
+
+- :code:`path point latitude variable` [optional]: GeoVaLs variable containing \mathbf{geodetic} latitude for each slant-path point. Default is :code:`pathPointLatitude`. Not applicable to vertical summation.
+
+- :code:`path point longitude variable` [optional]: GeoVaLs variable containing \mathbf{geodetic} longitude for each slant-path point. Default is :code:`pathPointLongitude`. Not applicable for vertical summation.
+
+- :code:`path point height variable` [optional]: GeoVaLs variable containing \mathbf{geodetic} height for each slant/vertical path point. Default is :code:`pathPointHeight`.
+
+Examples of YAML:
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Slant-path integration using GeoVaLs weights:
+
+.. code-block:: yaml
+
+  - obs operator:
+      name: PathSum
+      path type: slant
+      geoval variable: variablename
+      weight variable: path_weight
+
+Vertical integration using YAML weights:
+
+.. code-block:: yaml
+
+  - obs operator:
+      name: PathSum
+      path type: vertical            
+      geoval variable: variablename
+      weights: [1.0, 2.0, 3.0]    
+
+Slant-path integration using internally computed weights, with height from Geovals in unit of km and a scaling factor, 1.0e-07, for H(x):
+
+.. code-block:: yaml
+
+  - obs operator:
+      name: PathSum
+      path type: slant
+      geoval variable: variablename
+      path point latitude variable: path_latitude
+      path point longitude variable: path_longitude
+      path point height variable: path_height
+      use km for height: true
+      scaling factor: 1.0e-07
+
+Vertical integration using internally computed weights with a defined height range:
+
+.. code-block:: yaml
+
+  - obs operator:
+      name: PathSum
+      path type: vertical
+      geoval variable: variablename
+      path point height variable: path_height
+      height range: [0, 20]
+      use km for height: true
+
+Vertical integration with boundary interpolation at two end points from the YAML defined height range:
+
+.. code-block:: yaml
+
+  - obs operator:
+      name: PathSum
+      path type: vertical
+      geoval variable: variablename
+      weight variable: weights
+      path point height variable: path_height
+      height range: [0, 105]
+      use km for height: true
+      interpolate boundaries: true
+      scaling factor: 1.0e-04
