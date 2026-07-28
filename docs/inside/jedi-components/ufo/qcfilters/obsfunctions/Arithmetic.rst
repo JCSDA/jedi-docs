@@ -58,7 +58,7 @@ The ObsFunction accepts the following parameters. In each case the correspondenc
 * :code:`absolute value`: Take absolute value of each variable (:code:`true`/:code:`false`). If :code:`true`, the absolute value is taken before any other operation is performed (:math:`g_i(\cdot)`).
 * :code:`truncate`: Truncate (round towards zero) each input variable to the nearest integer multiple of the corresponding entry in this vector. If the value in the vector is zero or negative, no truncation is performed. If the value is positive, truncation is performed before any other operation apart from taking the absolute value. (:math:`g_i(\cdot)`).
 * :code:`use channel numbers`: This option enables channel numbers to be combined if that is desired. If :code:`true`, the channel number will be used in the calculation instead of the value of each variable. Default :code:`false`.
-
+* :code:`abort if invalid operation`: When :code:`true`, certain invalid operations (outlined below) will cause an exception to be raised. When :code:`false` a warning will be logged instead and the output value will be set to missing. Default :code:`false`.
 The :code:`variables` parameter must be present. All other parameters are optional.
 The length of vector parameters such as :code:`log bases` must be the same length as :code:`variables`.
 
@@ -68,12 +68,15 @@ The same occurs for a missing input channel if :code:`use channel numbers` is :c
 Warnings are emitted in the following situations:
 
 * The :code:`total exponent` parameter is larger than 25, or any value in the :code:`exponents` vector is larger than 10. Such values could cause numerical overflows.
-* A negative value is raised to a non-integer exponent. In this case the output value is set to missing.
+* A negative value is raised to a non-integer exponent and :code:`abort if invalid exception` is :code:`false`. In this case the output value is set to missing.
+* Zero is raised to a negative exponent and :code:`abort if invalid exception` is :code:`false`. In this case the output value is set to missing.
 
 Exceptions are thrown in the following situations:
 
 * The logarithm of a negative number (or zero) is taken.
 * The chosen log base is invalid.
+* A negative value is raised to a non-integer exponent and :code:`abort if invalid exception` is :code:`true`.
+* Zero is raised to a negative exponent and :code:`abort if invalid exception` is :code:`true`.
 
 
 Example 1
