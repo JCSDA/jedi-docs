@@ -323,10 +323,12 @@ Optionally the vertical interpolation can use a 'backup' coordinate for interpol
 * :code:`observation vertical coordinate group backup` [optional]: If the observation coordinate is not in the group :code:`MetaData` the parameter can be used to set the group to something else.
 * :code:`interpolation method backup` [optional]: Type of interpolation to do when using the backup coordinate.
 
-Optionally the resulting hofx can be scaled by another variable from the GeoVaLs or ObsSpace. This is achieved using two configuraiton keys:
+Optionally the resulting :math:`H(x)` can be scaled by another variable from the GeoVaLs or ObsSpace. This is achieved using two configuration keys:
 
 * :code:`hofx scaling field` [optional]: The group providing the scaling field. Can be `GeoVaLs`.
 * :code:`hofx scaling field group` [optional]: The name of the field used for scaling.
+
+If either the existing :math:`H(x)` or the scaling factor are missing at a given location, the scaled output at that location will also be missing.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -1820,18 +1822,18 @@ Examples of yaml:
 
 .. code-block:: yaml
 
-  obs operator: 
-    name: VertInterp 
+  obs operator:
+    name: VertInterp
     observation alias file: test/testinput/obsop_name_map.yaml
-    vertical coordinate: height 
-    observation vertical coordinate: height 
+    vertical coordinate: height
+    observation vertical coordinate: height
     observation vertical coordinate group: MetaData
 
 Alias obsop_name_map.yaml
 
 .. code-block:: yaml
 
-  - name: particulatematter2p5Surface 
+  - name: particulatematter2p5Surface
     alias: mass_density_of_particulate_matter_2p5_in_air
 
 CMAQ particulate matter (PM) operator (**deprecated**)
@@ -2265,6 +2267,13 @@ Configuration options
 * :code:`variables` [optional]: simulated variables whose background errors may be calculated by
   this operator. If not specified, defaults to the list of all simulated variables in the ObsSpace.
 
+Optionally the resulting error can be scaled by another variable from the GeoVaLs or ObsSpace. This is achieved using two configuration keys:
+
+* :code:`error scaling field` [optional]: The group providing the scaling field. Can be `GeoVaLs`.
+* :code:`error scaling field group` [optional]: The name of the field used for scaling.
+
+If either the existing error or the scaling factor are missing at a given location, the scaled output at that location will also be missing.
+
 .. _Background Error Vertical Interpolation Example:
 
 Example
@@ -2355,14 +2364,14 @@ Example of a yaml
 Profile Average operator
 ------------------------
 
-This observation operator produces H(x) vectors which correspond to vertically-averaged profiles. The algorithm determines the locations at which reported-level profiles
+This observation operator produces :math:`H(x)` vectors which correspond to vertically-averaged profiles. The algorithm determines the locations at which reported-level profiles
 intersect each model pressure level. The intersections are found by stepping through the observation locations from the lowest-altitude value upwards. For each model level,
 the location of the observation whose pressure is larger than, and closest to, the model pressure is recorded. The :code:`vertical coordinate` parameter controls the model pressure GeoVaLs that are used in this procedure. If there are no observations in a model level, which can occur for (e.g.) sondes reporting in low-frequency TAC format, the location corresponding to the last filled level is used. (If there are some model levels closer to the surface than the lowest-altitude observation, the location of the lowest observation is used for these levels.)
 
 This procedure is iterated multiple times in order to account for the fact that model pressures can be slanted close to the Earth's surface. The number of iterations is configured with the :code:`number of intersection iterations` parameter.
 
 Having obtained the profile boundaries, values of model pressure and any simulated variables are obtained as in the locations that were determined in the procedure above.
-This produces a single column of model values which are used as the H(x) variable.
+This produces a single column of model values which are used as the :math:`H(x)` variable.
 
 In order for this operator to work correctly the ObsSpace must have been extended as in the following yaml snippet:
 
@@ -2374,11 +2383,14 @@ In order for this operator to work correctly the ObsSpace must have been extende
        average profiles onto model levels: 71
 
 
-(where 71 can be replaced by the length of the air_pressure_levels GeoVaL). The H(x) values are placed in the extended section of the ObsSpace. Note that, unlike what may be expected for an observation operator, averaging of the model values across each layer is not performed; a single model value is used in each case.
+(where 71 can be replaced by the length of the air_pressure_levels GeoVaL). The :math:`H(x)` values are placed in the extended section of the ObsSpace. Note that, unlike what may be expected for an observation operator, averaging of the model values across each layer is not performed; a single model value is used in each case.
 
 A comparison with results obtained using the Met Office OPS system is performed if the option :code:`compare with OPS` is set to true. This checks values of the locations and pressure values associated with the slant path. All other comparisons are performed with the standard :code:`vector ref` option in the yaml file.
 
 This operator also accepts an optional :code:`variables` parameter, which controls which ObsSpace variables will be simulated. This option should only be set if this operator is used as a component of the Composite operator. If :code:`variables` is not set, the operator will simulate all ObsSpace variables. Please see the documentation of the Composite operator for further details.
+
+An optional :code:`scaling factor` parameter can be used to scale the input simulated variable GeoVaLs :math:`x` when calculating :math:`H(x)`, for example to convert model units to observation units. The default value is :code:`1.0`, which means no scaling is applied.
+
 
 Configuration options
 ^^^^^^^^^^^^^^^^^^^^^
@@ -2387,13 +2399,15 @@ Configuration options
 
 - :code:`model vertical coordinate`: Name of model vertical coordinate.
 
-- :code:`number of intersection iterations`: Number of iterations that are used to find the intersection between the observed profile and each model level. Default: 3.
+- :code:`number of intersection iterations`: Number of iterations that are used to find the intersection between the observed profile and each model level. Default: :code:`3`.
 
-- :code:`compare with OPS`: If true, perform comparisons of auxiliary variables with the Met Office OPS system. Default: false.
+- :code:`compare with OPS`: If true, perform comparisons of auxiliary variables with the Met Office OPS system. Default: :code:`false`.
 
 - :code:`pressure coordinate`: Name of air pressure coordinate.
 
 - :code:`pressure group`: Name of air pressure group.
+
+- :code:`scaling factor`: Scaling factor for to apply to input simulated variable GeoVaLs :math:`x` when calculating :math:`H(x)`. Default: :code:`1.0`.
 
 
 Example

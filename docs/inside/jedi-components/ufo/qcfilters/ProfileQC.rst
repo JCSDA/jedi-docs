@@ -590,15 +590,17 @@ The following conditions must be met in order for a level to fail the high-altit
 
 The following parameters are used in the cloud top check:
 
+- :code:`observation relative humidity units`: Units of the observation relative humidity. Must be set to either :code:`percentage` or :code:`fraction` when using the RH background check. Has **no default and must be specified**.
+
 - :code:`RHCheck_PressThresh`: Pressure threshold for check at top of cloud layers (default 500.0 Pa).
 
 - :code:`RHCheck_PressDiff0Thresh`: Threshold for difference between pressure at the present level and pressure at the lowest level (default 50.0 Pa).
 
 - :code:`RHCheck_tdDiffThresh`: Threshold for difference in dew point temperature between the present level and the level below (default 5.0 K).
 
-- :code:`RHCheck_RHThresh`: Threshold for relative humidity check to be applied (default 75.0%).
+- :code:`RHCheck_RHThresh`: Threshold for relative humidity check to be applied (default 75.0 for "percentage" or 0.75 for "fraction", depending on the value of :code:`observation relative humidity units`). Given values should match the choice of :code:`observation relative humidity units` (i.e. if the units are set to "percentage" then the value should be between 0 and 100, whereas if the units are set to "fraction" then the value should be between 0 and 1).
 
-- :code:`RHCheck_MinRHThresh`: Threshold for minimum relative humidity at top of cloud layers (default 75.0%).
+- :code:`RHCheck_MinRHThresh`: Threshold for minimum relative humidity at top of cloud layers (default 75.0 for "percentage" or 0.75 for "fraction", depending on the value of :code:`observation relative humidity units`). Given values should match the choice of :code:`observation relative humidity units` (i.e. if the units are set to "percentage" then the value should be between 0 and 100, whereas if the units are set to "fraction" then the value should be between 0 and 1).
 
 - :code:`RHCheck_PressDiffAdjThresh`: Pressure threshold for determining cloud layer minimum RH (default 50.0 Pa).
 
@@ -608,7 +610,7 @@ The following parameters are used in the high-altitude check:
 
 - :code:`RHCheck_TminInit`: Initial value used in the algorithm that determines the minimum observed temperature (default 400.0 K).
 
-- :code:`RHCheck_SondeRHHiTol`: Threshold for relative humidity O-B difference in sonde ascent check (default 0.0%).
+- :code:`RHCheck_SondeRHHiTol`: Threshold for relative humidity O-B difference in sonde ascent check (default 0.0). Given values should match the choice of :code:`observation relative humidity units` (i.e. if the units are set to "percentage" then the value should be between 0 and 100, whereas if the units are set to "fraction" then the value should be between 0 and 1).
 
 - :code:`RHCheck_PressInitThresh`: Pressure below which O-B mean is calculated (default 500.0 Pa).
 
@@ -647,7 +649,7 @@ The Bayesian background checks all operate in a similar manner. Firstly, the pro
 The errors and PGEs are modified as follows for each variable:
 
 - Geopotential height: the background errors and probability density of bad observations are initialised from the arrays :code:`BkCheck_zBkgErrs` and :code:`BkCheck_zBadPGEs` respectively. The value taken from each array depends on where the observed pressure lies in the array :code:`BkCheck_PlevelThresholds`.
-- Relative humidity: the probability density of bad observations is set to :code:`BkCheck_PdBad_rh`. The background and observation error values are multiplied by the square root of two in order to account for long-tailed error distributions. The maximum combined observation and background error variance passed to the Bayesian PGE update is set to the value :code:`BkCheck_ErrVarMax_rh`.
+- Relative humidity: the probability density of bad observations is set to :code:`BkCheck_PdBad_rh`. The background and observation error values are multiplied by the square root of two in order to account for long-tailed error distributions. The maximum combined observation and background error variance passed to the Bayesian PGE update is set to the value :code:`BkCheck_ErrVarMax_rh`. **The** :code:`observation relative humidity units` **parameter must be set to either** :code:`percentage` **or** :code:`fraction` **to use this check.** The value of :code:`BkCheck_ErrVarMax_rh` must be set accordingly, as described in the parameter summary below.
 - Temperature: the probability density of bad observations is set to :code:`BkCheck_PdBad_t`. The observation errors above a certain pressure threshold ('Psplit') are scaled in order to account for extra representivity error. The value of Psplit depends on whether the observation is in the tropics, defined as the region with absolute latitude less than :code:`options_.BkCheck_Psplit_latitude_tropics` degrees. If the observation is in the tropics, Psplit is set to :code:`BkCheck_Psplit_tropics`; otherwise it is :code:`BkCheck_Psplit_extratropics`. The error inflation for pressures less than or equal to Psplit is set to :code:`BkCheck_ErrorInflationBelowPsplit` and :code:`BkCheck_ErrorInflationAbovePsplit` otherwise. The observation PGE is modified if the observation was previously flagged in the UnstableLayer, Interpolation or Hydrostatic checks.
 - Wind speed: the probability density of bad observations is set to :code:`BkCheck_PdBad_uv`. The observation PGE is modified if observation was previously flagged in the Interpolation check.
 
@@ -657,11 +659,13 @@ The PGE update code is located in a UFO utility function, enabling it to be used
 
 **Summary of yaml parameters**
 
+- :code:`observation relative humidity units`: Units of the observed relative humidity. Must be set to either :code:`percentage` or :code:`fraction` when using the RH background check. Has **no default and must be specified**.
+
 - :code:`ModelLevels`: Governs whether the observations have been averaged onto model levels.
 
 - :code:`BkCheck_PdBad_t`: Probability density of bad observations for T (default: 0.05).
 
-- :code:`BkCheck_PdBad_rh`: Probability density of bad observations for RH (default: 0.05).
+- :code:`BkCheck_PdBad_rh`: Probability density of bad observations for RH (default: 0.05 for RH as a percentage or 0.0005 for RH as a fraction, depending on the value of :code:`observation relative humidity units`). Given values should match the choice of :code:`observation relative humidity units` (i.e. a value for units set to "fraction" should be 100 times smaller than if the units are set to "percentage").
 
 - :code:`BkCheck_PdBad_uv`: Probability density of bad observations for u and v (default: 0.001).
 
@@ -675,7 +679,7 @@ The PGE update code is located in a UFO utility function, enabling it to be used
 
 - :code:`BkCheck_ErrorInflationAbovePsplit`: Error inflation factor above Psplit (default value: 1.0).
 
-- :code:`BkCheck_ErrVarMax_rh`: Maximum combined observation and background error variance for RH (default: 500.0 per 10000).
+- :code:`BkCheck_ErrVarMax_rh`: Maximum combined observation and background error variance for RH (default: :math:`500.0`` in %^2 for RH as a percentage or :math:`0.05` for RH as a fraction, depending on the value of :code:`observation relative humidity units`). Given values should match the choice of :code:`observation relative humidity units` (i.e. a value for units set to "fraction" should be 10,000 times smaller than if the units are set to "percentage").
 
 - :code:`BkCheck_PlevelThresholds`: Pressure thresholds for setting geopotential height background errors and bad observation PGE. This vector must be the same length as :code:`BkCheck_zBkgErrs` and :code:`BkCheck_zBadPGEs` (default: [1000.0, 500.0, 100.0, 50.0, 10.0, 5.0, 1.0, 0.0] hPa).
 
@@ -942,7 +946,7 @@ Note that a call to the Ocean Vertical Stability Check filter MUST be preceded b
         - name: set
           flag: Superadiabat
         - name: reject
-    
+
 In this example, the Diagnostic Flags are associated with the filter variable :code:`DerivedObsValue/depthBelowWaterSurface`. This sets :code:`DiagnosticFlags/DensitySpike/depthBelowWaterSurface` and :code:`DiagnosticFlags/DensityStep/depthBelowWaterSurface`. Additionally, because a filter action is specified to set :code:`DiagnosticFlags/Superadiabat`, this flag is set (for :code:`depthBelowWaterSurface` only) at every location that is flagged as a density spike or step (both levels of each step). These locations are rejected because that filter action has also been specified.
 
 This filter has only been tested for observations that have been grouped into records (profiles) by setting the :code:`obsgrouping.group variables` option. The :code:`sort variable`, :code:`sort group` and :code:`sort order` options are optional, though incorrect results will be obtained if the profiles are not sorted surface to depth.
@@ -1117,7 +1121,7 @@ This filter supports use of :ref:`"where" statements <where-statement>`: any whe
 Average Observations To GeoVals Model Levels
 ------------------------------------------------
 
-For each of the filter variables given, this filter averages the observations within each given model layer and assigns them to that layer. The resulting observation values, averaged onto model levels, are written to the :code:`DerivedObsValue`'s extended space. The original space of :code:`DerivedObsValue` remains the same as that of :code:`ObsValue`.  
+For each of the filter variables given, this filter averages the observations within each given model layer and assigns them to that layer. The resulting observation values, averaged onto model levels, are written to the :code:`DerivedObsValue`'s extended space. The original space of :code:`DerivedObsValue` remains the same as that of :code:`ObsValue`.
 
 A new variable, :code:`modelLayer`, is added in :code:`MetaData`, with values ranging from 1 to the number of model layers. It is the user's responsibility to extend the :code:`ObsSpace` based on the number of model levels.
 

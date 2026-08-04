@@ -2197,7 +2197,7 @@ Example
 Satwind Inversion Filter
 ----------------------------------------
 
-This filter is a processing step which modifies the assigned pressure of AMV observations if a
+This filter is a processing step which modifies the assigned pressure of Atmospheric Motion Vector (AMV) observations if a
 temperature inversion is detected in the model profile and defined criteria
 are met.
 
@@ -2227,7 +2227,7 @@ Workshop 27 June - 1 July 2016, Monterey, California, USA.
 This filter requires the following YAML parameters:
 
 * :code:`observation pressure`: name of the observation pressure variable to correct.
-* :code:`RH threshold`: relative humidity (%) threshold value.
+* :code:`model RH threshold`: relative humidity (fraction, 0-1) threshold value.
 
 The following are optional YAML parameters with appropriate defaults:
 
@@ -2242,7 +2242,7 @@ Example:
     - filter: Satwind Inversion Correction
       observation pressure:
         name: MetaData/pressure
-      RH threshold: 50
+      model RH threshold: 0.5
       maximum pressure: 96000
 
 GNSS-RO 1D-Var Check (GNSSROOneDVar) Filter

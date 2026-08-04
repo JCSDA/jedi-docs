@@ -14,11 +14,19 @@ obs space.
     obs filters:
     - filter: Variable Transforms
       Transform: PressureFromHeightForICAO
+      height coordinate: geopotentialHeight
+      pressure coordinate: pressure
+      pressure group: MetaData
 
 **Observation parameters needed** (JEDI name)
 
-- geopotentialHeight (:math:`Z`)
+- geopotentialHeight (:math:`Z`), specified with the ``height coordinate`` parameter.
 
+**Parameters**
+
+- ``height coordinate`` [*Required*] Height coordinate variable name in group ``ObsValue`` (if a ``DerivedObsValue`` exists, it will be used instead).
+- ``pressure coordinate`` [*Required*] Pressure coordinate variable name.
+- ``pressure group`` [*Optional* | *default = ``ObsValue``*] Pressure coordinate group name, default is ``ObsValue`` (if a ``DerivedObsValue`` exists, it will be used instead).
 
 **Method(s) available**
 
@@ -42,13 +50,23 @@ template.
     - filter: Variable Transforms
       Transform: PressureFromHeightForProfile
       Method: UKMO
+      observation relative humidity units: percentage
+      height coordinate: geopotentialHeight
+      pressure coordinate: pressure
+      pressure group: MetaData
 
 **Observation parameters needed** (JEDI name)
 
-- geopotentialHeight (:math:`Z`)
+- geopotentialHeight (:math:`Z`), specified with the ``height coordinate`` parameter.
 - airTemperature  (:math:`T`)
 - dewPointTemperature (:math:`T_{d}`) or relativeHumidity (:math:`RH`)
 
+**Parameters**
+
+- ``observation relative humidity units`` [*Required*] The units of relative humidity, in case it is used by the transform. Valid values are ``percentage`` or ``fraction``.
+- ``height coordinate`` [*Required*] Height coordinate variable name in group ``ObsValue`` (if a ``DerivedObsValue`` exists, it will be used instead).
+- ``pressure coordinate`` [*Required*] Pressure coordinate variable name.
+- ``pressure group`` [*Optional* | *default = ``ObsValue``*] Pressure coordinate group name, default is ``ObsValue`` (if a ``DerivedObsValue`` exists, it will be used instead).
 
 **Method(s) available**
 

@@ -80,6 +80,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`MetOfficeRelativeHumidityCorrection <MetOfficeRelativeHumidityCorrection>`
   Produce correction to Met Office relative humidity H(x).
 
+:ref:`ModelHeightAdjustedRelativeHumidity <ModelHeightAdjustedRelativeHumidity>`
+  Produce an adjusted relativeHumidityAt2M based on an input station elevation.
+
 :ref:`ModelLevelIndex <ModelLevelIndex>`
   Given observed and model values of a chosen vertical coordinate, return the index at which each observed value lies in its equivalent model column.
 
@@ -244,6 +247,7 @@ filters into separate parts would have an obfuscating effect.
    InterChannelConsistencyCheck
    LinearTimeInterpolate
    MetOfficeRelativeHumidityCorrection
+   ModelHeightAdjustedRelativeHumidity
    ModelLevelIndex
    MPIRank
    NearSSTRetCheckIR

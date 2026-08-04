@@ -12,14 +12,16 @@ The visibility is assumed to only be limited by (potentially wet) aerosol partic
 Required Obs Space Variables
 ----------------------------
 
-- Relative Humidity (unitless fraction): this is specified via the :code:`relative humidity variable` parameter. Both the group and variable name must be specified, for example ``ObsValue/relativeHumidityAt2M``.
+- Relative Humidity (unitless fraction or percentage): this is specified via the :code:`relative humidity variable` parameter. Both the group and variable name must be specified, for example ``ObsValue/relativeHumidityAt2M``.
 - Pressure (Pa): this is specified via the :code:`pressure variable` parameter. Both the group and variable name must be specified, for example ``ObsValue/surfacePressure``.
 - Temperature (K): this is specified via the :code:`temperature variable` parameter. Both the group and variable name must be specified, for example ``ObsValue/temperatureAt2M``.
 
 Other Parameters
 ----------------
 
-- :code:`critical relative humidity` (unitless fraction - *Required*): that at which liquid water droplets are considered to form (:math:`RH_\text{crit}` below).
+- :code:`observation relative humidity units` (string - *Required*): the units of the relative humidity variable and parameters, either :code:`fraction` or :code:`percentage`.
+
+- :code:`critical relative humidity` (unitless fraction or percentage - *Required*): that at which liquid water droplets are considered to form (:math:`RH_\text{crit}` below). The units should match the :code:`observation relative humidity units` parameter.
 
 The below parameterize the RH_TO_CC diagnostic taken from the UK Met Office Unified Model, as used in the Met Office Observation Processing System (OPS).
 This calculates a cloud cover fraction, a proxy for the presence of mist or fog, from relative humidity.
@@ -75,8 +77,8 @@ The below parameters are specific to the Newton-Raphson method used to estimate 
 Equation numbers continue to refer to Clark 2008, referenced above.
 
 - :code:`minimum total water specific humidity` (kg kg\ :sup:`-1` - *Optional - Default 0.001*): :math:`q_T^\text{min}`
-- :code:`minimum relative humidity for first guess` (unitless fraction - *Optional - Default 0.01*): for calculating the first guess of the particle radius.
-- :code:`maximum relative humidity for first guess` (unitless fraction - *Optional - Default 0.999*): for calculating the first guess of the particle radius.
+- :code:`minimum relative humidity for first guess` (unitless fraction or percentage - *Optional - Default 0.01 / 1%*): for calculating the first guess of the particle radius. If specified, units should match the :code:`observation relative humidity units` parameter.
+- :code:`maximum relative humidity for first guess` (unitless fraction or percentage - *Optional - Default 0.999 / 99.9%*): for calculating the first guess of the particle radius. If specified, units should match the :code:`observation relative humidity units` parameter.
 - :code:`minimum allowed normalized droplet radius` (m m\ :sup:`-1` - *Optional - Default 2.0*): :math:`r_m^\text{min}/r_{md}` - minimum allowed wet particle (droplet) radius, normalized by the mean dry radius :math:`r_{md}`. The expression for :math:`r_{md}` is Eq. 2.
 - :code:`maximum allowed normalized droplet radius` (m m\ :sup:`-1` - *Optional - Default 10000.0*): :math:`r_m^\text{max}/r_{md}` - maximum allowed wet particle (droplet) radius, normalized by the mean dry radius :math:`r_{md}`. The expression for :math:`r_{md}` is Eq. 2.
 - :code:`maximum number of iterations` (unitless - *Optional - Default 10*): maximum number of iterations for the Newton-Raphson loop.

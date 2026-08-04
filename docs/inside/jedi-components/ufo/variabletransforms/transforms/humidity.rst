@@ -8,6 +8,7 @@ Parameters
 
 All humidity transforms share a common set of parameters. Exactly which parameters are needed depends on the transform and the method.
 
+- ``observation relative humidity units``: [*Required in most cases*] Units of relative humidity, required whenever a relative humidity variable is an input or output of a variable transform. Must be one of ``fraction`` or ``percentage``.
 - ``AllowSuperSaturation`` [*Optional* | *default = false*] Allow supersaturation.
 - ``specific humidity variable``: [*Optional* | *default = ``specificHumidity``*] Variable name for specific humidity.
 - ``pressure variable``: [*Optional* | *default = ``pressure``*] Variable name for pressure.
@@ -42,6 +43,7 @@ Example yaml block
     - filter: Variable Transforms
       Transform: RelativeHumidity
       Method: UKMO
+      observation relative humidity units: percentage
 
 -------
 Methods
@@ -53,7 +55,8 @@ There are two groups of methods, those which use the default recipe with varying
 Default Recipe
 ^^^^^^^^^^^^^^
 
-These methods define the relative humidity (:math:`RH`) as the ratio of the mass of water vapor per unit mass of dry air (:math:`r`) to the equivalent quantity at at saturation (:math:`r_\text{sat}`)
+These methods define the relative humidity (:math:`RH`) as the ratio of the mass of water vapor per unit mass of dry air (:math:`r`) to the equivalent quantity at saturation (:math:`r_\text{sat}`), multiplied by the relative humidity at saturation (:math:`RH_\text{sat}`).
+:math:`RH_\text{sat}` is 1 if the relative humidity is defined as a fraction, or 100 if it is defined as a percentage.
 
 .. math::
 
@@ -61,7 +64,7 @@ These methods define the relative humidity (:math:`RH`) as the ratio of the mass
 
     r_\text{sat} = m_\text{water vapor at saturation}/m_\text{dry air}
 
-    RH = \frac{r}{r_\text{sat}}.
+    RH = \frac{r}{r_\text{sat}} \times RH_\text{sat}.
 
 
 Observation parameters needed
@@ -123,7 +126,7 @@ Lastly the relative humidity is calculated as the fraction
 
 .. math::
 
-    RH = \text{max}(r/r_\text{sat}, 1 \times 10^{-6}).
+    RH = \text{max}(r/r_\text{sat}, 1 \times 10^{-6}) \times RH_\text{sat}.
 
 .. _VT-_SatVaporPres_fromTemp_Methods:
 
@@ -215,11 +218,9 @@ This more complex method defines the relative humidity (:math:`RH`) as the ratio
 
 .. math::
 
-    RH = \frac{q_\text{sat}(T_d)}{q_\text{sat}(T_\text{dry bulb})} \times 100.
+    RH = \frac{q_\text{sat}(T_d)}{q_\text{sat}(T_\text{dry bulb})} \times RH_\text{sat}.
 
-**Note:** the relative humidity is written to the ObsSpace as a percentage rather than a fraction.
-
-The ``AllowSuperSaturation`` parameter has an effect here: if set to false, the reported value will be capped at 100%.
+The ``AllowSuperSaturation`` parameter has an effect here: if set to false, the reported value will be capped at :math:`RH_\text{sat}` (i.e. 1 or 100 depending on the units of relative humidity).
 
 
 Observation parameters needed
@@ -237,7 +238,7 @@ Calculation Used
 """"""""""""""""
 
 This is not yet documented.
-The reported value will be capped at 100% if the ``AllowSuperSaturation`` parameter is set to false.
+The reported value will be capped at :math:`RH_\text{sat}` (1 or 100 depending on the units of relative humidity) if the ``AllowSuperSaturation`` parameter is set to false.
 
 
 UKMOmixingratio Method
@@ -247,11 +248,11 @@ This method approximates the relative humidity (:math:`RH`) as the ratio of the 
 
 .. math::
 
-    RH = \frac{r}{q_\text{sat}(T_\text{dry bulb})} \times 100.
+    RH = \frac{r}{q_\text{sat}(T_\text{dry bulb})} \times RH_\text{sat}.
 
 **Note:** the relative humidity is written to the ObsSpace as a percentage rather than a fraction.
 
-The ``AllowSuperSaturation`` parameter has an effect here: if set to false, the reported value will be capped at 100%.
+The ``AllowSuperSaturation`` parameter has an effect here: if set to false, the reported value will be capped at :math:`RH_\text{sat}` (i.e. 1 or 100 depending on the units of relative humidity).
 
 
 Observation Parameters Needed
@@ -301,9 +302,9 @@ The relative humidity :math:`RH` is then calculated as
 
 .. math::
 
-    RH = \frac{r}{q_\text{sat}} \times 100.
+    RH = \frac{r}{q_\text{sat}} \times RH_\text{sat}.
 
-The reported value will not be over 100% if the ``AllowSuperSaturation`` parameter is set to false.
+The reported value will not be over :math:`RH_\text{sat}` (1 or 100 depending on the units of relative humidity) if the ``AllowSuperSaturation`` parameter is set to false.
 
 
 .. _VT-Specific-Humidity:
@@ -325,6 +326,7 @@ Example yaml block
     - filter: Variable Transforms
       Transform: SpecificHumidity
       Method: Sonntag
+      observation relative humidity units: fraction
 
 
 -------
@@ -338,11 +340,12 @@ Default Recipe
 
 These use the same equations, with differences being the formulation used to calculate the saturation vapor pressure from the temperature (:math:`h(T)`).
 
-If the relative humidity is supplied as an input, these methods **assume that the relative humidity has been calculated as the ratio of the mixing ratio of water vapor in dry air to the saturation mixing ratio of water vapor in dry air**
+If the relative humidity is supplied as an input, these methods **assume that the relative humidity has been calculated as the ratio of the mixing ratio of water vapor in dry air to the saturation mixing ratio of water vapor in dry air** multiplied by the relative humidity at saturation (:math:`RH_\text{sat}`).
+:math:`RH_\text{sat}` is 1 if the relative humidity is defined as a fraction, or 100 if it is defined as a percentage.
 
 .. math::
 
-    RH = \frac{r}{r_\text{sat}}.
+    RH = \frac{r}{r_\text{sat}} \times RH_\text{sat}.
 
 Method Names for Default Recipe
 """""""""""""""""""""""""""""""
@@ -389,11 +392,11 @@ This is converted to the saturation mixing ratio of water vapor in dry air :math
 
 where :math:`\epsilon` is the ratio of the gas constant for dry air (:math:`R_d`) to the gas constant for pure water vapor (:math:`R_v`).
 
-Since the relative humidity is assumed to be :math:`RH = r/r_\text{sat}`, the mixing ratio is calculated as
+Since the relative humidity is assumed to be :math:`RH = r/r_\text{sat} \times RH_\text{sat}`, the mixing ratio is calculated as
 
 .. math::
 
-    r = RH \times r_\text{sat}
+    r = RH \times r_\text{sat} / RH_\text{sat}
 
 which is then converted to the specific humidity :math:`q`
 
@@ -424,7 +427,7 @@ If the dew point temperature (:math:`T_d`) is reported, the vapor pressure and m
 
     q = r/(1+r).
 
-Note that relative humidity is not used, so no assumptions are made about how it is defined.
+Note that relative humidity is not used so the :code:`observation relative humidity units` parameter is not needed in this case.
 
 
 UKMOQsatWater amd UKMOQsatIceWater Recipe
@@ -434,7 +437,7 @@ These methods **assume that the relative humidity is defined as the ratio of the
 
 .. math::
 
-    RH = \frac{q}{q_\text{sat}}.
+    RH = \frac{q}{q_\text{sat}} \times RH_\text{sat}.
 
 Observation parameters needed
 """""""""""""""""""""""""""""
@@ -475,7 +478,7 @@ Lastly, the specific humidity :math:`q` is calculated as
 
 .. math::
 
-    q = q_\text{sat} \times \text{RH}.
+    q = q_\text{sat} \times \text{RH} / RH_\text{sat}.
 
 
 .. _VT-Virtual-Temperature:
