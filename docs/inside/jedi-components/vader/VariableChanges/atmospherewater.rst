@@ -13,6 +13,7 @@ Atmospheric Water
     recipes/cloud_liquid_water_mixing_ratio_wrt_wet_air_a
     recipes/rain_mixing_ratio_a
     recipes/relative_humidity_a
+    recipes/relative_humidity_at_2m_percentage_to_fraction_a
     recipes/saturation_specific_humidity_a
     recipes/total_mixing_ratio_a
     recipes/total_relative_humidity_a
