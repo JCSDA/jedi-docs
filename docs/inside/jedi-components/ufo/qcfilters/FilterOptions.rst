@@ -635,3 +635,69 @@ By default, filters are applied only before the first iteration of the outer loo
     - filter: Background Check
       apply at iterations: 0,1
       threshold: 0.25
+
+
+.. _filter-identifier:
+
+Identifier
+----------
+
+The optional :code:`identifier` block can be added to assign a unique :code:`name` to each filter in an observation space, enabling optional logging to the JEDI log file and/or creation of diagnostic flags in the output IODA files based on this unique identifier.
+
+Options
+^^^^^^^
+
+* :code:`name` *(required)*: A unique string identifier for this filter instance within an observation space. Used in log messages and diagnostic flag group names. It is recommended to use CamelCase, following the naming convention of ObsFunctions (e.g., :code:`ObsErrorFactorPressureCheck`).
+* :code:`logging` *(optional, default: false)*: If :code:`true`, the filter will log to :code:`oops::Log::info()` how many observations are flagged by it. The log line has the format:
+
+  .. code-block:: text
+
+      FilterID [<identififer.name>] <obs space name> outerLoop<iteration> <variable>: flagged N (newly M) out of T obs
+
+  where:
+
+  - **N** is the total number of observations flagged by this filter (including those already rejected by previous filters),
+  - **M** is the number of observations that were previously passing (:code:`QCflags::pass`) and are newly flagged by this filter,
+  - **T** is the total number of observations.
+
+  .. note::
+
+     In multi-outer-loop variational DA, "newly" counts only observations transitioning from
+     :code:`pass` to rejected in the current invocation. Observations already rejected in a
+     previous outer loop will appear in the "flagged" count but not in "newly".
+
+* :code:`diagnostic flag` *(optional, default: false)*: If :code:`true`, the filter writes per-observation boolean flags to the output IODA file under the group :code:`DiagnosticFlags/<identifier.name><iteration>/<variable>`. This allows post-processing tools to identify exactly which observations were flagged by each filter at each outer loop iteration.
+
+* :code:`diagnostic flag new` *(optional, default: false)*: If :code:`true`, the filter writes per-observation boolean flags for ONLY newly flagged observations (those that currently have :code:`QCflags::pass` status) to :code:`DiagnosticFlags/<identifier.name><iteration>_new/<variable>`. Observations already rejected by previous filters are excluded. This is useful for identifying the incremental effect of each filter.
+
+  Both :code:`diagnostic flag` and :code:`diagnostic flag new` can be enabled simultaneously to produce both outputs.
+
+Example
+^^^^^^^
+
+.. code-block:: yaml
+
+    # Online regional domain check
+    - filter: Bounds Check
+      identifier:
+        name: OnlineRegionalDomainCheck
+        logging: true
+        diagnostic flag: true
+        diagnostic flag new: true
+      filter variables:
+      - name: airTemperature
+      test variables:
+      - name: GeoVaLs/observable_domain_mask
+      minvalue: 0.0
+      maxvalue: 0.5
+
+This produces log output such as:
+
+.. code-block:: text
+
+    FilterID [OnlineRegionalDomainCheck] aircar_t133 outerLoop0 airTemperature: flagged 54 (newly 54) out of 25724 obs
+
+and writes diagnostic flags to the output IODA file under:
+
+- :code:`DiagnosticFlags/OnlineRegionalDomainCheck0/airTemperature` (all flagged observations)
+- :code:`DiagnosticFlags/OnlineRegionalDomainCheck0_new/airTemperature` (only newly flagged observations)
