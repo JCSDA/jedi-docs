@@ -16,6 +16,87 @@ There are four meta-operators which, when selected, run other operators and mani
 
 * Time interpolation (documentation to be added).
 
+.. _obsops_variable_name_mapping:
+
+Variable Name Mapping
+---------------------
+
+Observation operators use a :code:`VariableNameMap` to translate observation-space variable names (camelCase, e.g. :code:`airTemperature`) to model/GeoVaLs variable names (snake_case, e.g. :code:`air_temperature`). A set of common mappings is hardcoded (see table below). Additional mappings can be specified in two ways.
+
+**Option 1: External alias file**
+
+Reference a separate YAML file via :code:`observation alias file`:
+
+.. code-block:: yaml
+
+    obs operator:
+      name: VertInterp
+      observation alias file: path/to/obsop_name_map.yaml
+
+where :code:`obsop_name_map.yaml` contains:
+
+.. code-block:: yaml
+
+    variable maps:
+    - name: airTemperatureAt2M
+      alias: air_temperature_at_2m
+    - name: particulatematter2p5Surface
+      alias: mass_density_of_particulate_matter_2p5_in_air
+
+**Option 2: Inline variable maps**
+
+Specify mappings directly in the operator configuration via :code:`variable maps`:
+
+.. code-block:: yaml
+
+    obs operator:
+      name: Identity
+      variable maps:
+      - name: airTemperatureAt2M
+        alias: air_temperature_at_2m
+
+If both :code:`observation alias file` and :code:`variable maps` are specified, inline maps take precedence over file-based ones for overlapping names.
+
+The same :code:`variable maps` option is also available for filters that use variable name mapping (e.g. Background Check):
+
+.. code-block:: yaml
+
+    - filter: Background Check
+      variable maps:
+      - name: airTemperatureAt2M
+        alias: air_temperature_at_2m
+      threshold: 3.0
+
+**Hardcoded default mappings:**
+
+.. list-table::
+    :header-rows: 1
+
+    * - Obs variable (camelCase)
+      - GeoVaLs variable (snake_case)
+    * - airTemperature
+      - air_temperature
+    * - windEastward
+      - eastward_wind
+    * - windNorthward
+      - northward_wind
+    * - specificHumidity
+      - water_vapor_mixing_ratio_wrt_moist_air
+    * - relativeHumidity
+      - relative_humidity
+    * - pressure
+      - air_pressure
+    * - virtualTemperature
+      - virtual_temperature
+    * - stationPressure
+      - air_pressure_at_surface
+    * - surfacePressure
+      - air_pressure_at_surface
+    * - seaSurfaceTemperature
+      - sea_surface_temperature
+
+These defaults can be overridden by either the alias file or inline maps.
+
 .. _obsops_categorical:
 
 Categorical
