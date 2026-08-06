@@ -61,7 +61,7 @@ OOPS collects H(x) from UFO and y from IODA to form a departure, y - H(x), that 
 Data Providers and Output Diagnostics
 -------------------------------------
 
-The Data Providers, :numref:`ioda-hlev-dflow`, (e.g., `Global Telecommunication System (GTS) <https://public.wmo.int/en/programmes/global-telecommunication-system>`_ store observation data in a wide variety of formats.
+The Data Providers, :numref:`ioda-hlev-dflow`, (e.g., `Global Telecommunication System (GTS) <https://wmo.int/site/knowledge-hub/programmes-and-initiatives/global-telecommunication-system-gts>`_ store observation data in a wide variety of formats.
 Because of this, the general idea in IODA is to convert these formats to a common format, the IODA data model, to facilitate access by IODA.
 This way, the different manners in which JEDI may want to select, query, or distribute the observation data can be done through one API to the IODA data model, as opposed to many API's to the various data provider formats.
 After the DA run completes, it is often desired to analyze different aspects of that run.
