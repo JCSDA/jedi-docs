@@ -1802,6 +1802,16 @@ YAML file. Each element of this list can contain the following options:
   variable doesn't exist yet. If this option is provided and the variable already exists, its type
   must match the value of this option, otherwise an exception is thrown.
 
+- :code:`epoch`: Date-time epoch used when converting values from a :code:`datetime`
+  :code:`source variable` to a numeric destination variable (type :code:`int` or :code:`float`).
+  The assigned numeric value is the number of seconds relative to this epoch.
+  This option is required for datetime-to-numeric conversion and ignored otherwise.
+
+When assigning from a :code:`source variable`, a conversion exception is thrown if values cannot be
+converted to the destination type. For example, with a datetime-to-numeric conversion, this can
+happen if the chosen :code:`epoch` makes the seconds offset too large for the destination numeric
+type.
+
 It is possible to assign variables or ObsFunctions of type :code:`int` to variables of type
 :code:`float` and vice versa. No other type conversions are supported.
 
