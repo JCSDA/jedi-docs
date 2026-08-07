@@ -2735,6 +2735,188 @@ Example:
 In this case, the filter is configured to calculate the mean and spread of the model equivalents of horizontal wind velocity components. The results will be written to ObsSpace variables :code:`MeanHofX/windEastward`, :code:`MeanHofX/windNorthward`, :code:`HofXStdDev/windEastward`, and :code:`HofXStdDev/windNorthward`.
 
 
+.. _find-nearest-neighbors-filter:
+
+Find Nearest Neighbors Filter
+-----------------------------
+
+This filter creates spatial nearest-neighbor information.
+
+Given a set of query locations (locations for which nearest neighbors are needed) and a set of
+reference locations (locations treated as nearest-neighbor candidates), the filter can identify
+the first, second, third, etc. nearest neighbors for each query point (up to the number of
+available reference locations), together with distances to those locations.
+
+The user supplies query and reference latitude/longitude information indirectly, by providing two
+variables of interest which have non-missing values at the associated latitude/longitude locations
+in the obs space.
+
+For example, one might want to know, for the assimilation period, the 3 nearest SYNOPs to any
+reports from aerodromes. One would first create a variable in the obs space which is missing except
+where one has aerodrome data; this is the :code:`query point variable`. One then would do the same with
+SYNOPs; this is the :code:`reference point variable`.
+
+To identify the nearest neighbors an :code:`output assignment` variable is also required (for
+example, SYNOP station ID) which has non-missing values at the reference locations.
+
+This filter rearranges values within a single obs space: it transfers values from reference-point
+obs space locations to query-point obs space locations based on nearest-neighbor relationships.
+
+Nearest neighbors are found using a chosen :code:`distance method` (for example, the
+:code:`haversine` method for calculating great-circle distances). Once a set of nearest neighbors
+and distances are identified for each query point, the filter writes the distances and contents of
+the :code:`output assignment` at the reference points to user-selected variables at the query points.
+In the example of aerodrome reports and SYNOPs, the filter would write the station IDs of the 3
+nearest SYNOPs and distances to each location in the obs space where the associated aerodrome
+variable is found.
+
+The YAML for doing this would be
+
+.. code-block:: yaml
+
+   - filter: Find Nearest Neighbors
+     query point variable: MetaData/isAerodromeReport # missing except where there are aerodrome reports
+     reference point variable: MetaData/isSynopReport # missing except where there are SYNOP reports
+     distance output variables:
+       - name: DerivedMetaData/firstNearestSynopDistance # distance to nearest SYNOP at associated aerodrome report locations
+       - name: DerivedMetaData/secondNearestSynopDistance # distance to second nearest SYNOP at associated aerodrome report locations
+       - name: DerivedMetaData/thirdNearestSynopDistance # distance to third nearest SYNOP at associated aerodrome report locations
+     output assignment: MetaData/stationIdentification
+     output variables:
+       - name: DerivedMetaData/firstNearestSynopStatid # station ID of nearest SYNOP at associated aerodrome report locations
+       - name: DerivedMetaData/secondNearestSynopStatid # station ID of second nearest SYNOP at associated aerodrome report locations
+       - name: DerivedMetaData/thirdNearestSynopStatid # station ID of third nearest SYNOP at associated aerodrome report locations
+     algorithm: brute force
+     distance method: haversine
+     distance units: km # units for distance output variables
+
+
+Observations are included in the query set only when all of the following are true:
+
+* the filter is applied at that location (for example via :code:`where`), and
+* :code:`query point variable` is not missing.
+
+Observations are included in the reference set only when all of the following are true:
+
+* the filter is applied at that location,
+* :code:`reference point variable` is not missing, and
+* the location is owned by the current MPI rank (reference points are then gathered globally).
+
+The following YAML parameters are supported:
+
+- :code:`query point variable` (required): variable defining which locations act as query points.
+  Must be of float type.
+
+- :code:`reference point variable` (required): variable defining which locations act as
+  reference points. Must be of float type.
+
+- :code:`output assignment` (required): variable whose value at each reference location is copied
+  into output fields for the corresponding nearest neighbors. Supported variable
+  types are float, integer, string, datetime and bool.
+
+- :code:`output variables` (required): list of variables receiving nearest-neighbor values from
+  :code:`output assignment`.
+
+- :code:`distance output variables` (required): list of variables receiving distances to each
+  nearest neighbor. This list must have the same length as :code:`output variables`.
+  These variables must not be written to :code:`ObsValue` or :code:`DerivedObsValue`.
+
+- :code:`algorithm` (optional): currently only :code:`brute force` is implemented.
+
+- :code:`distance method` (optional): currently only :code:`haversine` is implemented.
+
+- :code:`distance units` (optional): supported units are :code:`m`/:code:`metres`/:code:`meters`,
+  :code:`km`/:code:`kilometres`/:code:`kilometers`, :code:`mi`/:code:`miles`, and
+  :code:`nmi`/:code:`nautical miles`. Default is :code:`m`.
+
+Notes:
+
+* :code:`filter variables` are ignored by this filter and no flagging is performed.
+* Output variables must not be written to :code:`ObsValue` or :code:`DerivedObsValue`.
+* Distance output variables must not be written to :code:`ObsValue` or :code:`DerivedObsValue`.
+* If query and reference locations overlap, those matches have zero distance.
+* If :code:`query point variable` and :code:`reference point variable` select the same set of
+  locations, then (for observations with unique latitude/longitude values) the first nearest
+  neighbor is the observation itself.
+* Identical reference latitude/longitude pairs are deduplicated before search; if multiple
+  observations share the same reference coordinates, only one is retained as a candidate at
+  that location.
+* If multiple candidates are at exactly the same distance from a query point, their ordering in
+  the neighbor list is not guaranteed.
+* If fewer reference points are available than requested neighbors, available neighbors are
+  written and remaining outputs are set to missing values.
+
+Algorithms
+^^^^^^^^^^
+
+For each query point, the :math:`k` nearest neighbors are defined as the :math:`k` reference points
+with the minimum distance to the query point, as determined by the chosen distance method. The
+currently implemented distance methods are:
+
+- :code:`haversine`: the great-circle distance between two latitude/longitude points on a sphere.
+
+The currently implemented algorithms for finding the nearest neighbors are:
+
+- :code:`brute force`: the distance from every query point to every reference point is evaluated,
+  and the nearest neighbors are identified from these distances. To avoid redundant computations,
+  identical reference latitude/longitude pairs are deduplicated before search, and query-point
+  results are cached for repeated query latitude/longitude pairs. This algorithm has complexity
+  :math:`O(Q \cdot R \log R)`, where :math:`Q` is the number of unique query points and :math:`R`
+  is the number of unique reference points. The :math:`\log R` factor comes from sorting the
+  distances for each query point to find the :math:`k` nearest neighbors.
+
+.. note::
+
+  In future, some algorithms may require an additional parameter that specifies an internal
+  embedding space used to accelerate the search. The embedding space may use an approximate or proxy
+  distance to efficiently generate candidate neighbors, which are then ranked using the chosen
+  distance method.
+
+
+  For example, a kd-tree algorithm may require the user to specify that the search is performed in a
+  Cartesian space derived from latitude/longitude, even though nearest neighbors are defined using
+  great-circle distance in latitude/longitude space. In this case,
+  the distance method would define how distances are calculated in the original latitude/longitude
+  space, and the embedding space would define how points are represented for the search.
+
+  The definition of nearest neighbors is always determined by the distance method; the embedding
+  space is a performance optimization and does not change this definition.
+
+Further Example
+^^^^^^^^^^^^^^^
+
+In the below example, all air temperature observations are used as query points and reference
+points. For observations with unique latitude/longitude values, the first nearest neighbor will be
+the station ID of the observation itself, and the second nearest neighbor will be the station ID of
+the nearest other observation. Similarly the distance to the first nearest neighbor will be 0 km,
+and the distance to the second nearest neighbor will be the distance to the nearest other
+observation. The filter is applied at all locations where air temperature observations are found.
+
+.. note::
+
+  The :code:`ObsValue/airTemperature` variable does **not have its QC information interrogated by
+  the filter** - all values of this variable are treated as valid for the purposes of defining query
+  and reference points. To avoid using rejected air temperature observations (for example if a
+  station has been flagged as having unrepresentative air temperature observations), the filter's
+  :code:`where` block awareness should be used to only include observations with passing QC flags.
+
+.. code-block:: yaml
+
+   - filter: Find Nearest Neighbors
+     query point variable: ObsValue/airTemperature
+     reference point variable: ObsValue/airTemperature
+     distance output variables:
+       - name: DerivedMetaData/firstNearestDistance
+       - name: DerivedMetaData/secondNearestDistance
+     output assignment: MetaData/stationIdentification
+     output variables:
+       - name: DerivedMetaData/firstNearestStationIdentification
+       - name: DerivedMetaData/secondNearestStationIdentification
+     algorithm: brute force
+     distance method: haversine
+     distance units: km
+
+
 .. _percentile-filter:
 
 Percentile Filter
