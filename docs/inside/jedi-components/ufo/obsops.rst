@@ -819,13 +819,31 @@ RTTOV
 Description:
 ^^^^^^^^^^^^
 
-Interface to the RTTOV observation operator.
+Interface to the RTTOV radiative transfer model for simulating satellite radiance observations.
+
+.. note::
+
+   Both RTTOV version 12 and version 14 are supported. The RTTOV version used is determined 
+   at build time by the RTTOV library linked to JEDI. The UFO interface is designed to make 
+   transition between versions straightforward, with most configuration options remaining 
+   compatible. Version-specific differences are noted below where applicable.
+
+.. note::
+
+   For RTTOV v14, several internal option names have changed but the YAML configuration 
+   options remain largely the same for backward compatibility. Key differences include:
+   
+   - MW scattering is handled through the main RTTOV interface rather than a separate RTTOV-SCATT call
+   - MW sea emissivity models have been renumbered: 1=FASTEM-5, 2=FASTEM-6, 3=SURFEM-Ocean
+   - Some deprecated options from v12 have been removed in v14
 
 Inputs:
 ^^^^^^^^^^^^^^^^^^^^^
-RTTOV requires the following GeoVaLs for clear-sky radiance calculation. The variable name for use with ufo is given in parentheses () and the expected units in square brackets []:
+
+The RTTOV observation operator requires the following GeoVaLs as input:
 
 * :code:`air_pressure` (:code:`var_prs`) [Pa]
+* :code:`air_pressure_levels` (:code:`var_prsi`) [Pa] (always required for v14 but only required for MW scattering in v12)
 * :code:`air_temperature` (:code:`var_ts`) [K]
 * :code:`specific_humidity` (:code:`var_q`) [kg/kg]
 * :code:`surface_temperature` (:code:`var_sfc_t2m`) [K]
@@ -835,19 +853,26 @@ RTTOV requires the following GeoVaLs for clear-sky radiance calculation. The var
 * :code:`specific_humidity_at_two_meters_above_surface` (:code:`var_sfc_q2m`) [kg/kg]
 * :code:`skin_temperature` (:code:`var_sfc_tskin`) [K]
 
-Additionally, for calculation of MW cloud-affected radiances using RTTOV-SCATT the following GeoVaLs are also required:
+Optional inputs for trace gases and cloud:
 
-* :code:`air_pressure_levels` (:code:`var_prsi`) [Pa]
-* :code:`cloud_liquid_water_mixing_ratio_wrt_moist_air_and_condensed_water` (:code:`var_qcl`) [kg/kg]
-* :code:`cloud_ice_mixing_ratio_wrt_moist_air_and_condensed_water` (:code:`var_qci`) [kg/kg]
-* :code:`cloud_area_fraction_in_atmosphere_layer`  (:code:`var_cloud_layer`) [dimensionless]
+..
+   * Ozone (``mole_fraction_of_ozone_in_air``)
+   * CO2 (``mole_fraction_of_carbon_dioxide_in_air``)
+     
+* ``mass_content_of_cloud_liquid_water_in_atmosphere_layer`` [kg/kg]
+* ``mass_content_of_cloud_ice_in_atmosphere_layer`` [kg/kg]
+* ``cloud_area_fraction_in_atmosphere_layer`` [dimensionless]
 
-The geographic location of the observation, the satellite zenith angle and the RTTOV surface type are also required from the ObsSpace:
+The location of the observation, the satellite zenith angle and the RTTOV surface type are also required from the ObsSpace:
 
-* At least one (in order of priority) from :code:`MetaData/heightOfSurface`, :code:`MetaData/heightOfSurface`, :code:`MetaData/model_orography` or the :code:`surface_altitude` geoval [m]
+* At least one (in order of priority) from
+
+  * :code:`MetaData/heightOfSurface` [m]
+  * :code:`MetaData/model_orography` [m]
+  * :code:`surface_altitude` geoval [m]
 * :code:`MetaData/latitude` [degrees]
 * :code:`MetaData/longitude` [degrees, -180--180 or 0--360]
-* :code:`MetaData/sensorZenithZngle` [degrees]
+* :code:`MetaData/sensorZenithAngle` [degrees]
 * :code:`MetaData/surfaceQualifier` [0-2]
 
   :code:`MetaData/surfaceQualifier` is used to specify whether RTTOV should treat an observation as having a land (0), sea (1) or sea-ice (2) surface. The :code:`SetSurfaceType` ObsFunction, may be called via the :code:`VariableAssignment` ObsFilter to generate this data according to rules used in operational processing at the Met Office.
@@ -861,7 +886,7 @@ Optionally, the satellite azimuth angle and the solar zenith/azimuth angles may 
 Outputs:
 ^^^^^^^^^^^^^^^^^^^^^
 
-| The interface returns brightness temperatures for any channels requested using the :code:`obs space.channels` YAML configuration key. The brightness temperature fields shall be stored in a two-dimensional dataset in the :code:`HofX` group in the output observation database (e.g. :code:`/HofX/brightnessTemperature`.
+| The interface returns brightness temperatures for any channels requested using the :code:`obs space.channels` YAML configuration key. The brightness temperature fields are stored in a two-dimensional dataset in the :code:`HofX` group in the output observation database (i.e. :code:`/HofX/brightnessTemperature`).
 
 | The interface optionally returns observation diagnostics including those requiring the calculation of jacobians, through the :code:`obs diagnostics.variables` YAML configuration key . Specifically:
 
@@ -875,15 +900,17 @@ Outputs:
 * :code:`emissivity`
 * :code:`brightness_temperature_jacobian_${any_active_variable}`
 
-Where an observation diagnostic is requested that is not recognised by the interface, **no error is returned**, but memory is still allocated for the named observation diagnostic and the array is initialised to :code:`missing`. This is to facilitate the subsequent creation of bias correction predictors using output from the observation operator.
+Where an observation diagnostic is requested that is not recognised by the interface, **no error is returned**, but memory is still allocated for the named observation diagnostic and the array is initialised to :code:`missing`.
 
 Generic Obs Operator configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The configurable options for the RTTOV observation operator interface are:
 
-* :code:`name` (string, required): Must be set to :code:`RTTOV` in order to invoke this RTTOV observation operator.
+* :code:`name` (string, required): Must be set to :code:`RTTOV`.
 
 * :code:`Debug` (boolean, optional, default false): Print additional debugging statements.
+
+* :code:`linear model absorbers` (optional) : used to indicate a different set of active variables for the Tangent Linear (TL) and Adjoint (AD) operators from the configuration used for the non-linear operator. The same profile is used in the RTTOV Forward and TL/AD calculations.
 
 * :code:`Absorbers` (string list, optional): *Additional* atmospheric absorber species that will be requested from geovals. Names must correspond to those specified in :code:`gas_name` array in the |rttov_const module|.
 
@@ -895,22 +922,13 @@ The configurable options for the RTTOV observation operator interface are:
 
   * :code:`Ozone`, :code:`CO2`, :code:`CO`, :code:`N2O`, :code:`CH4`, :code:`SO2` are due to be implemented.
 
-  | **N.B.**
+.. note::
 
-  | Where the optional trace gas profiles are not present in the geovals, RTTOV reference profiles stored in the RTTOV coefficients will be used to determine their concentration if a compatible RTTOV coefficient is being used.
+    Where the optional trace gas profiles are not present in the geovals, RTTOV reference profiles stored in the RTTOV coefficients will be used to determine their concentration if a compatible RTTOV coefficient is being used.
 
-  | The contribution to optical depth from absorbing species for which there are no coefficients present in the RTTOV coefficient file will usually have been included with a fixed profile during the training process. See |RTTOV_12.3_user_guide| for details.
+    The contribution to optical depth from absorbing species for which there are no coefficients present in the RTTOV coefficient file will usually have been included with a fixed profile during the training process. See |RTTOV_12.3_user_guide| or |RTTOV_14.1_user_guide| for details.
 
-  | There are no reference profiles for :code:`CLW` and :code:`CIW`. If either absorber is required, because it is mandatory or by user request, then the requisite datasets must be present in the geovals.
-
-.. todo::
-
-  hyperspectral IR support (specifically add code to read RTTOV supported gases)
-
-.. * :code:`linear model absorbers` (optional) : used to indicate a different set of active variables for the Tangent Linear (TL) and Adjoint (AD) operators from the configuration used for the non-linear operator. The same profile is used in the RTTOV Forward and TL/AD calculations.
-
-  * :code:`linear model absorbers` (string list, optional) : controls which of the selected absorbers will be active during the Jacobian calculation.
-  Omit :code:`linear model` in order to use the same absorbers as for the TL and AD operators as for the non-linear forward model.
+    There are no reference profiles for :code:`CLW` and :code:`CIW`. If either absorber is required, because it is mandatory or by user request, then the requisite datasets must be present in the geovals.
 
 RTTOV interface specific configuration options (:code:`obs options`):
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -920,19 +938,13 @@ Required
 ~~~~~~~~~~~~
 
 Three options are required to uniquely specify the RTTOV coefficient file to be used to process observations.
-The coefficient filename will be :code:`rtcoef_${Platform_Name}_${Sat_ID}_${Instrument_Name}` with the extension automatically discovered by RTTOV. The order of preference will be :code:`.bin` (platform-specific unformatted binary), :code:`.dat` (ASCII format), :code:`.H5` (HDF5 format).
+The coefficient filename will be :code:`rtcoef_${Platform_Name}_${Sat_ID}_${Instrument_Name}` with the extension automatically discovered by RTTOV. The order of preference will be :code:`.bin` (platform-specific unformatted binary), :code:`.dat` (ASCII format), :code:`.H5`/:code:`.nc` (HDF5 format for RTTOV v12 and NetCDF for RTTOV v14).
 Scattering coefficients will be automatically read when requested according to the other :code:`obs options`. Their absence when required shall result in an error.
 
-* :code:`obs options.Platform_Name` (string): Corresponds to an
-  element of the :code:`platform_name` array in the |rttov_const
-  module|, e.g. 'NOAA', 'Metop'. Note that this is case-insensitive,
-  as user input is automatically converted to lower case.
-* :code:`obs options.Sat_ID` (integer): Corresponds to the satellite ID.
-* :code:`obs options.Instrument_Name` (string): Corresponds to an
-  element of the :code:`instrument_name` array in  |rttov_const
-  module|, e.g. 'ATMS', 'IASI'. Note that this is case-insensitive as,
-  as user input is automatically converted to lower case.
-* :code:`obs options.CoefficientPath` (string): Relative or absolute path to all coefficient files to be read.
+* :code:`Platform_Name` (string): Corresponds to an element of the :code:`platform_name` array in the |rttov_const module|, e.g. 'NOAA', 'Metop'. Note that this is case-insensitive, as user input is automatically converted to lower case.
+* :code:`Sat_ID` (integer): Corresponds to the satellite ID.
+* :code:`Instrument_Name` (string): Corresponds to an element of the :code:`instrument_name` array in  |rttov_const module|, e.g. 'ATMS', 'IASI'. Note that this is case-insensitive, as user input is automatically converted to lower case.
+* :code:`CoefficientPath` (string): Relative or absolute path to all coefficient files to be read.
 
 .. |rttov_const module| raw:: html
 
@@ -941,30 +953,38 @@ Scattering coefficients will be automatically read when requested according to t
 
 Optional
 ~~~~~~~~
-* :code:`obs options.RTTOV_default_opts` (string, default :code:`default`): These are set first and may be overridden by setting individual options. Valid options are :code:`UKMO_PS43`, :code:`UKMO_PS44`, :code:`UKMO_PS45` and correspond to options pertaining to RTTOV used operationally at the Met Office.
-* :code:`obs options.Do_MW_Scatt` (boolean, default :code:`false`): Call RTTOV-SCATT to simulate MW radiances affected by cloud and precipitation.
-* :code:`obs options.UseQCFlagsToSkipHofX` (boolean, default :code:`false`): Use the quality control flags to decide whether a profile should be passed to rttov. This will turn on profile by profile processing. This is currently only implemented for the :code:`ObsOperator`. The :code:`LinearObsOperator` code will be added after oops functionality is available.
-* :code:`obs options.RTTOV_GasUnitConv` (integer, default :code:`false`): Convert absorber concentration from mass concentration [kg/kg] to volume concentration [ppmv dry] for use with RTTOV.
-* :code:`obs options.InspectProfileNumber` (integer list, default 0): Print RTTOV profile(s) with indices corresponding to the order in which the geovals are processed. Intended for use with debugging.
-* :code:`obs options.InspectProfileLatLonBox` (list of 4 floats, [latmin, latmax, lonmin, lonmax]): Print RTTOV profile(s) which fall within a specified latitude and longitude box. Intended for use with debugging.
-* :code:`obs options.SatRad_compatibility` (boolean, default :code:`true`): Sets internal options to replicate Met Office OPS processing.
-* :code:`obs options.UseColdSurfaceCheck` (boolean, default :code:`false`): Reset surface temperature over land and sea-ice where it is below 271.4 K. This is a legacy option for replicating OPS results prior to PS45 (requires :code:`SatRad_compatibility` to be true).
-* :code:`obs options.BoundQToSaturation` (boolean, default :code:`true`): Check the humidity profile and surface humidity does not exceed saturation.  If they do then reset to saturation. (requires :code:`SatRad_compatibility` to be true).
-* :code:`obs options.UseRHWaterForQC` (boolean, default :code:`true`): Use liquid water only in the saturation calculation (requires :code:`SatRad_compatibility` and :code:`BoundQToSaturation` to both be set to true).
-* :code:`obs options.UseMinimumQ` (boolean, default :code:`true`): Check the humidity profile and surface humidity is not less than min_q.  If the humidity is then it is reset to min_q.  Where the humidity profile has been reset to zero the Jacobian used in the TL and AD is set the zero. (requires :code:`SatRad_compatibility` to be true).
-* :code:`obs options.UseSurfaceEmissivityAtlas` (boolean, default :code:`false`): Initialise and read a surface emissivity atlas.
-* :code:`obs options.SurfaceEmissivityAtlasName` (string, default :code:`default`): Surface emissivity atlas name, valid options are: UWIREmis, CAMEL, CAMELClim, TELSEM2, CNRM
-* :code:`obs options.SurfaceEmissivityAtlasPath` (string): Surface emissivity atlas relative path
-* :code:`obs options.ReconstructedRadianceCorrection` (boolean, default :code:`false`): Apply a correction to simulated radiances to account for the effect of reconstruction from PC scores. The theory of this correction can be found <a href="https://itwg.ssec.wisc.edu/wordpress/wp-content/uploads/2025/06/poster.4p.04.Migliorini_itsc25.pdf" target="_blank">here</a>. If this option is set to true then :code:`CMatrixPath` must also be set. Note that when this option is set to true, :code:`RTTOV_switchrad` is set to false.
-* :code:`obs options.CMatrixPath` (string): Relative path to the files required the apply the corrections for the reconstructed radiance observation operator. Required if :code:`ReconstructedRadianceCorrection` is set to true.
+* :code:`RTTOV_default_opts` (string, default :code:`default`): These are set first and may be overridden by setting individual options. Valid options are :code:`UKMO_PS43`, :code:`UKMO_PS44` (RTTOV v12 only) and :code:`UKMO_PS45` and correspond to options pertaining to RTTOV used operationally at the Met Office.
+* :code:`Do_MW_Scatt` (boolean, default :code:`false`): Simulate MW radiances affected by cloud and precipitation.
+* :code:`UseQCFlagsToSkipHofX` (boolean, default :code:`false`): Use the quality control flags to decide whether a profile should be passed to RTTOV. This will turn on profile-by-profile processing. This is currently only implemented for the :code:`ObsOperator`. The :code:`LinearObsOperator` code will be added after oops functionality is available.
+* :code:`RTTOV_GasUnitConv` (boolean, default :code:`false`): Convert absorber concentration from mass concentration [kg/kg] to volume concentration [ppmv dry] for use with RTTOV.
+* :code:`InspectProfileNumber` (integer list, default 0): Print RTTOV profile(s) with indices corresponding to the order in which the geovals are processed. Intended for use with debugging.
+* :code:`InspectProfileLatLonBox` (list of 4 floats, [latmin, latmax, lonmin, lonmax]): Print RTTOV profile(s) which fall within a specified latitude and longitude box. Intended for use with debugging.
+* :code:`SatRad_compatibility` (boolean, default :code:`true`): Sets internal options to replicate Met Office OPS processing.
+* :code:`UseColdSurfaceCheck` (boolean, default :code:`false`): Reset surface temperature over land and sea-ice where it is below 271.4 K. This is a legacy option for replicating OPS results prior to PS45 (requires :code:`SatRad_compatibility` to be true).
+* :code:`BoundQToSaturation` (boolean, default :code:`true`): Check the humidity profile and surface humidity does not exceed saturation.  If they do then reset to saturation. (requires :code:`SatRad_compatibility` to be true).
+* :code:`UseRHWaterForQC` (boolean, default :code:`true`): Use liquid water only in the saturation calculation (requires :code:`SatRad_compatibility` and :code:`BoundQToSaturation` to both be set to true).
+* :code:`UseMinimumQ` (boolean, default :code:`true`): Check the humidity profile and surface humidity is not less than min_q.  If the humidity is then it is reset to min_q.  Where the humidity profile has been reset to zero the Jacobian used in the TL and AD is set the zero. (requires :code:`SatRad_compatibility` to be true).
+* :code:`UseSurfaceEmissivityAtlas` (boolean, default :code:`false`): Initialise and read a surface emissivity atlas.
+* :code:`SurfaceEmissivityAtlasName` (string, default :code:`default`): Surface emissivity atlas name, valid options are: UWIREmis, CAMEL, CAMELClim, TELSEM2, CNRM
+* :code:`SurfaceEmissivityAtlasPath` (string): Surface emissivity atlas relative path
+* :code:`ReconstructedRadianceCorrection` (boolean, default :code:`false`): Apply a correction to simulated radiances to account for the effect of reconstruction from PC scores. The theory of this correction can be found |ReconstructedRadianceCorrection|. If this option is set to true then :code:`CMatrixPath` must also be set. Note that when this option is set to true, :code:`RTTOV_switchrad` is set to false.
+* :code:`CMatrixPath` (string): Relative path to the files required the apply the corrections for the reconstructed radiance observation operator. Required if :code:`ReconstructedRadianceCorrection` is set to true.
 
 Additionally, each option that may be modified within the RTTOV options structure may be accessed by prefixing :code:`RTTOV_` ahead of the option name, regardless of where it resides within the RTTOV option structure.
 For example, :code:`RTTOV_addrefrac: true` will enable the option within RTTOV to account for atmospheric refraction during the optical depth calculation.
-All options are set to the defaults specified in the |RTTOV_12.3_user_guide|.
+All options are set to the defaults specified in the |RTTOV_12.3_user_guide| or |RTTOV_14.1_user_guide| respectively.
 
 .. |RTTOV_12.3_user_guide| raw:: html
 
-   <a href="https://www.nwpsaf.eu/site/download/documentation/rtm/docs_rttov12/users_guide_rttov12_v1.3.pdf" target="_blank">RTTOV 12.3 user guide</a>
+   <a href="https://nwp-saf.eumetsat.int/site/download/documentation/rtm/docs_rttov12/users_guide_rttov12_v1.3.pdf" target="_blank">RTTOV 12.3 user guide</a>
+
+.. |RTTOV_14.1_user_guide| raw:: html
+
+   <a href="https://nwp-saf.eumetsat.int/site/download/documentation/rtm/docs_rttov14/users_guide_rttov14_v1.1.pdf" target="_blank">RTTOV 14.1 user guide</a>
+
+.. |ReconstructedRadianceCorrection| raw:: html
+
+   <a href="https://itwg.ssec.wisc.edu/wordpress/wp-content/uploads/2025/06/poster.4p.04.Migliorini_itsc25.pdf" target="_blank">here</a>
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -979,7 +999,7 @@ Examples of yaml:
       RTTOV_default_opts: UKMO_PS45
       SatRad_compatibility: true
       RTTOV_GasUnitConv: true
-      UseRHwaterForQC: &UseRHwaterForQC true # default
+      UseRHWaterForQC: &UseRHWaterForQC true # default
       UseColdSurfaceCheck: &UseColdSurfaceCheck false # default
       Do_MW_Scatt: &RTTOVMWScattSwitch false
       Platform_Name: &platform_name NOAA
