@@ -518,7 +518,7 @@ Oftentimes a UFO variable identically matches an MPAS field variable, in which c
 transform is applied in :code:`Model2GeoVars` and/or :code:`LinearModel2GeoVars`.
 
 There is a list of ``GeoVars`` that are available in MPAS-JEDI in
-code:`mpas-jedi/test/testinput/namelists/geovars.yaml`. As an example, consider the entry for
+:code:`mpas-jedi/test/testinput/namelists/geovars.yaml`. As an example, consider the entry for
 :code:`air_pressure`, which is the name of a UFO ``GeoVars``
 
 .. code:: yaml
