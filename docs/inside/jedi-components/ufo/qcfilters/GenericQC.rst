@@ -1044,55 +1044,107 @@ Example:
 Stuck Check Filter
 ------------------
 
-This filter thins observations by iterating over them by station and flagging each observation that
-is part of a "streak" of sequential observations. The first condition for a "streak" is that the
-observation values are the same over a certain count of sequential observations. The second
-condition is either (a) that this set of observations is longer than a user-defined duration or (b)
-that it covers the full trajectory of a station.
+This filter works record-by-record. Record grouping is therefore fundamental to its behavior.
+Records are usually defined with :code:`obs space.obsdatain.obsgrouping`.
+See :ref:`here <radiosonde_example_yaml>` for an example. If no obsgrouping is set, all valid
+observations are treated as one record.
 
-Alternatively, a percentage can be specified, where if observation values are the same over more than this percentage of all non-missing values in a record, they are flagged as a streak. See :ref:`here <radiosonde_example_yaml>` for an example of using the :code:`obs space.obsdatain.obsgrouping` YAML option to group observations into records. With no obsgrouping, the full set of valid observations counts as a single record.
+Within each record and for each :code:`filter variables` independently, the filter searches for
+streaks of consecutive identical values, excluding any missing values.
 
-The observation values which are used for evaluation of whether a "streak" exists are the
-:code:`filter variables`. If multiple :code:`filter variables` are present, then each variable is
-considered independently. In other words the filter flags observations based on each variable,
-independent to the other variables. Any observations that form streaks in at least one
-variable will be flagged.
+Consider a timeseries of :math:`N` observations. A set of :math:`k \leq N` identical
+observations in a row (skipping any missing values) is considered a *streak* which is which is
+used in one of the following ways:
 
-The following YAML parameters are supported:
+* Mode A (count + time): uses a fixed *number stuck tolerance* :math:`T_{ns}` and a time stuck tolerance
+  to determine if a streak is "stuck".
+* Mode B (percentage): derives a number stuck tolerance :math:`T_{ns}` from a percentage of
+  observations in the record to determine if a streak is "stuck". Does not use a time stuck tolerance.
 
-* :code:`filter variables`: the variables to use to classify observations as "stuck".
-  This required parameter must be entered as a string vector.
+Mode A: count + time mode
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* :code:`number stuck tolerance`: the maximum number of observations in a row with the same
-  observation value before its classification as a potential streak is made.
-  This required parameter must be entered as a non-negative integer.
+Required parameters:
 
-* :code:`time stuck tolerance`: the maximum time duration before a potential streak is rejected
-  This required parameter must be entered in ISO 8601 duration format. If
-  :code:`number stuck tolerance` is exceeded and all of the station's observations are part of the
-  same streak, :code:`time stuck tolerance` is ignored and all of the observations are rejected
-  regardless of the duration.
+* :code:`number stuck tolerance`: a non-negative integer tolerance :math:`T_{ns}` applied to streak
+  intervals. A streak needs at least :math:`T_{ns} + 1` identical observations in a row to be classified
+  as "stuck". Exactly one of :code:`number stuck tolerance` and
+  :code:`number stuck tolerance variable` must be set in this mode.
 
-* :code:`percentage stuck tolerance`: the maximum percentage out of all non-missing values in each record, above which this many observations with the same value in a row are rejected as a streak. The percentage is first converted to a number for each record; if the number is less than 2, no observations are flagged in that record (otherwise every observation would be flagged as a streak of 1).
+* :code:`number stuck tolerance variable`: a variable (for example in :code:`MetaData`) containing
+  integer tolerances :math:`T_{ns}`, allowing different tolerances for each record. For each record, all
+  non-missing values of this variable must be identical and non-negative; records with all-missing
+  values are skipped. Exactly one of :code:`number stuck tolerance` and
+  :code:`number stuck tolerance variable` must be set in this mode.
 
-If :code:`percentage stuck tolerance` is defined, :code:`number stuck tolerance` and :code:`time stuck tolerance` must NOT be defined.
+* :code:`time stuck tolerance`: the maximum allowed duration a streak satisfying
+  :math:`k \ge T_{ns} + 1` can be before being considered "stuck". This parameter must be entered in
+  ISO 8601 duration format. A streak is rejected as "stuck" only if its duration is strictly greater
+  than :code:`time stuck tolerance`. If the streak spans the full record,
+  :code:`time stuck tolerance` is ignored and the streak is rejected as "stuck".
 
-If :code:`number stuck tolerance` and :code:`time stuck tolerance` are defined, :code:`percentage stuck tolerance` must NOT be defined.
+Mode B: percentage mode
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Required parameter:
+
+* :code:`percentage stuck tolerance`: tolerance given as a percentage (from 0 to 100). This is
+  converted to a per-record interval number stuck tolerance :math:`T_{ns}`.
+
+  If :code:`percentage stuck tolerance based on intervals` is :code:`false` (default):
+
+  .. math::
+
+    T_{ns} = \mathrm{round}(p/100 \cdot N)
+
+  If :code:`percentage stuck tolerance based on intervals` is :code:`true`:
+
+  .. math::
+
+    T_{ns} = \mathrm{round}(p/100 \cdot (N-1))
+
+  where :math:`p` is :code:`percentage stuck tolerance` and :math:`N` is the number of observations
+  in the record.
+
+Optional parameters in this mode:
+
+* :code:`minimum allowed stuck`: used with :code:`percentage stuck tolerance`.
+  If computed :math:`T_{ns}` is strictly less than :code:`minimum allowed stuck`, that record is
+  skipped (no stuck rejections from that record). Default: 1 (two identical observations in a row).
+
+* :code:`percentage stuck tolerance based on intervals`: used with
+  :code:`percentage stuck tolerance`. If set to :code:`false` (default), the percentage is applied
+  to the number of observations in the record. If set to :code:`true`, the percentage is applied
+  to the number of intervals between observations in the record.
+
+Validation rules
+^^^^^^^^^^^^^^^^
+
+If :code:`percentage stuck tolerance` is defined, then :code:`number stuck tolerance`,
+:code:`number stuck tolerance variable`, and :code:`time stuck tolerance` must NOT be defined.
+
+If :code:`percentage stuck tolerance` is not defined, then :code:`time stuck tolerance` must be
+defined and exactly one of :code:`number stuck tolerance` or
+:code:`number stuck tolerance variable` must be defined.
+
+Examples 1, 2 and 3 illustrate Mode A. Examples 4, 5 and 6 illustrate Mode B.
 
 Example 1
 ^^^^^^^^^
 
 With the following parameters, a "streak" of observations is defined as sequential observations with
 identical air temperature measured values. All observations in the streak will be flagged if the
-streak (a) consists of more than 2 observations and (b) lasts longer than 2 hours or consists of the
-full set of observations from the station.
+streak (a) has at least 3 identical observations in a row and (b) lasts longer than 2 hours or
+consists of the full set of observations from the group (typically a station).
 
 .. code-block:: yaml
 
-  - filter: Stuck Check:
+  - filter: Stuck Check
     filter variables: [airTemperature]
     number stuck tolerance: 2
     time stuck tolerance: PT2H
+
+Here :math:`T_{ns} = 2`, so the streak must satisfy :math:`k \ge T_{ns} + 1 = 3`.
 
 Example 2
 ^^^^^^^^^
@@ -1103,28 +1155,107 @@ as "stuck": air temperature and air pressure.
 
 .. code-block:: yaml
 
-  - filter: Stuck Check:
+  - filter: Stuck Check
     filter variables: [airTemperature, pressure]
     number stuck tolerance: 2
     time stuck tolerance: PT2H
 
-Say we have 5 observations each taken an hour apart. Let the air temperature values equal: 274, 274,
-274, 275, 275; and the air pressure values equal 4, 4, 5, 5, 5. In this case, all of the
-observations would be rejected.
+Again :math:`T_{ns} = 2`, so each variable needs at least 3 identical observations in a row.
+
+Say we have 5 observations each taken an hour apart. Let the air temperature values be
+274, 274, 274, 275, 275 and the air pressure values be 4, 4, 5, 5, 5.
+Each variable has 3 identical observations in a row (:math:`k = 3`), meeting the length criterion
+(:math:`k \ge T_{ns} + 1` with :math:`T_{ns}=2`), but the duration is exactly 2 hours and therefore
+not strictly greater than :code:`PT2H`. In this case, no observations are rejected.
+
+Were the time stuck tolerance set to :code:`PT1H`, the first three observations of air temperature
+and the last three observations of air pressure, which cover a duration of 2 hours, would be
+identified as "stuck" and be rejected.
 
 Example 3
 ^^^^^^^^^
 
-With the following parameters, a "streak" of observations is defined as sequential observations with
-identical air temperature measured values. A streak is rejected if it is longer than 50 % of the record.
+With the following parameters, the filter uses a per-record integer tolerance variable.
+For each record, all non-missing values of :code:`MetaData/numberStuckToleranceVariable`
+must be equal.
 
 .. code-block:: yaml
 
-  - filter: Stuck Check:
+  - filter: Stuck Check
+    filter variables: [windNorthward]
+    number stuck tolerance variable: MetaData/numberStuckToleranceVariable
+    time stuck tolerance: PT2M
+
+Example values for :code:`MetaData/numberStuckToleranceVariable` across two records:
+
+* Record A (5 observations): [2, 2, 2, 2, 2] means :math:`T_{ns} = 2`, so at least 3 identical values
+  in a row are needed.
+* Record B (4 observations): [1, 1, 1, 1] means :math:`T_{ns} = 1`, so at least 2 identical values in a
+  row are needed.
+
+Example 4
+^^^^^^^^^
+
+In this example the number stuck tolerance :math:`T_{ns}` is derived from a percentage of the number
+of observations in the record:
+
+.. code-block:: yaml
+
+  - filter: Stuck Check
     filter variables: [airTemperature]
     percentage stuck tolerance: 50
 
-Say we have 5 observations in one record: 274, 274, 274, 275, 275; and 4 in another: 274, 274, 275, 275. The first 3 observations in the first record form a streak and are rejected (3 is greater than 50 % of 5). They are the only ones rejected. This is because the next record comprises 2 streaks each 2 observations long, and 2 is exactly 50 % of 4, not greater than 50 % of 4; therefore neither clear the threshold for rejection.
+Using defaults (:code:`minimum allowed stuck: 1`,
+:code:`percentage stuck tolerance based on intervals: false`):
+
+* If record A has :math:`N = 5` observations, then :math:`T_{ns} = \mathrm{round}(0.5 \cdot 5) = 3`.
+  A streak will be considered "stuck" if it has :math:`k \ge 4` identical observations.
+* Record B has :math:`N = 4`, so :math:`T_{ns} = \mathrm{round}(0.5 \cdot 4) = 2`. A streak will be
+  considered "stuck" if it has :math:`k \ge 3` identical observations.
+
+If record A is 274, 274, 274, 274, 275 and record B is 274, 274, 275, 275, the first four
+observations in record A are rejected as "stuck".
+
+Example 5
+^^^^^^^^^
+
+With percentage-based tolerance, :code:`minimum allowed stuck` can change the result by skipping
+records whose computed number stuck tolerance :math:`T_{ns}` is too small.
+
+.. code-block:: yaml
+
+  - filter: Stuck Check
+    filter variables: [airTemperature]
+    percentage stuck tolerance: 25
+    minimum allowed stuck: 2
+
+Using :code:`percentage stuck tolerance based on intervals: false` (default):
+
+* Record A with :math:`N = 5`: :math:`T_{ns} = \mathrm{round}(0.25 \cdot 5) = 1`
+* Record B with :math:`N = 4`: :math:`T_{ns} = \mathrm{round}(0.25 \cdot 4) = 1`
+
+Because :math:`T_{ns} = 1 <` :code:`minimum allowed stuck: 2`, both records are skipped. If
+:code:`minimum allowed stuck` were left at its default (:code:`1`), these records would be checked.
+
+Example 6
+^^^^^^^^^
+
+The :code:`percentage stuck tolerance based on intervals` option changes the base of the
+calculation.
+
+.. code-block:: yaml
+
+  - filter: Stuck Check
+    filter variables: [airTemperature]
+    percentage stuck tolerance: 25
+    percentage stuck tolerance based on intervals: true
+
+For a record with :math:`N = 6` observations:
+
+* If :code:`percentage stuck tolerance based on intervals: false`,
+  :math:`T_{ns} = \mathrm{round}(0.25 \cdot 6) = 2`, so at least 3 identical observations are needed.
+* If :code:`percentage stuck tolerance based on intervals: true`,
+  :math:`T_{ns} = \mathrm{round}(0.25 \cdot 5) = 1`, so at least 2 identical observations are needed.
 
 
 Difference Check Filter
