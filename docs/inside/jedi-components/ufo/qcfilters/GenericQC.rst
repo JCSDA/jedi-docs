@@ -344,7 +344,7 @@ Polygon Check Filter
 
 This pre-filter rejects all observations outside a polygonal region on the sphere.
 
-The ``Polygon Check`` filter accepts any valid polygon (concave or convex) and has been tested from 3 up to 12,000 vertices. Vertices are connected via **great circle arcs**, representing the shortest path on a sphere. 
+The ``Polygon Check`` filter accepts any valid polygon (concave or convex) and has been tested from 3 up to 12,000 vertices. Vertices are connected via **great circle arcs**, representing the shortest path on a sphere.
 
 .. note::
    Great circle arcs appear curved on 2D map projections, particularly near the poles. Ensure vertex density is sufficient to maintain the intended shape.
@@ -2882,7 +2882,7 @@ The user supplies query and reference latitude/longitude information indirectly,
 variables of interest which have non-missing values at the associated latitude/longitude locations
 in the obs space.
 
-For example, one might want to know, for the assimilation period, the 3 nearest SYNOPs to any
+For example, one might want to know, for the assimilation period, the 3 nearest synoptic stations (SYNOPs) to any
 reports from aerodromes. One would first create a variable in the obs space which is missing except
 where one has aerodrome data; this is the :code:`query point variable`. One then would do the same with
 SYNOPs; this is the :code:`reference point variable`.
@@ -3046,6 +3046,518 @@ observation. The filter is applied at all locations where air temperature observ
      algorithm: brute force
      distance method: haversine
      distance units: km
+
+
+.. _use-nearest-neighbors-filter:
+
+Use Nearest Neighbors Filter
+----------------------------
+
+This filter uses nearest-neighbor information — typically produced by the
+:ref:`Find Nearest Neighbors <find-nearest-neighbors-filter>` filter — to perform operations
+on observations relative to their spatial neighbors. It maps values between reference
+observations and query observations using identifier variables that link the two sets.
+
+The filter is designed to work with a pre-populated obs space in which:
+
+* An **identifier variable** (:code:`identifier variable`) uniquely identifies each reference
+  observation row in the obs space. This is typically the same variable that was used as
+  :code:`output assignment` in the Find Nearest Neighbors filter.
+* A set of **nearest-neighbor identifier variables** (:code:`nearest neighbor identifier variables`)
+  hold, at each query-point location in the obs space, the identifier of the first, second, third,
+  etc. nearest reference observation row, as written by the Find Nearest Neighbors filter.
+  In other words, at query row :math:`i` in the obs space, these values are lookup keys that should
+  match :code:`identifier variable` values on reference rows.
+
+The specific operation performed on the gathered data is controlled by the :code:`algorithm` block.
+Three algorithms are currently supported.
+
+Common YAML parameters:
+
+- :code:`identifier variable` (required): variable whose value uniquely identifies each
+  reference observation row. Supported types are integer, string, and datetime.
+
+- :code:`nearest neighbor identifier variables` (required): list of variables, one per nearest
+  neighbor, holding the identifier of the corresponding nearest reference observation obs space row
+  at each query-point location in the obs space. At query row :math:`i`, each value should equal the
+  :code:`identifier variable` value on the matched reference row. All variables must be of the same
+  type as the :code:`identifier variable`. The length of this list determines how many nearest
+  neighbors are considered.
+
+- :code:`algorithm` (required): block specifying which algorithm to run and its parameters.
+  The algorithm is selected via the ``name`` key within this block.
+
+Observations that are neither a recognized reference observation nor a query point (i.e. where
+the identifier variable and all nearest-neighbor identifier variables are missing) produce missing
+values in all output variables for all the currently implemented algorithms.
+
+.. note::
+
+  This filter is not QC flag aware: if any :code:`variable` parameters are in the `ObsValue` or
+  `DerivedObsValue` groups, values are used regardless of the presence of QC flags. In practice,
+  this means that observations which have been rejected by a previous filter can be treated as valid
+  observations in this filter, unless they are specifically excluded by a :code:`where` clause. Care
+  has been taken when documenting the filter to explicitly describe when values are used or not
+  used. In all currently implemented algorithms, if one wishes to explicitly exclude observations,
+  it is recommended to set such observations to missing values in a prior filter (e.g. using the
+  :ref:`Variable Assignment <VariableAssignmentFilter>` filter).
+
+.. _use-nearest-neighbors-gather-and-match-timestamp:
+
+Gather and Match Timestamp Algorithm
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For each query point, this algorithm gathers a value from each nearest reference observation using
+an exact key match on identifier and timestamp. The effect of this is to move values from reference
+observation locations in the obs space to query observation locations, but only when the timestamp
+at the query location matches the timestamp at the reference location. One output variable is
+written per nearest-neighbor identifier variable.
+
+The algorithm allows the specification of a timestamp match variable which need-not be the same as
+the timestamp variable (:code:`MetaData/dateTime`) in the obs space. This is useful, for example,
+when query observations (e.g. frequent and irregular low quality observations) are binned into
+hourly intervals and assigned a timestamp on the hour, to match reference observations (e.g. higher
+quality synoptic station reports) that are recorded at exactly that time. The algorithm only matches
+reference observations to query observations with the same timestamp match variable value.
+
+Example
+"""""""
+
+.. code-block:: yaml
+
+   - filter: Use Nearest Neighbors
+     identifier variable: MetaData/referenceStationIdentification
+     nearest neighbor identifier variables:
+       - name: DerivedMetaData/firstNearestReferenceStationID
+       - name: DerivedMetaData/secondNearestReferenceStationID
+       - name: DerivedMetaData/thirdNearestReferenceStationID
+     algorithm:
+       name: gather and match timestamp
+       gather variable: ObsValue/airTemperatureReference
+       timestamp match variable: DerivedMetaData/binnedDateTime
+       output variables:
+         - name: DerivedMetaData/matchedFirstNearestTemperature
+         - name: DerivedMetaData/matchedSecondNearestTemperature
+         - name: DerivedMetaData/matchedThirdNearestTemperature
+
+Given a pre-constructed global lookup map
+
+
+.. math::
+
+   \begin{aligned}
+     L(&\text{MetaData/referenceStationIdentification}_j, \text{MetaData/dateTime}_j) \\
+     &= \text{ObsValue/airTemperatureReference}_j, \\
+     &\forall j \in \{\text{reference obs space locations}\}
+   \end{aligned}
+
+
+Then, for each location in the obs space :math:`i`:
+
+* :code:`DerivedMetaData/matchedFirstNearestTemperature` is looked up with key
+
+  .. math::
+
+    (\text{firstNearestReferenceStationID}_i, \text{binnedDateTime}_i).
+
+* :code:`DerivedMetaData/matchedSecondNearestTemperature` is looked up with key
+
+  .. math::
+
+    (\text{secondNearestReferenceStationID}_i, \text{binnedDateTime}_i).
+
+* :code:`DerivedMetaData/matchedThirdNearestTemperature` is looked up with key
+
+  .. math::
+
+    (\text{thirdNearestReferenceStationID}_i, \text{binnedDateTime}_i).
+
+
+If any key is absent in the global lookup map, that output is written as missing at that location.
+
+
+Algorithm details
+"""""""""""""""""
+
+Define for location (row) :math:`i` in the obs space:
+
+* :math:`t_i` = :code:`timestamp match variable` at :math:`i`
+* :math:`d_i` = :code:`MetaData/dateTime` at :math:`i`
+* :math:`r_i` = :code:`identifier variable` at :math:`i`
+* :math:`g_i` = :code:`gather variable` at :math:`i`
+* :math:`n_i^{(k)}` = value of the :math:`k`-th nearest-neighbor identifier variable at :math:`i`
+
+The algorithm first builds a global lookup map over reference candidates satisfying
+:math:`t_i = d_i` (plus non-missing and picked-by-:code:`where` clause checks):
+
+.. math::
+
+  L(r_i, t_i) = g_i.
+
+Then, for each location :math:`i` and nearest-neighbor index :math:`k`, output is
+
+.. math::
+
+  y_i^{(k)} =
+  \begin{cases}
+  L\left(n_i^{(k)}, t_i\right), & \mathrm{if\ key\ exists\ in}\ L \\
+  \mathrm{missing}, & \mathrm{otherwise}
+  \end{cases}
+
+So the match is exact on the pair :math:`(\text{neighbor ID}, \text{timestamp match variable})`.
+
+Algorithm-specific YAML parameters:
+
+- :code:`gather variable` (required): the variable to gather from the reference observations.
+  Supported types are float, integer, string, and datetime.
+
+- :code:`timestamp match variable` (required): variable holding the timestamp used to select
+  which value to retrieve from each nearest reference observation. The value at the query point
+  is matched against values at the reference observations identified by each nearest-neighbor
+  identifier variable.
+
+- :code:`output variables` (required): list of variables where the matched values are written,
+  one per entry in :code:`nearest neighbor identifier variables`. Must be the same length as that
+  list.
+
+
+.. _use-nearest-neighbors-reference-point-variables-mean:
+
+Reference Point Variables Mean Algorithm
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For each query point, this algorithm gathers a variable from all of its nearest reference
+observations and computes means grouped by an integer *mean about* variable. It is assumed that,
+for a given combination of *identifier* (e.g. station ID) and *mean about* integer (e.g. a time bin)
+there is at most one unique *gather variable* value (reference observation).
+
+Example
+"""""""
+
+This example shows averaging of temperature from 3 nearest reference stations, grouped by time bin.
+The first output variable is the average of the 3 nearest reference temperatures at time bin 0, and
+the second output variable is the average of the 3 nearest reference temperatures at time bin 1.
+
+.. code-block:: yaml
+
+   - filter: Use Nearest Neighbors
+     identifier variable: MetaData/referenceStationIdentification
+     nearest neighbor identifier variables:
+       - name: DerivedMetaData/firstNearestReferenceStationID
+       - name: DerivedMetaData/secondNearestReferenceStationID
+       - name: DerivedMetaData/thirdNearestReferenceStationID
+     algorithm:
+       name: reference point variables mean
+       gather variable: ObsValue/airTemperatureReference
+       mean about: DerivedMetaData/timeBin # integer bins used exactly as stored (e.g. 0, 1, 2)
+       output variables:
+         - name: DerivedMetaData/averageThreeClosestReferenceAirTemperaturesBin0
+         - name: DerivedMetaData/averageThreeClosestReferenceAirTemperaturesBin1
+
+For each obs space location :math:`i`:
+
+1. Read the three nearest-neighbor IDs at row :math:`i`:
+
+   - :code:`firstNearestReferenceStationID[i]`,
+   - :code:`secondNearestReferenceStationID[i]`,
+   - :code:`thirdNearestReferenceStationID[i]`.
+
+2. Build target bin from output-list position:
+   first output variable :code:`DerivedMetaData/averageThreeClosestReferenceAirTemperaturesBin0`
+   uses :code:`timeBin = 0`, second uses :code:`timeBin = 1`, etc.
+3. For output variable :code:`DerivedMetaData/averageThreeClosestReferenceAirTemperaturesBin0`,
+   look up *up to* three :math:`(\text{ID}, \text{timeBin})` keys:
+
+   - :math:`(\text{firstNearestReferenceStationID}_i, 0)`
+   - :math:`(\text{secondNearestReferenceStationID}_i, 0)`
+   - :math:`(\text{thirdNearestReferenceStationID}_i, 0)`
+
+
+4. Average all values found for those keys and write the result at row :math:`i`.
+   If none are found, write missing at row :math:`i`.
+5. For output variable :code:`DerivedMetaData/averageThreeClosestReferenceAirTemperaturesBin1`,
+   repeat exactly the same process (step 3 onward) with bin :code:`1` instead of :code:`0`.
+
+The output variable names are labels only. The mapping is determined by output-list position,
+not by parsing the variable names. The formal lookup structure is defined in
+the Algorithm details section below.
+
+
+Algorithm details
+"""""""""""""""""
+
+Define for location (row) :math:`i` in the obs space:
+
+* :math:`r_i` = :code:`identifier variable` at location :math:`i`
+* :math:`m_i` = :code:`mean about` (integer) at location :math:`i`
+* :math:`g_i` = :code:`gather variable` at location :math:`i`
+
+The algorithm builds a global lookup map
+
+.. math::
+
+  L(r_i, m_i) = g_i
+
+from valid reference candidates (non-missing and selected by :code:`where` clause), keeping the
+first occurrence of each key.
+
+For a given position :math:`q` in the list of :code:`output variables`, the algorithm defines a
+target :code:`mean about` integer
+
+.. math::
+
+  m_q = q - 1,
+
+where :math:`q = 1` is the first :code:`output variable` (:math:`m_1 = 0`), :math:`q = 2` is the
+second (:math:`m_2 = 1`), etc.
+
+For each neighbor slot :math:`k` (:math:`k = 1, 2, 3` for three nearest neighbors), define
+
+.. math::
+
+  v_{i,q}^{(k)} =
+  \begin{cases}
+  L\left(n_i^{(k)}, m_q\right), & \text{if key } \left(n_i^{(k)}, m_q\right) \text{ exists} \\
+  \text{missing}, & \text{otherwise}
+  \end{cases}
+
+and count how many neighbor slots contributed a valid value:
+
+.. math::
+
+  N_{i,q} = \sum_k \mathbf{1}\!\left(v_{i,q}^{(k)} \neq \text{missing}\right).
+
+Then the output for each location :math:`i` and output position :math:`q` is the
+mean of those valid neighbor contributions:
+
+.. math::
+
+  y_{i,q} =
+  \begin{cases}
+  \dfrac{1}{N_{i,q}}\sum_{k,\,v_{i,q}^{(k)}\neq\text{missing}} v_{i,q}^{(k)}, & \text{if } N_{i,q}>0 \\
+  \text{missing}, & \text{if } N_{i,q}=0
+  \end{cases}
+
+For datetime gather variables, the mean is computed as first value plus mean offset in whole
+seconds.
+
+Algorithm-specific YAML parameters:
+
+- :code:`gather variable` (required): variable to gather from the reference observations and
+  average. Supported types are float, integer, and datetime.
+
+- :code:`mean about` (required): integer variable defining the 0-based index used to group values
+  before averaging.
+
+- :code:`output variables` (required): list of output variables where per-index means are written.
+
+
+.. _use-nearest-neighbors-local-plane-fit:
+
+Local Plane Fit Algorithm
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For each query point, this algorithm interpolates (or extrapolates) a scalar value from the
+nearest reference observations using a local plane fit, with a fallback to inverse distance
+weighting (IDW) when the plane fit is not well-determined. The plane fit models the field as a
+linear function of latitude and longitude across the neighborhood, fitted in a weighted
+least-squares sense. If the plane fit residuals are too large relative to the fitted values (as
+controlled by :code:`relative error threshold`), or if insufficient neighbors are available to
+constrain the fit (fewer than 3), the algorithm falls back to IDW.
+
+Like the :ref:`Find Nearest Neighbors <find-nearest-neighbors-filter>` filter, this algorithm
+uses :code:`query point variable` and :code:`reference point variable` in two ways:
+(1) to identify which observations are query and reference points (by non-missing values), and
+(2) to indicate the locations whose latitude/longitude coordinates are used for the plane fit.
+
+The :code:`match variable` is used to ensure that query and reference values are compared at
+equivalent conditions (e.g. the same time step or height level). Only reference observations
+whose :code:`match variable` value equals that of the query point at each obs space location are
+used.
+
+Example
+"""""""
+
+This example shows interpolation of temperature at query points from 4 nearest
+reference stations.
+
+.. code-block:: yaml
+
+   - filter: Use Nearest Neighbors
+     identifier variable: MetaData/referenceStationIdentification
+     nearest neighbor identifier variables:
+       - name: DerivedMetaData/firstNearestReferenceStationID
+       - name: DerivedMetaData/secondNearestReferenceStationID
+       - name: DerivedMetaData/thirdNearestReferenceStationID
+       - name: DerivedMetaData/fourthNearestReferenceStationID
+     algorithm:
+       name: local plane fit
+       query point variable: MetaData/queryPointTemperature
+       reference point variable: ObsValue/airTemperatureReference
+       distance variables: # must be in km
+         - name: DerivedMetaData/firstNearestReferenceDistance
+         - name: DerivedMetaData/secondNearestReferenceDistance
+         - name: DerivedMetaData/thirdNearestReferenceDistance
+         - name: DerivedMetaData/fourthNearestReferenceDistance
+       inverse distance weighting power: 2.0
+       match variable: DerivedMetaData/matchIndex
+       relative error threshold: 0.25
+       output variable: DerivedMetaData/interpolatedTemperature
+
+For each location in the obs space :math:`i` with non-missing query value,
+latitude, longitude, and valid matched-neighbor data:
+
+1. Build a set of matched reference rows: those with :code:`referenceStationIdentification` equal
+   to each nearest-neighbor ID at row :math:`i` and :code:`matchIndex` equal to the
+   :code:`matchIndex` value at row :math:`i`.
+2. Extract from matched reference rows their latitudes, longitudes,
+   and :code:`reference point variable` values, and lookup the corresponding
+   :code:`distance variables` at row :math:`i`.
+3. Compute normalized IDW weights from the distances with :math:`p=2`.
+4. If any matched reference row is colocated (distance :math:`< 10^{-10}` km), copy that reference
+   value to the output.
+5. Otherwise, if fewer than 3 matched neighbors, use IDW:
+
+   .. math::
+
+      \hat{z}_i = \sum_{k=1}^{K} w_k z_k.
+
+   where :math:`K` is the number of matched neighbors, :math:`w_k` are the IDW weights, and
+   :math:`z_k` are the matched reference values.
+
+6. If 3 or more matched neighbors, attempt a weighted local plane fit:
+
+  - Convert matched neighbor coordinates to local equirectangular offsets,
+    centered at the query-point location on row :math:`i`.
+  - Assemble the weighted least-squares system for the local plane fit and
+    compute an :math:`LDL^\mathsf{T}` factorization of the resulting symmetric
+    normal matrix. If the factorization succeeds and the matrix is judged
+    positive semidefinite (indicating a well-posed system with sufficient
+    geometric support for a local plane fit), compute the relative fit error.
+  - If relative error :math:`\le 0.25`, write the fitted intercept (value at
+    the query location).
+  - If the factorization fails, the local system is degenerate, the relative
+    error exceeds :math:`0.25`, or an exception occurs, use IDW instead.
+
+7. Write the interpolated or IDW value to :code:`DerivedMetaData/interpolatedTemperature[i]`.
+   If any required data is missing at row :math:`i`, that row remains missing.
+
+
+Algorithm details
+"""""""""""""""""
+
+For each location :math:`i`, gather matched neighbors (same :code:`match variable` value as the
+query point). If any required neighbor field is missing, output remains missing at that location.
+
+Let neighbor distances be :math:`d_k`, values :math:`z_k`, and power be :math:`p`.
+The IDW weights are
+
+.. math::
+
+  \tilde{w}_k = \frac{1}{d_k^p + 10^{-10}},
+  \qquad
+  w_k = \frac{\tilde{w}_k}{\sum_l \tilde{w}_l}.
+
+Special and fallback cases are applied in this order:
+
+* If :math:`\min_k d_k < 10^{-10}` km, copy the colocated neighbor value.
+* If number of neighbors :math:`k < 3`, use IDW directly:
+
+  .. math::
+
+    \hat{z} = \sum_{k=1}^{K} w_k z_k.
+
+* If :math:`k \ge 3`, attempt weighted local plane fit.
+
+For the plane fit, convert neighbor coordinates to local equirectangular offsets centered at query
+location :math:`(\phi_q, \lambda_q)`:
+
+.. math::
+
+  x_k = R\cos(\phi_q)(\lambda_k-\lambda_q),
+  \qquad
+  y_k = R(\phi_k-\phi_q),
+
+with angles in radians and :math:`R` the mean Earth radius in km.
+
+Fit
+
+.. math::
+
+  z \approx a x + b y + c
+
+by solving the weighted normal equations
+
+.. math::
+
+  (A^\mathsf{T} W A)\,\beta = A^\mathsf{T} W z,
+
+where :math:`A \in \mathbb{R}^{k\times 3}` is the design matrix with rows
+:math:`[x_k\; y_k\; 1]`,
+:math:`\beta = [a\; b\; c]^\mathsf{T}`,
+and :math:`W = \operatorname{diag}(w_1,\dots,w_k)` is the diagonal matrix of
+IDW weights.
+The symmetric matrix :math:`A^\mathsf{T} W A` is the normal matrix.
+
+The system is solved using an :math:`LDL^\mathsf{T}` decomposition.
+
+If the factorization fails or the normal matrix is not judged positive
+semidefinite, fall back to IDW.
+
+The implementation computes relative fit error as
+
+.. math::
+
+  e = z - A\beta,
+  \qquad
+  \epsilon_{\text{rel}} =
+  \frac{\sqrt{\sum_k w_k\, e_k^2}}{\sqrt{\sum_k w_k\, z_k^2} + 10^{-10}}.
+
+That is, :math:`\epsilon_{\text{rel}}` is the ratio of the weighted 2-norm of the residuals
+to the weighted 2-norm of the neighbor values, using the IDW weights :math:`w_k`.
+
+If :math:`\epsilon_{\text{rel}} >` :code:`relative error threshold`, fall back to IDW;
+otherwise output :math:`c` (the intercept at query-point origin).
+
+Algorithm-specific YAML parameters
+""""""""""""""""""""""""""""""""""
+
+- :code:`query point variable` (required): variable holding the scalar value at query-point
+  locations (used to define which observations are query points and to retrieve their coordinates).
+  Supported types are float and integer.
+
+- :code:`reference point variable` (required): variable holding the scalar value at reference-point
+  locations to be interpolated/extrapolated.
+
+- :code:`distance variables` (required): list of variables holding the distances from each query
+  point to each of its nearest neighbors, one per entry in
+  :code:`nearest neighbor identifier variables`. Must be the same length as that list. **These are
+  assumed to be in kilometers**.
+
+- :code:`inverse distance weighting power` (required): the power :math:`p` for computing
+  inverse distance weighting factors, where weights are proportional to :math:`1 / d^p`.
+  These weights are used in the weighted least-squares plane fit matrix :math:`W`, and in the IDW
+  fallback if the plane fit is not well-determined.
+
+- :code:`match variable` (required): variable used to match query and reference observations.
+  Supported types are integer, string, and datetime.
+
+- :code:`output variable` (required): variable where the interpolated/extrapolated values are
+  written.
+
+- :code:`relative error threshold` (optional, default 0.25): if the relative weighted RMS error
+  of the plane fit exceeds this threshold, the algorithm falls back to IDW. If set to 0.0, only
+  exact zero-error plane fits are accepted; all non-zero-error fits fall back to IDW.
+
+Notes:
+
+* If only one nearest neighbor is available, IDW is used trivially (the single neighbor value
+  is copied).
+* If two nearest neighbors are available, the system is underdetermined for a 2-D plane fit, so
+  IDW is used.
+* Colinear or nearly colinear neighbor configurations are situations which can lead to insufficient
+  geometric support for a local plane fit. This will be detected at the weighted least-squares
+  system assembly stage, as previously described, and the algorithm will fall back to IDW.
 
 
 .. _percentile-filter:
