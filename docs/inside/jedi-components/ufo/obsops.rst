@@ -2196,13 +2196,14 @@ Available from http://cimss.ssec.wisc.edu/iwwg/iww14/program/index.html.
 .. _obsops_sfc_corrected:
 
 SfcCorrected
----------------------------------------
+------------
 
 Description:
 ^^^^^^^^^^^^
 This forward operator contains three schemes (WRFDA, UKMO, GSL) to correct the computation of surface variables (2m air temperature, station pressure) caused by the discrepancy of model topography at observed locations.
 
 To note:
+
 * Currently the 2m temperature using the WRFDA and UKMO method and station pressure for all schemes of forward operators are the ones implemented. Surface correction for Humidity is not implemented.
 * The `Non-linear` operators can be used in simulation of OBS only.
 * The `Linear` operators have not been implemented. Until TL/AD is available, must specify Identity Obs Operator in assimilation.
@@ -2211,11 +2212,11 @@ The unified SfcCorrected operator is an initial framework to apply a consistent 
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
-* variable - list of variables to be simulated which must be a subset of the simulated variables in the ObsSpace.
-* geovar_geomz - model variable for height of vertical levels. Geopotential heights will be converted to height above mean sea level.
-* geovar_sfc_geomz - model variable for surface height. Geopotential heights will be converted to height above mean sea level.
-* station_altitude - variable in the ObsSpace which will be used for the staion height of the observation.
-* correction shceme to use - the scheme to use to correct the variable.  Currently available are 'WRFDA', 'UKMO' and 'GSL'.
+* ``variable`` - list of variables to be simulated which must be a subset of the simulated variables in the ObsSpace.
+* ``geovar_geomz`` - model variable for height of vertical levels. Geopotential heights will be converted to height above mean sea level.
+* ``geovar_sfc_geomz`` - model variable for surface height. Geopotential heights will be converted to height above mean sea level.
+* ``station_altitude`` - variable in the ObsSpace which will be used for the staion height of the observation.
+* ``correction scheme to use`` - the scheme to use to correct the variable.  Currently available are 'WRFDA', 'UKMO' and 'GSL'.
 
 Example of surface air temperature correction yaml:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2302,13 +2303,13 @@ pressure, and `Ps_o2m` is the observed pressure adjusted to the model surface he
 `Ps_m2o` is the model(background) surface pressure adjusted to observed station height as such:
 
 .. math::
-  Ps_{m2o} = Ps_{model} * (T_{m2o}/T_{model})** (gravity / Rd * L)
+  Ps_{m2o} = Ps_{model} * (T_{m2o}/T_{model}) * (gravity / Rd * L)
 
 where `L` is the constant lapse rate (0.0065 K/m),
 `T_model` is the temperature at model surface height (`H_model`), derived from the virtual temperature at 2000m above the model surface height (Tv_2000) to avoid diurnal/local variations, and `T_m2o` is the model temperature at observed station height (`H_ob`) as such:
 
 .. math::
-  T_{model} = TV_{2000} * (Ps_{model} / P_{2000}) ** (Rd * L / gravity)
+  T_{model} = TV_{2000} * (Ps_{model} / P_{2000}) * (Rd * L / gravity)
 
 .. math::
   T_{m2o} = T_{model} + L*(H_{model} - H_{ob})
