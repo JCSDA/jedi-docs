@@ -49,8 +49,8 @@ temperature weight :math:`w_b` defined as:
 :math:`w_{b} = 1 - \frac{BT_{\text{corr}} - BT}{d_{T\pm}}`,
 
 where
-:math:`d_{\text{s}}` is the :code:`stable density`,
-:math:`d_{\text{rh}}` is the :code:`relative humidity density as a fraction` (expressed as a fraction to match :math:`RH`),
+:math:`d_{\text{s}}` is the :code:`stable denominator`,
+:math:`d_{\text{rh}}` is the :code:`relative humidity denominator as a fraction` (expressed as a fraction to match :math:`RH`),
 :math:`d_{\text{off}}` is the :code:`relative humidity offset`,
 :math:`d_{\text{min}}` is the :code:`relative humidity minimum`,
 :math:`d_{T\pm}` is the :code:`temperature limit warm` or :code:`temperature limit cold` depending
@@ -127,9 +127,9 @@ Parameters
 
 :code:`temperature limit cold` - float value (default -1.0 K) to set the maximum negative difference between the bias corrected brightness temperature and the level brightness temperature.
 
-:code:`stable density` - float value (default 1.0) to control the lapse weight.
+:code:`stable denominator` - float value (default 1.0) to control the lapse weight.
 
-:code:`relative humidity density as a fraction` - float value (default 1.0) to control the rh weight, expressed as a fraction rather than a percentage to match the model units of relative humidity.
+:code:`relative humidity denominator as a fraction` - float value (default 1.0) to control the rh weight, expressed as a fraction rather than a percentage to match the model units of relative humidity.
 
 :code:`relative humidity offset` - float value (default 0.0) to control the rh weight.
 
@@ -177,7 +177,7 @@ stability weights.
               corrected brightness temperature: BiasCorrObsValue/brightnessTemperature_7
               temperature limit warm: 5.0
               temperature limit cold: -10.0
-              stable density: 0.1
-              relative humidity density as a fraction: 0.8
+              stable denominator: 0.1
+              relative humidity denominator as a fraction: 0.8
               relative humidity offset: -0.1
               relative humidity minimum: 0.1
