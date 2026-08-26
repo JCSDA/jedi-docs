@@ -1363,6 +1363,8 @@ Spike and Step Check Filter
 
 This filter goes through each record and flags observations where the value of the dependent variable (as specified by the user) is classified as a spike or step relative to adjacent points along the (user-specified) independent variable, e.g. profiles of ocean temperature against depth. (Only tested for data grouped into records - set grouping with the :code:`obs space.obsdatain.obsgrouping.group_variable` YAML option. An example of its use can be found in the :ref:`Profile consistency checks <profconcheck_filtervars>` section.)
 
+For a less profile-focused alternative, see :ref:`Step Check <step-check-filter>`.
+
 A spike is a point whose dependent variable value differs from the adjacent points on either side of it by more than a given tolerance. A step is when two adjacent points' dependent variable values differ from each other by more than the tolerance. The tolerance can vary along the independent variable (more below). Points only count as spikes or steps if they are isolated, and not part of a trend spanning multiple points. A spike results in the point in question being flagged; a step results in both points on either side of the step being flagged.
 
 Required parameters:
@@ -2864,6 +2866,210 @@ Example:
       - name: windNorthward
 
 In this case, the filter is configured to calculate the mean and spread of the model equivalents of horizontal wind velocity components. The results will be written to ObsSpace variables :code:`MeanHofX/windEastward`, :code:`MeanHofX/windNorthward`, :code:`HofXStdDev/windEastward`, and :code:`HofXStdDev/windNorthward`.
+
+.. _step-check-filter:
+
+Step Check Filter
+-----------------
+
+This filter flags observations when large jumps ("steps") are detected between
+consecutive observations in a record. As with other record-based filters, the
+check is applied independently to each record/station grouping.
+
+This is similar to the :ref:`Spike and Step Check <spikeandstep-check-filter>` filter,
+but the two filters have different focus. Spike and Step Check is a profile-focused filter,
+whilst Step Check is a lightweight option that only requires an ordered sequence of values
+and a step threshold.
+
+By default, step size is computed as absolute difference between consecutive
+values:
+
+:math:`|x_i - x_{i-1}|`
+
+If :code:`circular period` is configured, circular difference is used instead:
+
+:math:`\min(|x_i - x_{i-1}|, P - |x_i - x_{i-1}|)`
+
+where :math:`P` is the configured circular period (for example 360 for wind
+direction in degrees).
+
+Missing values are ignored when evaluating step sizes.
+
+Operating modes
+^^^^^^^^^^^^^^^
+
+Step Check has two mutually exclusive operating modes:
+
+1. **Per-step mode** (default; :code:`use average step: false`)
+
+   Consecutive differences are tested one by one against :code:`step threshold`.
+   For a record with :math:`N` observations, there are :math:`N-1` steps.
+   When a step that exceeds the step threshold is identified between two
+   consecutive observations, the second observation in that pair is flagged.
+
+   By default, any threshold-exceeding step causes flagging. The filter can be
+   configured to allow some threshold-exceeding steps before flagging, using
+   either of the following criteria:
+
+   * **Number-based tolerance**: flag if the number of threshold-exceeding steps
+     is greater than :code:`number step tolerance`.
+   * **Percentage-based tolerance**: if :math:`M` of :math:`N-1` steps exceed
+     threshold, compute :math:`\frac{M}{N-1} \times 100` and flag if this is
+     strictly greater than :code:`percentage step tolerance`.
+
+   **Example**: 11 observations gives 10 steps. If 3 steps exceed threshold,
+   percentage is :math:`\frac{3}{10} \times 100 = 30\%`.
+
+   * :code:`percentage step tolerance: 25` flags (30% > 25%)
+   * :code:`number step tolerance: 2` flags (3 > 2)
+   * :code:`percentage step tolerance: 30` does not flag (30% ≤ 30%)
+   * :code:`number step tolerance: 3` does not flag (3 ≤ 3)
+
+2. **Average-step mode** (:code:`use average step: true`)
+
+   A mean step magnitude is computed and compared with :code:`step threshold`.
+   If it exceeds threshold, all valid observations in the record are flagged;
+   otherwise none are flagged.
+
+   If :code:`chunk size` is set, the record is split into chunks, mean step is
+   computed per chunk, and these chunk means are then averaged.
+   :code:`remove stuck chunks`, :code:`chunk stuck tolerance`, and
+   :code:`ignore last chunk if incomplete` modify this chunked averaging path.
+   The :code:`remove stuck chunks` option exists to avoid sets of identical
+   values artificially deflating the overall average step magnitude.
+
+The following YAML parameters are supported.
+
+Parameters used in both modes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`step threshold`: Magnitude threshold for a step. Required.
+
+* :code:`inclusive step threshold`: If true (default), threshold comparison is
+  inclusive (:math:`\geq`). If false, strict comparison (:math:`>`) is used.
+  This applies in both per-step mode and average-step mode.
+
+* :code:`circular period`: Enables circular difference calculation with the
+  specified period.
+
+* :code:`station_id_variable`: Optional station ID variable used for grouping
+  when no ObsSpace grouping is configured.
+
+Parameters for per-step mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`number step tolerance`: Per-step mode only. See Operating modes above.
+
+* :code:`percentage step tolerance`: Per-step mode only. See Operating modes
+  above. Must be in range :math:`[0, 100]`. A value of 0 is strictest (zero
+  exceeding steps allowed); 100 is most permissive (all exceeding steps
+  allowed).
+
+Parameters for average-step mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* :code:`use average step`: Enables average-step mode. If true, compare an
+  average step magnitude against :code:`step threshold`. If threshold is
+  exceeded, all valid observations in the record are flagged. Default: false.
+
+* :code:`chunk size`: Optional chunk size used only with
+  :code:`use average step: true`. Data in each record are split into chunks,
+  average step is computed within each chunk, and those chunk averages are then
+  averaged across the record. If not set, the average step is computed across
+  the whole record. Note that steps between chunks are *not* considered when
+  computing the average step.
+
+* :code:`ignore last chunk if incomplete`: If true, discard the last chunk in
+  chunking mode if it has fewer than :code:`chunk size` observations.
+  Default: false.
+
+* :code:`remove stuck chunks`: If true, skip chunks considered "stuck"
+  (i.e. chunks where all values are equal within :code:`chunk stuck tolerance`)
+  before averaging.
+  This avoids sets of identical values artificially deflating the overall
+  average step magnitude. Default: false.
+
+* :code:`chunk stuck tolerance`: Tolerance used to determine whether a chunk is
+  stuck. Default: 0.0.
+
+Compatibility/validation rules:
+
+* :code:`number step tolerance` and :code:`percentage step tolerance` cannot be
+  used together.
+
+* :code:`use average step` cannot be used together with either
+  :code:`number step tolerance` or :code:`percentage step tolerance`.
+
+* :code:`chunk size` requires :code:`use average step: true`.
+
+Example 1
+^^^^^^^^^
+
+Basic per-step check with inclusive threshold comparison.
+
+.. code-block:: yaml
+
+  - filter: Step Check
+    filter variables: [pressure]
+    step threshold: 10.0
+    inclusive step threshold: true # Default; can be omitted
+
+With no :code:`number step tolerance` or :code:`percentage step tolerance`
+set, any threshold-exceeding step in a record causes the second observation in
+the step pair to be flagged.
+
+Example 2
+^^^^^^^^^
+
+Per-step check with number-based tolerance.
+
+.. code-block:: yaml
+
+  - filter: Step Check
+    filter variables: [pressure]
+    step threshold: 10.0
+    number step tolerance: 4
+
+In this case, records with 4 or fewer exceeding steps pass; records with 5 or
+more exceeding steps are flagged.
+
+Example 3
+^^^^^^^^^
+
+Circular-difference check for directional data.
+
+.. code-block:: yaml
+
+  - filter: Step Check
+    filter variables: [windDirection]
+    step threshold: 15.0
+    circular period: 360.0
+
+Any step between consecutive observations of 15 degrees or more (in either direction) causes
+the second observation in the pair to be flagged.
+
+Example 4
+^^^^^^^^^
+
+Chunked average-step mode with stuck-chunk removal.
+
+.. code-block:: yaml
+
+  - filter: Step Check
+    filter variables: [windDirection]
+    step threshold: 10.0
+    circular period: 360.0
+    use average step: true
+    chunk size: 10
+    remove stuck chunks: true
+    chunk stuck tolerance: 2.0
+    ignore last chunk if incomplete: true
+
+In this mode, mean step is computed within each chunk of 10 observations (9
+steps in each chunk), excluding any chunks where all values are within 2.0
+degrees of each other. These averages are then also averaged, giving an overall
+average step for the record. If this average step exceeds 10 degrees, all valid
+observations in the record are flagged.
 
 
 .. _find-nearest-neighbors-filter:
