@@ -2655,11 +2655,81 @@ The priority variable name is :code:`MetaData/thinningPriority`; observations wi
 SuperOb filter
 --------------
 
-The SuperOb filter can be used to produce superobs (super-observations) by combining multiple observation (:math:`O`) values (and optionally model background (:math:`B`) values) in a chosen region into a single quantity. This quantity is assigned to the :code:`DerivedObsValue` group for each filter variable at a chosen location. It is possible to perform this procedure at more than one location in the region. After the assignments have concluded, all other locations in the superob region are flagged as rejected. Typically, superobbing is used when the density of observations is very high and the observation error covariances have not been fully specified. Superobbing can also be used to reduce the computational load experienced when dealing with very high-density observations.
+The SuperOb filter can be used to produce superobs (super-observations) by combining multiple
+observation (:math:`O`) values (and optionally model background (:math:`B`) values) in a chosen
+region into a single quantity. This quantity is assigned to the :code:`DerivedObsValue` group for
+each filter variable at a chosen location. It is possible to perform this procedure at more than
+one location in the region. After the assignments have concluded, the default action of the filter
+is to flag all other locations in the superob region as rejected with the QC flag :code:`31`
+(:code:`QCflags::superob`).
+
+Typically, superobbing is used when the density of observations is very high and the observation
+error covariances have not been fully specified.
+Superobbing can also be used to reduce the computational load experienced when dealing with
+very high-density observations.
 
 The ObsSpace must have been divided into records for this filter to be used.
 
-The :code:`algorithm` parameter selects the algorithm that is used to compute one or more superobs in each ObsSpace record.
+The :code:`algorithm` parameter selects the algorithm that is used to compute one or more superobs
+in each ObsSpace record.
+
+Common SuperOb parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In addition to :code:`filter variables`, :code:`where` and :code:`action`, the
+SuperOb filter supports the following configuration options:
+
+* :code:`algorithm` (required): algorithm-specific options, including :code:`name`.
+
+* :code:`set values outside where clause to missing` (optional, list of booleans,
+  default :code:`true` for each filter variable): controls the initialization of
+  :code:`DerivedObsValue` when a :code:`where` clause is present.
+
+  If :code:`true`, values are initialized to missing everywhere and only assigned locations are filled.
+  If :code:`false`, existing values are preserved outside the :code:`where` selection.
+
+* :code:`increment if non-missing` (optional, list of booleans, default :code:`false`):
+  if :code:`true` for a filter variable, an integer variable is incremented whenever
+  a superob is successfully computed.
+
+* :code:`variables to increment` (optional, list of variables): integer-valued variables to update.
+  These must not be in :code:`ObsValue` or :code:`DerivedObsValue` because that might require
+  updating associated QC flags, which is not currently supported.
+
+* :code:`increment values` (optional, list of integers): increment amount for each filter variable.
+
+* :code:`increment whole record` (optional, list of booleans, default :code:`false`):
+  if :code:`true`, apply increments to all selected locations in the record; otherwise increment
+  only location(s) where the superob is stored.
+
+* :code:`increment whole record respects where` (optional, list of booleans, default :code:`true`):
+  if :code:`false` (only valid when :code:`increment whole record` is :code:`true`), increments all
+  locations in the record, including those outside :code:`where`.
+
+For the vector-valued options above, list lengths should match the number of filter variables.
+
+
+Common algorithm options
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Most SuperOb algorithms (all except :code:`radar`) share these options under :code:`algorithm`:
+
+* :code:`assign to all values in record` (default :code:`false`):
+  if :code:`true`, the computed superob value is written to all selected locations in a record and
+  no locations in the record are flagged as rejected (if using non-default
+  :ref:`filter actions <filter-actions>`, this means the actions will apply to no locations in the
+  record). If :code:`false`, it is written only to one representative location and other selected
+  locations are set to missing in :code:`DerivedObsValue` and are flagged as rejected.
+
+* :code:`grouping variable` (optional): deduplicates observations before computing the superob.
+  Within each record, locations with the same grouping-variable value are treated as duplicates.
+  For example, if the grouping variable has values :code:`[1, 1, 2, 2, 3]` and the
+  :code:`filter variables` are set to a single variable with values :code:`[10, 10, 20, 20, 50]`,
+  then the superob is computed using the values :code:`[10, 20, 50]` (one value per group).
+  Duplicate members must match for all filter variables and their QC flags, otherwise an exception
+  is thrown: in the above example, if the first two values were :code:`[10, 11, ...]` instead of
+  :code:`[10, 10, ...]`, and/or the QC flags were :code:`[pass, rejected, ...]` instead of
+  :code:`[pass, pass, ...]`, an exception would be thrown.
 
 
 Available superobbing algorithms
@@ -2669,6 +2739,10 @@ The following superobbing algorithms are available:
 
 * :code:`mean obs`: Computes superob using mean :math:`O` in each record,
 * :code:`mean OmB`: Computes superob using mean :math:`O - B` in each record,
+* :code:`range obs`: Computes superob as max(:math:`O`) - min(:math:`O`) in each record,
+* :code:`count obs`: Computes superob as the number of non-missing values in each record,
+* :code:`max obs`: Computes superob as max(:math:`O`) in each record,
+* :code:`circular mean obs`: Computes circular mean of directional data in each record,
 * :code:`radar`: Computes superob for weather radar data.
 
 These algorithms are described in more detail in the following sections.
@@ -2676,7 +2750,11 @@ These algorithms are described in more detail in the following sections.
 
 **mean obs**
 
-This algorithm computes the mean :math:`O` of each filter variable in each record, ignoring missing values. The mean value is assigned to the first location in the record. All other entries in the record are flagged as rejected. Note the choice of the first location in the record is arbitrary and could lead to different results depending on the ordering of the input data.
+This algorithm computes the mean :math:`O` of each filter variable in each record, ignoring missing
+values and locations with failing QC flags. The mean value is assigned to the first valid location
+encountered in the record (i.e. the first location that is not missing and passes QC). All other
+locations in the record are flagged as rejected. Note that the choice of representative location
+depends on the ordering of the input data.
 
 Example usage:
 
@@ -2692,7 +2770,18 @@ Example usage:
 
 **mean OmB**
 
-This algorithm computes the mean :math:`O - B` of each filter variable in each record, ignoring missing values. The mean values are added to the value of :math:`B` at the first location in the record. All other entries in the record are flagged as rejected. Note the choice of the first location in the record is arbitrary and could lead to different results depending on the ordering of the input data.
+This algorithm computes the mean :math:`O - B` of each filter variable in each record, ignoring
+missing values and locations with failing QC flags. The mean innovation is added to the value of
+:math:`B` at the first valid location in the record, giving:
+
+.. math::
+
+   Y^o = H(x^b)_r + \frac{1}{n} \sum_{i=1}^{n} [y^o_i - H(x^b)_i]
+
+where :math:`Y^o` is the superob value, :math:`n` is the number of valid observations, and the
+subscript :math:`r` indicates the representative location (the first valid location in the record).
+All other locations in the record are flagged as rejected. Note that the choice of representative
+location depends on the ordering of the input data.
 
 Example usage:
 
@@ -2706,11 +2795,116 @@ Example usage:
       name: mean OmB
 
 
+**range obs**
+
+This algorithm computes :math:`\max(O) - \min(O)` over valid values in each record, ignoring
+missing values and values with failing QC flags. Since :code:`assign to all values in record` is set
+to :code:`true` in the below example, the range is written to all locations in the record. Also shown
+is an example of how to initialize a new variable to hold the range, and how to use a :code:`where`
+clause to restrict the superobbing to observations which already had non-rejected QC flags.
+
+Example usage:
+
+.. code:: yaml
+
+  - filter: Variable Assignment
+    assignments:
+      - name: DerivedObsValue/airTemperature_range_at_location # new variable to hold the range - include in derived variables list
+        type: float
+        source variable: ObsValue/airTemperature # initialise to original value for modification by SuperOb range obs filter below
+    where:
+      - variable: { name: QCflagsData/airTemperature }
+        is_in: 0,1 # passing or passive QC flags
+
+  - filter: SuperOb
+    filter variables:
+    - name: DerivedObsValue/airTemperature_range_at_location
+    algorithm:
+      name: range obs
+      assign to all values in record: true  # write the range to all locations in the record
+
+
+**count obs**
+
+This algorithm counts the number of valid (non-missing, passing QC) values in each record. Unlike
+other algorithms, :code:`count obs` always produces a result for every record (returning zero when
+all values are missing), so there is never a record where the computation fails entirely and all
+locations are left unassigned.
+
+Example usage:
+
+.. code:: yaml
+
+  # Assume DerivedObsValue/airTemperature_count_at_location has been created as a copy
+  # of ObsValue/airTemperature as in the range obs example above, and that the where clause is the same.
+
+  - filter: SuperOb
+    filter variables:
+    - name: DerivedObsValue/airTemperature_count_at_location # new variable which previously held airTemperature
+    algorithm:
+      name: count obs
+
+
+**max obs**
+
+This algorithm computes the maximum valid (non-missing, passing QC) observation value in each record.
+If :code:`assign to all values in record` is :code:`false`, the superob is written at the location
+where this maximum occurs. If multiple locations share the same maximum value, the first such
+location encountered in record order is used.
+
+Example usage:
+
+.. code:: yaml
+
+  # Assume DerivedObsValue/airTemperature_max_at_location has been created as a copy of
+  # ObsValue/airTemperature as in the range obs example above, and that the where clause is the same.
+
+  - filter: SuperOb
+    filter variables:
+    - name: DerivedObsValue/airTemperature_max_at_location
+    algorithm:
+      name: max obs
+
+
+**circular mean obs**
+
+This algorithm is intended for circular variables (those with values that wrap around periodically,
+such as wind direction angles or hours in a day). It computes the circular mean over valid
+(non-missing, passing QC) values in each record.
+
+The implementation follows the standard circular mean formula: values are mapped to points on the
+circumference of a unit circle (:math:`\sin` and :math:`\cos`), averaged, and the result is
+converted back using :math:`\mathrm{atan2}`. This is equivalent to
+`scipy.stats.circmean <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html>`_.
+
+Optional parameters:
+
+* :code:`lower bound` (default :code:`0.0`): inclusive lower end of the circular domain.
+* :code:`exclusive upper bound` (default :code:`2π`): exclusive upper end of the circular domain.
+
+Together these define the value interval interpreted as one full cycle,
+i.e. :math:`[\mathrm{lower\ bound}, \mathrm{exclusive\ upper\ bound})`.
+Values are normalized into this interval before computing the mean and the result is mapped back.
+
+Example usage (wind direction in degrees):
+
+.. code:: yaml
+
+  - filter: SuperOb
+    filter variables:
+    - name: windDirection
+    algorithm:
+      name: circular mean obs
+      assign to all values in record: true  # write the mean to all locations in the record
+      lower bound: 0.0          # degrees domain starts at 0
+      exclusive upper bound: 360.0  # and wraps at 360 (but does not include 360 itself)
+
+
 **radar**
 
 This algorithm computes superobs for ground radar scans. Each scan is divided into superob regions according to the parameters
 :code:`number of beams in superob region` and :code:`superob region radial extent [m]`.
-Values of :math:`O` and :math:`B` inside each region are summed, discarding any locations that are masked by a superob template class.
+Values of :math:`O` and :math:`B` inside each region are accumulated, discarding any locations that are masked by the superob template class.
 The superob template is a circle (looking vertically down on the scan) which is used to select regions in a group of beams and radial sections as in the following image:
 
 .. figure:: images/beamSuperob.png
@@ -2721,14 +2915,17 @@ Note there are typically multiple regions in a scan, so there can be multiple su
 
 If there are insufficient observations inside the region (governed by the parameter :code:`minimum number of observations in superob region`) a superob is not computed.
 
-In order to compute the superob, the mean value of :math:`O - B` is calculated and added onto the background value that lies spatially closest to the centre of the superob template.
+The superob value is computed by taking the mean :math:`O - B` innovation over the region and
+adding it to the background value at the location closest to the centre of the superob template.
 Using the notation in Simonin *et al.* 2014:
 
 .. math::
 
-   Y^o = H(x^b)_c + \sum_{i = 1}^{n} [y^o_i - H(x^b)_i]
+   Y^o = H(x^b)_c + \frac{1}{n} \sum_{i = 1}^{n} [y^o_i - H(x^b)_i]
 
-where :math:`Y^o` is the superob value, :math:`y^o_k` is the observation value at location :math:`k`, :math:`H(x^b)_k` is the observation operator acting on the model background at location :math:`k`,
+where :math:`Y^o` is the superob value, :math:`n` is the number of valid observations in the
+region, :math:`y^o_i` is the observation value at location :math:`i`,
+:math:`H(x^b)_i` is the observation operator applied to the model background at location :math:`i`,
 and the subscript :math:`c` indicates the location closest to the centre of the superob region.
 
 Two superob uncertainties are also computed for use in subsequent error assignment:
@@ -2754,6 +2951,75 @@ Example usage:
       number of beams in superob region: 5
       superob region radial extent [m]: 5000.0
       minimum number of observations in superob region: 5
+
+
+Example: where clause with preserved values and increment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This example demonstrates two behaviors:
+
+1. **Preserving values outside the** :code:`where` **clause.** By default, when a :code:`where`
+   clause is used, the output :code:`DerivedObsValue` is initialized to missing at all locations,
+   and only locations selected by the clause receive a superob value. Setting
+   :code:`set values outside where clause to missing: [false]` instead preserves whatever is
+   already in :code:`DerivedObsValue` at those locations. In the example below this means that
+   observations outside 03:00–11:00 are left with the values copied from :code:`ObsValue` by the
+   preceding :code:`Variable Assignment` filter, rather than being set to missing.
+
+2. **Incrementing a counter per successful superob.** When :code:`increment if non-missing: [true]`
+   is set and a superob is successfully computed for a record, the integer variable named in
+   :code:`variables to increment` is incremented by the corresponding value in
+   :code:`increment values`. Setting :code:`increment whole record: [true]` applies the increment
+   to all locations in the record. In this example,
+   :code:`increment whole record respects where: [false]` applies the increment to all locations in
+   the record, not just those selected by the :code:`where` clause. This lets future filters identify
+   records where a superob was successfully computed without also needing to be aware of the
+   :code:`where` clause that was used.
+
+Note: the variable to be superobbed must be pre-populated using a :code:`Variable Assignment`
+filter before this filter runs, since the filter reads from :code:`DerivedObsValue`. These
+values are then overwritten by the superob algorithm at selected locations, and left unchanged
+at other locations (since :code:`set values outside where clause to missing: [false]` is used).
+The variable names must be included in the list of :ref:`Derived Variables <Derived-Variables>` in
+the ObsSpace configuration.
+
+.. code:: yaml
+
+  # Initialise a counter and copy ObsValue into DerivedObsValue
+  - filter: Variable Assignment
+    assignments:
+    - name: MetaData/airTemperature_non_missing_averages
+      type: int
+      value: 0  # counter starts at zero for every record
+    - name: DerivedObsValue/airTemperature_mean_at_location
+      type: float
+      source variable: ObsValue/airTemperature  # pre-populate output with observed values
+    where:
+    - variable:
+        name: QCflagsData/airTemperature
+      is_in: 0,1  # only consider observations with passing or passive QC flags
+
+  # Compute a per-record mean over observations between 03:00 and 11:00.
+  # Observations outside this window are left unchanged in DerivedObsValue.
+  # For each record where a superob is computed, increment the counter at all
+  # selected locations.
+  - filter: SuperOb
+    filter variables:
+    - name: DerivedObsValue/airTemperature_mean_at_location  # read/write DerivedObsValue
+    algorithm:
+      name: mean obs
+      assign to all values in record: true  # write the mean to every location in the record
+    where:
+    - variable:
+        name: MetaData/dateTime
+      minvalue: "****-**-**T03:00:00Z"  # only consider observations from 03:00 onwards
+      maxvalue: "****-**-**T11:00:00Z"  # ... up to 11:00
+    set values outside where clause to missing: [false]  # preserve values outside the window
+    increment if non-missing: [true]   # increment counter when a valid superob is produced
+    variables to increment: [MetaData/airTemperature_non_missing_averages]
+    increment values: [1]              # increment by 1 per successful superob
+    increment whole record: [true]     # apply increment to all selected locations in record
+    increment whole record respects where: [false]  # apply increment to all locations in record, not just those selected by where clause
 
 
 References
