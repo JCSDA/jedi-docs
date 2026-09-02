@@ -730,7 +730,10 @@ The CRTM operator has some required geovals (see varin_default in ufo/crtm/ufo_r
 * :code:`CO2AbsorberMethod` [optional]: The method used to populate the CO\ :sub:`2`  profile for CRTM. Methods include 'Background' (default), 'EternalConstant', and 'MaunaLoa' (empirical global constant derived from time at the middle of the analysis cycle).
 * :code:`CO2ppmvValue` [optional]: When the 'EternalConstant' method is chosen for CO2AbsorberMethod, this specifies in ppmv the global constant.
 * :code:`Clouds` [optional] : CRTM cloud constituents that will be requested as geovals; can include any of Water, Ice, Rain, Snow, Graupel, Hail. Clouds water contents and effective radius can be re-set as zero in the atmospheric profiles for CRTM by assigning a value 1 to :code:`MetaData/zeroCloudInCRTM` in certain conditions in :code:`obs prior filters`. An example to zero-out cloud constituents above surface where :code:`GeoVaLs/water_area_fraction` is less than 0.99 is provided.
-* :code:`Cloud_Fraction` [optional] : sets the CRTM Cloud_Fraction to a constant value across all profiles (e.g., 1.0). Omit this option in order to request cloud_area_fraction_in_atmosphere_layer as a geoval from the model. This parameter is also used for :code:`linear obs operator`.
+* :code:`Cloud_Fraction` [optional] : sets the CRTM Cloud_Fraction to a constant value across all profiles (e.g., 1.0). Omit this option in order to request :code:`cloud_area_fraction_in_atmosphere_layer` as a geoval from the model. This parameter is also used for :code:`linear obs operator`.
+* :code:`method for cloud fraction within fov` [optional] : method to calculate cloud fraction using interpolated meteorological variables. Only the "Thompson" method is included in the UFO at present. When a method is provided, the input of :code:`Cloud_Fraction` becomes obsolete and can be omitted.
+* :code:`method for hydrometeor effective radii within fov` [optional] : method to calculate cloud particle radii using interpolated meteorologival variables. Only the "Thompson" method is included in the UFO at present.
+
 * :code:`SurfaceWindGeoVars` [str, optional, options: :code:`vector` - default, :code:`uv`] : specify which two surface wind GeoVaLs are requested from the model.  :code:`vector` indicates that surface wind direction and magnitude are requested.  :code:`uv` indicates that surface eastward and northward wind components are requested.
 
 * :code:`linear obs operator` [optional] : used to indicate a different configuration for K-Matrix multiplication of tangent linear and adjoint operators from the configuration used for the Forward operator.  The same atmospheric profile is used in the CRTM Forward and K_Matrix calculations. Only the linear GeoVaLs interface to the model will be altered by this sub-configuration. Omit :code:`linear obs operator` in order to use the same settings across Forward, Tangent Linear, and Adjoint operators.
@@ -762,7 +765,24 @@ Examples of valid yaml:
     linear obs operator:
       Absorbers: [H2O]
       Clouds: [Water, Ice]
-    obs options:
+  obs options:
+      Sensor_ID: amsua_n19
+      EndianType: little_endian
+      CoefficientPath: Data/
+
+.. code-block:: yaml
+
+  ## Use the "thompson" methods for cloud fraction and hydrometeor effective radii within fov.
+  obs operator:
+    name: CRTM
+    Absorbers: [H2O, O3]
+    Clouds: [Water, Ice, Rain, Snow, Graupel, Hail]
+    linear obs operator:
+      Absorbers: [H2O]
+      Clouds: [Water, Ice]
+    method for cloud fraction within fov: thompson
+    method for hydrometeor effective radii within fov: thompson
+  obs options:
       Sensor_ID: amsua_n19
       EndianType: little_endian
       CoefficientPath: Data/

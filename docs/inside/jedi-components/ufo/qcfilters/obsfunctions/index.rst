@@ -159,6 +159,9 @@ filters into separate parts would have an obfuscating effect.
 :ref:`OceanPressureToDepth <OceanPressureToDepth>`
   Convert an ocean pressure variable (Pa) to depth below surface (m)
 
+:ref:`PotentialTemperatureFromTemperature <PotentialTemperatureFromTemperature>`
+  Calculate air potential temperature at the surface or retrieve it at a specific pressure level.
+
 :ref:`ProfileAverageObsPressure <ProfileAverageObsPressure>`
   Fill values of pressure in profiles that have been averaged onto model levels.
 
@@ -273,6 +276,7 @@ filters into separate parts would have an obfuscating effect.
    ObsFunctionStringManipulation
    ObsFunctionVelocity
    OceanPressureToDepth
+   PotentialTemperatureFromTemperature
    ProfileAverageObsPressure
    ProfileLevelCount
    ProfileVerticalSmoothing
