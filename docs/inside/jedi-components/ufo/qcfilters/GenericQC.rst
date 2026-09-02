@@ -4144,3 +4144,110 @@ Notes and constraints
   of filter variables.
 - If ObsSpace record grouping is not configured, use :code:`station_id_variable`
   to define record grouping for this filter.
+
+
+.. _threshold-rejection-filter:
+
+Record Threshold Rejection
+--------------------------
+
+Filter to perform actions for all entries within a record after a certain value is reached (in ascending or
+descending data ordering). The specified :code:`threshold variable` is compared to the specified :code:`threshold value` for
+each entry within the record. If the :code:`rejection type` is :code:`less than` ( :code:`greater than` ), then the filter flags all
+entries before (or after, depending on the data order value) this entry within the record.
+
+The motivation for this filter arose from needing to reject all observations in a sonde profile once
+a certain temperature was hit. For example, if the profile has five levels, with
+:code:`ObsValue/airTemperature` in the profile being equal to :code:`[293,270,250,260,280]` (in units of Kelvin),
+and you want to reject any observations for all remaining levels in the profile (record) once the temperature drops below :code:`255` K, you can use
+this filter to do that. If you want to reject all preceding values to get
+:code:`[reject,reject,reject,accept,accept]`, you can use the filter as
+
+.. code-block:: yaml
+
+    - filter: Record Threshold Rejection
+      threshold value: 255
+      threshold variable: ObsValue/airTemperature
+      rejection type: less than
+      data order: descending
+
+If instead you wanted to reject all values after the threshold temperature is hit, you can
+do
+
+.. code-block:: yaml
+
+    - filter: Record Threshold Rejection
+      threshold value: 255
+      threshold variable: ObsValue/airTemperature
+      rejection type: less than
+      data order: ascending
+
+The above example is just to demonstrate the purpose in a toy example. The filter applies
+more broadly to any obsspace which is split into records.
+
+The filter sets rejected observations to QC flag :code:`34` (:code:`QCflags::recordthreshold`).
+
+Required:
+
+- :code:`threshold value`: The value at which rejections should begin within a record. This can be either a
+  single float, or an obsspace variable. For example, you can
+  assign an obs space variable :code:`MetaData/Threshold` which is equal to a specific float for record 1,
+  a different float for record 2, etc. Then, each record will be filtered according to their specific threshold
+  value. You could even have a `threshold value` that varies within each record:
+  If you provide a variable that changes within a record it will still compare threshold
+  value to threshold variable at each point in the record. For example, if one sets 
+  `threshold value` to a variable in the obs space which has values `[1,2,3,0,3]` within
+  a specific record, and the `threshold variable` is found to be equal to `[0, 1, 2, 3, 4]` 
+  for that same record, this filter will compare each `threshold value` to its corresponding
+  `threshold variable` within the record. If one set `rejection type` to `less than or equal to`
+  and `data order` to `ascending` you'd get
+  ```
+  0 <= 1
+  1 <= 2
+  2 <= 3
+  3 <= 0
+  4 <= 3
+  ```
+  which will result in the final two locations being rejected.
+  
+- :code:`threshold variable`: The variable to which you are comparing the threshold value to. For instance, if
+  you have a record which is a profile, and you want to reject all data above the point where temperature hits
+  :code:`220K`, you would set :code:`threshold variable` to be :code:`ObsValue/airTemperature` (and
+  :code:`threshold value` to be :code:`220`).
+- :code:`rejection type`: Either :code:`less than`, :code:`less than or equal to`, :code:`greater than`, or
+  :code:`greater than or equal to`. This parameter decides the logic for comparing :code:`threshold variable`
+  with :code:`threshold value`.
+
+Optional:
+
+- :code:`data order`: Either :code:`ascending` or :code:`descending`, corresponding to which direction you
+  want to traverse the entries in the record. The default choice is :code:`ascending`.
+
+Example:
+
+.. code-block:: yaml
+
+    time window:
+      begin: 2020-12-31T23:59:00Z
+      end: 2021-01-01T00:01:00Z
+
+    observations:
+    - obs space:
+        name: test data
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+          obsgrouping:
+            group variables: ["sequenceNumber"]
+        simulated variables: [variable]
+      obs filters:
+      - filter: Record Threshold Rejection
+        filter variables: [variable]
+        threshold value: 0
+        threshold variable: HofX/variable
+        rejection type: less than
+
+In this case, the obsspace is grouped into records according to :code:`MetaData/sequenceNumber`. For each record,
+the values of :code:`HofX/variable` are inspected in ascending order (default behaviour), and once a value is
+less than 0, the remainder of the record is rejected.
