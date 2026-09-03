@@ -38,3 +38,18 @@ All observation filters in UFO are tested with the :code:`ObsFilters` test from 
         reference:
           name: TestReference/northward_wind
         absTol: 1e-5
+
+- :code:`diagnosticFlagBenchmark`: A map whose presence instructs the test to count how many instances of a Diagnostic Flag are :code:`true`. Each key is a diagnostic flag along with the relevant variable being tested. Each value is the number of instances that the diagnostic flag is set to :code:`true`. Example:
+
+  .. code-block:: yaml
+
+    diagnosticFlagBenchmark:
+      PermanentStationRejection/relativeHumidity: 115
+      InterpolationCheckRejection/relativeHumidity: 33
+      FinalQCRejection/relativeHumidity: 264
+      SignificantWindLevelInAscent/relativeHumidity: 0
+      TropopauseLevelInAscent/relativeHumidity: 2
+      PartialLayerUsedInAveraging/airTemperature: 2
+      MaximumWindLevelInAscent/airTemperature: 0
+      SignificantWindLevelInAscent/airTemperature: 0
+      StandardLevelInAscent/airTemperature: 29
