@@ -186,6 +186,45 @@ to reach the length scale set in the calibration is pre-calculated by the block.
           levels: *levels
           filepath: <path/to/data>/<vertical_normalization_filename>
 
+
+The example above has all the central block variables (AKA control variables) lumped into a
+single group, but the block supports an arbitrary number of variable sub-groupings where
+a different correlation/localization length is used for each variable sub-group. An example
+with two sub-groups is shown below:
+
+.. code-block:: yaml
+
+    saber central block:
+      saber block name: diffusion
+      read:
+        groups:
+        - variables:         # GROUP 1
+          - air_temperature
+          - water_vapor_mixing_ratio_wrt_moist_air
+          - air_pressure_at_surface
+          multivariate strategy: duplicated    # for localization (see note)
+          horizontal:
+            filepath: <path/to/horizontal_normalization_filename_for_group_1>
+          vertical:
+            # method: <implicit/explicit>
+            levels: *levels
+            filepath: <path/to/vertical_normalization_filename_for_group_1>
+        - variables:         # GROUP 2
+          - northward_wind
+          - eastward_wind
+          horizontal:
+            filepath: <path/to/horizontal_normalization_filename_for_group_2>
+          vertical:
+            # method: <implicit/explicit>
+            levels: *levels
+            filepath: <path/to/vertical_normalization_filename_for_group_2>
+
+.. note::
+
+   Typically the `duplicated` multivariate strategy is used for ensemble localization
+   and a `univariate` strategy is used for the correlation operator in a
+   static/parametric background error model. See <MULTIVARIATE STRATEY docs COMING SOON>
+
 Implicit Vertical Diffusion (optional)
 --------------------------------------
 
