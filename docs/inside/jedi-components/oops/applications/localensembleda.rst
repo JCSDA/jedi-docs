@@ -173,6 +173,7 @@ For models which use UFO `R`-matrices, an additional representation is currently
 
 Here, :code:`input file` is a file containing cross-variable or inter-channel correlations. See :ref:`obsErrorCrossVar` for more information, including the required format for :code:`input file`. As with the diagonal `R`-matrix, the observation error standard deviations are read as an :code:`ObsError` group from the observation file.
 
+.. _ensDA-obs-space-loc:
 
 Observation-space localization supported in the ensemble solvers
 ----------------------------------------------------------------
@@ -198,10 +199,11 @@ The final weights are then used to scale the observation error covariance matrix
 The sequence of localizations is applied separately to each obs space.
 
 There are two main types of observation-space localization function: those that act horizontally, and those that act vertically.
-Observation-space horizontal localization can be used for both the LETKF and GETKF solvers, whereas observation-space vertical localization should only be used for the LETKF solvers.
+Observation-space horizontal localization can be used for the LETKF, GETKF, and EAKF (sequential EnKF) solvers.
+Observation-space vertical localization can be used for the LETKF and EAKF solvers, but not for the GETKF, which instead uses model-space vertical localization via the modulation product described above.
 Further discussion of this point can be found :ref:`here <top-oops-ETKF>`.
 
-If using observation-space vertical localization for the LETKF solvers, the 3D geometry iterator must be enabled to carry model height information into the vertical localization routines.
+If using observation-space vertical localization, the 3D geometry iterator must be enabled to carry model height information into the vertical localization routines.
 The geometry iterator is model-specific and the yaml syntax varies between models. In the FV3 model the 3D iterator can be enabled as follows:
 
 .. code-block:: yaml
@@ -253,6 +255,21 @@ The Gaspari-Cohn, SOAR, and Box Car methods are also supported for vertical loca
          ioda vertical coordinate: height                # Name of UFO variable storing the vertical coordinate
                                                          #   of the observation locations
          vertical lengthscale: 6e3                       # vertical localization distance in units of given coord
+
+For the EAKF (sequential EnKF) solver, set the :code:`iterator vertical coordinate` key on the corresponding obs space to the name of a :code:`MetaData` variable (e.g. :code:`height` or :code:`pressure`), because the EAKF reads the obs-side vertical coordinate from the 3D points emitted by :code:`ioda::ObsIterator` rather than from the localization itself. If this key is omitted the iterator emits :code:`z = 0` and vertical localization will be inactive; the :code:`ioda vertical coordinate group` / :code:`ioda vertical coordinate` keys on the localization are not used in this path.
+
+.. code-block:: yaml
+
+   observations:
+     observers:
+     - obs space:
+         name: radiosonde
+         iterator vertical coordinate: height            # propagates z into ObsIterator's 3D points
+       ...
+       obs localizations:
+       - localization method: Vertical localization
+         localization function: Gaspari Cohn
+         vertical lengthscale: 6e3
 
 
 Inflation supported in the ensemble solvers

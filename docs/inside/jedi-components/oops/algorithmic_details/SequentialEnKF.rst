@@ -45,6 +45,14 @@ For each observation :math:`k` (processed sequentially), the algorithm performs 
 Here :math:`\mathbf{y}_k^{b\prime}` denotes the ensemble perturbations of the :math:`k`-th observation prior (deviations from the ensemble mean), and :math:`\mathbf{X}'_i` is the state ensemble perturbation matrix at grid point :math:`i`.
 
 
+Localization
+------------
+
+The localization weights :math:`\rho_{jk}` (observation-to-observation) and :math:`\rho_{ik}` (model-grid-to-observation) are evaluated at run time by the same obs-space localization classes used by the LETKF/GETKF solvers, invoked via :code:`computeLocalization(p1, p2)` on 3D points produced by the model geometry iterator and :code:`ioda::ObsIterator`. The available methods, parameters, and YAML reference are documented in :ref:`ensDA-obs-space-loc`.
+
+For vertical localization specifically, the EAKF solver requires the corresponding obs space to expose its vertical coordinate to the iterator by setting the :code:`iterator vertical coordinate` key (see :ref:`ensDA-obs-space-loc`); when unset, the iterator emits :code:`z = 0` and vertical localization will be inactive.
+
+
 Ensemble Adjustment Kalman Filter (EAKF)
 -----------------------------------------
 
