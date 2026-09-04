@@ -12,4 +12,5 @@ An introductory video produced for the JEDI Academy is available `here <http://a
 
    BUMP_general_overview.rst
    BUMP_saber_blocks.rst
+   BUMP_nicas_estimation.rst
    BUMP_workflows.rst

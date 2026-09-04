@@ -56,7 +56,7 @@ The explicit horizontal lengthscales can be specified either as a single value o
          - 1500.0e+3
          - 2000.0e+3
 
-Vertical correlations depend on the vertical coordinate provided by the model interfaced to SABER. The models pass vertical coordinate to BUMP as the field `vert coordinate` in extra Geometry fields.
+Vertical correlations depend on the vertical coordinate provided by the model interfaced to SABER. The models pass the vertical coordinate to BUMP as the extra Geometry field :code:`vert_coord`, or per variable via the fields metadata key :code:`<variable>.vert_coord`. The vertical length-scale is expressed in the units of that field, which are the model's choice: some interfaces provide a depth or height in metres, others the level index.
 If vertical lengthscale is not specified in the yaml, it is assumed to be zero. Note that if vertical lengthscale is set to zero the convolution will only be computed between the grid points that have the same vertical coordinate.
 
 An important parameter in the :code:`nicas` subsection is the :code:`resolution`. It is a unitless real number, and it can be understood as the number of points that would be used in a 1D case to discretize the Gaspari-Cohn function from its origin to the limit of its support. The function representation is more precise with a larger resolution. It is recommended to use resolution of at least 3, better (if affordable computationally) 4-8.
@@ -65,55 +65,7 @@ Note that the computational and memory cost of NICAS depends on the :code:`resol
 
 In general, NICAS smoother is very efficient for large length-scales, which is the case for localization length-scales in general, but can be inefficent for small length-scales.
 
-Correlation and localization length scales for BUMP can also be diagnosed from the ensemble using BUMP HDIAG (Hybrid DIAGnostics) driver, e.g. for estimating localization lengthscales from the ensemble:
-
-  .. code-block:: yaml
-
-    saber block name: BUMP_NICAS
-    calibration:
-      io:
-        data directory: path_to_bump_directory  # BUMP data directory
-        files prefix: my_bump_files             # BUMP files prefix
-      drivers:
-        multivariate strategy: univariate  # NICAS multivariate strategy (here: same localization for all variables)
-        compute covariance: true
-        compute correlation: true
-        compute localization: true
-        compute nicas: true
-        write global nicas: true
-        write local nicas: true
-      sampling:
-        distance class width: 500.0e3         # Distance class size (in m) in HDIAG
-        computation grid size: 500            # Number of subsampling points in HDIAG
-        distance classes: 20                  # Number of distance classes in HDIAG
-        reduced levels: 2                     # Number of reduced levels in HDIAG
-      nicas:
-        resolution: 8.0                       # NICAS subgrid resolution
-
-And for estimating correlation lengths-scales from the ensemble:
-
-  .. code-block:: yaml
-
-    saber block name: BUMP_NICAS
-    calibration:
-      io:
-        data directory: path_to_bump_directory  # BUMP data directory
-        files prefix: my_bump_files             # BUMP files prefix
-      drivers:
-        multivariate strategy: univariate  # NICAS multivariate strategy (here: same localization for all variables)
-        compute covariance: true
-        compute correlation: true
-        compute nicas: true
-        write global nicas: true
-        write local nicas: true
-      sampling:
-        distance class width: 500.0e3         # Distance class size (in m) in HDIAG
-        computation grid size: 500            # Number of subsampling points in HDIAG
-        distance classes: 20                  # Number of distance classes in HDIAG
-        reduced levels: 2                     # Number of reduced levels in HDIAG
-      nicas:
-        resolution: 8.0                       # NICAS subgrid resolution
-
+Correlation and localization length-scales for BUMP can also be diagnosed from an ensemble, using the BUMP HDIAG (Hybrid DIAGnostics) driver, rather than being specified explicitly as above. Because that involves several interacting yaml sections (:code:`drivers`, :code:`sampling`, :code:`diagnostics` and :code:`fit`), it is covered separately: see :ref:`BUMP_nicas_estimation` for complete worked configurations, guidance on choosing the sampling parameters, and the common failure modes.
 
 Pre-computed NICAS use
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -126,9 +78,9 @@ NICAS can be computed on the fly and used as in previous section, or pre-compute
     read:
       io:
         data directory: path_to_bump_directory  # BUMP data directory
-        prefix: my_bump_files                   # BUMP files prefix
+        files prefix: my_bump_files             # BUMP files prefix
       drivers:
-        multivariate strategy: univariate
+        multivariate strategy: univariate       # must match the run that wrote the files
         read local nicas: true                  # Load local NICAS data
 
 Note that for some operators like NICAS, BUMP can produce "local" files (one per MPI task) or "global" files (a single file) during the NICAS computation described in the previous section. If local files were produced when generating NICAS files, the application using those files has to be run with the same number of MPI tasks and the same grid distribution among these tasks.

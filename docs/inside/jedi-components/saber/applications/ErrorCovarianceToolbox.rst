@@ -15,6 +15,16 @@ More precisely, this application:
 
 This is briefly detailed in the next sections.
 
+Each model builds its own executable for this application, and it is run as:
+
+.. code-block:: bash
+
+   mpiexec -n <ntasks> <model>_error_covariance_toolbox.x myconfig.yaml
+
+For a complete, model-independent worked example of using this application to estimate
+correlation or localization length-scales from an ensemble and to build a NICAS operator, see
+:ref:`BUMP_nicas_estimation`.
+
 Creation of a SABER error covariance
 ------------------------------------
 
