@@ -1074,11 +1074,93 @@ Aerosol Optical Depth (AODMassFraction)
 Description:
 ^^^^^^^^^^^^
 
-This operator calculates the Aerosol Optical Depth (AOD) for a given model and extinction coefficient calculation method. For each model, a list of species is defined in the ObsAodMassFraction constructor in ObsAodMassFraction.cc, along with the variable names for their mass fractions. The variable names for number fractions can also optionally be defined. The AOD is then calculated as a function of mass fractions per species, extinction coefficient per species and level, :code:`air_pressure_levels` and :code:`air_pressure_at_surface`, summing over all levels and species. :code:`air_pressure_levels` is assumed to be on staggered levels in relation to the aerosol mass and number fractions.
+This operator calculates the Aerosol Optical Depth (:math:`AOD`), which is dimensionless, for a given model and for a given method of calculating the extinction coefficient :math:`k_{\mathrm{ext}}` (:math:`m^{2} \, \text{kg}^{-1}`). For each model, a list of species is defined in the ObsAodMassFraction constructor in ObsAodMassFraction.cc, along with the variable names for their mass fractions. The variable names for number fractions can also optionally be defined. The AOD is then calculated as a function of mass fractions per species, extinction coefficient per species and level, :code:`air_pressure_levels` and :code:`air_pressure_at_surface`, summing over all levels and species. :code:`air_pressure_levels` is assumed to be on staggered levels in relation to the aerosol mass and number fractions.
 
-The operator is currently implemented for the GLOMAP/UKCA dust modal model, which has two defined 'species': the dust accumulation and coarse modes. The only method for calculating the extinction coefficient that is currently implemented is the :code:`MetOfficeLUTFit`. In this method the extinction coefficient for a given atmospheric level is calculated as a function of the median modal diameter for the UKCA dust model, using a best fit function. The best fit function parameters are defined in the yaml. The median modal diameter is itself derived from the mass and number fraction for each mode (assuming a log-normal distribution of sizes).
+The operator is currently implemented for the GLOMAP/UKCA dust modal model, which has two defined 'species': the dust accumulation and coarse modes. The only method for calculating the extinction coefficient that is currently implemented is the :code:`MetOfficeLUTFit`. In this method the extinction coefficient for a given atmospheric level is calculated as a function of the median modal diameter (m) for the UKCA dust model, using a best fit function. The best fit function parameters are defined in the yaml. The median modal diameter is itself derived from the mass and number fraction for each mode (assuming a log-normal distribution of sizes).
 
 In future, other models with different species lists could be added, as could other methods for calculating the extinction coefficient per level and species. For example a Look-Up Table approach could be implemented for the extinction coefficient calculation, such as is currently used for AODCRTM.
+
+Detailed description of operator definition:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The median modal diameter :math:`D` for a given mode is calculated for each profile :math:`j` and model level :math:`k`  as a function of the mass fraction :math:`m_{\mathrm{mode}}(j,k)` and number fraction :math:`n_{\mathrm{mode}}(j,k)` as follows:
+
+.. math::
+
+   D(j,k)=\left[ \frac{6}{\pi\, e^{4.5 \ln^{2}\sigma_{\mathrm{mode}}}} 
+      \times \frac{k_B}{R_a} 
+      \times \frac{1}{n_{\mathrm{mode}}(j,k)} 
+      \times \frac{m_{\mathrm{mode}}(j,k)}{\rho_x} 
+   \right]^{1/3}
+
+where the standard deviation per mode is :math:`\sigma_{mode}=1.59` for the accumulation mode or :math:`\sigma_{mode}=2` for coarse mode. The density of dust particles is assumed to be :math:`\rho_x=2650 \, \text{kg m}^{-3}`. The specific gas constant for dry air is :math:`R_a=2.8705 \times 10^2 \, \text{J K}^{-1} \, \text{kg}^{-1}`. Boltzmann's constant is :math:`k_B=1.380649 \times 10^{-23} \, \text{J K}^{-1}`.
+
+For each profile, :math:`AOD` is  calculated as a function of the extinction coefficient :math:`k_{\mathrm{ext}}` per mode and the pressure difference between levels, summing over all levels and modes:
+
+.. math::
+
+   AOD(m_{\mathrm{mode}}, n_{\mathrm{mode}})=\sum_{mode=1}^{2} 
+   \sum_{k=0}^{nlevels-2} \frac{1}{g} \, m_{\mathrm{mode}} 
+   \, k_{\mathrm{ext}}(m_{\mathrm{mode}}, n_{\mathrm{mode}})\, dp
+
+where :math:`dp=p(k+1) - p(k)` is the pressure difference between levels and :math:`g` is the acceleration due to gravity :math:`g = 9.80665 \, \text{m s}^{-2}`.
+
+The extinction coefficient for each mode is calculated as a function of (:math:`D`) for that mode, using a best fit function with parameters defined in the yaml. The best fit function is different for each mode:
+
+**Coarse mode:**
+
+.. math::
+
+   k_{ext}=a_{0} \, D^{a_{1}} e^{a_{2} D} + a_{3}
+
+The coefficients :math:`a_0, a_1, a_2, a_3` are defined in the yaml.
+
+
+**Accumulation mode:**
+
+.. math::
+
+   k_{ext} = e^{c_6 (\ln D)^6 + c_5 (\ln D)^5 + c_4 (\ln D)^4 + c_3 (\ln D)^3 + c_2 (\ln D)^2 + c_1 \ln D + c_0}
+
+The coefficients :math:`c_0, c_1, c_2, c_3, c_4, c_5, c_6` are defined in the yaml.
+
+The tangent linear and adjoint operators are implemented for this operator, and the Jacobian  (:math:`\mathbf{J}`) is calculated with respect to the mass fraction and number fraction of each species.
+
+.. math::
+
+   \mathbf{J}
+   =
+   \begin{pmatrix}
+      1
+      &
+      0
+      &
+      0
+      \\
+      0
+      &
+      1
+      &
+      0
+      \\
+      \frac{dp}{g} \,k_{ext} + \frac{dp}{g} \,m\,\frac{\partial k_{ext}(m,n)}{\partial m}
+      &
+      \frac{dp}{g} \,m\,\frac{\partial k_{ext}(m,n)}{\partial n}
+      &
+      0
+   \end{pmatrix}
+   
+Thus, the tangent linear statement for the AOD operator is :math:`\mathbf{\delta x} = \mathbf{J} \, \mathbf{\delta x}`, where :math:`\mathbf{\delta x}` is the perturbation vector:
+
+.. math::
+   \boldsymbol{\delta x} = 
+   \begin{pmatrix}
+      \delta m \\
+      \delta n \\
+      \delta AOD
+   \end{pmatrix}
+   
+The adjoint statement is :math:`\mathbf{\delta x^{*}} = \mathbf{J}^{T} \, \mathbf{\delta x^{*}}`.
 
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
