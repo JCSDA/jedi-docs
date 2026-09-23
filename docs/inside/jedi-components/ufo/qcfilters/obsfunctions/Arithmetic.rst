@@ -106,7 +106,7 @@ Example 2
      variables: [ObsValue/variable1,
                  ObsValue/variable2,
                  ObsValue/variable3]
-     coefficients: [0.1, 0.2, 0.3]
+     coefs: [0.1, 0.2, 0.3]
      exponents: [1, 2, 3]
      log bases: ["10", "", e]
      total coefficient: 4
