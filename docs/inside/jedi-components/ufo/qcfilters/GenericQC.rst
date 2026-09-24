@@ -1918,8 +1918,12 @@ YAML file. Each element of this list can contain the following options:
 - :code:`value`: Value to be assigned to the specified variable. If this parameter is set to the
   string :code:`missing`, the variable will be set to the relevant missing value at all locations that pass
   the :code:`where` clause. The missing value to use is deduced from the type of the variable.
+  For variables of type :code:`bool`, accepted string values are :code:`true` and :code:`false`
+  (case-insensitive), and numeric values are also accepted (:code:`0` maps to false, nonzero maps
+  to true).
   Note it is therefore not possible to assign the string :code:`missing` to a variable
   because it will be automatically converted to the missing string signifier.
+  For variables of type :code:`bool`, assigning :code:`missing` is not supported.
   Exactly one of the :code:`value`, :code:`source variable` and :code:`function` options must be present.
 
 - :code:`source variable`: Variable that should be copied into the destination variable (specified
@@ -1930,7 +1934,7 @@ YAML file. Each element of this list can contain the following options:
   Exactly one of the :code:`value`, :code:`source variable` and :code:`function` options must be
   present.
 
-- :code:`type`: Type (:code:`int`, :code:`float`, :code:`string` or :code:`datetime`) of the
+- :code:`type`: Type (:code:`int`, :code:`float`, :code:`string`, :code:`datetime` or :code:`bool`) of the
   variable to which new values should be assigned. This option only needs to be provided if the
   variable doesn't exist yet. If this option is provided and the variable already exists, its type
   must match the value of this option, otherwise an exception is thrown.
@@ -1946,7 +1950,19 @@ happen if the chosen :code:`epoch` makes the seconds offset too large for the de
 type.
 
 It is possible to assign variables or ObsFunctions of type :code:`int` to variables of type
-:code:`float` and vice versa. No other type conversions are supported.
+:code:`float` and vice versa.
+
+It is also possible to assign :code:`bool` variables from :code:`float` or :code:`int` values
+(nonzero maps to true; zero maps to false), including values produced by ObsFunctions.
+
+The following conversions/assignments are not supported:
+
+- converting :code:`datetime` values to :code:`bool`
+- assigning :code:`bool` values to :code:`DerivedObsValue` variables
+
+The :code:`DerivedObsValue` restriction exists because QC-flag updates use missing-value
+comparisons, and for :code:`bool` the missing marker is not distinguishable from a valid
+:code:`false` value.
 
 If the modified variable belongs to the :code:`DerivedObsValue` group and is a observed variable,
 QC flags previously set to :code:`missing` are reset to :code:`pass` at locations where a valid
