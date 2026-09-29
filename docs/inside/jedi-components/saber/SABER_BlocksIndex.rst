@@ -162,6 +162,7 @@ Generic blocks
    :titlesonly:
 
    ID: identity operator<blocks/ID>
+   Geographical Mask<blocks/GeographicalMask>
    StdDev: standard-deviation application<blocks/StdDev>
    ShadowLevels: shadow levels convolution<blocks/ShadowLevels>
    DuplicateVariables: outer block to duplicate one variable into others<blocks/DuplicateVariables>
