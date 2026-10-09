@@ -429,6 +429,115 @@ This filter behaves like the exact opposite of Domain Check: it rejects all obse
          name: MetaData/stationIdentification
        is_in: 1, 7, 100-199
 
+.. _sharedlistcheck-filter:
+
+SharedListCheck Filter
+----------------------
+
+This filter screens observations against shared lookup lists loaded from external YAML files. It supports aircraft reject lists, mesonet use lists, trusted provider lists, and similar use cases.
+Lists are cached in memory , so if multiple filters reference the same file, it's only read once.
+
+The filter flags observations based on whether the value of a specified variable (e.g., station ID, provider name, etc.) matches entries in the list. The user controls what happens to flagged observations via the standard :code:`action` block.
+
+Configuration options:
+
+* :code:`shared list file` *(required)*: Path to the shared list YAML file.
+* :code:`list to use` *(required)*: Name of the list (top-level key) within the YAML file to look up. This allows multiple variables to use the same list (e.g., a "wind" list used for both windEastward and windNorthward).
+* :code:`variable to check` *(optional)*: Observation variable to match against the list entries (e.g., :code:`MetaData/stationIdentification`). Used for simple (single-field) matching. Not needed when :code:`compound check` is used.
+* :code:`compound check` *(optional)*: List of compound match fields. Each entry has:
+
+  - :code:`obs variable`: Observation variable to read.
+  - :code:`sublist to use`: Dictionary key in the list entries whose values to match against.
+
+  If any key's value list contains ``"all"``, it matches any observation value for that field.
+
+* :code:`flag mode` *(required)*: Either :code:`flag matched` (flag observations that ARE in the list) or :code:`flag unmatched` (flag observations that are NOT in the list).
+
+Shared list file format
+^^^^^^^^^^^^^^^^^^^^^^^
+
+List files use a per-variable format. Top-level keys are variable names, values are lists of entries (both flow-style and block-style YAML lists are supported).
+
+**Simple lists** (single key matching):
+
+.. code-block:: yaml
+
+    # aircraft_rejectlist.yaml
+    airTemperature:
+      - "00000320"
+      - "N215AK"
+    windEastward: ["N301UP", "00000400"]
+
+**Compound lists** (multiple fields, values are arrays):
+
+.. code-block:: yaml
+
+    # mesonet_providers.yaml
+    trusted:
+      - provider: ["FL-Meso"]
+        subprovider: ["FAWN"]
+      - provider: ["OK-Meso"]
+        subprovider: ["all"]    # matches any subprovider
+
+Example 1: Reject list
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Reject observations whose station IDs are in the reject list:
+
+.. code-block:: yaml
+
+    - filter: SharedListCheck
+      shared list file: aircraft_rejectlist.yaml
+      list to use: airTemperature
+      variable to check: MetaData/stationIdentification
+      flag mode: flag matched
+      action:
+        name: reject
+      filter variables:
+      - name: airTemperature
+
+Example 2: Use list
+^^^^^^^^^^^^^^^^^^^^
+
+Reject observations whose station IDs are NOT in the use list:
+
+.. code-block:: yaml
+
+    - filter: SharedListCheck
+      shared list file: mesonet_uselist.yaml
+      list to use: airTemperature
+      variable to check: MetaData/stationIdentification
+      flag mode: flag unmatched
+      action:
+        name: reject
+      filter variables:
+      - name: airTemperature
+
+Example 3: Trusted providers (accept back)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Accept back previously rejected observations from trusted providers:
+
+.. code-block:: yaml
+
+    - filter: SharedListCheck
+      shared list file: mesonet_providers.yaml
+      list to use: trusted
+      compound check:
+      - obs variable: MetaData/dataProvider
+        sublist to use: provider
+      - obs variable: MetaData/dataSubprovider
+        sublist to use: subprovider
+      flag mode: flag matched
+      action:
+        name: accept
+      filter variables:
+      - name: airTemperature
+
+.. note::
+
+    The same list file can be referenced by multiple filters across different observation spaces. The file is read once and cached for the duration of the program.
+
 .. _rejectlist-filter:
 
 RejectList Filter
