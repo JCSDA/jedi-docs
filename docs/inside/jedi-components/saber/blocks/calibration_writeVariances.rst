@@ -14,7 +14,7 @@ This block has two modes of use:
 In all cases we are assuming:
 
 - the mean of each field has been removed before entering this saber block. This affects the operations being performed.
-- the fields are either on a cubed-sphere dual mesh or on a classic Gaussian latitude mesh. The main restriction here is the need for a measure of the horizontal area for each grid point. In principle, we should be able to extend the usefulness of this block when we are able to get the horizontal area associated with each grid point from the model's geometry.
+- the fields are either on a cubed-sphere dual mesh, a classic Gaussian latitude mesh, or an octahedral Gaussian mesh. The main restriction here is the need for a measure of the horizontal area for each grid point. In principle, we should be able to extend the usefulness of this block when we are able to get the horizontal area associated with each grid point from the model's geometry.
 - in calibration mode we are assuming (for now) that the perturbations that are being used come from the randomization method. A consequence of this is that with this method there are N degrees of freedom with N perturbations, unlike the standard calculation where there are N-1 degrees of freedom for N perturbations (where one of the degrees of freedom has been used in calculating the ensemble mean as part of the process of creating the perturbations.)
 
 
