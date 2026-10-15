@@ -4347,8 +4347,12 @@ Optional:
 
 - :code:`data order`: Either :code:`ascending` or :code:`descending`, corresponding to which direction you
   want to traverse the entries in the record. The default choice is :code:`ascending`.
+- :code:`threshold from all locations in record`: Only relevant when using the :ref:`Where Statement <where-statement>`.
+  If :code:`true`, then all locations (not just those selected by :code:`where`) are still considered when determining
+  when a threshold has been hit (but flags are still set only if the location(s) are in the :code:`where` statement). See the examples below for more details.
 
-Example:
+Example 1: Reject all remaining observations in a record once a value of zero is reached
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: yaml
 
@@ -4376,3 +4380,68 @@ Example:
 In this case, the obsspace is grouped into records according to :code:`MetaData/sequenceNumber`. For each record,
 the values of :code:`HofX/variable` are inspected in ascending order (default behaviour), and once a value is
 less than 0, the remainder of the record is rejected.
+
+Example 2: :code:`where` statement is ignored only for purposes of starting the thresholding
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+    - filter: Record Threshold Rejection
+      threshold value: 3
+      threshold variable: MetaData/ThresholdValue
+      rejection type: greater than or equal to
+      threshold from all locations in record: true
+      where:
+      - variable:
+          name: MetaData/ScreeningValue
+        is_not_in: 1
+
+With this yaml snippet in mind, consider the case where :code:`MetaData/ThresholdValue` has values
+:code:`[0,1,3,0,1,2]` and :code:`MetaData/ScreeningValue` has values :code:`[0,0,1,0,0,0]` (for a
+given record). Since :code:`threshold from all locations in record` is :code:`true`, the locations
+to be rejected are :code:`[false,false,false,true,true,true]` (the :code:`where` clause excludes the third entry of :code:`3` which is why it's set to false). If instead :code:`threshold from all
+locations in record` was :code:`false`, no locations would be rejected,
+:code:`[false,false,false,false,false,false]`, since the only location which hit the threshold value of ``3``
+was ignored by the :code:`where` statement. Finally, if there was no :code:`where` statement at all, the
+locations to be rejected would be :code:`[false,false,true,true,true,true]` (and the parameter
+:code:`threshold from all locations in record` would be ignored as it is irrelevant in this case).
+
+Example 3: Unique thresholds for each record
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  # first set up record-specific thresholds for the data, starting with a default value of 98
+  - filter: Variable Assignment
+    assignments:
+    - name: DerivedMetaData/threshold
+      type: float
+      value: 98
+  - filter: Variable Assignment
+    where:
+    - variable: MetaData/sequenceNumber
+      is_in: 2, 7, 8
+    assignments:
+    - name: DerivedMetaData/threshold
+      type: float
+      value: 109
+  - filter: Variable Assignment
+    where:
+    - variable: MetaData/sequenceNumber
+      is_in: 4,9
+    assignments:
+    - name: DerivedMetaData/threshold
+      type: float
+      value: 0
+
+  # now apply the record threshold rejection filter, using the record-specific thresholds
+  - filter: Record Threshold Rejection
+    filter variables: [variable]
+    threshold value: DerivedMetaData/threshold
+    threshold variable: HofX/variable 
+    rejection type: greater than
+    data order: ascending
+
+This final example demonstrates using a variable for :code:`threshold value`. Again, assume the obs space has
+been grouped by :code:`MetaData/sequenceNumber`. Then, the variable :code:`DerivedMetaData/threshold`
+is set as a specific value for each record, meaning each record has its own threshold value.
