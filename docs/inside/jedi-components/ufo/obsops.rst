@@ -739,6 +739,9 @@ The CRTM operator has some required geovals (see varin_default in ufo/crtm/ufo_r
 * :code:`linear obs operator` [optional] : used to indicate a different configuration for K-Matrix multiplication of tangent linear and adjoint operators from the configuration used for the Forward operator.  The same atmospheric profile is used in the CRTM Forward and K_Matrix calculations. Only the linear GeoVaLs interface to the model will be altered by this sub-configuration. Omit :code:`linear obs operator` in order to use the same settings across Forward, Tangent Linear, and Adjoint operators.
 * :code:`linear obs operator.Absorbers` [optional] : only the selected Absorbers will be acted upon in K-Matrix multiplication.  Must be a sub-set of :code:`obs operator.Absorbers`.
 * :code:`linear obs operator.Clouds` [optional] : only the selected Clouds will be acted upon in K-Matrix multiplication.  Must be a sub-set of :code:`obs operator.Clouds`.
+* :code:`linear obs operator.ZeroJacParameters` [optional] : list of parameters for which the Jacobian will be set to zero in the K-Matrix multiplication. This option is only available when :code:`linear obs operator` is specified.
+* :code:`ZeroJacParameters.variable` [Required] : name of the increment variable for which the Jacobian will be set to zero in the K-Matrix multiplication. 
+* :code:`ZeroJacParameters.channels` [Required] : list of channels of the variable for which the Jacobian will be set to zero in the K-Matrix multiplication. Must be a valid channel number for the variable. A string of comma-separated integers and/or ranges of integers, e.g., "1-5,7,9-12"
 
 :code:`obs options` configures the tabulated coefficient files that are used by CRTM
 
@@ -765,6 +768,9 @@ Examples of valid yaml:
     linear obs operator:
       Absorbers: [H2O]
       Clouds: [Water, Ice]
+      zeroJacParams:
+        - variable: mole_fraction_of_ozone_in_air
+          channels: "1-5"
   obs options:
       Sensor_ID: amsua_n19
       EndianType: little_endian
