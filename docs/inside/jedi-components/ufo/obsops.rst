@@ -2312,9 +2312,9 @@ This forward operator contains three schemes (WRFDA, UKMO, GSL) to correct the c
 
 To note:
 
-* Currently the 2m temperature using the WRFDA and UKMO method and station pressure for all schemes of forward operators are the ones implemented. Surface correction for Humidity is not implemented.
-* The `Non-linear` operators can be used in simulation of OBS only.
-* The `Linear` operators have not been implemented. Until TL/AD is available, must specify Identity Obs Operator in assimilation.
+* Currently the 2m temperature using the WRFDA, UKMO, and GSL methods and station pressure for all schemes of forward operators are the ones implemented. Surface correction for Humidity is not implemented.
+* The GSL scheme for 2m temperature has a full TL/AD implementation (settraj, TL, AD) and can be used directly in assimilation (see :ref:`GSL linearization <obsops_sfc_corrected_gsl_tlad>` below).
+* The WRFDA and UKMO schemes for 2m temperature and all pressure schemes do not yet have TL/AD implemented. Until TL/AD is available for those schemes, the Identity Obs Operator must be specified in assimilation.
 
 The unified SfcCorrected operator is an initial framework to apply a consistent model terrain height discrepancy correction for many of surface observation types.
 
@@ -2378,7 +2378,7 @@ The surface corrector operator, based on the correction scheme selected, perform
 
 Schemes:
 
-:code:`GSI`: If there is observed temperature along with pressure, take the average of the model simulated and observed near surface temperature, otherwise use just the model simulated temperature (and extrapolate to the surface using 6.5K/km
+:code:`GSL`: If there is observed temperature along with pressure, take the average of the model simulated and observed near surface temperature, otherwise use just the model simulated temperature (and extrapolate to the surface using 6.5K/km
 lapse rate if the ob height is below the model lowest layer).  Then the pressure output from this option is the model (background) surface pressure corrected from model surface to observation height as such:
 
 .. math::
@@ -2451,6 +2451,112 @@ When both observed temperature `T_{ob}` and observed humidity `Q_{ob}` have non-
 
 
 where `t2tv=0.608` is the constant factor used in conversion defined in ufo/utils/Constants.h.
+
+:code:`GSL` (2m air temperature): The model diagnostic 2m temperature (:code:`air_temperature_at_2m`) is used as the
+starting point and then adjusted to the observation station height using a lapse rate:
+
+.. math::
+  H(x) = T_{2m,model} + \Gamma \cdot (H_{model} - H_{ob})
+
+where :math:`T_{2m,model}` is the model 2m temperature geoval, :math:`H_{model}` is the model surface height,
+:math:`H_{ob}` is the observed station height, and :math:`\Gamma` is the lapse rate (K/m).
+The lapse rate is determined by the :code:`temperature lapse rate option` sub-parameter (see configuration options below).
+For the :code:`Local` option it is computed from the model :code:`air_temperature` profile as
+
+.. math::
+  \Gamma = \frac{T_{1} - T_{k}}{z_{k} - z_{1}}
+
+where level 1 is the lowest model level and level :math:`k` is the level selected by
+:code:`temperature local lapse rate level`, optionally clamped to [:code:`min threshold`, :code:`max threshold`].
+
+The GSL scheme requires the GeoVaLs :code:`air_temperature_at_2m`, :code:`air_temperature`, and the
+model level and surface heights named by :code:`geovar_geomz` and :code:`geovar_sfc_geomz`.
+
+GSL-specific configuration options (:code:`gsl parameters`):
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When :code:`correction scheme to use: GSL` is set for :code:`airTemperatureAt2M`, a :code:`gsl parameters` block is
+required.  The following options are available within that block:
+
+* :code:`temperature lapse rate option` [optional, default: :code:`Local`]: Method used to determine the lapse rate :math:`\Gamma`. Options:
+
+  * :code:`Constant`: Use a fixed lapse rate specified by :code:`temperature lapse rate` (K/km).
+  * :code:`Local`: Compute the lapse rate locally from the model temperature profile between the lowest model level and a configurable upper level (see :code:`temperature local lapse rate level`). Optionally clamped to a min/max range.
+  * :code:`NoAdjustment`: No height correction is applied (:math:`\Gamma = 0`); the model 2m temperature is returned directly.
+
+* :code:`temperature lapse rate` [optional, default: :code:`9.8` K/km]: Fixed lapse rate value used when :code:`temperature lapse rate option: Constant`.
+
+* :code:`temperature local lapse rate level` [optional, default: :code:`5`]: Highest model level, counted upward from the lowest model level (level 1), used as the upper bound of the local lapse rate calculation; the default of 5 spans levels 1 to 5. Must be less than the number of model levels minus one. Used when :code:`temperature lapse rate option: Local`.
+
+* :code:`temperature lapse rate threshold` [optional, default: :code:`true`]: If :code:`true`, clamp the locally computed lapse rate to the range [:code:`min threshold`, :code:`max threshold`]. Used when :code:`temperature lapse rate option: Local`.
+
+* :code:`min threshold` [optional, default: :code:`0.5` K/km]: Minimum allowed lapse rate when thresholding is active.
+
+* :code:`max threshold` [optional, default: :code:`10.0` K/km]: Maximum allowed lapse rate when thresholding is active.
+
+* :code:`tlad lapse rate option` [optional, default: :code:`MatchSimobs`]: Controls linearization of the lapse rate in the TL/AD operators. Options:
+
+  * :code:`MatchSimobs`: Consistently differentiate the lapse rate through the model temperature levels used to compute it (default).
+  * :code:`NoAdjustment`: Treat the trajectory-time lapse rate as constant in TL/AD, dropping the contribution from model temperature levels. Use this for NOAA-operations compatibility.
+
+  This option only matters for :code:`temperature lapse rate option: Local`; the :code:`Constant` and :code:`NoAdjustment` lapse rates do not depend on the model state.
+
+* :code:`tlad spread to lowest level` [optional, default: :code:`false`]: Opt-in deviation from the exact linearization. When the lapse rate has zero derivative with respect to the model state (:code:`temperature lapse rate option: Constant` or :code:`NoAdjustment`, or :code:`Local` with :code:`tlad lapse rate option: NoAdjustment`), also add the lowest model level :code:`air_temperature` increment to the :code:`air_temperature_at_2m` increment in TL/AD. Use this when the model's TL/AD does not carry an independent increment for :code:`air_temperature_at_2m` (e.g. MPAS-JEDI), so that the observation can still update the 3D temperature field. Ignored for :code:`Local` with :code:`MatchSimobs`.
+
+.. _obsops_sfc_corrected_gsl_tlad:
+
+GSL linearization (TL/AD):
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The TL/AD operators linearize :math:`H(x) = T_{2m,model} + \Gamma \cdot (H_{model} - H_{ob})` with the heights held fixed.
+By default the linearization is exact:
+
+* :code:`Local` lapse rate with :code:`tlad lapse rate option: MatchSimobs`:
+
+  .. math::
+    \delta H = \delta T_{2m} + \frac{\delta T_{1} - \delta T_{k}}{z_{k} - z_{1}} \cdot (H_{model} - H_{ob})
+
+  At locations where the threshold clamp was active in the trajectory, the lapse rate does not respond to the state and the second term is dropped.
+
+* All other cases (:code:`Constant`, :code:`NoAdjustment`, or :code:`Local` with :code:`tlad lapse rate option: NoAdjustment`):
+
+  .. math::
+    \delta H = \delta T_{2m}
+
+  With :code:`tlad spread to lowest level: true` this becomes
+
+  .. math::
+    \delta H = \delta T_{2m} + \delta T_{1}
+
+The AD operators are the exact adjoints of these TL operators.
+
+Example of GSL 2m temperature correction yaml:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  observations:
+  - obs operator:
+      name: SfcCorrected
+      correction scheme to use: GSL
+      geovar_sfc_geomz: geopotential_height_at_surface
+      geovar_geomz: geopotential_height
+      gsl parameters:
+        temperature lapse rate option: Local
+        temperature local lapse rate level: 5
+        temperature lapse rate threshold: true
+        min threshold: 0.5
+        max threshold: 10.0
+        tlad lapse rate option: MatchSimobs
+    obs space:
+      name: Surface operator 2M temperature GSL method
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/surface_tquv_obs_2022052700.nc4
+      simulated variables: [airTemperatureAt2M]
+    geovals:
+      filename: Data/ufo/testinput_tier_1/surface_tquv_geovals_2022052700.nc4
 
 Background Error Vertical Interpolation
 ---------------------------------------
