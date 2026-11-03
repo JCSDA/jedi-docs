@@ -99,7 +99,7 @@ For multivariate assimilation (e.g., variable-dependent localization), multiple 
 can be wrapped into a single 'meta'-central block. This 'meta'-central block (similar to the
 :code:`SaberCentralBlockBase` base class) contains default implementations for some methods mentioned
 above, which can be optionally overridden by a specific **Central** block own implementations. Please
-note that the ``crossed`` multivariate strategy (see :ref:<documentation arriving soon>) CANNOT use
+note that the ``crossed`` multivariate strategy (see :ref:`saber_multivariate_loc`) CANNOT use
 overridding :code:`multiply()` and :code:`randomize()`, and needs to use the default implementation
 (via the ``Sqrt`` methods) of the 'meta'-central block instead. 
 

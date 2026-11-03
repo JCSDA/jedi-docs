@@ -10,6 +10,8 @@ Four SABER blocks are based on BUMP:
 * **BUMP_VerticalBalance**: vertical balance operator.
 * **BUMP_PsiChiToUV**: variable change from streamfunction and velocity potential to horizontal wind components, using smooth estimates of the derivatives.
 
+.. _BUMP-NICAS:
+
 BUMP_NICAS SABER block
 **********************
 

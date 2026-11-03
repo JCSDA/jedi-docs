@@ -223,7 +223,8 @@ with two sub-groups is shown below:
 
    Typically the `duplicated` multivariate strategy is used for ensemble localization
    and a `univariate` strategy is used for the correlation operator in a
-   static/parametric background error model. See <MULTIVARIATE STRATEY docs COMING SOON>
+   static/parametric background error model. See :ref:`saber_multivariate_loc` for more
+   information.
 
 Implicit Vertical Diffusion (optional)
 --------------------------------------

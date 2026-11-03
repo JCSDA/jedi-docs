@@ -17,6 +17,7 @@ which a jedi-model interface exists).
    SABER_intro.rst
    SABER_BlocksIndex.rst
    SABER_BlockChainGuide.rst
+   SABER_UserGuide.rst
    SABER_Applications.rst
    SABER_calibration.rst
    SABER_tests.rst
