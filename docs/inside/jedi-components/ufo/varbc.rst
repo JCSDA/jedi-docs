@@ -471,11 +471,50 @@ observations taken by station XYZ in the Northern hemisphere.
 `lapseRate`
 +++++++++++
 
-nth power of the lapse rate.
+nth power of the transmittance-weighted lapse rate of each channel, minus that channel's mean
+lapse rate.
 
 The following options are supported:
 
-* :code:`order` (Optional) Power to which to raise the lapse rate. By default, 1.
+* :code:`order` (Optional) Power to which to raise the lapse rate. By default, 1. If this option is set,
+  :code:`_order_<n>` is appended to the predictor name (even when :code:`n` is 1).
+* :code:`tlapse` (Optional) Path to a text file of per-channel mean lapse rates. Each line holds
+  :code:`<sensor> <channel> <mean>`; only the channel and mean are used. Every simulated channel must be
+  present in the file.
+* :code:`calculated mean` (Optional) If :code:`true`, the per-channel mean lapse rates are calculated from
+  the observations on the first evaluation for the ObsSpace and then held fixed. By default, :code:`false`.
+* :code:`save means` (Optional) Path of a file to which the per-channel means are written (by MPI
+  rank 0), in the same format as the :code:`tlapse` file, so it can be read back with :code:`tlapse`
+  in later runs. An existing file is overwritten.
+
+Each :code:`lapseRate` entry must specify exactly one of :code:`tlapse` or :code:`calculated mean: true`.
+The means are shared by all :code:`lapseRate` predictors of an ObsSpace, so every entry must use the same
+source (the same :code:`tlapse` file, or :code:`calculated mean: true`). :code:`save means` needs to be set
+on only for the first entry; if more than one entry sets it, all must use the same path.
+
+Examples
+........
+
+Reading the means from a file, with the predictors listed in descending order:
+
+.. code-block:: yaml
+
+  - name: lapseRate
+    order: 2
+    tlapse: atms_n20_tlapse.txt
+  - name: lapseRate
+    tlapse: atms_n20_tlapse.txt
+
+Calculating the means and saving them to a file, which can then be read with :code:`tlapse` as above:
+
+.. code-block:: yaml
+
+  - name: lapseRate
+    order: 2
+    calculated mean: true
+    save means: atms_n20_tlapse_calculated_means.txt
+  - name: lapseRate
+    calculated mean: true
 
 `legendre`
 ++++++++++
