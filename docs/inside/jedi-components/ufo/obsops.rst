@@ -2187,8 +2187,11 @@ Examples of yaml:
 
 In the example above, this `InsituPM` operator calculates modeled (CMAQ) PM2.5 at selected U.S. AirNow monitoring stations. This calculation is based on 70 CMAQ aerosol species (defined in "tracer_geovals") in three modes (defined in "tracer_modes_cmaq"), with mode-specific scaling factors applied (use_scalefac_cmaq: true). Vertical interpolation is conducted to match the model height (asl) with the monitoring station elevation (vertical_coordinate: height_asl).
 
-Radar Radial Velocity
---------------------------
+Radar Radial Velocity (deprecated)
+-----------------------------------
+
+Note:
+Radar Doppler wind operator :ref:`Radar Doppler wind <obsops_radar_doppler_wind>` can be used instead.
 
 Description:
 ^^^^^^^^^^^^
@@ -2212,6 +2215,8 @@ Examples of yaml:
             obsfile: Data/radar_rw_obs_2019052222.nc4
         simulated variables: [radialVelocity]
 
+.. _obsops_radar_doppler_wind:
+
 Radar Doppler wind
 ------------------
 
@@ -2233,15 +2238,22 @@ and azimuth [deg] is the angle of the radar beam measured clockwise relative to 
 
 It is mandatory to specify the names of the model vertical coordinates associated with both
 horizontal (u, v) and vertical (w) wind speeds. That will ensure the correct vertical
-interpolation is performed.
+interpolation is performed. Optionally, terminal velocity can be subtracted
+from the vertical wind before it is projected onto the radar beam.
 
-This operator shares functionality with the :code:`RadarRadialVelocity` operator, but is implemented entirely in C++.
+.. math::
+
+   v_r = \sin\phi \cos\theta \, u + \cos\phi \cos\theta \, v + \sin\theta \, (w - v_t)
+
+where :math:`v_r` is the radial velocity, :math:`\phi` is the azimuth, :math:`\theta` is the tilt,
+:math:`u`, :math:`v`, :math:`w` are the model wind components, and :math:`v_t` is the terminal velocity.
 
 Configuration options
 ^^^^^^^^^^^^^^^^^^^^^
 
 :code:`vertical coordinate for horizontal wind`: (required, string) model vertical coordinate associated with horizontal winds.
 :code:`vertical coordinate for vertical wind`: (required, string) model vertical coordinate associated with vertical wind.
+:code:`terminal velocity`: (optional, double) Precipitation terminal fall velocity [m/s], Default: 0.0.
 
 Example
 ^^^^^^^
@@ -2252,6 +2264,7 @@ Example
    name: RadarDopplerWind
    vertical coordinate for horizontal wind: height_levels
    vertical coordinate for vertical wind: height
+   terminal velocity: 5.0
 
 Radar Reflectivity
 ------------------
