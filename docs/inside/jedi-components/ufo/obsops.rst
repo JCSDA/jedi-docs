@@ -764,37 +764,75 @@ Interface to the Community Radiative Transfer Model (CRTM) as an observational o
 Configuration options:
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The CRTM operator has some required geovals (see varin_default in ufo/crtm/ufo_radiancecrtm_mod.F90). The configurable geovals are as follows:
+The CRTM operator has some required geovals (see varin_default in ufo/operators/crtm/ufo_radiancecrtm_mod.F90). The configurable geovals are as follows:
 
-* :code:`Absorbers` : CRTM atmospheric absorber species that will be requested as geovals.  H2O and O3 are always required. So far H2O, O3, CO2 are implemented. More species can be added readily by extending UFO_Absorbers and CRTM_Absorber_Units in ufo/crtm/ufo_crtm_utils_mod.F90.
+* :code:`Absorbers` : CRTM atmospheric absorber species that will be requested as geovals.  H2O and O3 are always required. So far H2O, O3, CO2 are implemented. More species can be added readily by extending UFO_Absorbers and CRTM_Absorber_Units in ufo/operators/crtm/ufo_crtm_utils_mod.F90.
 * :code:`CO2AbsorberMethod` [optional]: The method used to populate the CO\ :sub:`2`  profile for CRTM. Methods include 'Background' (default), 'EternalConstant', and 'MaunaLoa' (empirical global constant derived from time at the middle of the analysis cycle).
 * :code:`CO2ppmvValue` [optional]: When the 'EternalConstant' method is chosen for CO2AbsorberMethod, this specifies in ppmv the global constant.
 * :code:`Clouds` [optional] : CRTM cloud constituents that will be requested as geovals; can include any of Water, Ice, Rain, Snow, Graupel, Hail. Clouds water contents and effective radius can be re-set as zero in the atmospheric profiles for CRTM by assigning a value 1 to :code:`MetaData/zeroCloudInCRTM` in certain conditions in :code:`obs prior filters`. An example to zero-out cloud constituents above surface where :code:`GeoVaLs/water_area_fraction` is less than 0.99 is provided.
 * :code:`Cloud_Fraction` [optional] : sets the CRTM Cloud_Fraction to a constant value across all profiles (e.g., 1.0). Omit this option in order to request :code:`cloud_area_fraction_in_atmosphere_layer` as a geoval from the model. This parameter is also used for :code:`linear obs operator`.
 * :code:`method for cloud fraction within fov` [optional] : method to calculate cloud fraction using interpolated meteorological variables. Only the "Thompson" method is included in the UFO at present. When a method is provided, the input of :code:`Cloud_Fraction` becomes obsolete and can be omitted.
 * :code:`method for hydrometeor effective radii within fov` [optional] : method to calculate cloud particle radii using interpolated meteorologival variables. Only the "Thompson" method is included in the UFO at present.
+* :code:`convection_mass_flux_flag` [optional, default true] : used with :code:`method for cloud fraction within fov: thompson`; set to true if the model uses a scale-aware mass-flux deep convection scheme.
+* :code:`Cloud_Seeding` [optional, default false] : for passive sensors with :code:`Clouds`, raise the water content and effective radius of each cloud species to small minimum values (liquid species where the temperature is above -20 °C, frozen species where it is below 0 °C), and the cloud fraction to at least 0.001. This gives non-zero cloud Jacobians in layers where the background is clear. Profiles whose clouds are zeroed with :code:`MetaData/zeroCloudInCRTM` are not seeded.
 
 * :code:`SurfaceWindGeoVars` [str, optional, options: :code:`vector` - default, :code:`uv`] : specify which two surface wind GeoVaLs are requested from the model.  :code:`vector` indicates that surface wind direction and magnitude are requested.  :code:`uv` indicates that surface eastward and northward wind components are requested.
 
 * :code:`linear obs operator` [optional] : used to indicate a different configuration for K-Matrix multiplication of tangent linear and adjoint operators from the configuration used for the Forward operator.  The same atmospheric profile is used in the CRTM Forward and K_Matrix calculations. Only the linear GeoVaLs interface to the model will be altered by this sub-configuration. Omit :code:`linear obs operator` in order to use the same settings across Forward, Tangent Linear, and Adjoint operators.
 * :code:`linear obs operator.Absorbers` [optional] : only the selected Absorbers will be acted upon in K-Matrix multiplication.  Must be a sub-set of :code:`obs operator.Absorbers`.
 * :code:`linear obs operator.Clouds` [optional] : only the selected Clouds will be acted upon in K-Matrix multiplication.  Must be a sub-set of :code:`obs operator.Clouds`.
-* :code:`linear obs operator.ZeroJacParameters` [optional] : list of parameters for which the Jacobian will be set to zero in the K-Matrix multiplication. This option is only available when :code:`linear obs operator` is specified.
-* :code:`ZeroJacParameters.variable` [Required] : name of the increment variable for which the Jacobian will be set to zero in the K-Matrix multiplication. 
-* :code:`ZeroJacParameters.channels` [Required] : list of channels of the variable for which the Jacobian will be set to zero in the K-Matrix multiplication. Must be a valid channel number for the variable. A string of comma-separated integers and/or ranges of integers, e.g., "1-5,7,9-12"
+* :code:`linear obs operator.Surfaces` [optional] : CRTM surface variables whose Jacobians are used in the K-Matrix multiplication; can include any of Water_Temperature, Land_Temperature, Ice_Temperature, Snow_Temperature, Wind_Speed, Wind_Direction. By default no surface Jacobians are used.
+* :code:`linear obs operator.nullify jacobian params` [optional] : list of variables and channels for which the Jacobian will be set to zero in the K-Matrix multiplication. This option is only available when :code:`linear obs operator` is specified.
+* :code:`nullify jacobian params.variable` [Required] : name of the increment variable for which the Jacobian will be set to zero in the K-Matrix multiplication.
+* :code:`nullify jacobian params.channels` [Required] : list of channels of the variable for which the Jacobian will be set to zero in the K-Matrix multiplication. Must be a valid channel number for the variable. A string of comma-separated integers and/or ranges of integers, e.g., "1-5,7,9-12"
+* :code:`do fov average` [optional, default false] : average the surface GeoVaLs (surface type fractions, skin temperatures, vegetation, soil, land type and snow depth) over the sensor's field of view instead of taking them at the observation location. The field of view is an ellipse computed with GSI's :code:`calc_fov` code from :code:`Sensor_ID`, :code:`MetaData/sensorScanPosition` and :code:`MetaData/sensorAzimuthAngle`, and samples are weighted by the antenna power. Within 2 degrees of the poles, a single sample at the observation location is used.
+* :code:`fov sample points per semimajor axis` [optional, default 4] : resolution of the lat-lon grid of samples within the field-of-view ellipse.
+* :code:`reduced geovals output` [optional] : write the GeoVaLs passed to CRTM (after any field-of-view averaging) to a file, e.g. :code:`reduced geovals output: {filename: geovals_out.nc4}`.
+* :code:`UseQCFlagsToSkipHofX` [optional, default false] : skip the CRTM calculation for locations where all channels have already been rejected by QC. If used, **must** set :code:`UseQCFlagsToSkipHofX` at the :code:`obs operator` level; it applies to the forward, TL and AD calculations.
 
 :code:`obs options` configures the tabulated coefficient files that are used by CRTM
 
 * :code:`obs options.Sensor_ID` : {sensor}_{platform} prefix of the sensor-specific coefficient files, e.g., amsua_n19
 * :code:`obs options.EndianType` : Endianness of the coefficient files. Either little_endian or big_endian.
 * :code:`obs options.CoefficientPath` : location of all coefficient files
+* :code:`obs options.NC_CoefficientPath` [optional] : location of the netCDF coefficient files. Defaults to :code:`CoefficientPath`.
+* :code:`obs options.ShareCoefficients` [optional] : options: [true (D), false]. See `Shared coefficient loads`_ below.
 
-* :code:`obs options.IRwaterCoeff` [optional] : options: [Nalli (D), WuSmith]
+* :code:`obs options.SpcCoeff_Format`, :code:`obs options.TauCoeff_Format` [optional] : options: [Binary (D), netCDF]. With netCDF, the files {Sensor_ID}.SpcCoeff.nc and {Sensor_ID}.TauCoeff.nc are read from :code:`NC_CoefficientPath`.
+* :code:`obs options.Cloud_Model` [optional] : CRTM cloud optics model. Default: CRTM
+* :code:`obs options.CloudCoeff_File` [optional] : Default: CloudCoeff.bin
+* :code:`obs options.CloudCoeff_Format` [optional] : options: [Binary (D), netCDF]
+* :code:`obs options.Aerosol_Model` [optional] : CRTM aerosol optics model. Default: CRTM
+* :code:`obs options.AerosolCoeff_File` [optional] : Default: AerosolCoeff.bin
+* :code:`obs options.AerosolCoeff_Format` [optional] : options: [Binary (D), netCDF]
+
+* :code:`obs options.IRwaterCoeff` [optional] : options: [Nalli (D), Nalli2, WuSmith]
 * :code:`obs options.VISwaterCoeff` [optional] : options: [NPOESS (D)]
 * :code:`obs options.IRVISlandCoeff` [optional] : options: [NPOESS (D), USGS, IGBP]
 * :code:`obs options.IRVISsnowCoeff` [optional] : options: [NPOESS (D)]
 * :code:`obs options.IRVISiceCoeff` [optional] : options: [NPOESS (D)]
 * :code:`obs options.MWwaterCoeff` [optional] : options: [FASTEM6 (D), FASTEM5, FASTEM4]
+
+* :code:`obs options.InspectProfileNumber` [optional] : print the CRTM atmosphere, surface and geometry input for this profile, for debugging.
+* :code:`obs options.ReconstructedRadianceCorrection` [optional, default false] : apply the reconstructed radiance correction (e.g. for IASI principal component observations), using the C matrix read from :code:`obs options.CMatrixPath`.
+
+Shared coefficient loads
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, CRTM operators with the same coefficient settings share one CRTM coefficient load in each MPI task. The coefficients are read once, for all the sensors of those operators, and stay in memory until the last of these operators is deleted. Without sharing, each operator reads its coefficients again for every H(x) and trajectory calculation and frees them afterwards.
+
+Sharing saves time but uses more memory, since the coefficients of all sensors stay in memory for the whole run, including the minimization. For example, in a 3D-Var with 15 microwave and infrared sensors (including two IASI), sharing halved the run time and raised the peak memory per task from about 395 MB to 670 MB. Set :code:`ShareCoefficients: false` in the :code:`obs options` of an operator to load its coefficients for each calculation instead.
+
+Operators share a load only if all their coefficient options above match: the paths, the formats, and the Cloud, Aerosol, IR/VIS and MW options. Operators whose options differ get separate loads.
+
+CRTM can hold only one load at a time. If operators with separate loads take turns, each turn reads a whole load again, which can be slower than not sharing at all. A warning is printed once per run when this can happen. To avoid it, set :code:`ShareCoefficients: false` for the operators whose options differ from the rest.
+
+A shared load can hold at most 100 sensors, which is CRTM's limit.
+
+Geometry for GMI
+^^^^^^^^^^^^^^^^
+
+For :code:`gmi_gpm`, channels 1-9 **must** be listed before channels 10-13 in :code:`channels`, otherwise the operator aborts. Channels 10-13 use the angles in :code:`MetaData/sensorZenithAngle1`, :code:`solarZenithAngle1`, :code:`sensorAzimuthAngle1`, :code:`solarAzimuthAngle1` and :code:`sensorViewAngle1`. Any of these missing from the observation file is replaced by the channel 1-9 angle, with a warning printed once per run.
 
 Examples of valid yaml:
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -808,10 +846,10 @@ Examples of valid yaml:
     linear obs operator:
       Absorbers: [H2O]
       Clouds: [Water, Ice]
-      zeroJacParams:
+      nullify jacobian params:
         - variable: mole_fraction_of_ozone_in_air
           channels: "1-5"
-  obs options:
+    obs options:
       Sensor_ID: amsua_n19
       EndianType: little_endian
       CoefficientPath: Data/
@@ -828,7 +866,7 @@ Examples of valid yaml:
       Clouds: [Water, Ice]
     method for cloud fraction within fov: thompson
     method for hydrometeor effective radii within fov: thompson
-  obs options:
+    obs options:
       Sensor_ID: amsua_n19
       EndianType: little_endian
       CoefficientPath: Data/
@@ -859,6 +897,18 @@ Examples of valid yaml:
       Sensor_ID: abi_g16
       EndianType: little_endian
       CoefficientPath: Data/
+
+.. code-block:: yaml
+
+  ## Load this operator's coefficients for each calculation instead of sharing them.
+  obs operator:
+    name: CRTM
+    Absorbers: [H2O, O3]
+    obs options:
+      Sensor_ID: iasi_metop-b
+      EndianType: little_endian
+      CoefficientPath: Data/
+      ShareCoefficients: false
 
 .. code-block:: yaml
 
@@ -1097,6 +1147,7 @@ Configuration options:
   * :code:`CoefficientPath` : location of all coefficient files
   * :code:`AerosolOption`: aerosols_gocart_default, aerosols_gocart_1, aerosols_gocart_2. Define the different gocart variables, see https://github.com/JCSDA-internal/ufo/blob/develop/src/ufo/ufo_variables_mod.F90 for details.
   * :code:`model units coeff`: (optional) scaling factor for different background units, e.g. GFS is ug/kg and GEOS is kg/kg. Default value is 1.0 and operator would then expect ug/kg.
+  * :code:`ShareCoefficients`: (optional) share one CRTM coefficient load with other CRTM operators of the same settings (default true), or load the coefficients for each calculation (false). See `Shared coefficient loads`_ in the CRTM section.
 
 
 Example of a yaml:
