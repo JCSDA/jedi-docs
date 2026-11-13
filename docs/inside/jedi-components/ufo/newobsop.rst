@@ -21,7 +21,7 @@ The source directory for an observation operator implemented in Fortran typicall
 2. :code:`ObsVertInterp.interface.F90`, :code:`ObsVertInterp.interface.h`: C++ and Fortan files defining interfaces between Fortran and C++.
 3. :code:`ufo_vertinterp_mod.F90` - Fortran module containing the vertical interpolation code.
 
-Other examples of this C++-to-Fortran interface pattern can be found across UFO. For example, see the Background Error Identity Operator (:code:`ufo/operators/backgrounderroridentity`) for a simple example of setting up the interface, or the Column Retrieval operator (:code:`/ufo/operators/columnretrieval`) for a more complicated example that includes tangent linear and adjoint (TL/AD) implementations.
+Other examples of this C++-to-Fortran interface pattern can be found across UFO. For example, see the Background Error Identity Operator (:code:`ufo/operators/backgrounderroridentity`) for a simple example of setting up the interface. For tangent linear and adjoint (TL/AD) implementations, VertInterp follows the same pattern in :code:`ObsVertInterpTLAD.cc`, :code:`ObsVertInterpTLAD.h`, :code:`ObsVertInterpTLAD.interface.F90`, :code:`ObsVertInterpTLAD.interface.h` and :code:`ufo_vertinterp_tlad_mod.F90`.
 
 Adding an Observation Operator test
 -----------------------------------

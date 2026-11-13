@@ -531,21 +531,49 @@ The result of that first part of the operator is to either calculate a partial/t
 
 where :math:`A_{k}` the averaging kernel value at the retrieval level :math:`k`, :math:`X_{k}` the partial column corresponding to the retrieval level and :math:`P_{c}=(\mathbf{I} - \mathbf{A})\mathbf{X}_{\text{apriori}}` which is calculated within the iodaconverter and put as scalar value per observation location.
 
-The code of the non-linear and tangent linear and adjoint of this operator is in:
-:code:`ufo/operators/columnretrieval/ufo_satcolumn_mod.F90`
+The column weights and the non-linear, tangent linear and adjoint computations of this operator are in:
+:code:`ufo/operators/columnretrieval/SatColumnAlgorithm.cc`. The operator classes that read the observation data and loop over locations are in :code:`ObsColumnRetrieval.cc` and :code:`ObsColumnRetrievalTLAD.cc` in the same directory.
 
 Option descriptions:
 ^^^^^^^^^^^^^^^^^^^^
 Yaml options are defined in :code:`ufo/operators/columnretrieval/ObsColumnRetrievalParameters.h`
 
-* :code:`nlayers_retrieval`: Integer, optional and default is 1. It defines the number of retrieval layers in the obs file. Number of vertices will be and must be :code:`nlayers_retrieval +1`
-* :code:`tracer variables`: String, required. It specify the names of model tracer variables in Geovals.
+* :code:`nlayers_retrieval`: Integer, optional and default is 1. It must be at least 1. It defines the number of retrieval layers in the obs file. Number of vertices will be and must be :code:`nlayers_retrieval +1`
+* :code:`tracer variables`: List containing a single string, required. It specifies the name of the model tracer variable in Geovals. Only a single entry is allowed.
 * :code:`isApriori`: Boolean, optional and default is false. It adds the a priori retrieval term if set to True.
 * :code:`isAveragingKernel`: Boolean, optional and default is false. It adds the averaging kernel term if set to True.
-* :code:`stretchVertices`: String, optional and default value is None. This option allows top and/or bottom retrieval vertices to match the geovals top of the atmosphere and/or surface pressure vertices. Options are: top, bottom, topbottom and none (default).
+* :code:`stretchVertices`: String, optional. Stretches the outermost retrieval
+  vertices and GeoVaLs pressure interfaces so both grids cover the same pressure
+  range. Without it, retrieval vertices that extend beyond the GeoVaLs column are
+  clamped to the GeoVaLs top or surface, and that part of the column is lost.
+  Both grids are stretched to the wider of the two extents:
+
+  * :code:`bottom`: sets the bottom vertex of both grids to the higher of the two
+    surface pressures.
+  * :code:`top`: sets the top vertex of both grids to the lower of the two top
+    pressures.
+  * :code:`topbottom`: applies both.
+  * :code:`none` (default): no stretching. If string provided does not match one of these options an error is thrown.
+
+  Only the outermost vertices change, so the edge layer of whichever grid was
+  shorter becomes thicker.
 * :code:`model units coeff`: Double, optional and default is 1.0. It adds a conversion factor if background geovals values are not in the correct required unit: **dry volume mixing ratio** which is **mol of molecule considered per mol of dry air**
-* :code:`totalNoVertice`: Boolean, optional and default is false. This option, if set to true, is valid if :code:`isAveragingKernel` is false and :code:`nlayers_retrieval` is 1. This then calculates the total column with all the geovals level values using all the pressure ranges. No pressure vertice information is needed.
-* :code:`tropopause pressure`: Force the tropopause level when the observation product tropopause level could be above the chemical tropopause. Unit is in Pa and default value is 0 (top of the atmosphere).
+* :code:`totalNoVertice`: Boolean, optional and default is false. This option, if set to true, is valid if :code:`isAveragingKernel` is false and :code:`nlayers_retrieval` is 1. This then calculates the total column with all the geovals level values using all the pressure ranges. No pressure vertice information is needed. Any other combination with :code:`totalNoVertice: true` is rejected with an error when the yaml is read. The single layer spans the geovals top to the geovals surface, so :code:`stretchVertices` has no effect with this option.
+* :code:`tropopause pressure`: Double, optional. Force the tropopause level when the observation product tropopause level could be above the chemical tropopause. Unit is in Pa and default value is 0 (top of the atmosphere, i.e. no cutoff). The averaging kernel of a retrieval layer is set to zero when the **top** vertex of that layer is at a pressure lower than :code:`tropopause pressure`. A layer straddling the tropopause is therefore dropped entirely, not truncated at the tropopause.
+
+  .. warning::
+
+     Do not set a positive :code:`tropopause pressure` when simulating a total column. With :code:`totalNoVertice: true` the single layer starts at the top of the GeoVaLs, so any positive value zeroes out the whole column and the simulated observation becomes 0.
+
+Computing a total column:
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There are two options for simulating a total column; choose based on whether the observation product provides averaging kernels and pressure vertices:
+
+* **With averaging kernel and vertices** (e.g. TROPOMI CO, MOPITT CO): set :code:`isAveragingKernel: true`, set :code:`nlayers_retrieval` to the number of averaging kernel layers in the file, use :code:`stretchVertices: topbottom` so the full column is covered at both ends, and leave :code:`tropopause pressure` unset (or 0). Set :code:`isApriori: true` only if the product provides :code:`aprioriTerm`.
+* **Without averaging kernel or vertices** (e.g. OMPS total column ozone): set :code:`totalNoVertice: true`, :code:`nlayers_retrieval: 1` and :code:`isAveragingKernel: false`, and leave :code:`tropopause pressure` unset (or 0). The column is integrated over the whole geovals profile and nothing is read from :code:`RetrievalAncillaryData`.
+
+Setting a positive :code:`tropopause pressure` turns either configuration into a tropospheric column.
 
 Examples of yaml:
 ^^^^^^^^^^^^^^^^^
@@ -561,7 +589,6 @@ Example of using O3 OMPS Total Column without the Averaging Kernel Information. 
     isApriori: false
     isAveragingKernel: false
     totalNoVertice: true
-    stretchVertices: topbottom
 
 Example of using O3 OMPS Nadir Profiler without the Averaging Kernel Information. Here vertices are provided to define the pressure ranges of each of profile values. Since no averaging kernel is used in this case, each retrieval profile level is considered as a separate observation (partial columns) and the 2D structure of the original observation (retrieval pixel, retrieval layers) can be flatten in the :code:`Location` dimension in the observation file.
 
@@ -580,7 +607,7 @@ Example of using O3 OMPS Nadir Profiler without the Averaging Kernel Information
 
 
 
-Example of using NO2 TropOMI retrievals. Here the averaging kernel function is used but no apriori term (DOAS retrieval). :code:`pressureVertice` and :code:`averagingKernel` terms are needed in the :code:`RetrievalAncillaryData` group in the observation file (see observation file structure section below).
+Example of using NO2 TropOMI retrievals as a **tropospheric** column. Here the averaging kernel function is used but no apriori term (DOAS retrieval), and :code:`tropopause pressure` zeroes the averaging kernel above 250 hPa. Remove :code:`tropopause pressure` to simulate the total column instead. :code:`pressureVertice` and :code:`averagingKernel` terms are needed in the :code:`RetrievalAncillaryData` group in the observation file (see observation file structure section below).
 
 .. code-block:: yaml
 
@@ -593,6 +620,19 @@ Example of using NO2 TropOMI retrievals. Here the averaging kernel function is u
     stretchVertices: topbottom
     model units coeff: 1e-6 # ppmv to ppv
     tropopause pressure: 25000
+
+Example of using CO TropOMI retrievals as a **total** column with the averaging kernel. No :code:`tropopause pressure` is set, so the full column is used.
+
+.. code-block:: yaml
+
+  obs operator:
+    name: ColumnRetrieval
+    nlayers_retrieval: 50
+    tracer variables: [volume_mixing_ratio_of_co]
+    isApriori: false
+    isAveragingKernel: true
+    stretchVertices: topbottom
+    model units coeff: 1e-6 # ppmv to ppv
 
 Example of using CO MOPITT retrievals. Here the :code:`aprioriTerm` is added.
 
