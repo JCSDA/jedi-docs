@@ -2429,6 +2429,8 @@ Configuration options:
 * ``geovar_sfc_geomz`` - model variable for surface height. Geopotential heights will be converted to height above mean sea level.
 * ``station_altitude`` - variable in the ObsSpace which will be used for the staion height of the observation.
 * ``correction scheme to use`` - the scheme to use to correct the variable.  Currently available are 'WRFDA', 'UKMO' and 'GSL'.
+* ``observed temperature variable`` - (ObsValue group). Default is ``airTemperatureAt2M``. Used by the GSL scheme.
+* ``observed specific humidity variable`` - (ObsValue group). Default is ``specificHumidityAt2M``. Used by the GSL scheme.
 
 Example of surface air temperature correction yaml:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2494,7 +2496,8 @@ where `Rd` is 287.05 J/kg/K, `Ps` and `Zs` are the surface pressure and height, 
 .. math::
   Tv_{avg} = (Tv_{model} + Tv_{ob})/2.0
 
-if the surface obervation has virtual temperature value (`Tv_ob`). Otherwise
+where `Tv_ob` is the observed virtual temperature, computed from the observed air temperature and specific humidity.
+If specific humidity is missing, the observed air temperature (`T_ob`) is used instead:
 
 .. math::
   Tv_{avg} = (Tv_{model} + T_{ob})/2.0
