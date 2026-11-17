@@ -1,3 +1,4 @@
+
 Absolute dynamic topography
 ---------------------------
 
@@ -173,6 +174,83 @@ Examples of yaml:
          simulated variables: [seaIceFreeboard]
        obs operator:
          name: SeaIceThickness
+
+
+Sea ice freeboard
+-----------------
+
+Description:
+^^^^^^^^^^^^
+The sea ice freeboard UFO simulates the freeboard measured by lidar (e.g. ICESat-2) or
+radar (e.g. CryoSat-2) altimeters from the aggregate (single-category) sea ice and snow
+thicknesses:
+
+.. math::
+
+   F = \alpha \, h_i + \beta \, h_s, \qquad \alpha = \frac{\rho_w - \rho_i}{\rho_w}
+
+where :math:`h_i` and :math:`h_s` are the sea ice and snow thicknesses, and
+:math:`\rho_i`, :math:`\rho_s` and :math:`\rho_w` are the sea ice, snow and seawater
+densities. The :code:`instrument` option selects the snow coefficient :math:`\beta`:
+
+ - :code:`lidar`: the return comes from the air/snow interface, so the operator simulates
+   the total (ice + snow) freeboard, :math:`\beta = (\rho_w - \rho_s) / \rho_w`.
+ - :code:`radar Ka`: Ka-band radar (e.g. SARAL/AltiKa) little penetration into snow,
+   is treated the same as :code:`lidar` total (ice + snow) freeboard.
+ - :code:`radar Ku`: Ku-band radar (e.g. CryoSat-2) is assumed to penetrate to the snow/ice
+   interface, so the operator simulates the ice freeboard, :math:`\beta = -\rho_s / \rho_w`.
+
+For the same ice and snow thicknesses, the total freeboard (:code:`lidar`, :code:`radar Ka`)
+is larger than the ice freeboard (:code:`radar Ku`) by exactly :math:`h_s`.
+
+Freeboard is a height measured over the ice, not a grid-cell mean. The input thicknesses
+are per unit ice area, so no sea ice concentration weighting is applied. Freeboard is not
+defined over open water. Screen out low-concentration locations with a filter, for
+example a Domain Check on :code:`GeoVaLs/sea_ice_area_fraction`.
+
+The operator is linear in :math:`h_i` and :math:`h_s`. Its tangent linear and adjoint use
+the same coefficients. Locations where the trajectory thickness is missing are masked.
+The operator throws an exception if the input thicknesses have more than one category,
+or if the simulated variable is not :code:`seaIceFreeboard`.
+
+Options:
+^^^^^^^^
+
+ - :code:`instrument`: :code:`lidar`, :code:`radar Ka` or :code:`radar Ku` (required).
+ - :code:`sea ice density`: sea ice density in kg m\ :sup:`-3`, between 850 and 950 (required).
+ - :code:`surface snow density`: snow density in kg m\ :sup:`-3`, between 50 and 450 (required).
+ - :code:`sea water density`: seawater density in kg m\ :sup:`-3`, between 990 and 1035 (required).
+
+Input variables:
+^^^^^^^^^^^^^^^^
+
+ - sea_ice_thickness
+ - sea_ice_snow_thickness
+
+Examples of yaml:
+^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+   obs space:
+     name: SeaIceFreeboard lidar
+     obsdatain:
+       engine:
+         type: H5File
+         obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
+     simulated variables: [seaIceFreeboard]
+   obs operator:
+     name: SeaIceFreeboard
+     instrument: lidar
+     sea ice density: 917.0
+     surface snow density: 330.0
+     sea water density: 1026.0
+   linear obs operator:
+     name: SeaIceFreeboard
+     instrument: lidar
+     sea ice density: 917.0
+     surface snow density: 330.0
+     sea water density: 1026.0
 
 
 Sea ice fraction

@@ -2777,11 +2777,6 @@ Example of a yaml
   - obs operator:
       name: SatTCWV
 
-..
-   Link to the marine ufo
-
-.. include:: marineufo.rst
-
 .. _profileaverageoperator:
 
 Profile Average operator
@@ -2985,3 +2980,9 @@ Vertical integration with boundary interpolation at two end points from the YAML
       use km for height: true
       interpolate boundaries: true
       scaling factor: 1.0e-04
+
+
+..
+   Link to the marine ufo
+
+.. include:: marineufo.rst
