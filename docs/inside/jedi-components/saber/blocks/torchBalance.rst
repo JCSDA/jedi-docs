@@ -20,17 +20,20 @@ variables; the diagonal blocks of :math:`K` are implicitly identity since no mod
 maps a variable to itself. The transform is applied **independently at each
 horizontal grid node**: no spatial cross-correlations are introduced by this block.
 
+Two emulator types are supported:
+
+* **Surface emulators** — single-level Jacobians, typically used for coupled
+  atmosphere–ocean–ice relationships (e.g. SST ↔ near-surface air temperature).
+  Each model returns a Jacobian of shape ``[nnodes, 1, num_inputs]``.
+
+* **Vertical emulators** — level-diagonal Jacobians for multi-level variables.
+  The model receives full vertical profiles as input, but only the diagonal
+  entries :math:`J[k, k]` are evaluated — level :math:`k` of the output depends
+  only on level :math:`k` of the input; cross-level interactions are not supported.
+  This is suitable for relationships such as salinity from temperature at each
+  depth level independently.
+
 **Requires PyTorch (minimum) v2.8.0 and up to (maximum) v2.10.0**
-
-.. note::
-
-   **Current limitation — single-level Jacobians only.**
-   The initial motivation for ``TorchBalance`` is coupled atmosphere–ocean–ice
-   background error modelling, where the cross-variable relationships of interest
-   (e.g. SST ↔ near-surface air temperature) act between single model levels.
-   Consequently, each TorchScript model is currently required to return a
-   single-level Jacobian (the ``output_levels`` attribute must contain exactly
-   one entry). Support for multi-level Jacobians may be added in a future release.
 
 Jacobian field naming convention
 ---------------------------------
@@ -55,7 +58,10 @@ configuration.
 TorchScript model interface
 ---------------------------
 
-Each model must be a TorchScript file (``.ts``) that exposes the following
+Surface emulators
+~~~~~~~~~~~~~~~~~
+
+Each surface emulator must be a TorchScript file (``.ts``) that exposes the following
 attributes and method:
 
 * ``input_names`` — list of input variable names (strings)
@@ -70,15 +76,48 @@ The ``mask`` argument is always provided as a ``[nnodes, 1]`` float tensor;
 pass a tensor of ones for no masking, or provide a field-derived mask to suppress
 Jacobian contributions (e.g. over land for a sea surface model).
 
-A reference Python script showing how to create a conforming TorchScript model
-(using a simple linear function as an example) is provided at
+Vertical emulators
+~~~~~~~~~~~~~~~~~~
+
+Each vertical emulator must be a TorchScript file (``.ts``) that exposes the
+following attributes and method:
+
+* ``input_names`` — list of input variable names (strings)
+* ``output_names`` — list of output variable names (must have exactly one entry)
+
+.. note::
+
+   Vertical emulators do **not** use ``input_levels`` or ``output_levels`` attributes.
+   The number of levels for each variable is read directly from the Atlas field shapes
+   in the background state at runtime.
+
+* ``jac_physical(inputs, mask, requested_row_indices, requested_col_indices)`` —
+  returns a compact Jacobian tensor of shape ``[nnodes, nRequestedPairs]``.
+
+  * ``inputs`` — full vertical profiles concatenated across all input variables:
+    shape ``[nnodes, nTotalInputLevels]``
+  * ``mask`` — mask tensor of shape ``[nnodes, 1]``
+  * ``requested_row_indices`` — 1-D ``int64`` tensor of output level indices
+  * ``requested_col_indices`` — 1-D ``int64`` tensor of input level indices
+    (into the full concatenated input level dimension)
+
+  The C++ layer always requests **only diagonal pairs**: for level ``k``,
+  ``requested_row_indices[k] = k`` and ``requested_col_indices[k] = k``
+  (offset by the input variable's level offset in the concatenated input).
+  The model must return the corresponding diagonal Jacobian values
+  :math:`J[k, k]` — only same-level relationships are considered.
+  Cross-level entries :math:`J[k_\text{out}, k_\text{in}]` with
+  :math:`k_\text{out} \neq k_\text{in}` are never requested.
+
+A reference Python script showing how to create conforming TorchScript models for
+both emulator types is provided at
 :code:`saber/src/saber/torchbalance/create_test_emulator.py`.
 
 YAML configuration
 ------------------
 
 The block is configured under ``saber outer blocks`` with
-``saber block name: TorchBalance``. The required parameters are:
+``saber block name: TorchBalance``. The top-level parameters are:
 
 .. list-table::
    :widths: 25 10 65
@@ -88,8 +127,12 @@ The block is configured under ``saber outer blocks`` with
      - Required
      - Description
    * - ``surface emulators``
-     - Yes
-     - List of TorchScript model configurations (see below)
+     - Yes*
+     - List of surface TorchScript model configurations (see below).
+       *At least one of ``surface emulators`` or ``vertical emulators`` must be provided.
+   * - ``vertical emulators``
+     - No
+     - List of vertical TorchScript model configurations (see below)
    * - ``save jacobians``
      - No
      - If ``true``, write the assembled Jacobian FieldSet to disk for debugging
@@ -120,14 +163,39 @@ Each entry in ``surface emulators`` accepts:
      - No
      - Level index of the masking variable (default: ``0``)
 
-Example configuration
----------------------
+Each entry in ``vertical emulators`` accepts the same parameters:
 
-The following example configures two TorchScript models: one providing the Jacobian of
-``sea_water_potential_temperature`` with respect to ``air_temperature`` and
-``water_vapor_mixing_ratio_wrt_moist_air``, and another providing the Jacobian of
-``air_temperature`` with respect to ``sea_water_potential_temperature`` and
-``water_vapor_mixing_ratio_wrt_moist_air``:
+.. list-table::
+   :widths: 25 10 65
+   :header-rows: 1
+
+   * - Parameter
+     - Required
+     - Description
+   * - ``name``
+     - Yes
+     - Name of the output variable provided by this model
+   * - ``path``
+     - Yes
+     - Path to the TorchScript model file (``.ts``)
+   * - ``jacobian wrt``
+     - Yes
+     - List of input variable names the Jacobian is computed with respect to
+   * - ``jacobian masking.variable``
+     - No
+     - Name of a background field to use as a mask
+   * - ``jacobian masking.level``
+     - No
+     - Level index of the masking variable (default: ``0``)
+
+Example configurations
+----------------------
+
+Surface emulators only
+~~~~~~~~~~~~~~~~~~~~~~
+
+The following example configures two surface TorchScript models coupling SST, air
+temperature, and water vapour at the surface:
 
 .. code-block:: yaml
 
@@ -158,10 +226,47 @@ structure:
 
 .. code-block:: none
 
-                          sst    qv    tair
-     sst              [   I    0.1   0.4  ]
-     qv               [   0     I     0   ]
-     tair             [ 0.3   0.2    I    ]
+                       sst    qv    tair
+   sst              [   I    0.1   0.4  ]
+   qv               [   0     I     0   ]
+   tair             [ 0.3   0.2    I    ]
+
+Surface and vertical emulators combined
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following example adds a vertical emulator for salinity as a function of
+temperature over all model levels (4-level geometry):
+
+.. code-block:: yaml
+
+   background error:
+     covariance model: SABER
+     adjoint test: true
+     saber outer blocks:
+     - saber block name: TorchBalance
+       surface emulators:
+       - name: air_temperature
+         path: ./testdata/air_temperature_emulator.ts
+         jacobian wrt:
+         - sea_water_potential_temperature
+         - water_vapor_mixing_ratio_wrt_moist_air
+       vertical emulators:
+       - name: sea_water_salinity
+         path: ./testdata/vertical_emulator.ts
+         jacobian wrt:
+         - sea_water_potential_temperature
+     saber central block:
+       saber block name: ID
+
+For the vertical emulator with a diagonal Jacobian
+:math:`J_\text{sal,temp} = 0.5 \, I_4`, the :math:`K` block acting on
+temperature and salinity over 4 levels is:
+
+.. code-block:: none
+
+                temp (4 lvls)   sal (4 lvls)
+   temp (4 lvls) [    I_4           0      ]
+   sal  (4 lvls) [  0.5*I_4        I_4     ]
 
 Building SABER with PyTorch
 ---------------------------
